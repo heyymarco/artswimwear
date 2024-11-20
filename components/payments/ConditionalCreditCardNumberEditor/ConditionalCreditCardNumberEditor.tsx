@@ -45,8 +45,8 @@ import {
     CardNumberElement,
 }                           from '@stripe/react-stripe-js'
 import {
-    IfInStripeElementsProvider,
-}                           from '@/components/payments/ConditionalStripeElementsProvider'
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     // react components:
     StripeCardFieldWrapper,
@@ -151,7 +151,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
     );
     return (
         <>
-            <IfInStripeElementsProvider>
+            <IfInStripeScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
@@ -189,7 +189,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     // children:
                     childrenAfter={labelCardNumber}
                 />}
-            </IfInStripeElementsProvider>
+            </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel

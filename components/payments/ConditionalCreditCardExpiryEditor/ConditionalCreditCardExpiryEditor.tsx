@@ -45,8 +45,8 @@ import {
     CardExpiryElement,
 }                           from '@stripe/react-stripe-js'
 import {
-    IfInStripeElementsProvider,
-}                           from '@/components/payments/ConditionalStripeElementsProvider'
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     // react components:
     StripeCardFieldWrapper,
@@ -143,7 +143,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
     );
     return (
         <>
-            <IfInStripeElementsProvider>
+            <IfInStripeScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
@@ -181,7 +181,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     // children:
                     childrenAfter={labelCardExpiry}
                 />}
-            </IfInStripeElementsProvider>
+            </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel

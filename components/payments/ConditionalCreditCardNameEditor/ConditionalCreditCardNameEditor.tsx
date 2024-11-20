@@ -50,8 +50,8 @@ import {
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
-    IfInStripeElementsProvider,
-}                           from '@/components/payments/ConditionalStripeElementsProvider'
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
 
 import {
     IfInMidtransScriptProvider,
@@ -136,7 +136,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     );
     return (
         <>
-            <IfInStripeElementsProvider>
+            <IfInStripeScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
@@ -162,7 +162,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     // children:
                     childrenAfter={labelCardName}
                 />}
-            </IfInStripeElementsProvider>
+            </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel

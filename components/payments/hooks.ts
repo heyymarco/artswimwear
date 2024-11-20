@@ -3,8 +3,8 @@ import {
     useIsInPaypalScriptProvider,
 }                           from './ConditionalPaypalScriptProvider'
 import {
-    useIsInStripeElementsProvider,
-}                           from './ConditionalStripeElementsProvider'
+    useIsInStripeScriptProvider,
+}                           from './ConditionalStripeScriptProvider'
 import {
     useIsInMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'
@@ -36,12 +36,12 @@ export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps
     
     
     const isInPaypalScriptProvider   = useIsInPaypalScriptProvider();
-    const isInStripeElementsProvider = useIsInStripeElementsProvider();
+    const isInStripeScriptProvider   = useIsInStripeScriptProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const supportedCardProcessors    : string[] = (
         ([
             !isInPaypalScriptProvider   ? undefined : 'paypal',
-            !isInStripeElementsProvider ? undefined : 'stripe',
+            !isInStripeScriptProvider   ? undefined : 'stripe',
             !isInMidtransScriptProvider ? undefined : 'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))

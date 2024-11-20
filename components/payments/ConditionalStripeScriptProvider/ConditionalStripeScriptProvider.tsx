@@ -56,8 +56,8 @@ import {
 
 // internals:
 import {
-    IsInStripeElementsProviderContextProvider,
-}                           from './states/isInStripeElementsProvider'
+    IsInStripeScriptProviderContextProvider,
+}                           from './states/isInStripeScriptProvider'
 
 // configs:
 import {
@@ -75,7 +75,7 @@ const stripePromise : Promise<Stripe|null> = (stripeEnabled && !!clientId) ? loa
 
 
 
-const ConditionalStripeElementsProvider = ({children}: React.PropsWithChildren) => {
+const ConditionalStripeScriptProvider = ({children}: React.PropsWithChildren) => {
     // states:
     const {
         // accessibilities:
@@ -163,16 +163,16 @@ const ConditionalStripeElementsProvider = ({children}: React.PropsWithChildren) 
     
     // jsx:
     return (
-        <ImplementedStripeElementsProvider
+        <ImplementedStripeScriptProvider
             // options:
             currency={currency}
             totalAmount={convertedAmount}
         >
             {children}
-        </ImplementedStripeElementsProvider>
+        </ImplementedStripeScriptProvider>
     );
 }
-interface ImplementedStripeElementsProviderProps {
+interface ImplementedStripeScriptProviderProps {
     // options:
     currency    : string
     totalAmount : number
@@ -182,7 +182,7 @@ interface ImplementedStripeElementsProviderProps {
     // children:
     children    : React.ReactNode
 }
-const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProviderProps) => {
+const ImplementedStripeScriptProvider = (props: ImplementedStripeScriptProviderProps) => {
     // props:
     const {
         // options:
@@ -213,13 +213,13 @@ const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProvi
             stripe={stripePromise}
             options={stripeOptions}
         >
-            <IsInStripeElementsProviderContextProvider>
+            <IsInStripeScriptProviderContextProvider>
                 {children}
-            </IsInStripeElementsProviderContextProvider>
+            </IsInStripeScriptProviderContextProvider>
         </Elements>
     );
 };
 export {
-    ConditionalStripeElementsProvider,            // named export for readibility
-    ConditionalStripeElementsProvider as default, // default export to support React.lazy
+    ConditionalStripeScriptProvider,            // named export for readibility
+    ConditionalStripeScriptProvider as default, // default export to support React.lazy
 };
