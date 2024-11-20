@@ -23,7 +23,7 @@ import {
 
 
 // styles:
-const paypalCardFieldResetStyle    : PayPalCardFieldsStyleOptions = {
+const paypalCardComposerResetStyle   : PayPalCardFieldsStyleOptions = {
     // layouts:
     'appearance'           : 'none !important',
     
@@ -53,7 +53,7 @@ const paypalCardFieldResetStyle    : PayPalCardFieldsStyleOptions = {
     // spacings:
     'padding'              : '0 !important',
 };
-export const paypalCardFieldsStyle : Record<string, PayPalCardFieldsStyleOptions> = {
+export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptions> = {
     // bases:
     body: {
         // spacings:
@@ -83,7 +83,7 @@ export const paypalCardFieldsStyle : Record<string, PayPalCardFieldsStyleOptions
     // inputs:
     input: {
         // resets:
-        ...paypalCardFieldResetStyle,
+        ...paypalCardComposerResetStyle,
         
         
         
@@ -117,11 +117,12 @@ export const paypalCardFieldsStyle : Record<string, PayPalCardFieldsStyleOptions
     },
     
     
+    
     // states:
-    ':focus': paypalCardFieldResetStyle,
+    ':focus': paypalCardComposerResetStyle,
     '.valid': {
         // resets:
-        ...paypalCardFieldResetStyle,
+        ...paypalCardComposerResetStyle,
         
         
         
@@ -135,7 +136,7 @@ export const paypalCardFieldsStyle : Record<string, PayPalCardFieldsStyleOptions
     },
     '.invalid': {
         // resets:
-        ...paypalCardFieldResetStyle,
+        ...paypalCardComposerResetStyle,
         
         
         

@@ -44,8 +44,8 @@ import {
     usePaymentProcessorPriority,
 }                           from '@/components/payments/hooks'
 import {
-    usePaypalCardFieldsState,
-}                           from '@/components/payments/ConditionalPaypalCardFieldsProvider/states/paypalCardFieldsState'
+    usePaypalCardComposerState,
+}                           from '@/components/payments/ConditionalPaypalCardComposerProvider/states/paypalCardComposerState'
 import {
     usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
@@ -128,7 +128,7 @@ const CreditCardButtonPaypal   = (): JSX.Element|null => {
     
     const {
         signalApprovedOrderIdRef,
-    } = usePaypalCardFieldsState();
+    } = usePaypalCardComposerState();
     
     // const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
     

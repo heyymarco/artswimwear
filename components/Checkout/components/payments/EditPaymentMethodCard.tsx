@@ -14,8 +14,8 @@ import {
 
 // payment components:
 import {
-    ConditionalPaypalCardFieldsProvider,
-}                           from '@/components/payments/ConditionalPaypalCardFieldsProvider'
+    ConditionalPaypalCardComposerProvider,
+}                           from '@/components/payments/ConditionalPaypalCardComposerProvider'
 import {
     ConditionalCreditCardNumberEditor,
 }                           from '@/components/payments/ConditionalCreditCardNumberEditor'
@@ -51,9 +51,9 @@ import {
 const EditPaymentMethodCard = (): JSX.Element|null => {
     // jsx:
     return (
-        <ConditionalPaypalCardFieldsProvider>
+        <ConditionalPaypalCardComposerProvider>
             <EditPaymentMethodCardInternal />
-        </ConditionalPaypalCardFieldsProvider>
+        </ConditionalPaypalCardComposerProvider>
     );
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {

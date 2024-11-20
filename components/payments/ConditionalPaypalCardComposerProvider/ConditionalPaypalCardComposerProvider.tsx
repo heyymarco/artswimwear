@@ -37,16 +37,16 @@ import {
 
 // internals:
 import {
-    paypalCardFieldsStyle,
+    paypalCardComposerStyle,
 }                           from './styles'
 import {
-    usePaypalCardFieldsState,
-    PaypalCardFieldsStateProvider,
-}                           from './states/paypalCardFieldsState'
+    usePaypalCardComposerState,
+    PaypalCardComposerStateProvider,
+}                           from './states/paypalCardComposerState'
 
 
 
-const ConditionalPaypalCardFieldsProvider = ({children}: React.PropsWithChildren) => {
+const ConditionalPaypalCardComposerProvider = ({children}: React.PropsWithChildren) => {
     // conditions:
     const isInPaypalScriptProvider = useIsInPaypalScriptProvider();
     if (!isInPaypalScriptProvider) {
@@ -63,18 +63,18 @@ const ConditionalPaypalCardFieldsProvider = ({children}: React.PropsWithChildren
     
     // jsx:
     return (
-        <PaypalCardFieldsStateProvider>
-            <ImplementedPaypalCardFieldsProvider>
+        <PaypalCardComposerStateProvider>
+            <ImplementedPaypalCardComposerProvider>
                 {children}
-            </ImplementedPaypalCardFieldsProvider>
-        </PaypalCardFieldsStateProvider>
+            </ImplementedPaypalCardComposerProvider>
+        </PaypalCardComposerStateProvider>
     );
 }
-interface ImplementedPaypalCardFieldsProviderProps {
+interface ImplementedPaypalCardComposerProviderProps {
     // children:
     children : React.ReactNode
 }
-const ImplementedPaypalCardFieldsProvider = (props: ImplementedPaypalCardFieldsProviderProps) => {
+const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardComposerProviderProps) => {
     // props:
     const {
         // children:
@@ -91,7 +91,7 @@ const ImplementedPaypalCardFieldsProvider = (props: ImplementedPaypalCardFieldsP
     
     const {
         signalApprovedOrderIdRef,
-    } = usePaypalCardFieldsState();
+    } = usePaypalCardComposerState();
     
     
     
@@ -138,7 +138,7 @@ const ImplementedPaypalCardFieldsProvider = (props: ImplementedPaypalCardFieldsP
     return (
         <PayPalCardFieldsProvider
             // styles:
-            style={paypalCardFieldsStyle}
+            style={paypalCardComposerStyle}
             
             
             
@@ -152,6 +152,6 @@ const ImplementedPaypalCardFieldsProvider = (props: ImplementedPaypalCardFieldsP
     );
 };
 export {
-    ConditionalPaypalCardFieldsProvider,            // named export for readibility
-    ConditionalPaypalCardFieldsProvider as default, // default export to support React.lazy
+    ConditionalPaypalCardComposerProvider,            // named export for readibility
+    ConditionalPaypalCardComposerProvider as default, // default export to support React.lazy
 };
