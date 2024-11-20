@@ -40,13 +40,13 @@ import {
     paypalCardFieldsStyle,
 }                           from './styles'
 import {
-    usePay_palCardFieldsState,
-    Pay_palCardFieldsStateProvider,
-}                           from './states/pay_palCardFieldsState'
+    usePaypalCardFieldsState,
+    PaypalCardFieldsStateProvider,
+}                           from './states/paypalCardFieldsState'
 
 
 
-const ConditionalPay_palCardFieldsProvider = ({children}: React.PropsWithChildren) => {
+const ConditionalPaypalCardFieldsProvider = ({children}: React.PropsWithChildren) => {
     // conditions:
     const isInPayPalScriptProvider = useIsInPayPalScriptProvider();
     if (!isInPayPalScriptProvider) {
@@ -63,11 +63,11 @@ const ConditionalPay_palCardFieldsProvider = ({children}: React.PropsWithChildre
     
     // jsx:
     return (
-        <Pay_palCardFieldsStateProvider>
+        <PaypalCardFieldsStateProvider>
             <ImplementedPayPalCardFieldsProvider>
                 {children}
             </ImplementedPayPalCardFieldsProvider>
-        </Pay_palCardFieldsStateProvider>
+        </PaypalCardFieldsStateProvider>
     );
 }
 interface ImplementedPayPalCardFieldsProviderProps {
@@ -91,7 +91,7 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
     
     const {
         signalApprovedOrderIdRef,
-    } = usePay_palCardFieldsState();
+    } = usePaypalCardFieldsState();
     
     
     
@@ -152,6 +152,6 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
     );
 };
 export {
-    ConditionalPay_palCardFieldsProvider,            // named export for readibility
-    ConditionalPay_palCardFieldsProvider as default, // default export to support React.lazy
+    ConditionalPaypalCardFieldsProvider,            // named export for readibility
+    ConditionalPaypalCardFieldsProvider as default, // default export to support React.lazy
 };
