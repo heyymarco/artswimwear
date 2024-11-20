@@ -29,8 +29,8 @@ import {
     ConditionalCreditCardCvvEditor,
 }                           from '@/components/payments/ConditionalCreditCardCvvEditor'
 import {
-    ButtonPaymentCard,
-}                           from '@/components/payments/ButtonPaymentCard'
+    ConditionalCreditCardButton,
+}                           from '@/components/payments/ConditionalCreditCardButton'
 
 // internal components:
 import {
@@ -114,7 +114,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             <ButtonWithBusy
                 // components:
                 buttonComponent={
-                    <ButtonPaymentCard />
+                    <ConditionalCreditCardButton />
                 }
             />
         </ValidationProvider>

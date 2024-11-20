@@ -75,7 +75,7 @@ import {
 
 
 // react components:
-const ButtonPaymentCard = (): JSX.Element|null => {
+const ConditionalCreditCardButton = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
@@ -95,19 +95,19 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     // jsx:
-    if (isPaymentPriorityPaypal  ) return <ButtonPaymentCardForPayPal />;
-    if (isPaymentPriorityStripe  ) return <ButtonPaymentCardForStripe />;
-    if (isPaymentPriorityMidtrans) return <ButtonPaymentCardForMidtrans />;
+    if (isPaymentPriorityPaypal  ) return <CreditCardButtonPaypal />;
+    if (isPaymentPriorityStripe  ) return <CreditCardButtonStripe />;
+    if (isPaymentPriorityMidtrans) return <CreditCardButtonMidtrans />;
     return null;
 };
 export {
-    ButtonPaymentCard,
-    ButtonPaymentCard as default,
+    ConditionalCreditCardButton,
+    ConditionalCreditCardButton as default,
 };
 
 
 
-const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
+const CreditCardButtonPaypal   = (): JSX.Element|null => {
     // // states:
     // const {
     //     // shipping data:
@@ -189,14 +189,14 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <ButtonPaymentCardGeneral
+        <CreditCardButtonGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
             doAuthenticate={proxyDoAuthenticate}
         />
     );
 };
-const ButtonPaymentCardForStripe = (): JSX.Element|null => {
+const CreditCardButtonStripe   = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
@@ -316,14 +316,14 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <ButtonPaymentCardGeneral
+        <CreditCardButtonGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
             doAuthenticate={proxyDoAuthenticate}
         />
     );
 };
-const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
+const CreditCardButtonMidtrans = (): JSX.Element|null => {
     // states:
     const {
         // sections:
@@ -561,7 +561,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <ButtonPaymentCardGeneral
+        <CreditCardButtonGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
             doAuthenticate={proxyDoAuthenticate}
@@ -584,7 +584,7 @@ interface ButtonPaymentGeneralProps
         >
 {
 }
-const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
+const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
     const {
         doPlaceOrder,
