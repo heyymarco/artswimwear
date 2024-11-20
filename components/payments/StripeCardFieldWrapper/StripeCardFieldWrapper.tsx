@@ -51,17 +51,33 @@ export type CardBaseElementProps =
     |CardCvcElementProps
 export interface StripeCardFieldWrapperProps
     extends
+        // bases:
         EditableTextControlProps
 {
+    // formats:
+    placeholder          ?: string
+    
+    
+    
     // components:
-    cardElementComponent : React.ReactElement<CardBaseElementProps>
+    cardElementComponent  : React.ReactElement<CardBaseElementProps>
 }
 const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     // rest props:
     const {
+        // formats:
+        placeholder,
+        
+        
+        
         // components:
         cardElementComponent,
-    ...restStripeCardFieldWrapperProps} = props;
+        
+        
+        
+        // other props:
+        ...restStripeCardFieldWrapperProps
+    } = props;
     
     
     
@@ -94,6 +110,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
                 options : {
                     ...cardElementComponent.props.options,
                     style : stripeCardFieldStyle,
+                    placeholder,
                 },
                 
                 
@@ -104,7 +121,17 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
                 onChange  : handleChange,
             },
         );
-    }, []);
+    }, [
+        // formats:
+        placeholder,
+        
+        
+        
+        // handlers:
+        // handleFocus,  // stable ref
+        // handleBlur,   // stable ref
+        // handleChange, // stable ref
+    ]);
     
     
     
@@ -112,7 +139,11 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     const {
         // accessibilities:
         tabIndex     : editableTabIndex  = -1,
-        // 'aria-label' : editableAriaLabel = placeholder,
+        
+        
+        
+        // formats:
+        'aria-label' : editableAriaLabel = placeholder,
         
         
         
@@ -136,7 +167,11 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
             
             // accessibilities:
             tabIndex   = {editableTabIndex}
-            // aria-label = {editableAriaLabel}
+            
+            
+            
+            // formats:
+            aria-label = {editableAriaLabel}
             
             
             
