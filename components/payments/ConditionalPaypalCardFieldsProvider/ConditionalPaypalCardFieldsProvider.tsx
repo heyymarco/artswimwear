@@ -27,7 +27,7 @@ import {
 }                           from '@paypal/react-paypal-js'
 import {
     useIsInPayPalScriptProvider,
-}                           from '@/components/payments/ConditionalPayPalScriptProvider'
+}                           from '@/components/payments/ConditionalPay_PalScriptProvider'
 
 // checkout components:
 import {
@@ -48,8 +48,8 @@ import {
 
 const ConditionalPaypalCardFieldsProvider = ({children}: React.PropsWithChildren) => {
     // conditions:
-    const isInPayPalScriptProvider = useIsInPayPalScriptProvider();
-    if (!isInPayPalScriptProvider) {
+    const isInPay_PalScriptProvider = useIsInPayPalScriptProvider();
+    if (!isInPay_PalScriptProvider) {
         // jsx:
         return (
             /* the <div> is for preserving the layout */

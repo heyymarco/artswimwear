@@ -1,7 +1,7 @@
 // payment components:
 import {
     useIsInPayPalScriptProvider,
-}                           from './ConditionalPayPalScriptProvider'
+}                           from './ConditionalPay_PalScriptProvider'
 import {
     useIsInStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
@@ -35,12 +35,12 @@ export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps
     
     
     
-    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInPay_PalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const supportedCardProcessors    : string[] = (
         ([
-            !isInPayPalScriptProvider   ? undefined : 'paypal',
+            !isInPay_PalScriptProvider   ? undefined : 'paypal',
             !isInStripeElementsProvider ? undefined : 'stripe',
             !isInMidtransScriptProvider ? undefined : 'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
