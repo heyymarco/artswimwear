@@ -64,11 +64,6 @@ import {
 
 // reusable-ui components:
 import {
-    // base-components:
-    basics,
-    
-    
-    
     // base-content-components:
     containers,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -668,11 +663,35 @@ export default () => {
                 }),
                 ...descendants('.cardField', {
                     // layouts:
-                    display       : 'grid',
+                    display : 'grid',
                     
-                    ...children(':only-child', {
+                    
+                    
+                    // spacings:
+                    // copy parent's paddings:
+                    paddingInline  : paddingVars.paddingInline,
+                    paddingBlock   : paddingVars.paddingBlock,
+                    
+                    
+                    
+                    // children:
+                    ...children('*', {
+                        // children:
                         ...children(['&', '*'], {
-                            blockSize : `calc(1em * ${switchOf(basics.lineHeight, typos.lineHeight)})`,
+                            // layouts:
+                            display   : 'grid',
+                            blockSize : '1lh !important',
+                            
+                            
+                            
+                            // spacings:
+                            // cancel-out parent's padding with negative margin:
+                            marginInline   : `calc(0px - ${paddingVars.paddingInline})`,
+                            marginBlock    : `calc(0px - ${paddingVars.paddingBlock })`,
+                            
+                            // copy parent's paddings:
+                            paddingInline  : paddingVars.paddingInline,
+                            paddingBlock   : paddingVars.paddingBlock,
                         }),
                     }),
                 })

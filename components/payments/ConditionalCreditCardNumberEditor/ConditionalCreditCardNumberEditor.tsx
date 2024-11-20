@@ -42,12 +42,14 @@ import {
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
-    CardNumberElement,
-}                           from '@stripe/react-stripe-js'
-import {
     IfInStripeScriptProvider,
 }                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
+    // options:
+    stripeCardNumberOptions,
+    
+    
+    
     // react components:
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
@@ -167,20 +169,18 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     // components:
                     inputComponent={
                         <StripeCardFieldWrapper
+                            // options:
+                            {...stripeCardNumberOptions}
+                            
+                            
+                            
                             // accessibilities:
                             aria-label='Card Number'
                             
                             
                             
-                            // validations:
-                            enableValidation={isPaymentPriorityStripe ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardNumberElement />
-                            }
+                            // classes:
+                            className='cardField'
                         />
                     }
                     

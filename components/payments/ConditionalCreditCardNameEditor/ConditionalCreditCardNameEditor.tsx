@@ -152,6 +152,17 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     // components:
                     inputComponent={
                         <CreditCardNameEditor
+                            // accessibilities:
+                            aria-label='Cardholder Name'
+                            placeholder='John Doe'
+                            
+                            
+                            
+                            // classes:
+                            className='cardField'
+                            
+                            
+                            
                             // forms:
                             name='cardHolder'
                         />

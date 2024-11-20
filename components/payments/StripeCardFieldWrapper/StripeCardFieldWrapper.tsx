@@ -1,10 +1,5 @@
 'use client'
 
-// styles:
-import {
-    useStripeCardFieldStyleSheet,
-}                           from './styles/loader'
-
 // react:
 import {
     // react:
@@ -70,11 +65,6 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     
     
     
-    // styles:
-    const styleSheet = useStripeCardFieldStyleSheet();
-    
-    
-    
     // states:
     const [isFocused, setIsFocused] = useState<boolean|undefined>(false);
     const [isValid  , setIsValid  ] = useState<boolean|undefined>(false);
@@ -104,11 +94,6 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
                 options : {
                     style : stripeCardFieldStyle,
                 },
-                
-                
-                
-                // classes:
-                className : styleSheet.main,
                 
                 
                 

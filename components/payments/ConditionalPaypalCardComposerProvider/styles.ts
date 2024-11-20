@@ -5,6 +5,11 @@ import {
     
     
     
+    // a spacer (gap) management system:
+    spacerValues,
+    
+    
+    
     // a typography management system:
     typoValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -23,15 +28,9 @@ import {
 
 
 // styles:
-const paypalCardComposerResetStyle   : PayPalCardFieldsStyleOptions = {
+const paypalCardComposerResetBoxStyle     : PayPalCardFieldsStyleOptions = {
     // layouts:
     'appearance'           : 'none !important',
-    
-    
-    
-    // sizes:
-    // @ts-ignore
-    'height'               : '1lh !important',
     
     
     
@@ -51,11 +50,43 @@ const paypalCardComposerResetStyle   : PayPalCardFieldsStyleOptions = {
     
     
     // spacings:
-    'padding'              : '0 !important',
+    'padding-top'          : '0 !important',
+    'padding-bottom'       : '0 !important',
+    'padding-left'         : '0 !important',
+    'padding-right'        : '0 !important',
+};
+const paypalCardComposerResetTextboxStyle : PayPalCardFieldsStyleOptions = {
+    // resets:
+    ...paypalCardComposerResetBoxStyle,
+    
+    
+    
+    // sizes:
+    // @ts-ignore
+    'height'           : '100%',
+    
+    
+    
+    // spacings:
+    'padding-top'      : `calc((${typoValues.fontSizeMd} / 3))`,
+    'padding-bottom'   : `calc((${typoValues.fontSizeMd} / 3))`,
+    'padding-left'     : `calc((${typoValues.fontSizeMd} / 1.5))`,
+    'padding-right'    : `calc((${typoValues.fontSizeMd} / 1.5))`,
 };
 export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptions> = {
     // bases:
+    html : {
+        // sizes:
+        // @ts-ignore
+        'height'           : '100%',
+    },
     body: {
+        // sizes:
+        // @ts-ignore
+        'height'           : '100%',
+        
+        
+        
         // spacings:
         'padding'          : '0',
         
@@ -68,14 +99,14 @@ export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptio
     
     
     // icons:
-    '.card-icon': {
+    '.card-icon.card-icon': {
         // @ts-ignore
-        // 'left'             : '0', doesn't work
-        'width'            : '40px',
-        'height'           : '1lh',
+        // 'left'             : `calc((${typoValues.fontSizeMd} / 1.5)) !important`, // doesn't work, Paypal doesn't allow to declare `left` prop
+        'width'            : '40px !important',
+        'height'           : `calc(100% - (${spacerValues.md} / 2)) !important`,
     },
-    'input.card-field-number.display-icon': {
-        'padding-left'     : 'calc(40px + 1.2rem + 1em) !important',
+    'input.card-field-number.display-icon.display-icon': {
+        'padding-left'     : `calc(1.1875rem + 40px + (${typoValues.fontSizeMd} / 1.5)) !important`,
     },
     
     
@@ -83,7 +114,7 @@ export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptio
     // inputs:
     input: {
         // resets:
-        ...paypalCardComposerResetStyle,
+        ...paypalCardComposerResetTextboxStyle,
         
         
         
@@ -119,10 +150,10 @@ export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptio
     
     
     // states:
-    ':focus': paypalCardComposerResetStyle,
+    ':focus': paypalCardComposerResetTextboxStyle,
     '.valid': {
         // resets:
-        ...paypalCardComposerResetStyle,
+        ...paypalCardComposerResetTextboxStyle,
         
         
         
@@ -136,7 +167,7 @@ export const paypalCardComposerStyle : Record<string, PayPalCardFieldsStyleOptio
     },
     '.invalid': {
         // resets:
-        ...paypalCardComposerResetStyle,
+        ...paypalCardComposerResetTextboxStyle,
         
         
         

@@ -15,25 +15,21 @@ import {
 
 // options:
 export const paypalCardNumberOptions : PaypalCardFieldWrapperProps = {
-    // selector              : '#cardNumber',
     placeholder              : '1111-2222-3333-4444',
     type                     : 'cardNumberField',
     paypalCardFieldComponent : <PayPalNumberField />,
 };
 export const paypalCardNameOptions   : PaypalCardFieldWrapperProps = {
-    // selector              : '#cardName',
     placeholder              : 'John Doe',
     type                     : 'cardNameField',
     paypalCardFieldComponent : <PayPalNameField />,
 };
 export const paypalCardExpiryOptions : PaypalCardFieldWrapperProps = {
-    // selector              : '#cardExpiry',
     placeholder              : '11/2020',
     type                     : 'cardExpiryField',
     paypalCardFieldComponent : <PayPalExpiryField />,
 };
 export const paypalCardCvvOptions    : PaypalCardFieldWrapperProps = {
-    // selector              : '#cardCvv',
     placeholder              : '123',
     type                     : 'cardCvvField',
     paypalCardFieldComponent : <PayPalCVVField />,

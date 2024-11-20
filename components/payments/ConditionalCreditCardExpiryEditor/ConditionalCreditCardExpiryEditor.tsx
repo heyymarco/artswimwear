@@ -42,12 +42,14 @@ import {
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
-    CardExpiryElement,
-}                           from '@stripe/react-stripe-js'
-import {
     IfInStripeScriptProvider,
 }                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
+    // options:
+    stripeCardExpiryOptions,
+    
+    
+    
     // react components:
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
@@ -159,20 +161,18 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     // components:
                     inputComponent={
                         <StripeCardFieldWrapper
+                            // options:
+                            {...stripeCardExpiryOptions}
+                            
+                            
+                            
                             // accessibilities:
                             aria-label='Card Expiry'
                             
                             
                             
-                            // validations:
-                            enableValidation={isPaymentPriorityStripe ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardExpiryElement />
-                            }
+                            // classes:
+                            className='cardField'
                         />
                     }
                     

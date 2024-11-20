@@ -42,12 +42,14 @@ import {
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
-    CardCvcElement,
-}                           from '@stripe/react-stripe-js'
-import {
     IfInStripeScriptProvider,
 }                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
+    // options:
+    stripeCardCvvOptions,
+    
+    
+    
     // react components:
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
@@ -162,20 +164,18 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     // components:
                     inputComponent={
                         <StripeCardFieldWrapper
+                            // options:
+                            {...stripeCardCvvOptions}
+                            
+                            
+                            
                             // accessibilities:
                             aria-label='Card CSC/CVV'
                             
                             
                             
-                            // validations:
-                            enableValidation={isPaymentPriorityStripe ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardCvcElement />
-                            }
+                            // classes:
+                            className='cardField'
                         />
                     }
                     
