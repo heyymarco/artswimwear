@@ -18,14 +18,11 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// reusable-ui components:
-import {
-    // base-components:
-    EditableTextControlProps,
-    EditableTextControl,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
 // payment components:
+import {
+    type BaseCardFieldWrapperProps,
+    BaseCardFieldWrapper,
+}                           from '@/components/payments/BaseCardFieldWrapper'
 import {
     type PayPalCardFieldsStateObject,
 }                           from '@paypal/paypal-js'
@@ -39,11 +36,7 @@ import {
 export interface PaypalCardFieldWrapperProps
     extends
         // bases:
-        EditableTextControlProps,
-        Pick<PayPalCardFieldsIndividualFieldOptions,
-            // formats:
-            |'placeholder'
-        >
+        BaseCardFieldWrapperProps
 {
     // formats:
     type                     : keyof Awaited<PayPalCardFieldsStateObject>['fields']
@@ -84,11 +77,11 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     
     
     // handlers:
-    const handleFocus    = useEvent((data: PayPalCardFieldsStateObject): void => {
+    const handleFocus        = useEvent((data: PayPalCardFieldsStateObject): void => {
         // actions:
         setIsFocused(true);
     });
-    const handleBlur    = useEvent((data: PayPalCardFieldsStateObject): void => {
+    const handleBlur         = useEvent((data: PayPalCardFieldsStateObject): void => {
         // actions:
         setIsFocused(false);
     });
@@ -135,51 +128,37 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     
     // default props:
     const {
-        // accessibilities:
-        tabIndex     : editableTabIndex  = -1,
-        
-        
-        
-        // formats:
-        'aria-label' : editableAriaLabel = placeholder,
-        
-        
-        
         // states:
         focused      : editableFocused   = isFocused,
         isValid      : editableIsValid   = isValid,
         
         
+        
         // other props:
-        ...restEditableTextControlProps
+        ...restBaseCardFieldWrapperProps
     } = restPaypalCardFieldWrapperProps;
     
     
     
     // jsx:
     return (
-        <EditableTextControl
+        <BaseCardFieldWrapper
             // other props:
-            {...restEditableTextControlProps}
-            
-            
-            
-            // accessibilities:
-            tabIndex   = {editableTabIndex}
+            {...restBaseCardFieldWrapperProps}
             
             
             
             // formats:
-            aria-label = {editableAriaLabel}
+            placeholder = {placeholder}
             
             
             
             // states:
-            focused    = {editableFocused}
-            isValid    = {editableIsValid}
+            focused     = {editableFocused}
+            isValid     = {editableIsValid}
         >
             {cachedCardField}
-        </EditableTextControl>
+        </BaseCardFieldWrapper>
     );
 };
 export {

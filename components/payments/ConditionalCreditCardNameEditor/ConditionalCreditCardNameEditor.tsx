@@ -158,11 +158,6 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                             
                             
                             
-                            // classes:
-                            // className='cardFieldWrapper' // <CreditCardNameEditor> is not a iframe wrapper, do not add `cardFieldWrapper` class
-                            
-                            
-                            
                             // forms:
                             name='cardHolder'
                         />
@@ -197,11 +192,6 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                             
                             // accessibilities:
                             aria-label='Cardholder Name'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                             
                             
                             

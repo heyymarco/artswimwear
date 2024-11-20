@@ -176,11 +176,6 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                             
                             // accessibilities:
                             aria-label='Card Number'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -213,11 +208,6 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                             
                             // accessibilities:
                             aria-label='Card Number'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                             
                             
                             

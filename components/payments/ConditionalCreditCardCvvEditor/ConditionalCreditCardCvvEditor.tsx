@@ -171,11 +171,6 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             // accessibilities:
                             aria-label='Card CSC/CVV'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -208,11 +203,6 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             // accessibilities:
                             aria-label='Card CSC/CVV'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                             
                             
                             

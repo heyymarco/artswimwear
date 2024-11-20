@@ -661,40 +661,6 @@ export default () => {
                 ...children('.payButton', {
                     gridArea: 'payButton',
                 }),
-                ...descendants('.cardFieldWrapper', {
-                    // layouts:
-                    display : 'grid',
-                    
-                    
-                    
-                    // spacings:
-                    // copy parent's paddings:
-                    paddingInline  : paddingVars.paddingInline,
-                    paddingBlock   : paddingVars.paddingBlock,
-                    
-                    
-                    
-                    // children:
-                    ...children('*', {
-                        // children:
-                        ...children(['&', '*'], {
-                            // layouts:
-                            display   : 'grid',
-                            blockSize : '1lh !important',
-                            
-                            
-                            
-                            // spacings:
-                            // cancel-out parent's padding with negative margin:
-                            marginInline   : `calc(0px - ${paddingVars.paddingInline})`,
-                            marginBlock    : `calc(0px - ${paddingVars.paddingBlock })`,
-                            
-                            // copy parent's paddings:
-                            paddingInline  : paddingVars.paddingInline,
-                            paddingBlock   : paddingVars.paddingBlock,
-                        }),
-                    }),
-                })
             }),
         }, {specificityWeight: 2}),
         scope('paymentEntryExpressCheckout', {

@@ -18,14 +18,11 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// reusable-ui components:
-import {
-    // base-components:
-    EditableTextControlProps,
-    EditableTextControl,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
 // payment components:
+import {
+    type BaseCardFieldWrapperProps,
+    BaseCardFieldWrapper,
+}                           from '@/components/payments/BaseCardFieldWrapper'
 import {
     type StripeCardNumberElementChangeEvent,
     type StripeCardExpiryElementChangeEvent,
@@ -52,15 +49,10 @@ export type CardBaseElementProps =
 export interface StripeCardFieldWrapperProps
     extends
         // bases:
-        EditableTextControlProps
+        BaseCardFieldWrapperProps
 {
-    // formats:
-    placeholder          ?: string
-    
-    
-    
     // components:
-    cardElementComponent  : React.ReactElement<CardBaseElementProps>
+    stripeCardElementComponent : React.ReactElement<CardBaseElementProps>
 }
 const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     // rest props:
@@ -71,7 +63,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
         
         
         // components:
-        cardElementComponent,
+        stripeCardElementComponent,
         
         
         
@@ -82,8 +74,8 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     
     
     // states:
-    const [isFocused, setIsFocused] = useState<boolean|undefined>(false);
-    const [isValid  , setIsValid  ] = useState<boolean|undefined>(false);
+    const [isFocused, setIsFocused] = useState<boolean>(false); // the fields are intitially untouched, so initially blur
+    const [isValid  , setIsValid  ] = useState<boolean>(false); // the fields are initially blank (but required), so initially invalid
     
     
     
@@ -103,12 +95,12 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     // caches:
     const cachedCardField = useMemo(() => {
         // jsx:
-        return React.cloneElement<CardBaseElementProps>(cardElementComponent,
+        return React.cloneElement<CardBaseElementProps>(stripeCardElementComponent,
             // props:
             {
                 // options:
                 options : {
-                    ...cardElementComponent.props.options,
+                    ...stripeCardElementComponent.props.options,
                     style : stripeCardFieldStyle,
                     placeholder,
                 },
@@ -137,50 +129,37 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     
     // default props:
     const {
-        // accessibilities:
-        tabIndex     : editableTabIndex  = -1,
-        
-        
-        
-        // formats:
-        'aria-label' : editableAriaLabel = placeholder,
-        
-        
-        
         // states:
-        focused      : editableFocused   = isFocused ?? false,
-        isValid      : editableIsValid   = isValid   ?? null,
+        focused      : editableFocused   = isFocused,
+        isValid      : editableIsValid   = isValid,
         
         
-        ...restEditableTextControlProps
+        
+        // other props:
+        ...restBaseCardFieldWrapperProps
     } = restStripeCardFieldWrapperProps;
     
     
     
     // jsx:
     return (
-        <EditableTextControl
+        <BaseCardFieldWrapper
             // other props:
-            {...restEditableTextControlProps}
-            
-            
-            
-            // accessibilities:
-            tabIndex   = {editableTabIndex}
+            {...restBaseCardFieldWrapperProps}
             
             
             
             // formats:
-            aria-label = {editableAriaLabel}
+            placeholder = {placeholder}
             
             
             
             // states:
-            focused    = {editableFocused}
-            isValid    = {editableIsValid}
+            focused     = {editableFocused}
+            isValid     = {editableIsValid}
         >
             {cachedCardField}
-        </EditableTextControl>
+        </BaseCardFieldWrapper>
     );
 };
 export {

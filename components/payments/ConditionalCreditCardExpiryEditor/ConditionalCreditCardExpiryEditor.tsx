@@ -168,11 +168,6 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                             
                             // accessibilities:
                             aria-label='Card Expiry'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -205,11 +200,6 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                             
                             // accessibilities:
                             aria-label='Card Expiry'
-                            
-                            
-                            
-                            // classes:
-                            className='cardFieldWrapper'
                             
                             
                             
