@@ -38,8 +38,8 @@ import {
     
     
     // react components:
-    Pay_PalCardFieldWrapper,
-}                           from '@/components/payments/Pay_PalCardFieldWrapper'
+    PaypalCardFieldWrapper,
+}                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
     CardNumberElement,
@@ -205,7 +205,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     
                     // components:
                     inputComponent={
-                        <Pay_PalCardFieldWrapper
+                        <PaypalCardFieldWrapper
                             // options:
                             {...paypalCardNumberOptions}
                             

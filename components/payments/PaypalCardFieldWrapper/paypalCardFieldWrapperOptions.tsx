@@ -8,31 +8,31 @@ import {
 
 // internals:
 import {
-    type Pay_PalCardFieldWrapperProps,
-}                           from './Pay_PalCardFieldWrapper'
+    type PaypalCardFieldWrapperProps,
+}                           from './PaypalCardFieldWrapper'
 
 
 
 // options:
-export const paypalCardNumberOptions : Pay_PalCardFieldWrapperProps = {
+export const paypalCardNumberOptions : PaypalCardFieldWrapperProps = {
     // selector              : '#cardNumber',
     placeholder              : '1111-2222-3333-4444',
     type                     : 'cardNumberField',
     payPalCardFieldComponent : <PayPalNumberField />,
 };
-export const paypalCardNameOptions   : Pay_PalCardFieldWrapperProps = {
+export const paypalCardNameOptions   : PaypalCardFieldWrapperProps = {
     // selector              : '#cardName',
     placeholder              : 'John Doe',
     type                     : 'cardNameField',
     payPalCardFieldComponent : <PayPalNameField />,
 };
-export const paypalCardExpiryOptions : Pay_PalCardFieldWrapperProps = {
+export const paypalCardExpiryOptions : PaypalCardFieldWrapperProps = {
     // selector              : '#cardExpiry',
     placeholder              : '11/2020',
     type                     : 'cardExpiryField',
     payPalCardFieldComponent : <PayPalExpiryField />,
 };
-export const paypalCardCvvOptions    : Pay_PalCardFieldWrapperProps = {
+export const paypalCardCvvOptions    : PaypalCardFieldWrapperProps = {
     // selector              : '#cardCvv',
     placeholder              : '123',
     type                     : 'cardCvvField',

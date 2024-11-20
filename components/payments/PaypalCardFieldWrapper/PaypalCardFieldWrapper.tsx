@@ -36,7 +36,7 @@ import {
 
 
 // react components:
-export interface Pay_PalCardFieldWrapperProps
+export interface PaypalCardFieldWrapperProps
     extends
         Omit<EditableTextControlProps,
             // styles:
@@ -58,7 +58,7 @@ export interface Pay_PalCardFieldWrapperProps
     // components:
     payPalCardFieldComponent : React.ReactElement<PayPalCardFieldsIndividualFieldOptions>
 }
-const Pay_PalCardFieldWrapper = (props: Pay_PalCardFieldWrapperProps) => {
+const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     // props:
     const {
         // styles:
@@ -82,7 +82,7 @@ const Pay_PalCardFieldWrapper = (props: Pay_PalCardFieldWrapperProps) => {
         
         
         // other props:
-        ...restPay_PalCardFieldWrapperProps
+        ...restPaypalCardFieldWrapperProps
     } = props;
     
     
@@ -168,7 +168,7 @@ const Pay_PalCardFieldWrapper = (props: Pay_PalCardFieldWrapperProps) => {
         
         // other props:
         ...restEditableTextControlProps
-    } = restPay_PalCardFieldWrapperProps;
+    } = restPaypalCardFieldWrapperProps;
     
     
     
@@ -195,6 +195,6 @@ const Pay_PalCardFieldWrapper = (props: Pay_PalCardFieldWrapperProps) => {
     );
 };
 export {
-    Pay_PalCardFieldWrapper,
-    Pay_PalCardFieldWrapper as default,
+    PaypalCardFieldWrapper,
+    PaypalCardFieldWrapper as default,
 };

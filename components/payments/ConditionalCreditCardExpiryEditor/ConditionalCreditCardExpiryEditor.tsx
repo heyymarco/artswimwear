@@ -38,8 +38,8 @@ import {
     
     
     // react components:
-    Pay_PalCardFieldWrapper,
-}                           from '@/components/payments/Pay_PalCardFieldWrapper'
+    PaypalCardFieldWrapper,
+}                           from '@/components/payments/PaypalCardFieldWrapper'
 
 import {
     CardExpiryElement,
@@ -197,7 +197,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     
                     // components:
                     inputComponent={
-                        <Pay_PalCardFieldWrapper
+                        <PaypalCardFieldWrapper
                             // options:
                             {...paypalCardExpiryOptions}
                             
