@@ -38,7 +38,7 @@ import {
 
 // internals:
 import {
-    IsInPayPalScriptProviderContextProvider,
+    IsInPaypalScriptProviderContextProvider,
 }                           from './states/isInPaypalScriptProvider'
 
 // configs:
@@ -144,9 +144,9 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
         <PayPalScriptProvider
             options={paypalOptions}
         >
-            <IsInPayPalScriptProviderContextProvider>
+            <IsInPaypalScriptProviderContextProvider>
                 {children}
-            </IsInPayPalScriptProviderContextProvider>
+            </IsInPaypalScriptProviderContextProvider>
         </PayPalScriptProvider>
     );
 };

@@ -1,6 +1,6 @@
 // payment components:
 import {
-    useIsInPayPalScriptProvider,
+    useIsInPaypalScriptProvider,
 }                           from './ConditionalPaypalScriptProvider'
 import {
     useIsInStripeElementsProvider,
@@ -35,7 +35,7 @@ export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps
     
     
     
-    const isInPaypalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInPaypalScriptProvider   = useIsInPaypalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const supportedCardProcessors    : string[] = (

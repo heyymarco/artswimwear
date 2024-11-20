@@ -35,7 +35,7 @@ import {
 
 // payment components:
 import {
-    useIsInPayPalScriptProvider,
+    useIsInPaypalScriptProvider,
     ConditionalPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
 import {
@@ -138,7 +138,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     
     
-    const isInPaypalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInPaypalScriptProvider   = useIsInPaypalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const canPayUsingPaypal          = isInPaypalScriptProvider   && appropriatePaymentProcessors.includes('paypal');

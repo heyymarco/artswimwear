@@ -19,13 +19,13 @@ import {
 
 
 // contexts:
-const IsInPayPalScriptProviderContext = createContext<boolean>(false);
-export const useIsInPayPalScriptProvider = (): boolean => {
-    return useContext(IsInPayPalScriptProviderContext);
+const IsInPaypalScriptProviderContext = createContext<boolean>(false);
+export const useIsInPaypalScriptProvider = (): boolean => {
+    return useContext(IsInPaypalScriptProviderContext);
 };
-export const IfInPayPalScriptProvider = ({children} : React.PropsWithChildren): JSX.Element|null => {
+export const IfInPaypalScriptProvider = ({children} : React.PropsWithChildren): JSX.Element|null => {
     // conditions:
-    const isInPaypalScriptProvider = useIsInPayPalScriptProvider();
+    const isInPaypalScriptProvider = useIsInPaypalScriptProvider();
     if (!isInPaypalScriptProvider) return null;
     
     
@@ -37,11 +37,11 @@ export const IfInPayPalScriptProvider = ({children} : React.PropsWithChildren): 
         </>
     );
 };
-export const IsInPayPalScriptProviderContextProvider = ({children} : React.PropsWithChildren): JSX.Element|null => {
+export const IsInPaypalScriptProviderContextProvider = ({children} : React.PropsWithChildren): JSX.Element|null => {
     // jsx:
     return (
-        <IsInPayPalScriptProviderContext.Provider value={true}>
+        <IsInPaypalScriptProviderContext.Provider value={true}>
             {children}
-        </IsInPayPalScriptProviderContext.Provider>
+        </IsInPaypalScriptProviderContext.Provider>
     );
 };

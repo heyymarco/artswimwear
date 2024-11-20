@@ -29,7 +29,7 @@ import {
 }                           from '@/components/payments/hooks'
 
 import {
-    IfInPayPalScriptProvider,
+    IfInPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
 import {
     // options:
@@ -185,7 +185,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     childrenAfter={labelCardCvv}
                 />}
             </IfInStripeElementsProvider>
-            <IfInPayPalScriptProvider>
+            <IfInPaypalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
@@ -226,7 +226,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     // children:
                     childrenAfter={labelCardCvv}
                 />
-            </IfInPayPalScriptProvider>
+            </IfInPaypalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityMidtrans && <InputWithLabel
