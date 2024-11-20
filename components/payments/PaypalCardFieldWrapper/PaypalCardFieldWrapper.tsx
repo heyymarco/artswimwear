@@ -56,7 +56,7 @@ export interface PaypalCardFieldWrapperProps
     
     
     // components:
-    payPalCardFieldComponent : React.ReactElement<PayPalCardFieldsIndividualFieldOptions>
+    paypalCardFieldComponent : React.ReactElement<PayPalCardFieldsIndividualFieldOptions>
 }
 const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     // props:
@@ -77,7 +77,7 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
         
         
         // components:
-        payPalCardFieldComponent,
+        paypalCardFieldComponent,
         
         
         
@@ -112,7 +112,7 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     // caches:
     const cachedCardField = useMemo(() => {
         // jsx:
-        return React.cloneElement<PayPalCardFieldsIndividualFieldOptions>(payPalCardFieldComponent,
+        return React.cloneElement<PayPalCardFieldsIndividualFieldOptions>(paypalCardFieldComponent,
             // props:
             {
                 // styles:
