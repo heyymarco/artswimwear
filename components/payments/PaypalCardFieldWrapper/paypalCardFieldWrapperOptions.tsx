@@ -25,7 +25,7 @@ export const paypalCardNameOptions   : PaypalCardFieldWrapperProps = {
     paypalCardFieldComponent : <PayPalNameField />,
 };
 export const paypalCardExpiryOptions : PaypalCardFieldWrapperProps = {
-    placeholder              : '11/2020',
+    // placeholder              : '11/2020', // leave it blank, to avoid confusion of `MM/YY` or `MM/YYYY`
     type                     : 'cardExpiryField',
     paypalCardFieldComponent : <PayPalExpiryField />,
 };

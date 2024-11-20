@@ -92,6 +92,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
             {
                 // options:
                 options : {
+                    ...cardElementComponent.props.options,
                     style : stripeCardFieldStyle,
                 },
                 

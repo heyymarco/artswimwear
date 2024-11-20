@@ -23,7 +23,7 @@ export const stripeCardNumberOptions : StripeCardFieldWrapperProps = {
 export const stripeCardExpiryOptions : StripeCardFieldWrapperProps = {
     cardElementComponent : <CardExpiryElement
         options = {{
-            placeholder  : '11/2020',
+            // placeholder  : '11/2020', // leave it blank, to avoid confusion of `MM/YY` or `MM/YYYY`
         }}
     />,
 };
