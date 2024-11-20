@@ -38,15 +38,10 @@ import {
 // react components:
 export interface PaypalCardFieldWrapperProps
     extends
-        Omit<EditableTextControlProps,
-            // styles:
-            |'style'
-        >,
+        // bases:
+        EditableTextControlProps,
         Pick<PayPalCardFieldsIndividualFieldOptions,
-            // styles:
-            |'style'
-            
-            // accessibilities:
+            // formats:
             |'placeholder'
         >
 {
@@ -61,12 +56,7 @@ export interface PaypalCardFieldWrapperProps
 const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     // props:
     const {
-        // styles:
-        style,
-        
-        
-        
-        // accessibilities:
+        // formats:
         placeholder,
         
         
@@ -115,12 +105,7 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
         return React.cloneElement<PayPalCardFieldsIndividualFieldOptions>(paypalCardFieldComponent,
             // props:
             {
-                // styles:
-                style,
-                
-                
-                
-                // accessibilities:
+                // formats:
                 placeholder,
                 
                 
@@ -135,12 +120,7 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
             },
         );
     }, [
-        // styles:
-        style,
-        
-        
-        
-        // accessibilities:
+        // formats:
         placeholder,
         
         
@@ -157,6 +137,10 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
     const {
         // accessibilities:
         tabIndex     : editableTabIndex  = -1,
+        
+        
+        
+        // formats:
         'aria-label' : editableAriaLabel = placeholder,
         
         
@@ -182,6 +166,10 @@ const PaypalCardFieldWrapper = (props: PaypalCardFieldWrapperProps) => {
             
             // accessibilities:
             tabIndex   = {editableTabIndex}
+            
+            
+            
+            // formats:
             aria-label = {editableAriaLabel}
             
             
