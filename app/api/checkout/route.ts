@@ -1011,6 +1011,9 @@ router
                     hasShippingAddress,
                     shippingAddress,
                     
+                    hasBillingAddress,
+                    billingAddress,
+                    
                     detailedItems,
                 });
             }

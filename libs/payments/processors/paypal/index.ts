@@ -111,6 +111,9 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         
         hasShippingAddress,
         shippingAddress,
+        
+        hasBillingAddress,
+        billingAddress,
     } = options;
     
     
@@ -254,57 +257,61 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 
                 // shipping object|undefined
                 // The name and address of the person to whom to ship the items.
-                shipping                  : hasShippingAddress ? {
-                    // address object|undefined
-                    // The address of the person to whom to ship the items.
-                    address               : {
-                        // country_code string required
-                        // The two-character ISO 3166-1 code that identifies the country or region.
-                        country_code      : shippingAddress.country,
+                shipping                  : (
+                    (hasShippingAddress && !!shippingAddress)
+                    ? {
+                        // address object|undefined
+                        // The address of the person to whom to ship the items.
+                        address               : {
+                            // country_code string required
+                            // The two-character ISO 3166-1 code that identifies the country or region.
+                            country_code      : shippingAddress.country,
+                            
+                            // admin_area_1 string|undefined
+                            // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
+                            /*
+                                Value, by country, is:
+                                * UK. A county.
+                                * US. A state.
+                                * Canada. A province.
+                                * Japan. A prefecture.
+                                * Switzerland. A kanton.
+                            */
+                            admin_area_1      : shippingAddress.state,
+                            
+                            // admin_area_2 string|undefined
+                            // A city, town, or village.
+                            admin_area_2      : shippingAddress.city,
+                            
+                            // postal_code string
+                            // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
+                            postal_code       : shippingAddress.zip,
+                            
+                            // address_line_1 string|undefined
+                            // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                            // Required for data entry and compliance and risk checks. Must contain the full address.
+                            address_line_1    : shippingAddress.address,
+                            
+                            // address_line_2 string|undefined
+                            // The second line of the address. For example, suite or apartment number.
+                            address_line_2    : undefined,
+                        },
                         
-                        // admin_area_1 string|undefined
-                        // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
-                        /*
-                            Value, by country, is:
-                            * UK. A county.
-                            * US. A state.
-                            * Canada. A province.
-                            * Japan. A prefecture.
-                            * Switzerland. A kanton.
-                        */
-                        admin_area_1      : shippingAddress.state,
+                        // name object|undefined
+                        // The name of the person to whom to ship the items. Supports only the full_name property.
+                        name                  : {
+                            // full_name string
+                            // When the party is a person, the party's full name.
+                            full_name         : `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+                        },
                         
-                        // admin_area_2 string|undefined
-                        // A city, town, or village.
-                        admin_area_2      : shippingAddress.city,
-                        
-                        // postal_code string
-                        // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
-                        postal_code       : shippingAddress.zip,
-                        
-                        // address_line_1 string|undefined
-                        // The first line of the address. For example, number or street. For example, 173 Drury Lane.
-                        // Required for data entry and compliance and risk checks. Must contain the full address.
-                        address_line_1    : shippingAddress.address,
-                        
-                        // address_line_2 string|undefined
-                        // The second line of the address. For example, suite or apartment number.
-                        address_line_2    : undefined,
-                    },
-                    
-                    // name object|undefined
-                    // The name of the person to whom to ship the items. Supports only the full_name property.
-                    name                  : {
-                        // full_name string
-                        // When the party is a person, the party's full name.
-                        full_name         : `${shippingAddress.firstName} ${shippingAddress.lastName}`,
-                    },
-                    
-                    // type enum|undefined
-                    // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
-                    // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
-                    type                  : 'SHIPPING',
-                } : undefined,
+                        // type enum|undefined
+                        // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
+                        // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
+                        type                  : 'SHIPPING',
+                    }
+                    : undefined
+                ),
                 
                 // soft_descriptor string|undefined
                 // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
@@ -316,7 +323,44 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
             
             payment_source: {
                 card : {
-                    // billing_address : undefined, // TODO provide billingAddress passed from checkoutState::doPlaceOrder()
+                    billing_address : (
+                        (hasBillingAddress && !!billingAddress)
+                        ? {
+                            // country_code string required
+                            // The two-character ISO 3166-1 code that identifies the country or region.
+                            country_code      : billingAddress.country,
+                            
+                            // admin_area_1 string|undefined
+                            // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
+                            /*
+                                Value, by country, is:
+                                * UK. A county.
+                                * US. A state.
+                                * Canada. A province.
+                                * Japan. A prefecture.
+                                * Switzerland. A kanton.
+                            */
+                            admin_area_1      : billingAddress.state,
+                            
+                            // admin_area_2 string|undefined
+                            // A city, town, or village.
+                            admin_area_2      : billingAddress.city,
+                            
+                            // postal_code string
+                            // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
+                            postal_code       : billingAddress.zip,
+                            
+                            // address_line_1 string|undefined
+                            // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                            // Required for data entry and compliance and risk checks. Must contain the full address.
+                            address_line_1    : billingAddress.address,
+                            
+                            // address_line_2 string|undefined
+                            // The second line of the address. For example, suite or apartment number.
+                            address_line_2    : undefined,
+                        }
+                        : undefined
+                    ),
                     
                     
                     

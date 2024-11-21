@@ -243,18 +243,22 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         } = await stripe.createPaymentMethod({
             type            : 'card',
             card            : cardNumberElement,
-            billing_details : !finalBillingAddress ? undefined : {
-                address : {
-                    country     : finalBillingAddress.country,
-                    state       : finalBillingAddress.state,
-                    city        : finalBillingAddress.city,
-                    postal_code : finalBillingAddress.zip ?? undefined,
-                    line1       : finalBillingAddress.address,
-                    line2       : undefined,
-                },
-                name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
-                phone           : finalBillingAddress.phone,
-            },
+            billing_details : (
+                !!finalBillingAddress
+                ? {
+                    address : {
+                        country     : finalBillingAddress.country,
+                        state       : finalBillingAddress.state,
+                        city        : finalBillingAddress.city,
+                        postal_code : finalBillingAddress.zip ?? undefined,
+                        line1       : finalBillingAddress.address,
+                        line2       : undefined,
+                    },
+                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
+                    phone           : finalBillingAddress.phone,
+                }
+                : undefined
+            ),
         });
         if (paymentMethodError) {
             /*

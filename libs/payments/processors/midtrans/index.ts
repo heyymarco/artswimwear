@@ -448,30 +448,38 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
                 }]),
             ],
             customer_details     : {
-                first_name       : shippingAddress.firstName,
-                last_name        : shippingAddress.lastName,
-                phone            : shippingAddress.phone,
+                first_name       : (hasShippingAddress && !!shippingAddress) ? shippingAddress.firstName : undefined,
+                last_name        : (hasShippingAddress && !!shippingAddress) ? shippingAddress.lastName  : undefined,
+                phone            : (hasShippingAddress && !!shippingAddress) ? shippingAddress.phone     : undefined,
                 email            : undefined,
-                shipping_address : {
-                    country_code : shippingAddress.country && ['ID', 'IDN'].includes(shippingAddress.country) ? 'IDN' : undefined,
-                    city         : shippingAddress.city,
-                    postal_code  : shippingAddress.zip,
-                    address      : shippingAddress.address,
-                    first_name   : shippingAddress.firstName,
-                    last_name    : shippingAddress.lastName,
-                    phone        : shippingAddress.phone,
-                    email        : undefined,
-                },
-                billing_address  : {
-                    country_code : billingAddress?.country && ['ID', 'IDN'].includes(billingAddress.country) ? 'IDN' : undefined,
-                    city         : billingAddress?.city,
-                    postal_code  : billingAddress?.zip,
-                    address      : billingAddress?.address,
-                    first_name   : billingAddress?.firstName,
-                    last_name    : billingAddress?.lastName,
-                    phone        : billingAddress?.phone,
-                    email        : undefined,
-                },
+                shipping_address : (
+                    (hasShippingAddress && !!shippingAddress)
+                    ? {
+                        country_code : shippingAddress.country && ['ID', 'IDN'].includes(shippingAddress.country) ? 'IDN' : undefined,
+                        city         : shippingAddress.city,
+                        postal_code  : shippingAddress.zip,
+                        address      : shippingAddress.address,
+                        first_name   : shippingAddress.firstName,
+                        last_name    : shippingAddress.lastName,
+                        phone        : shippingAddress.phone,
+                        email        : undefined,
+                    }
+                    : undefined
+                ),
+                billing_address  : (
+                    (hasBillingAddress && !!billingAddress)
+                    ? {
+                        country_code : billingAddress?.country && ['ID', 'IDN'].includes(billingAddress.country) ? 'IDN' : undefined,
+                        city         : billingAddress?.city,
+                        postal_code  : billingAddress?.zip,
+                        address      : billingAddress?.address,
+                        first_name   : billingAddress?.firstName,
+                        last_name    : billingAddress?.lastName,
+                        phone        : billingAddress?.phone,
+                        email        : undefined,
+                    }
+                    : undefined
+                ),
             },
         }),
     });

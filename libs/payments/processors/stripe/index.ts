@@ -544,18 +544,22 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
             currency                  : currency.toLowerCase(),
             amount                    : convertCurrencyToStripeNominal(totalCostConverted, currency),
             
-            shipping                  : !shippingAddress ? undefined : {
-                address : {
-                    country     : shippingAddress.country,
-                    state       : shippingAddress.state,
-                    city        : shippingAddress.city,
-                    postal_code : shippingAddress.zip ?? undefined,
-                    line1       : shippingAddress.address,
-                    line2       : undefined,
-                },
-                name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
-                phone           : shippingAddress.phone,
-            },
+            shipping                  : (
+                (hasShippingAddress && !!shippingAddress)
+                ? {
+                    address : {
+                        country     : shippingAddress.country,
+                        state       : shippingAddress.state,
+                        city        : shippingAddress.city,
+                        postal_code : shippingAddress.zip ?? undefined,
+                        line1       : shippingAddress.address,
+                        line2       : undefined,
+                    },
+                    name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+                    phone           : shippingAddress.phone,
+                }
+                : undefined
+            ),
             capture_method            : isPaymentMethodToken ? 'manual' : undefined, // the fund must be captured on server_side
             // confirmation_method       : isConfirmationToken  ? 'manual' : undefined, // the fund must be captured on server_side // DOESN'T WORK
             

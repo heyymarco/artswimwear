@@ -178,7 +178,7 @@ export interface CreateOrderOptions {
     detailedItems               : DetailedItem[]
     
     hasShippingAddress          : boolean
-    shippingAddress             : ShippingAddressDetail
+    shippingAddress             : ShippingAddressDetail|null
     
     hasBillingAddress          ?: boolean
     billingAddress             ?: BillingAddressDetail|null
