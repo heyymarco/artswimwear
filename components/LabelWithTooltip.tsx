@@ -63,7 +63,7 @@ const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: Lab
         
         
         // other props:
-        ...restLabelWithTooltipProps
+        ...restLabelProps
     } = props;
     
     
@@ -87,11 +87,6 @@ const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: Lab
     
     
     // default props:
-    const {
-        // other props:
-        ...restLabelProps
-    } = restLabelWithTooltipProps;
-    
     const {
         // variants:
         theme      : tooltipComponentTheme      = 'warning',
