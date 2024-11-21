@@ -42,6 +42,11 @@ export interface LabelWithTooltipProps<TElement extends Element = HTMLSpanElemen
      */
     labelComponent   ?: React.ReactElement<LabelProps<TElement>>
     tooltipComponent ?: React.ReactElement<TooltipProps<Element>>
+    
+    
+    
+    // children:
+    tooltipChildren  ?: React.ReactNode
 }
 const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: LabelWithTooltipProps<TElement>): JSX.Element|null => {
     // rest props:
@@ -59,6 +64,7 @@ const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: Lab
         
         // children:
         children,
+        tooltipChildren,
         
         
         
@@ -95,6 +101,11 @@ const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: Lab
         
         // floatable:
         floatingOn : tooltipComponentFloatingOn = labelRefInternal,
+        
+        
+        
+        // children:
+        children   : tooltipComponentChildren   = tooltipChildren,
         
         
         
@@ -138,6 +149,11 @@ const LabelWithTooltip = <TElement extends Element = HTMLSpanElement>(props: Lab
                 // floatable:
                 floatingOn : tooltipComponentFloatingOn,
             },
+            
+            
+            
+            // children:
+            tooltipComponentChildren,
         ),
     );
 };
