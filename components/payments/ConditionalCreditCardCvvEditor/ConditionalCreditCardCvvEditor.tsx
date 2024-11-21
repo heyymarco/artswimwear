@@ -10,10 +10,18 @@ import {
 import {
     usePaymentProcessorPriority,
 }                           from '@/components/payments/hooks'
-
 import {
     IfInPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
+import {
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
+import {
+    IfInMidtransScriptProvider,
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
+import {
+    useBaseCardFieldWrapperStyleSheet,
+}                           from '@/components/payments/BaseCardFieldWrapper'
 import {
     // options:
     paypalCardCvvOptions,
@@ -23,10 +31,6 @@ import {
     // react components:
     PaypalCardFieldWrapper,
 }                           from '@/components/payments/PaypalCardFieldWrapper'
-
-import {
-    IfInStripeScriptProvider,
-}                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     // options:
     stripeCardCvvOptions,
@@ -36,10 +40,6 @@ import {
     // react components:
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
-
-import {
-    IfInMidtransScriptProvider,
-}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
 // internal components:
 import {
@@ -71,6 +71,10 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
         // payment data:
         appropriatePaymentProcessors,
     } = props;
+    
+    
+    
+    const styleSheets = useBaseCardFieldWrapperStyleSheet();
     
     
     
@@ -128,7 +132,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // classes:
-                    className={'csc' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'csc' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     

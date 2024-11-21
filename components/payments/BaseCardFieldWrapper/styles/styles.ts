@@ -58,6 +58,17 @@ const usesBaseCardFieldWrapperLayout = () => {
         }),
     });
 };
+const usesHiddenLayout = () => {
+    return style({
+        // positions:
+        zIndex     : -99,
+        
+        
+        
+        // appearances:
+        visibility : 'hidden',
+    });
+};
 
 
 
@@ -65,5 +76,9 @@ export default () => [
     scope('main', {
         // layouts:
         ...usesBaseCardFieldWrapperLayout(),
+    }, { specificityWeight: 2 }),
+    scope('hidden', {
+        // layouts:
+        ...usesHiddenLayout(),
     }, { specificityWeight: 2 }),
 ];

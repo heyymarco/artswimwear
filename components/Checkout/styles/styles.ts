@@ -640,10 +640,6 @@ export default () => {
                 ...children('.csc', {
                     gridArea: 'csc',
                 }),
-                ...children('.hidden', {
-                    visibility : 'hidden',
-                    zIndex     : -99,
-                }),
                 ...children('.horz1', {
                     gridArea: 'horz1',
                     marginBlock: 0,

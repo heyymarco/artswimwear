@@ -10,10 +10,18 @@ import {
 import {
     usePaymentProcessorPriority,
 }                           from '@/components/payments/hooks'
-
 import {
     IfInPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
+import {
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
+import {
+    IfInMidtransScriptProvider,
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
+import {
+    useBaseCardFieldWrapperStyleSheet,
+}                           from '@/components/payments/BaseCardFieldWrapper'
 import {
     // options:
     paypalCardNumberOptions,
@@ -23,10 +31,6 @@ import {
     // react components:
     PaypalCardFieldWrapper,
 }                           from '@/components/payments/PaypalCardFieldWrapper'
-
-import {
-    IfInStripeScriptProvider,
-}                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     // options:
     stripeCardNumberOptions,
@@ -36,10 +40,6 @@ import {
     // react components:
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
-
-import {
-    IfInMidtransScriptProvider,
-}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
 // internal components:
 import {
@@ -71,6 +71,10 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
         // payment data:
         appropriatePaymentProcessors,
     } = props;
+    
+    
+    
+    const styleSheets = useBaseCardFieldWrapperStyleSheet();
     
     
     
@@ -128,7 +132,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     
                     
                     // classes:
-                    className={'number' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'number' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     

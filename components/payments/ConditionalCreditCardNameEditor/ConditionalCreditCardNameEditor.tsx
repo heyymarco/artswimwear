@@ -22,10 +22,18 @@ import {
 import {
     usePaymentProcessorPriority,
 }                           from '@/components/payments/hooks'
-
 import {
     IfInPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
+import {
+    IfInStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
+import {
+    IfInMidtransScriptProvider,
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
+import {
+    useBaseCardFieldWrapperStyleSheet,
+}                           from '@/components/payments/BaseCardFieldWrapper'
 import {
     // options:
     paypalCardNameOptions,
@@ -35,14 +43,6 @@ import {
     // react components:
     PaypalCardFieldWrapper,
 }                           from '@/components/payments/PaypalCardFieldWrapper'
-
-import {
-    IfInStripeScriptProvider,
-}                           from '@/components/payments/ConditionalStripeScriptProvider'
-
-import {
-    IfInMidtransScriptProvider,
-}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
 // configs:
 import {
@@ -62,6 +62,10 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
         // payment data:
         appropriatePaymentProcessors,
     } = props;
+    
+    
+    
+    const styleSheets = useBaseCardFieldWrapperStyleSheet();
     
     
     
@@ -120,7 +124,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // classes:
-                    className={'name' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'name' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     
