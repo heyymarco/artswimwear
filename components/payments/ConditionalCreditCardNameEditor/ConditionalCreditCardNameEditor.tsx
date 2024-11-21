@@ -4,24 +4,7 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
-
-// reusable-ui components:
-import {
-    // simple-components:
-    Icon,
-    Label,
-    
-    
-    
-    // notification-components:
-    Tooltip,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
 import {
@@ -30,6 +13,10 @@ import {
 import {
     CreditCardNameEditor,
 }                           from '@/components/editors/CreditCardNameEditor'
+import {
+    type LabelHintsWithTooltipProps,
+    LabelHintsWithTooltip,
+}                           from '@/components/LabelHintsWithTooltip'
 
 // payment components:
 import {
@@ -88,52 +75,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     
     
     
-    // refs:
-    const labelRef = useRef<HTMLElement|null>(null);
-    
-    
-    
     // jsx:
-    const labelCardName   = (
-        <Label
-            // refs:
-            elmRef={labelRef}
-            
-            
-            
-            // variants:
-            theme='success'
-            mild={true}
-            
-            
-            
-            // classes:
-            className='solid'
-        >
-            <Icon
-                // appearances:
-                icon='help'
-            />
-            <Tooltip
-                // variants:
-                theme='warning'
-                
-                
-                
-                // classes:
-                className='tooltip'
-                
-                
-                
-                // floatable:
-                floatingOn={labelRef}
-            >
-                <p>
-                    The owner name as printed on front card.
-                </p>
-            </Tooltip>
-        </Label>
-    );
     return (
         <>
             <IfInStripeScriptProvider>
@@ -166,7 +108,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={<LabelHintsForCreditCardName />}
                 />}
             </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
@@ -203,7 +145,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={<LabelHintsForCreditCardName />}
                 />
             </IfInPaypalScriptProvider>
             <IfInMidtransScriptProvider>
@@ -230,7 +172,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={<LabelHintsForCreditCardName />}
                 />}
             </IfInMidtransScriptProvider>
         </>
@@ -239,4 +181,58 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
 export {
     ConditionalCreditCardNameEditor,
     ConditionalCreditCardNameEditor as default,
+};
+
+
+
+const LabelHintsForCreditCardName = (props: LabelHintsWithTooltipProps): JSX.Element|null => {
+    // default props:
+    const {
+        // appearances:
+        icon            = 'help',
+        
+        
+        
+        // classes:
+        className       = 'solid',
+        
+        
+        
+        // children:
+        tooltipChildren = <>
+            <p>
+                The owner name as printed on front card.
+            </p>
+        </>,
+        
+        
+        
+        // other props:
+        ...restLabelHintsWithTooltipProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <LabelHintsWithTooltip
+            // other props:
+            {...restLabelHintsWithTooltipProps}
+            
+            
+            
+            // appearances:
+            icon={icon}
+            
+            
+            
+            // classes:
+            className={className}
+            
+            
+            
+            // children:
+            tooltipChildren={tooltipChildren}
+        />
+    )
 };

@@ -4,24 +4,7 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
-
-// reusable-ui components:
-import {
-    // simple-components:
-    Icon,
-    Label,
-    
-    
-    
-    // notification-components:
-    Tooltip,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
 import {
@@ -65,6 +48,10 @@ import {
 import {
     CreditCardExpiryEditor,
 }                           from '@/components/editors/CreditCardExpiryEditor'
+import {
+    type LabelHintsWithTooltipProps,
+    LabelHintsWithTooltip,
+}                           from '@/components/LabelHintsWithTooltip'
 
 // configs:
 import {
@@ -97,52 +84,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
     
     
     
-    // refs:
-    const labelRef = useRef<HTMLElement|null>(null);
-    
-    
-    
     // jsx:
-    const labelCardExpiry = (
-        <Label
-            // refs:
-            elmRef={labelRef}
-            
-            
-            
-            // variants:
-            theme='success'
-            mild={true}
-            
-            
-            
-            // classes:
-            className='solid'
-        >
-            <Icon
-                // appearances:
-                icon='help'
-            />
-            <Tooltip
-                // variants:
-                theme='warning'
-                
-                
-                
-                // classes:
-                className='tooltip'
-                
-                
-                
-                // floatable:
-                floatingOn={labelRef}
-            >
-                <p>
-                    The expiration date as printed on front card.
-                </p>
-            </Tooltip>
-        </Label>
-    );
     return (
         <>
             <IfInStripeScriptProvider>
@@ -174,7 +116,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={<LabelHintsForCreditCardExpiry />}
                 />}
             </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
@@ -211,7 +153,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={<LabelHintsForCreditCardExpiry />}
                 />
             </IfInPaypalScriptProvider>
             <IfInMidtransScriptProvider>
@@ -238,7 +180,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={<LabelHintsForCreditCardExpiry />}
                 />}
             </IfInMidtransScriptProvider>
         </>
@@ -247,4 +189,58 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
 export {
     ConditionalCreditCardExpiryEditor,
     ConditionalCreditCardExpiryEditor as default,
+};
+
+
+
+const LabelHintsForCreditCardExpiry = (props: LabelHintsWithTooltipProps): JSX.Element|null => {
+    // default props:
+    const {
+        // appearances:
+        icon            = 'help',
+        
+        
+        
+        // classes:
+        className       = 'solid',
+        
+        
+        
+        // children:
+        tooltipChildren = <>
+            <p>
+                The expiration date as printed on front card.
+            </p>
+        </>,
+        
+        
+        
+        // other props:
+        ...restLabelHintsWithTooltipProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <LabelHintsWithTooltip
+            // other props:
+            {...restLabelHintsWithTooltipProps}
+            
+            
+            
+            // appearances:
+            icon={icon}
+            
+            
+            
+            // classes:
+            className={className}
+            
+            
+            
+            // children:
+            tooltipChildren={tooltipChildren}
+        />
+    )
 };

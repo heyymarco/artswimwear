@@ -4,24 +4,7 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
-
-// reusable-ui components:
-import {
-    // simple-components:
-    Icon,
-    Label,
-    
-    
-    
-    // notification-components:
-    Tooltip,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
 import {
@@ -65,6 +48,10 @@ import {
 import {
     CreditCardNumberEditor,
 }                           from '@/components/editors/CreditCardNumberEditor'
+import {
+    type LabelHintsWithTooltipProps,
+    LabelHintsWithTooltip,
+}                           from '@/components/LabelHintsWithTooltip'
 
 // configs:
 import {
@@ -97,60 +84,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
     
     
     
-    // refs:
-    const labelRef = useRef<HTMLElement|null>(null);
-    
-    
-    
     // jsx:
-    const labelCardNumber = (
-        <Label
-            // refs:
-            elmRef={labelRef}
-            
-            
-            
-            // variants:
-            theme='success'
-            mild={true}
-            
-            
-            
-            // classes:
-            className='solid'
-        >
-            <Icon
-                // appearances:
-                icon='lock'
-            />
-            
-            <Tooltip
-                // variants:
-                theme='warning'
-                
-                
-                
-                // classes:
-                className='tooltip'
-                
-                
-                
-                // floatable:
-                floatingOn={labelRef}
-            >
-                <p>
-                    All transactions are secure and encrypted.
-                </p>
-                <p>
-                    Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
-                </p>
-                <p>
-                    The card data will be forwarded to our payment gateway (PayPal and/or Stripe).<br />
-                    We won&apos;t store your card data into our database.
-                </p>
-            </Tooltip>
-        </Label>
-    );
     return (
         <>
             <IfInStripeScriptProvider>
@@ -182,7 +116,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardNumber}
+                    childrenAfter={<LabelHintsForCreditCardNumber />}
                 />}
             </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
@@ -219,7 +153,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardNumber}
+                    childrenAfter={<LabelHintsForCreditCardNumber />}
                 />
             </IfInPaypalScriptProvider>
             <IfInMidtransScriptProvider>
@@ -246,7 +180,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardNumber}
+                    childrenAfter={<LabelHintsForCreditCardNumber />}
                 />}
             </IfInMidtransScriptProvider>
         </>
@@ -255,4 +189,65 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
 export {
     ConditionalCreditCardNumberEditor,
     ConditionalCreditCardNumberEditor as default,
+};
+
+
+
+const LabelHintsForCreditCardNumber = (props: LabelHintsWithTooltipProps): JSX.Element|null => {
+    // default props:
+    const {
+        // appearances:
+        icon            = 'lock',
+        
+        
+        
+        // classes:
+        className       = 'solid',
+        
+        
+        
+        // children:
+        tooltipChildren = <>
+            <p>
+                All transactions are secure and encrypted.
+            </p>
+            <p>
+                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+            </p>
+            <p>
+                The card data will be forwarded to our payment gateway (PayPal and/or Stripe).<br />
+                We won&apos;t store your card data into our database.
+            </p>
+        </>,
+        
+        
+        
+        // other props:
+        ...restLabelHintsWithTooltipProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <LabelHintsWithTooltip
+            // other props:
+            {...restLabelHintsWithTooltipProps}
+            
+            
+            
+            // appearances:
+            icon={icon}
+            
+            
+            
+            // classes:
+            className={className}
+            
+            
+            
+            // children:
+            tooltipChildren={tooltipChildren}
+        />
+    )
 };

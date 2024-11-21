@@ -4,24 +4,7 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
-
-// reusable-ui components:
-import {
-    // simple-components:
-    Icon,
-    Label,
-    
-    
-    
-    // notification-components:
-    Tooltip,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
 import {
@@ -65,6 +48,10 @@ import {
 import {
     CreditCardCvvEditor,
 }                           from '@/components/editors/CreditCardCvvEditor'
+import {
+    type LabelHintsWithTooltipProps,
+    LabelHintsWithTooltip,
+}                           from '@/components/LabelHintsWithTooltip'
 
 // configs:
 import {
@@ -97,55 +84,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
     
     
     
-    // refs:
-    const labelRef = useRef<HTMLElement|null>(null);
-    
-    
-    
     // jsx:
-    const labelCardCvv    = (
-        <Label
-            // refs:
-            elmRef={labelRef}
-            
-            
-            
-            // variants:
-            theme='success'
-            mild={true}
-            
-            
-            
-            // classes:
-            className='solid'
-        >
-            <Icon
-                // appearances:
-                icon='help'
-            />
-            <Tooltip
-                // variants:
-                theme='warning'
-                
-                
-                
-                // classes:
-                className='tooltip'
-                
-                
-                
-                // floatable:
-                floatingOn={labelRef}
-            >
-                <p>
-                    3-digit security code usually found on the back of your card.
-                </p>
-                <p>
-                    American Express cards have a 4-digit code located on the front.
-                </p>
-            </Tooltip>
-        </Label>
-    );
     return (
         <>
             <IfInStripeScriptProvider>
@@ -177,7 +116,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={<LabelHintsForCreditCardCvv />}
                 />}
             </IfInStripeScriptProvider>
             <IfInPaypalScriptProvider>
@@ -214,7 +153,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={<LabelHintsForCreditCardCvv />}
                 />
             </IfInPaypalScriptProvider>
             <IfInMidtransScriptProvider>
@@ -241,7 +180,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={<LabelHintsForCreditCardCvv />}
                 />}
             </IfInMidtransScriptProvider>
         </>
@@ -250,4 +189,61 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
 export {
     ConditionalCreditCardCvvEditor,
     ConditionalCreditCardCvvEditor as default,
+};
+
+
+
+const LabelHintsForCreditCardCvv = (props: LabelHintsWithTooltipProps): JSX.Element|null => {
+    // default props:
+    const {
+        // appearances:
+        icon            = 'help',
+        
+        
+        
+        // classes:
+        className       = 'solid',
+        
+        
+        
+        // children:
+        tooltipChildren = <>
+            <p>
+                3-digit security code usually found on the back of your card.
+            </p>
+            <p>
+                American Express cards have a 4-digit code located on the front.
+            </p>
+        </>,
+        
+        
+        
+        // other props:
+        ...restLabelHintsWithTooltipProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <LabelHintsWithTooltip
+            // other props:
+            {...restLabelHintsWithTooltipProps}
+            
+            
+            
+            // appearances:
+            icon={icon}
+            
+            
+            
+            // classes:
+            className={className}
+            
+            
+            
+            // children:
+            tooltipChildren={tooltipChildren}
+        />
+    )
 };
