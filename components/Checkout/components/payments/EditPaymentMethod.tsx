@@ -36,16 +36,16 @@ import {
 // payment components:
 import {
     useIsInPaypalScriptProvider,
-    ConditionalPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
 import {
     useIsInStripeScriptProvider,
-    ConditionalStripeScriptProvider,
 }                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     useIsInMidtransScriptProvider,
-    ConditionalMidtransScriptProvider,
 }                           from '@/components/payments/ConditionalMidtransScriptProvider'
+import {
+    ConditionalPaymentScriptProvider,
+}                           from '@/components/payments/ConditionalPaymentScriptProvider'
 
 // internal components:
 import {
@@ -103,13 +103,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
         Error: Failed to render <PayPalCardFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
     */
     return (
-        <ConditionalStripeScriptProvider>
-            <ConditionalPaypalScriptProvider>
-                <ConditionalMidtransScriptProvider>
-                    <EditPaymentMethodInternal />
-                </ConditionalMidtransScriptProvider>
-            </ConditionalPaypalScriptProvider>
-        </ConditionalStripeScriptProvider>
+        <ConditionalPaymentScriptProvider>
+            <EditPaymentMethodInternal />
+        </ConditionalPaymentScriptProvider>
     );
 };
 const EditPaymentMethodInternal = (): JSX.Element|null => {
