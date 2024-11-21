@@ -950,7 +950,6 @@ model PaymentMethod {
     id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
-    expiresAt                       DateTime?
     
     // data:
     sort                            Int
@@ -958,8 +957,6 @@ model PaymentMethod {
     provider                        PaymentMethodProvider
     providerPaymentMethodId         String
     @@unique([provider, providerPaymentMethodId])
-    
-    billingAddress                  PaymentMethodBillingAddress?
     
     currency                        String                          // minLength: 3, maxLength: 3
     
@@ -971,25 +968,6 @@ enum PaymentMethodProvider {
     PAYPAL
     STRIPE
     MIDTRANS
-}
-model PaymentMethodBillingAddress {
-    // records:
-    id                              String                          @id @default(cuid()) // @map("_id")
-    
-    // data:
-    country                         String                          // minLength: 2 , maxLength:  3
-    state                           String                          // minLength: 2 , maxLength: 50
-    city                            String                          // minLength: 2 , maxLength: 50
-    zip                             String?                         // minLength: 2 , maxLength: 11
-    address                         String                          // minLength: 5 , maxLength: 90
-    
-    firstName                       String                          // minLength: 2 , maxLength: 30
-    lastName                        String                          // minLength: 1 , maxLength: 30
-    phone                           String                          // minLength: 5 , maxLength: 15
-    
-    // relations:
-    parentId                        String                          @unique
-    parent                          PaymentMethod                   @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related PaymentMethodBillingAddress(s) if the PaymentMethod deleted
 }
 
 
