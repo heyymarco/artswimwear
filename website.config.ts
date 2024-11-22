@@ -68,3 +68,5 @@ export const PAGE_WISH_ALL_DESCRIPTION                   = 'Customer Wishlist.'
 
 export const PAGE_PAYMENT_METHODS_TITLE                  = `Payment Methods - ${WEBSITE_TITLE}`
 export const PAGE_PAYMENT_METHODS_DESCRIPTION            = 'Customer Payment Methods.'
+export const PAGE_PAYMENT_METHODS_TAB_DATA               = 'Card Data'
+export const PAGE_PAYMENT_METHODS_TAB_DELETE             = 'Delete'

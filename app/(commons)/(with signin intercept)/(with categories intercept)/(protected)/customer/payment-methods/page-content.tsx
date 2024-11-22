@@ -31,6 +31,9 @@ import {
 import {
     PaymentMethodView,
 }                           from '@/components/views/PaymentMethodView'
+import {
+    EditPaymentMethodDialog,
+}                           from '@/components/dialogs/EditPaymentMethodDialog'
 
 // models:
 import {
@@ -50,6 +53,11 @@ export function PaymentMethodPageContent(): JSX.Element|null {
     // jsx:
     return (
         <PaginationStateProvider<PaymentMethodDetail>
+            // states:
+            initialPerPage={10}
+            
+            
+            
             // data:
             useGetModelPage={useGetPaymentMethodPage}
         >
@@ -76,11 +84,29 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
         <SimpleMainPage theme='primary'>
             <Section>
                 <PaginationList<PaymentMethodDetail>
+                    // appearances:
+                    showPaginationTop={false}
+                    autoHidePagination={true}
+                    
+                    
+                    
+                    // accessibilities:
+                    createItemText='Add New Payment Method'
+                    textEmpty='Your payment method is empty'
+                    
+                    
+                    
                     // components:
                     modelPreviewComponent={
                         <PaymentMethodView
                             // data:
                             model={undefined as any}
+                        />
+                    }
+                    modelCreateComponent={
+                        <EditPaymentMethodDialog
+                            // data:
+                            model={null} // create a new model
                         />
                     }
                 />

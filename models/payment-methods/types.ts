@@ -4,6 +4,9 @@ import {
     type PaymentMethod,
 }                           from '@prisma/client'
 import {
+    type MutationArgs,
+}                           from '../commons'
+import {
     type BillingAddressDetail,
 }                           from '../shippings'
 
@@ -29,4 +32,22 @@ export interface PaymentMethodDetail
     expiresAt      : Date|null
     
     billingAddress : BillingAddressDetail|null
+}
+
+
+
+export interface PaymentMethodUpdateRequest
+    extends
+        MutationArgs<
+            Pick<PaymentMethodDetail,
+                // records:
+                |'id'
+                
+                
+                
+                // data:
+                // |'name'
+            >
+        >
+{
 }

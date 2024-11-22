@@ -15,11 +15,14 @@ import {
 
 // models:
 import {
+    ModelIdSchema,
+    
     type Pagination,
     PaginationArgSchema,
     
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
+    PaymentMethodUpdateRequestSchema,
     
     
     
@@ -189,4 +192,169 @@ router
         return Response.json({ error: 'unexpected error' }, { status: 500 }); // handled with error
     } // try
     //#endregion query result
+})
+.patch(async (req) => {
+    // await new Promise<void>((resolve) => {
+    //     setTimeout(resolve, 1000);
+    // });
+    
+    
+    
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = await req.json();
+            return {
+                arg : PaymentMethodUpdateRequestSchema.parse(data),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        arg: {
+            // records:
+            id,
+        },
+    } = requestData;
+    //#endregion parsing and validating request
+    
+    
+    
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    //#endregion validating privileges
+    
+    
+    
+    //#region save changes
+    try {
+        const [customerIds, paymentMethodData] = await prisma.$transaction([
+            prisma.customer.findUnique({
+                where  : {
+                    id : customerId, // important: the signedIn customerId
+                },
+                select : {
+                    paypalCustomerId   : true,
+                    stripeCustomerId   : true,
+                    midtransCustomerId : true,
+                },
+            }),
+            (
+                !id
+                ? prisma.paymentMethod.create({
+                    data   : {
+                        sort                    : 0,
+                        
+                        provider                : 'PAYPAL',
+                        providerPaymentMethodId : '',
+                        
+                        currency                : 'USD',
+                        
+                        parentId                : customerId, // important: the signedIn customerId
+                    },
+                    select : paymentMethodDetailSelect,
+                })
+                : prisma.paymentMethod.update({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                    },
+                    data   : {
+                        sort                    : 0,
+                    },
+                    select : paymentMethodDetailSelect,
+                })
+            ),
+        ]);
+        if (!customerIds) return Response.json(null);
+        
+        
+        
+        //#region query api
+        const {
+            paypalCustomerId,
+            // stripeCustomerId,
+            // midtransCustomerId,
+        } = customerIds;
+        
+        const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId) : []),
+        ]);
+        //#endregion query api
+        
+        
+        
+        const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
+        return Response.json(paymentMethod); // handled with success
+    }
+    catch (error: any) {
+        console.log('ERROR: ', error);
+        return Response.json({ error: error }, { status: 500 }); // handled with error
+    } // try
+    //#endregion save changes
+})
+.delete(async (req) => {
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+            return {
+                id : ModelIdSchema.parse(data?.id),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        id,
+    } = requestData;
+    //#endregion parsing and validating request
+    
+    
+    
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) {
+        return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    } // if
+    //#endregion validating privileges
+    
+    
+    
+    //#region save changes
+    try {
+        const deletedPaymentMethod : Pick<PaymentMethodDetail, 'id'> = (
+            await prisma.paymentMethod.delete({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                    id       : id,
+                },
+                select : {
+                    id       : true,
+                },
+            })
+        );
+        return Response.json(deletedPaymentMethod); // handled with success
+    }
+    catch (error: any) {
+        console.log('ERROR: ', error);
+        // if (error instanceof RecordNotFound) return Response.json({ error: 'invalid ID' }, { status: 400 }); // handled with error
+        return Response.json({ error: error }, { status: 500 }); // handled with error
+    } // try
+    //#endregion save changes
 });

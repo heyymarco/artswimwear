@@ -82,6 +82,7 @@ import {
     type DeleteWishParam,
     
     type PaymentMethodDetail,
+    type PaymentMethodUpdateRequest,
 }                           from '@/models'
 
 import {
@@ -160,7 +161,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable'],
+    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable', 'PaymentMethod'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, GetProductPageRequest>({
             query: (arg) => ({
@@ -716,6 +717,27 @@ export const apiSlice = createApi({
                 method : 'POST',
                 body   : arg,
             }),
+            providesTags: (data, error, arg) => [{ type: 'PaymentMethod', id: arg.page }],
+        }),
+        updatePaymentMethod         : builder.mutation<PaymentMethodDetail, PaymentMethodUpdateRequest>({
+            query: (arg) => ({
+                url         : 'customer/payment-methods',
+                method      : 'PATCH',
+                body        : arg,
+            }),
+            onQueryStarted: async (arg, api) => {
+                await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod');
+            },
+        }),
+        deletePaymentMethod         : builder.mutation<Pick<PaymentMethodDetail, 'id'>, MutationArgs<Pick<PaymentMethodDetail, 'id'>>>({
+            query: (arg) => ({
+                url    : `customer/payment-methods?id=${encodeURIComponent(arg.id)}`,
+                method : 'DELETE',
+                body   : arg
+            }),
+            onQueryStarted: async (arg, api) => {
+                await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
+            },
         }),
     }),
 });
@@ -798,6 +820,8 @@ export const {
     
     
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
+    useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
+    useDeletePaymentMethodMutation         : useDeletePaymentMethod,
 } = apiSlice;
 
 export const {
@@ -934,7 +958,7 @@ interface PaginationUpdateOptions<TModel extends Model|string>
     providedMutatedModel ?: TModel
     invalidatePageTag    ?: (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => string|number
 }
-const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TModel, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], options?: PaginationUpdateOptions<TModel>) => {
+const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TModel, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'|'getPaymentMethodPage'>, updateType: PaginationUpdateType, invalidateTag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], options?: PaginationUpdateOptions<TModel>) => {
     // options
     const {
         providedMutatedModel,
