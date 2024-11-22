@@ -163,6 +163,14 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                     </span>
                 </Link>
             </ListItem>
+            <ListItem onClick={() => handleNavigate('/customer/payment-methods')}>
+                <Link href='/customer/payment-methods'>
+                    <Icon icon='payments' size='md' />
+                    <span>
+                        My saved payment methods
+                    </span>
+                </Link>
+            </ListItem>
             <ListSeparatorItem />
             <ListItem onClick={(event) => handleClose(event, 'signOut')}>
                 <Icon icon='logout' size='md' />

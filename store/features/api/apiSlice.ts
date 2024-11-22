@@ -80,6 +80,8 @@ import {
     type CreateOrUpdateWishParam,
     type CreateOrUpdateWishRequest,
     type DeleteWishParam,
+    
+    type PaymentMethodDetail,
 }                           from '@/models'
 
 import {
@@ -705,6 +707,16 @@ export const apiSlice = createApi({
                 //#endregion optimistic update
             },
         }),
+        
+        
+        
+        getPaymentMethodPage        : builder.query<Pagination<PaymentMethodDetail>, PaginationArgs>({
+            query : (arg) => ({
+                url    : 'customer/payment-methods',
+                method : 'POST',
+                body   : arg,
+            }),
+        }),
     }),
 });
 
@@ -782,6 +794,10 @@ export const {
     useGetWishPageQuery                    : useGetWishPage,
     useUpdateWishMutation                  : useUpdateWish,
     useDeleteWishMutation                  : useDeleteWish,
+    
+    
+    
+    useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
 } = apiSlice;
 
 export const {

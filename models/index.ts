@@ -20,3 +20,5 @@ export {
 }             from './checkouts'
 
 export      * from './wishes'
+
+export      * from './payment-methods'
