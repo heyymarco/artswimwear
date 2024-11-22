@@ -15,8 +15,8 @@ import {
 
 export const store = configureStore({
     reducer    : {
-        cart                   : persistReducer({ key: 'cart'    , storage                                }, cartReducer    ) as unknown as typeof cartReducer,
-        checkout               : persistReducer({ key: 'checkout', storage, blacklist: ['paymentSession'] }, checkoutReducer) as unknown as typeof checkoutReducer,
+        cart                   : persistReducer({ key: 'cart'    , storage }, cartReducer    ) as unknown as typeof cartReducer,
+        checkout               : persistReducer({ key: 'checkout', storage }, checkoutReducer) as unknown as typeof checkoutReducer,
         [apiSlice.reducerPath] : apiSlice.reducer,
     },
     middleware : (getDefaultMiddleware) => {

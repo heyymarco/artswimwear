@@ -25,17 +25,6 @@ import {
     useCartState,
 }                           from '@/components/Cart'
 
-// checkout components:
-import {
-    // states:
-    useCheckoutState,
-}                           from '@/components/Checkout/states/checkoutState'
-
-// models:
-import {
-    type CheckoutPaymentSessionDetail,
-}                           from '@/models'
-
 // internals:
 import {
     IsInPaypalScriptProviderContextProvider,
@@ -55,11 +44,6 @@ const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) =>
         currency,
     } = useCartState();
     
-    const {
-        // payment data:
-        paymentSession,
-    } = useCheckoutState();
-    
     
     
     // conditions:
@@ -68,8 +52,6 @@ const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) =>
         !checkoutConfigClient.payment.processors.paypal.enabled
         ||
         !clientId
-        ||
-        !paymentSession
         ||
         !checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) // the selected currency is not supported
     ) {
@@ -88,7 +70,6 @@ const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) =>
         <ImplementedPaypalScriptProvider
             // options:
             clientId={clientId}
-            paymentSession={paymentSession}
             currency={currency}
         >
             {children}
@@ -97,21 +78,19 @@ const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) =>
 }
 interface ImplementedPaypalScriptProviderProps {
     // options:
-    clientId       : string
-    paymentSession : CheckoutPaymentSessionDetail
-    currency       : string
+    clientId : string
+    currency : string
     
     
     
     // children:
-    children       : React.ReactNode
+    children : React.ReactNode
 }
 const ImplementedPaypalScriptProvider = (props: ImplementedPaypalScriptProviderProps) => {
     // props:
     const {
         // options:
         clientId,
-        paymentSession,
         currency,
         
         
@@ -125,9 +104,7 @@ const ImplementedPaypalScriptProvider = (props: ImplementedPaypalScriptProviderP
     // options:
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         clientId         : clientId,
-        dataClientToken  : paymentSession.paypalSession,
         currency         :  currency.toUpperCase(),
-        intent           : 'capture',
         components       : 'card-fields,buttons',
         // commit           : true,
         // vault            : false,
@@ -135,7 +112,7 @@ const ImplementedPaypalScriptProvider = (props: ImplementedPaypalScriptProviderP
         
         // UNCOMMENT to test 3DS scenario:
         // buyerCountry     : 'US',
-    }), [clientId, paymentSession, currency]);
+    }), [clientId, currency]);
     
     
     

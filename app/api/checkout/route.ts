@@ -51,8 +51,6 @@ import {
     
     type FinishedOrderState,
     
-    type CheckoutPaymentSessionDetail,
-    
     type CustomerOrGuestPreferenceDetail,
     type GuestDetail,
     
@@ -111,7 +109,6 @@ import {
 }                           from '@/libs/email-utilities'
 import {
     // utilities:
-    paypalCreatePaymentSession,
     paypalCreateOrder,
     paypalCaptureFund,
 }                           from '@/libs/payments/processors/paypal'
@@ -202,14 +199,6 @@ router
     
     // not_authenticated|authenticated => next:
     return await next();
-})
-
-/**
- * intialize paymentSession
- */
-.get(async (req) => {
-    const paymentSession : CheckoutPaymentSessionDetail = await paypalCreatePaymentSession();
-    return Response.json(paymentSession); // handled with success
 })
 
 /**
@@ -2182,7 +2171,6 @@ router
             // payment data:
             paymentValidation  : true,
             paymentMethod      : null,
-            paymentSession     : null,
         },
         totalShippingCost         : shippingCost,
         paymentDetail             : paymentDetail,

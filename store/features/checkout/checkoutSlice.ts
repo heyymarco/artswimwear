@@ -18,7 +18,6 @@ import {
     type CheckoutDetail,
     type CheckoutStep,
     type PaymentMethod,
-    type CheckoutPaymentSessionDetail,
     type CheckoutSession,
 }                           from '@/models'
 
@@ -63,7 +62,6 @@ const initialState : CheckoutSession = {
     // payment data:
     paymentValidation  : false,
     paymentMethod      : null,
-    paymentSession     : null,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -139,9 +137,6 @@ export const checkoutSlice = createSlice({
         setPaymentMethod      : (state, {payload: value}: PayloadAction<PaymentMethod|null>) => {
             state.paymentMethod = value;
         },
-        setPaymentSession     : (state, {payload: value}: PayloadAction<CheckoutPaymentSessionDetail|null>) => {
-            state.paymentSession = value;
-        },
         
         
         
@@ -149,7 +144,7 @@ export const checkoutSlice = createSlice({
         resetCheckout         : (state) => {
             return initialState; // reset
         },
-        restoreCheckout       : (state, {payload: checkoutDetail}: PayloadAction<Omit<CheckoutDetail, 'paymentSession'> & Partial<Pick<CheckoutSession, 'marketingOpt'>>>) => {
+        restoreCheckout       : (state, {payload: checkoutDetail}: PayloadAction<CheckoutDetail & Partial<Pick<CheckoutSession, 'marketingOpt'>>>) => {
             return {
                 ...initialState,
                 checkoutStep       : checkoutDetail.checkoutStep,
@@ -207,7 +202,6 @@ export const {
     // payment data:
     setPaymentValidation,
     setPaymentMethod,
-    setPaymentSession,
     
     
     
@@ -225,7 +219,6 @@ export const selectCheckoutSession = (state: RootState): CheckoutSession => {
 export const selectIsInitialCheckoutState = (state: RootState): boolean => {
     const checkoutState = state.checkout;
     for (const [key, value] of Object.entries(initialState)) {
-        if (key === 'paymentSession') continue; // ignore the payment session because it's not a value controlled by the user
         if (checkoutState[key as keyof CheckoutSession] !== value) return false;
     } // for
     return true;

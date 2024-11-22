@@ -4,8 +4,6 @@ import {
     type AuthorizedFundData,
     type PaymentDetail,
     
-    type CheckoutPaymentSessionDetail,
-    
     type PaymentMethodDetail,
 }                           from '@/models'
 
@@ -53,42 +51,6 @@ const paypalCreateAccessToken  = async () => {
     // console.log('created: accessTokenData: ', accessTokenData);
     if (!accessTokenData || accessTokenData.error) throw accessTokenData?.error_description ?? accessTokenData?.error ?? Error('Fetch access token failed.');
     return accessTokenData.access_token;
-}
-
-const paypalPaymentSessionExpiresThreshold = 0.5;
-/**
- * Call this function to create your client checkout session (paymentSession).
- * Uniquely identifies each payer.
- * Expires in a few minutes because it's meant to be used during checkout. Generate new sessions if the current sessions expire.
- */
-export const paypalCreatePaymentSession = async (): Promise<CheckoutPaymentSessionDetail> => {
-    const response    = await fetch(`${paypalUrl}/v1/identity/generate-token`, {
-        method  : 'POST',
-        headers : {
-            'Content-Type'    : 'application/json',
-            'Accept'          : 'application/json',
-            'Accept-Language' : 'en_US',
-            'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
-        },
-    });
-    const paymentSessionData = await response.json();
-    /*
-        example:
-        {
-            client_token: 'eyJicmFpbnRyZWUiOnsiYXV0aG9yaXphdGlvbkZpbmdlcnByaW50IjoiMjY4ZTg0NmMxNjllMzlkYjg2Zjk0ZGE4YWYzYzIxZTc3Y2VlNjBlYmJkZWY2NDM0YzZkZmI4YTg3NjMwYzkzMHxtZXJjaGFudF9pZD1yd3dua3FnMnhnNTZobTJuJnB1YmxpY19rZXk9NjNrdm4zN3Z0MjlxYjRkZiZjcmVhdGVkX2F0PTIwMjMtMDMtMTRUMDU6NTI6MDcuMjY2WiIsInZlcnNpb24iOiIzLXBheXBhbCJ9LCJwYXlwYWwiOnsiaWRUb2tlbiI6bnVsbCwiYWNjZXNzVG9rZW4iOiJBMjFBQUx0cnZYRnJ6MnZnRXZHWFdrc096RGU3WGVDQUlzR2ZTSHlIRHgwNUdzTVdwOTZDLXFFRUtwT1RpN2hUczNCUFRoYm4zZTl3Y09iVnh4Y2tJLWxkZ1llMGw0aFZBIn19',
-            expires_in: 3600, // seconds
-        }
-    */
-    console.log('created: paymentSessionData');
-    // console.log('created: paymentSessionData: ', paymentSessionData);
-    if (!paymentSessionData || paymentSessionData.error) throw paymentSessionData?.error_description ?? paymentSessionData?.error ?? Error('Fetch paymentSessionData failed.');
-    
-    const expiresIn = (paymentSessionData.expires_in ?? 3600) * 1000;
-    return {
-        paypalSession : paymentSessionData.client_token,
-        expiresAt     : Date.now() +  expiresIn,
-        refreshAt     : Date.now() + (expiresIn * paypalPaymentSessionExpiresThreshold),
-    } satisfies CheckoutPaymentSessionDetail;
 }
 
 const paypalHandleResponse       = async (response: Response) => {

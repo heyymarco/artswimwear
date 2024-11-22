@@ -61,7 +61,6 @@ import {
     
     type CartDetail,
     type CartUpdateRequest,
-    type CheckoutPaymentSessionDetail,
     
     type FinishedOrderState,
     type PlaceOrderRequest,
@@ -403,12 +402,6 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentSession      : builder.query<CheckoutPaymentSessionDetail, void>({
-            query : () => ({
-                url    : 'checkout',
-                method : 'GET',
-            }),
-        }),
         placeOrder                  : builder.mutation<PlaceOrderDetail|PaymentDetail, PlaceOrderRequest>({
             query : (orderData) => ({
                 url    : 'checkout',
@@ -776,7 +769,6 @@ export const {
     
     
     
-    useLazyGeneratePaymentSessionQuery     : useGeneratePaymentSession,
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
     useShowPrevOrderMutation               : useShowPrevOrder,

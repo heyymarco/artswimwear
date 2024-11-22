@@ -33,7 +33,7 @@ export const CartItemPreviewSchema = z.object({
 export const CartDetailSchema = z.object({
     currency : CurrencySchema,
     items    : z.array(CartItemPreviewSchema),
-    checkout : CheckoutDetailSchema.omit({ paymentSession: true }).nullable(),
+    checkout : CheckoutDetailSchema.nullable(),
 }) satisfies z.Schema<CartDetail>;
 
 

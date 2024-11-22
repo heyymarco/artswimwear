@@ -3,7 +3,6 @@ import {
     type DraftOrderItem,
     
     type Checkout,
-    // type CheckoutPaymentSession,
 }                           from '@prisma/client'
 
 // contexts:
@@ -50,7 +49,6 @@ export interface CheckoutDetail
     shippingAddress : ShippingAddressDetail|null
     billingAddress  : BillingAddressDetail|null
     paymentMethod   : PaymentMethod|null
-    paymentSession  : CheckoutPaymentSessionDetail|null
 }
 
 
@@ -71,26 +69,6 @@ export type PaymentMethod =
     |'alfamart'
     
     |'manual'
-
-
-
-export interface CheckoutPaymentSession { // a mock of Prisma's `CheckoutPaymentSession` model
-    // data:
-    paypalSession : string
-    expiresAt     : number // use number instead of DateTime for easier fetch transport
-    refreshAt     : number // use number instead of DateTime for easier fetch transport
-}
-export interface CheckoutPaymentSessionDetail
-    extends
-        Omit<CheckoutPaymentSession,
-            // records:
-            |'id'
-            
-            // relations:
-            |'parentId'
-        >
-{
-}
 
 
 

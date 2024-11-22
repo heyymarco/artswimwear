@@ -10,7 +10,6 @@ import {
 import {
     type CheckoutDetail,
     type PaymentMethod,
-    type CheckoutPaymentSession,
 }                           from './types'
 import {
     ModelIdSchema,
@@ -53,15 +52,6 @@ export const PaymentMethodSchema = z.enum([
 
 
 
-export const CheckoutPaymentSessionSchema = z.object({
-    // data:
-    paypalSession : z.string().min(1),
-    expiresAt     : z.number().finite().nonnegative(), // use number instead of DateTime for easier fetch transport
-    refreshAt     : z.number().finite().nonnegative(), // use number instead of DateTime for easier fetch transport
-}) satisfies z.Schema<CheckoutPaymentSession>;
-
-
-
 export const CheckoutDetailSchema = z.object({
     // data:
     checkoutStep       : CheckoutStepSchema,
@@ -70,5 +60,4 @@ export const CheckoutDetailSchema = z.object({
     billingAsShipping  : z.boolean(),
     billingAddress     : BillingAddressDetailSchema.nullable(),
     paymentMethod      : PaymentMethodSchema.nullable(),
-    paymentSession     : CheckoutPaymentSessionSchema.nullable(),
 }) satisfies z.Schema<CheckoutDetail>;
