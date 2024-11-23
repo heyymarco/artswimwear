@@ -33,8 +33,15 @@ import {
 
 // internals:
 import {
+    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// models:
+import {
+    type PaymentDetail,
+    type PlaceOrderDetail,
+}                           from '@/models'
 
 
 
@@ -48,7 +55,7 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
         
         
         // actions:
-        doTransaction,
+        startTransaction,
         doPlaceOrder,
     } = useCheckoutState();
     
@@ -57,32 +64,51 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
     // dialogs:
     const {
         showDialog,
-        showMessageFetchError,
     } = useDialogMessage();
     
     
     
     // handlers:
     const handlePayWithManual = useEvent(async (): Promise<void> => {
-        doTransaction(async () => {
-            // conditions:
-            const captcha = await showDialog<string>(
-                <CaptchaDialog />
-            );
-            if (!captcha) return;
-            
-            
-            
-            try {
+        startTransaction({
+            // handlers:
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|true|false> => {
+                // conditions:
+                const captcha = await showDialog<string>(
+                    <CaptchaDialog />
+                );
+                if (!captcha) return false;
+                
+                
+                
                 // createOrder:
-                await doPlaceOrder({ // will be immediately paid => no need further action
+                return doPlaceOrder({ // will be immediately paid => no need further action
                     paymentSource : 'manual',
                     captcha       : captcha,
                 });
-            }
-            catch (fetchError: any) {
-                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
-            } // try
+            },
+            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+                // this function should never called because the `doPlaceOrder({paymentSource: 'manual'})` always returns `true` or throw `ErrorDeclined`
+                return AuthenticatedResult.FAILED;
+            },
+            
+            
+            
+            // messages:
+            messageFailed        : null, // never denied
+            messageCanceled      : null, // never canceled
+            messageExpired       : null, // never expired
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
         });
     });
     
