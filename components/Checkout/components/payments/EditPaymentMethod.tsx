@@ -84,6 +84,24 @@ import {
 
 // react components:
 const EditPaymentMethod = (): JSX.Element|null => {
+    // states:
+    const {
+        // accessibilities:
+        currency,
+        
+        
+        
+        // cart data:
+        productPriceParts,
+    } = useCartState();
+    
+    const {
+        // shipping data:
+        totalShippingCost,
+    } = useCheckoutState();
+    
+    
+    
     // jsx:
     /*
         The <ConditionalStripeScriptProvider> must be on top of <ConditionalPaypalScriptProvider>
@@ -92,7 +110,16 @@ const EditPaymentMethod = (): JSX.Element|null => {
         Error: Failed to render <PayPalCardFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
     */
     return (
-        <ConditionalPaymentScriptProvider>
+        <ConditionalPaymentScriptProvider
+            // required:
+            currency={currency}
+            
+            
+            
+            // required for purchasing:
+            productPriceParts={productPriceParts}
+            totalShippingCost={totalShippingCost}
+        >
             <EditPaymentMethodInternal />
         </ConditionalPaymentScriptProvider>
     );

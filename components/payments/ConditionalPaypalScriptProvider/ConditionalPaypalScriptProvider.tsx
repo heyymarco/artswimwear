@@ -19,12 +19,6 @@ import {
     PayPalScriptProvider,
 }                           from '@paypal/react-paypal-js'
 
-// cart components:
-import {
-    // states:
-    useCartState,
-}                           from '@/components/Cart'
-
 // internals:
 import {
     IsInPaypalScriptProviderContextProvider,
@@ -37,12 +31,21 @@ import {
 
 
 
-const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) => {
-    // states:
+export interface ConditionalPaypalScriptProviderProps {
+    // required:
+    currency : string
+}
+const ConditionalPaypalScriptProvider = (props: React.PropsWithChildren<ConditionalPaypalScriptProviderProps>) => {
+    // props:
     const {
-        // accessibilities:
+        // required:
         currency,
-    } = useCartState();
+        
+        
+        
+        // children:
+        children,
+    } = props;
     
     
     

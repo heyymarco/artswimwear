@@ -30,17 +30,6 @@ import {
     Elements,
 }                           from '@stripe/react-stripe-js'
 
-// cart components:
-import {
-    // states:
-    useCartState,
-}                           from '@/components/Cart'
-
-// checkout components:
-import {
-    useCheckoutState,
-}                           from '@/components/Checkout/states/checkoutState'
-
 // models:
 import {
     type ProductPricePart,
@@ -75,24 +64,33 @@ const stripePromise : Promise<Stripe|null> = (stripeEnabled && !!clientId) ? loa
 
 
 
-const ConditionalStripeScriptProvider = ({children}: React.PropsWithChildren) => {
-    // states:
+export interface ConditionalStripeScriptProviderProps {
+    // required:
+    currency                   : string
+    
+    
+    
+    // required for purchasing:
+    productPriceParts         ?: ProductPricePart[]
+    totalShippingCost         ?: number|null
+}
+const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<ConditionalStripeScriptProviderProps>) => {
+    // props:
     const {
-        // accessibilities:
+        // required:
         currency,
         
         
         
-        // cart data:
+        // required for purchasing:
         productPriceParts,
-    } = useCartState();
-    
-    const {
-        // shipping data:
-        isShippingAddressRequired,
-        shippingProviderId,
-        totalShippingCost,
-    } = useCheckoutState();
+        totalShippingCost, // undefined: not selected yet; null: no shipping required (non physical product)
+        
+        
+        
+        // children:
+        children,
+    } = props;
     
     
     
@@ -143,13 +141,11 @@ const ConditionalStripeScriptProvider = ({children}: React.PropsWithChildren) =>
         ||
         !checkoutConfigClient.payment.processors.stripe.supportedCurrencies.includes(currency) // the selected currency is not supported
         ||
-        (isShippingAddressRequired && (shippingProviderId === null)) // physical_product => requires shippingProvider BUT NO shippingProvider selected
-        ||
         (convertedAmount === undefined) // the conversion is not yet ready
         ||
-        (convertedAmount === null) // the totalOrder cost is 0 (free) => nothing to pay
+        (convertedAmount === null)      // the totalOrder cost is null (free) => nothing to pay
         ||
-        (convertedAmount === 0)    // the totalOrder cost is 0 (free) => nothing to pay
+        (convertedAmount === 0)         // the totalOrder cost is 0    (free) => nothing to pay
     ) {
         // jsx:
         return (

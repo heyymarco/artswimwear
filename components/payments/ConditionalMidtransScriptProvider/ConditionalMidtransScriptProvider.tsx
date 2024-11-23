@@ -29,7 +29,24 @@ import {
 
 
 
-const ConditionalMidtransScriptProvider = ({children}: React.PropsWithChildren) => {
+export interface ConditionalMidtransScriptProviderProps {
+    // required:
+    currency : string
+}
+const ConditionalMidtransScriptProvider = (props: React.PropsWithChildren<ConditionalMidtransScriptProviderProps>) => {
+    // props:
+    const {
+        // required:
+        currency,
+        
+        
+        
+        // children:
+        children,
+    } = props;
+    
+    
+    
     // conditions:
     const environment = process.env.NEXT_PUBLIC_MIDTRANS_ENV ?? 'sandbox';
     const clientId    = process.env.NEXT_PUBLIC_MIDTRANS_ID  ?? '';
@@ -39,6 +56,8 @@ const ConditionalMidtransScriptProvider = ({children}: React.PropsWithChildren) 
         !environment
         ||
         !clientId
+        ||
+        !checkoutConfigClient.payment.processors.midtrans.supportedCurrencies.includes(currency) // the selected currency is not supported
     ) {
         // jsx:
         return (
