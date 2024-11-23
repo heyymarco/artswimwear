@@ -1,4 +1,3 @@
-[high prior] rename: draftOrderDetail => placeOrderDetail
 [high prior] verify: AuthenticatedResult.PENDING && AuthenticatedResult.CAPTURED
 
 [high prior] protect payment confirmation page using captcha

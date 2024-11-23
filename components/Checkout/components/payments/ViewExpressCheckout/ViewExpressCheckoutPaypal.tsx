@@ -184,12 +184,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             // handlers:
             doPlaceOrder         : async () => {
                 try {
-                    const draftOrderDetail = await doPlaceOrder(data);
-                    if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+                    const placeOrderDetail = await doPlaceOrder(data);
+                    if (placeOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
                     
                     
                     
-                    const rawOrderId = draftOrderDetail.orderId; // get the DraftOrder's id
+                    const rawOrderId = placeOrderDetail.orderId; // get the DraftOrder's id
                     const orderId = (
                         rawOrderId.startsWith('#PAYPAL_')
                         ? rawOrderId.slice(8) // remove prefix #PAYPAL_
@@ -199,7 +199,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     
                     
-                    return draftOrderDetail; // a DraftOrder has been created
+                    return placeOrderDetail; // a DraftOrder has been created
                 }
                 catch (fetchError: any) { // intercepts the exception
                     // DEL: if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
