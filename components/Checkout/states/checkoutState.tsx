@@ -239,7 +239,7 @@ export const enum AuthenticatedResult {
 export interface StartTransactionArg {
     // handlers:
     doPlaceOrder          : () => Promise<PlaceOrderDetail|true|false>
-    doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
+    doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
     
     
     
@@ -1627,9 +1627,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 let rawOrderId = placeOrderDetail.orderId;
-                let authenticatedResult : AuthenticatedResult;
+                let authenticatedResultOrPaymentDetail : AuthenticatedResult|PaymentDetail;
                 try {
-                    authenticatedResult = await doAuthenticate(placeOrderDetail);
+                    authenticatedResultOrPaymentDetail = await doAuthenticate(placeOrderDetail);
                     rawOrderId = placeOrderDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
@@ -1641,69 +1641,74 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                switch (authenticatedResult) {
-                    case AuthenticatedResult.FAILED     : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doCancelDraftOrder(rawOrderId);
+                if (typeof(authenticatedResultOrPaymentDetail) === 'object') {
+                    gotoFinished(authenticatedResultOrPaymentDetail, /*paid:*/(authenticatedResultOrPaymentDetail.type !== 'MANUAL'));
+                }
+                else {
+                    switch (authenticatedResultOrPaymentDetail) {
+                        case AuthenticatedResult.FAILED     : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelDraftOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageFailed,
+                            });
+                            break;
+                        }
+                        
+                        case AuthenticatedResult.CANCELED   : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelDraftOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageCanceled,
+                            });
+                            break;
+                        }
+                        case AuthenticatedResult.EXPIRED    : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelDraftOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageExpired,
+                            });
+                            break;
+                        }
                         
                         
                         
-                        showMessageError({
-                            error: messageFailed,
-                        });
-                        break;
-                    }
-                    
-                    case AuthenticatedResult.CANCELED   : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doCancelDraftOrder(rawOrderId);
+                        case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
+                            // then forward the authentication to backend_API to receive the fund:
+                            if (rawOrderId /* ignore empty string */) await doMakePayment(rawOrderId, /*paid:*/true);
+                            break;
+                        }
                         
                         
                         
-                        showMessageError({
-                            error: messageCanceled,
-                        });
-                        break;
-                    }
-                    case AuthenticatedResult.EXPIRED    : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doCancelDraftOrder(rawOrderId);
+                        case AuthenticatedResult.PENDING    :
+                        case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                            // gotoFinished(); // TODO: DISPLAY paid page
+                            break;
+                        }
                         
                         
                         
-                        showMessageError({
-                            error: messageExpired,
-                        });
-                        break;
-                    }
-                    
-                    
-                    
-                    case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
-                        // then forward the authentication to backend_API to receive the fund:
-                        if (rawOrderId /* ignore empty string */) await doMakePayment(rawOrderId, /*paid:*/true);
-                        break;
-                    }
-                    
-                    
-                    
-                    case AuthenticatedResult.PENDING    :
-                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                        // gotoFinished(); // TODO: DISPLAY paid page
-                        break;
-                    }
-                    
-                    
-                    
-                    default : { // an unexpected authentication result occured
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doCancelDraftOrder(rawOrderId);
-                        
-                        
-                        
-                        throw Error('Oops, an error occured!');
-                    }
-                } // switch
+                        default : { // an unexpected authentication result occured
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelDraftOrder(rawOrderId);
+                            
+                            
+                            
+                            throw Error('Oops, an error occured!');
+                        }
+                    } // switch
+                } // if
             }
             catch (fetchError: any) {
                 if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {

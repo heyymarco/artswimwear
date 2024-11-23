@@ -19,11 +19,6 @@ import {
     
     
     
-    // dialog-components:
-    PromiseDialog,
-    
-    
-    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -38,12 +33,14 @@ import {
 
 // internals:
 import {
+    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
 // models:
-import type {
-    PaymentDetail,
+import {
+    type PaymentDetail,
+    type PlaceOrderDetail,
 }                           from '@/models'
 
 
@@ -58,11 +55,8 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
         
         
         // actions:
-        gotoFinished,
-        
-        doTransaction,
+        startTransaction,
         doPlaceOrder,
-        doMakePayment,
     } = useCheckoutState();
     
     
@@ -70,98 +64,93 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     // dialogs:
     const {
         showDialog,
-        showMessageError,
-        showMessageFetchError,
     } = useDialogMessage();
     
     
     
     // handlers:
-    const handlePayWithQris      = useEvent(async (): Promise<void> => {
-        doTransaction(async () => {
-            try {
+    const handlePayWithQris = useEvent(async (): Promise<void> => {
+        startTransaction({
+            // handlers:
+            doPlaceOrder         : (): Promise<PlaceOrderDetail|true|false> => {
                 // createOrder:
-                const draftOrderDetail = await doPlaceOrder({
+                return doPlaceOrder({
                     paymentSource : 'midtransQris',
                 });
-                if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+            },
+            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+                const qrisData = placeOrderDetail.redirectData; // get the unfinished redirectData
+                if (!qrisData) return AuthenticatedResult.FAILED; // undefined|empty_string => failed
+                
+                let expiresRaw = placeOrderDetail.expires;
+                if (typeof(expiresRaw) === 'string') expiresRaw = new Date(Date.parse(expiresRaw));
                 
                 
                 
-                const qrisData = draftOrderDetail.redirectData; // get the unfinished redirectData
-                if (qrisData) { // not undefined && not empty_string
-                    let expiresRaw = draftOrderDetail.expires;
-                    if (typeof(expiresRaw) === 'string') expiresRaw = new Date(Date.parse(expiresRaw));
-                    
-                    const qrisResult = await showDialog<PaymentDetail|false|0>(
-                        <QrisDialog
-                            // accessibilities:
-                            title='Pay With QRIS'
-                            
-                            
-                            
-                            // resources:
-                            data={qrisData}
-                            expires={expiresRaw}
-                            paymentId={draftOrderDetail.orderId}
-                        />
-                    );
-                    switch (qrisResult) {
-                        case 0:
-                        case undefined: { // payment canceled or expired
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            handleRevertDraftOrder(draftOrderDetail.orderId);
-                            
-                            
-                            
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The transaction has been <strong>canceled</strong> {(qrisResult === 0) ? <>due to timeout</> : <>by the user</>}.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
+                const qrisResult = await showDialog<PaymentDetail|false|0>(
+                    <QrisDialog
+                        // accessibilities:
+                        title='Pay With QRIS'
                         
                         
                         
-                        case false : { // payment failed
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The transaction has been <strong>denied</strong> by the payment system.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                    <p>
-                                        Please try using another e-wallet.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
-                    } // switch
-                    
-                    
-                    
-                    gotoFinished(qrisResult, /*paid:*/true);
-                } // if
-            }
-            catch (fetchError: any) {
-                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-            } // try
-        });
-    });
-    const handleRevertDraftOrder = useEvent((rawOrderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
+                        // resources:
+                        data={qrisData}
+                        expires={expiresRaw}
+                        paymentId={placeOrderDetail.orderId}
+                    />
+                );
+                switch (qrisResult) {
+                    case 0         : return AuthenticatedResult.EXPIRED;
+                    case undefined : return AuthenticatedResult.CANCELED;
+                    case false     : return AuthenticatedResult.FAILED;
+                } // switch
+                return qrisResult;
+            },
+            
+            
+            
+            // messages:
+            messageFailed        : <>
+                <p>
+                    The transaction has been <strong>denied</strong> by the payment system.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
+            messageCanceled      : <>
+                
+                <p>
+                    The transaction has been <strong>canceled</strong> by the user.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageExpired       : <>
+                
+                <p>
+                    The transaction has been <strong>canceled</strong> due to timeout.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using QRIS.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
         });
     });
     
