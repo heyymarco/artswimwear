@@ -345,7 +345,6 @@ export interface CheckoutStateBase
     startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
     doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|true>
-    doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout              : () => void
 }
@@ -498,7 +497,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     startTransaction             : noopCallback as any,
     doTransaction                : noopCallback as any,
     doPlaceOrder                 : noopCallback as any,
-    doMakePayment                : noopCallback as any,
     
     refetchCheckout              : noopCallback,
 });
@@ -2116,7 +2114,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         startTransaction,             // stable ref
         doTransaction,                // stable ref
         doPlaceOrder,                 // stable ref
-        doMakePayment,                // stable ref
         
         refetchCheckout,              // stable ref
     }), [
@@ -2220,7 +2217,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // startTransaction,          // stable ref
         // doTransaction,             // stable ref
         // doPlaceOrder,              // stable ref
-        // doMakePayment,             // stable ref
         
         refetchCheckout,              // stable ref
     ]);
