@@ -1,3 +1,6 @@
+[high prior] rename: draftOrderDetail => placeOrderDetail
+[high prior] verify: AuthenticatedResult.PENDING && AuthenticatedResult.CAPTURED
+
 [high prior] protect payment confirmation page using captcha
 [high prior] verify 3DS implementation of paypal_card_payment
 
