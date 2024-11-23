@@ -31,15 +31,18 @@ import {
     CaptchaDialog,
 }                           from '@/components/dialogs/CaptchaDialog'
 
-// models:
-import {
-    type PlaceOrderRequestOptions,
-}                           from '@/models'
-
 // internals:
 import {
+    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// models:
+import {
+    type PaymentDetail,
+    type PlaceOrderRequestOptions,
+    type PlaceOrderDetail,
+}                           from '@/models'
 
 
 
@@ -65,7 +68,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
         
         
         // actions:
-        doTransaction,
+        startTransaction,
         doPlaceOrder,
     } = useCheckoutState();
     
@@ -74,32 +77,51 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     // dialogs:
     const {
         showDialog,
-        showMessageFetchError,
     } = useDialogMessage();
     
     
     
     // handlers:
     const handlePayWithOtc = useEvent(async (): Promise<void> => {
-        doTransaction(async () => {
-            // conditions:
-            const captcha = await showDialog<string>(
-                <CaptchaDialog />
-            );
-            if (!captcha) return;
-            
-            
-            
-            try {
+        startTransaction({
+            // handlers:
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|true|false> => {
+                // conditions:
+                const captcha = await showDialog<string>(
+                    <CaptchaDialog />
+                );
+                if (!captcha) return false;
+                
+                
+                
                 // createOrder:
-                await doPlaceOrder({ // will be immediately paid => no need further action
+                return doPlaceOrder({ // will be immediately paid => no need further action
                     paymentSource : paymentSource,
                     captcha       : captcha,
                 });
-            }
-            catch (fetchError: any) {
-                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-            } // try
+            },
+            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+                // this function should never called because the `doPlaceOrder({paymentSource: 'indomaret|alfamart'})` always returns `true` or throw `ErrorDeclined`
+                return AuthenticatedResult.FAILED;
+            },
+            
+            
+            
+            // messages:
+            messageFailed        : null, // never denied
+            messageCanceled      : null, // never canceled
+            messageExpired       : null, // never expired
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
         });
     });
     
