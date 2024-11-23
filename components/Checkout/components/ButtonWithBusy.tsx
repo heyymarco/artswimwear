@@ -15,9 +15,6 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
-    ButtonProps,
-    ButtonComponentProps,
-    
     ButtonIconProps,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
@@ -38,20 +35,23 @@ import {
 export interface ButtonWithBusyProps
     extends
         // bases:
-        ButtonProps,
-        
-        // components:
-        Required<Pick<ButtonComponentProps,
-            'buttonComponent' // a required underlying <Button>
-        >>
+        Omit<ButtonIconProps,
+            // components:
+            |'buttonComponent' // upgraded from <Button> to <ButtonIcon>
+        >
 {
     // appearances:
-    iconBusy ?: ButtonIconProps['icon']
+    iconBusy        ?: ButtonIconProps['icon']
     
     
     
     // behaviors:
-    busyType ?: BusyState
+    busyType        ?: BusyState
+    
+    
+    
+    // components:
+    buttonComponent  : React.ReactElement<ButtonIconProps>
 }
 const ButtonWithBusy = (props: ButtonWithBusyProps): JSX.Element|null => {
     // states:
@@ -75,22 +75,25 @@ const ButtonWithBusy = (props: ButtonWithBusyProps): JSX.Element|null => {
         
         
         // components:
-        buttonComponent,
-    ...restButtonIconProps} = props;
+        buttonComponent : buttonIconComponent,
+        
+        
+        
+        // other props:
+        ...restButtonIconProps
+    } = props;
     
     
     
-    
-    // fn props:
-    const isBusyType = !busyType ? isBusy : (isBusy === busyType);
-    const icon       = (buttonComponent?.props as ButtonIconProps|undefined)?.icon;
+    // states:
+    const isBusyOfType = (busyType === undefined) ? !!isBusy : (isBusy === busyType);
     
     
     
     // refs:
     const mergedElmRef   = useMergeRefs(
-        // preserves the original `elmRef` from `buttonComponent`:
-        buttonComponent.props.elmRef,
+        // preserves the original `elmRef` from `buttonIconComponent`:
+        buttonIconComponent.props.elmRef,
         
         
         
@@ -98,8 +101,8 @@ const ButtonWithBusy = (props: ButtonWithBusyProps): JSX.Element|null => {
         props.elmRef,
     );
     const mergedOuterRef = useMergeRefs(
-        // preserves the original `outerRef` from `buttonComponent`:
-        buttonComponent.props.outerRef,
+        // preserves the original `outerRef` from `buttonIconComponent`:
+        buttonIconComponent.props.outerRef,
         
         
         
@@ -109,14 +112,26 @@ const ButtonWithBusy = (props: ButtonWithBusyProps): JSX.Element|null => {
     
     
     
+    // default props:
+    const {
+        // appearances
+        icon : buttonIconComponentIcon = undefined,
+        
+        
+        
+        // other props:
+        ...restButtonIconComponentProps
+    } = buttonIconComponent.props;
+    
+    
+    
     // jsx:
-    /* <Button> or <ButtonIcon> */
-    return React.cloneElement<ButtonIconProps>(buttonComponent,
+    return React.cloneElement<ButtonIconProps>(buttonIconComponent,
         // props:
         {
             // other props:
             ...restButtonIconProps,
-            ...buttonComponent.props, // overwrites restButtonIconProps (if any conflics)
+            ...restButtonIconComponentProps, // overwrites restButtonIconProps (if any conflics)
             
             
             
@@ -127,7 +142,7 @@ const ButtonWithBusy = (props: ButtonWithBusyProps): JSX.Element|null => {
             
             
             // appearances:
-            icon     : !icon ? undefined : (isBusyType ? iconBusy : icon),
+            icon     : (isBusyOfType ? iconBusy : buttonIconComponentIcon),
         },
     );
 };
