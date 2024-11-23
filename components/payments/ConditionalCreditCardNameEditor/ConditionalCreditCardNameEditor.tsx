@@ -32,11 +32,6 @@ import {
     PaypalCardFieldWrapper,
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
-// cart components:
-import {
-    useCartState,
-}                           from '@/components/Cart/states/cartState'
-
 // internal components:
 import {
     InputWithLabel,
@@ -59,17 +54,10 @@ const ConditionalCreditCardNameEditor = (): JSX.Element|null => {
     
     // states:
     const {
-        // payment data:
-        currency,
-    } = useCartState();
-    
-    const {
         isPaymentPriorityPaypal,
         isPaymentPriorityStripe,
         isPaymentPriorityMidtrans,
-    } = usePaymentProcessorPriority({
-        currency,
-    });
+    } = usePaymentProcessorPriority();
     
     
     

@@ -35,11 +35,6 @@ import {
     ConditionalCreditCardButton,
 }                           from '@/components/payments/ConditionalCreditCardButton'
 
-// cart components:
-import {
-    useCartState,
-}                           from '@/components/Cart/states/cartState'
-
 // internal components:
 import {
     ButtonWithBusy,
@@ -68,11 +63,6 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
-        currency,
-    } = useCartState();
-    
-    const {
-        // payment data:
         paymentValidation,
         
         
@@ -80,10 +70,6 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
         // sections:
         billingAddressSectionRef,
     } = useCheckoutState();
-    
-    const appropriatePaymentProcessors = useAppropriatePaymentProcessors({
-        currency,
-    });
     
     
     

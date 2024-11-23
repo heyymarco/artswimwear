@@ -41,11 +41,6 @@ import {
     StripeCardFieldWrapper,
 }                           from '@/components/payments/StripeCardFieldWrapper'
 
-// cart components:
-import {
-    useCartState,
-}                           from '@/components/Cart/states/cartState'
-
 // internal components:
 import {
     InputWithLabel,
@@ -68,17 +63,10 @@ const ConditionalCreditCardNumberEditor = (): JSX.Element|null => {
     
     // states:
     const {
-        // payment data:
-        currency,
-    } = useCartState();
-    
-    const {
         isPaymentPriorityPaypal,
         isPaymentPriorityStripe,
         isPaymentPriorityMidtrans,
-    } = usePaymentProcessorPriority({
-        currency,
-    });
+    } = usePaymentProcessorPriority();
     
     
     

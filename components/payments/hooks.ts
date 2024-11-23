@@ -17,6 +17,11 @@ import {
     useIsInMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // configs:
 import {
     checkoutConfigClient,
@@ -24,16 +29,12 @@ import {
 
 
 
-export interface AppropriatePaymentProcessorsProps {
-    // payment data:
-    currency : string
-}
-export const useAppropriatePaymentProcessors = (props: AppropriatePaymentProcessorsProps): (typeof checkoutConfigClient.payment.preferredProcessors) => {
-    // props:
+export const useAppropriatePaymentProcessors = (): (typeof checkoutConfigClient.payment.preferredProcessors) => {
+    // states:
     const {
         // payment data:
         currency,
-    } = props;
+    } = useCartState();
     
     
     
@@ -57,20 +58,14 @@ export const useAppropriatePaymentProcessors = (props: AppropriatePaymentProcess
 
 
 
-export interface PaymentProcessorPriorityProps
-    extends
-        // bases:
-        AppropriatePaymentProcessorsProps
-{
-}
 export interface PaymentProcessorPriority {
     paymentPriorityProcessor  : string|null
     isPaymentPriorityPaypal   : boolean
     isPaymentPriorityStripe   : boolean
     isPaymentPriorityMidtrans : boolean
 }
-export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps): PaymentProcessorPriority => {
-    const appropriatePaymentProcessors = useAppropriatePaymentProcessors(props);
+export const usePaymentProcessorPriority = (): PaymentProcessorPriority => {
+    const appropriatePaymentProcessors = useAppropriatePaymentProcessors();
     const isInPaypalScriptProvider     = useIsInPaypalScriptProvider();
     const isInStripeScriptProvider     = useIsInStripeScriptProvider();
     const isInMidtransScriptProvider   = useIsInMidtransScriptProvider();
@@ -99,14 +94,6 @@ export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps
 
 
 
-export interface PaymentProcessorAvailabilityProps
-    extends
-        // bases:
-        AppropriatePaymentProcessorsProps
-{
-    // payment data:
-    currency                     : string
-}
 export interface PaymentProcessorAvailability {
     isPaymentAvailablePaypal     : boolean
     isPaymentAvailableStripe     : boolean
@@ -114,15 +101,23 @@ export interface PaymentProcessorAvailability {
     isPaymentAvailableBank       : boolean
     isPaymentAvailableCreditCard : boolean
 }
-export const usePaymentProcessorAvailability = (props: PaymentProcessorAvailabilityProps): PaymentProcessorAvailability => {
-    const appropriatePaymentProcessors = useAppropriatePaymentProcessors(props);
+export const usePaymentProcessorAvailability = (): PaymentProcessorAvailability => {
+    // states:
+    const {
+        // payment data:
+        currency,
+    } = useCartState();
+    
+    
+    
+    const appropriatePaymentProcessors = useAppropriatePaymentProcessors();
     const isInPaypalScriptProvider     = useIsInPaypalScriptProvider();
     const isInStripeScriptProvider     = useIsInStripeScriptProvider();
     const isInMidtransScriptProvider   = useIsInMidtransScriptProvider();
     const isPaymentAvailablePaypal     = isInPaypalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
     const isPaymentAvailableStripe     = isInStripeScriptProvider   && appropriatePaymentProcessors.includes('stripe');
     const isPaymentAvailableMidtrans   = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
-    const isPaymentAvailableBank       = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(props.currency);
+    const isPaymentAvailableBank       = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
     const isPaymentAvailableCreditCard = (isPaymentAvailablePaypal || isPaymentAvailableStripe || isPaymentAvailableMidtrans);
     
     

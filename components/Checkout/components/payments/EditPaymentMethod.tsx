@@ -73,10 +73,6 @@ import {
 }                           from '../../styles/loader'
 import {
     // states:
-    useCartState,
-}                           from '@/components/Cart'
-import {
-    // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -116,11 +112,6 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     // states:
     const {
-        // accessibilities:
-        currency,
-    } = useCartState();
-    
-    const {
         // payment data:
         paymentMethod,
         setPaymentMethod,
@@ -139,9 +130,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
         isPaymentAvailableMidtrans,
         isPaymentAvailableBank,
         isPaymentAvailableCreditCard,
-    } = usePaymentProcessorAvailability({
-        currency,
-    });
+    } = usePaymentProcessorAvailability();
     
     
     
