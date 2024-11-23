@@ -30,6 +30,11 @@ import {
     Elements,
 }                           from '@stripe/react-stripe-js'
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // models:
 import {
     type ProductPricePart,
@@ -61,25 +66,13 @@ import {
 
 
 export interface ConditionalStripeScriptProviderProps {
-    // required:
-    currency                   : string
-    
-    
-    
     // required for purchasing:
-    productPriceParts         ?: ProductPricePart[]
-    totalShippingCost         ?: number|null
+    totalShippingCost ?: number|null
 }
 const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<ConditionalStripeScriptProviderProps>) => {
     // props:
     const {
-        // required:
-        currency,
-        
-        
-        
         // required for purchasing:
-        productPriceParts,
         totalShippingCost, // undefined: not selected yet; null: no shipping required (non physical product)
         
         
@@ -87,6 +80,19 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
         // children:
         children,
     } = props;
+    
+    
+    
+    // states:
+    const {
+        // accessibilities:
+        currency,
+        
+        
+        
+        // cart data:
+        productPriceParts,
+    } = useCartState();
     
     
     

@@ -32,13 +32,7 @@ export interface ConditionalPaymentScriptProviderProps
 }
 const ConditionalPaymentScriptProvider = (props: React.PropsWithChildren<ConditionalPaymentScriptProviderProps>) => {
     const {
-        // required:
-        currency,
-        
-        
-        
         // required for purchasing:
-        productPriceParts,
         totalShippingCost,
         
         
@@ -58,23 +52,11 @@ const ConditionalPaymentScriptProvider = (props: React.PropsWithChildren<Conditi
     */
     return (
         <ConditionalStripeScriptProvider
-            // required:
-            currency={currency}
-            
-            
-            
             // required for purchasing:
-            productPriceParts={productPriceParts}
             totalShippingCost={totalShippingCost}
         >
-            <ConditionalPaypalScriptProvider
-                // required:
-                currency={currency}
-            >
-                <ConditionalMidtransScriptProvider
-                    // required:
-                    currency={currency}
-                >
+            <ConditionalPaypalScriptProvider>
+                <ConditionalMidtransScriptProvider>
                     {children}
                 </ConditionalMidtransScriptProvider>
             </ConditionalPaypalScriptProvider>

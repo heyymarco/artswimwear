@@ -86,16 +86,6 @@ import {
 const EditPaymentMethod = (): JSX.Element|null => {
     // states:
     const {
-        // accessibilities:
-        currency,
-        
-        
-        
-        // cart data:
-        productPriceParts,
-    } = useCartState();
-    
-    const {
         // shipping data:
         totalShippingCost,
     } = useCheckoutState();
@@ -111,13 +101,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     */
     return (
         <ConditionalPaymentScriptProvider
-            // required:
-            currency={currency}
-            
-            
-            
             // required for purchasing:
-            productPriceParts={productPriceParts}
             totalShippingCost={totalShippingCost}
         >
             <EditPaymentMethodInternal />

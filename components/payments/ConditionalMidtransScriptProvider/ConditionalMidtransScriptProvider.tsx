@@ -17,6 +17,11 @@ import {
     MidtransScriptProvider,
 }                           from '@/components/payments/MidtransScriptProvider'
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // internals:
 import {
     IsInMidtransScriptProviderContextProvider,
@@ -30,20 +35,22 @@ import {
 
 
 export interface ConditionalMidtransScriptProviderProps {
-    // required:
-    currency : string
+    /* no props needed yet */
 }
 const ConditionalMidtransScriptProvider = (props: React.PropsWithChildren<ConditionalMidtransScriptProviderProps>) => {
     // props:
     const {
-        // required:
-        currency,
-        
-        
-        
         // children:
         children,
     } = props;
+    
+    
+    
+    // states:
+    const {
+        // accessibilities:
+        currency,
+    } = useCartState();
     
     
     
