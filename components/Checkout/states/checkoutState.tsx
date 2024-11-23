@@ -307,8 +307,6 @@ export interface CheckoutStateBase
     
     
     // payment data:
-    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
-    
     setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
     
     paymentType                  : string|undefined
@@ -459,8 +457,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // payment data:
-    appropriatePaymentProcessors : [],
-    
     paymentValidation            : false,
     
     paymentMethod                : null,
@@ -642,22 +638,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         paymentMethod,
     } = localCheckoutSession;
-    
-    const appropriatePaymentProcessors = useMemo<CheckoutState['appropriatePaymentProcessors']>((): CheckoutState['appropriatePaymentProcessors'] => {
-        return (
-            checkoutConfigClient.payment.preferredProcessors
-            .map((paymentProcessorName) => [
-                paymentProcessorName,
-                checkoutConfigClient.payment.processors[paymentProcessorName]
-            ] as const)
-            .filter(([paymentProcessorName, {enabled, supportedCurrencies}]) =>
-                enabled
-                &&
-                supportedCurrencies.includes(currency)
-            )
-            .map(([name, value]) => name)
-        );
-    }, [currency]);
     
     const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
     
@@ -2090,8 +2070,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        appropriatePaymentProcessors,
-        
         paymentValidation,
         
         paymentMethod,
@@ -2196,8 +2174,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        appropriatePaymentProcessors,
-        
         paymentValidation,
         
         paymentMethod,

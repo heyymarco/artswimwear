@@ -6,18 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// internal components:
-import {
-    InputWithLabel,
-}                           from '@/components/InputWithLabel'
-import {
-    CreditCardNameEditor,
-}                           from '@/components/editors/CreditCardNameEditor'
-import {
-    type LabelHintsWithTooltipProps,
-    LabelHintsWithTooltip,
-}                           from '@/components/LabelHintsWithTooltip'
-
 // payment components:
 import {
     usePaymentProcessorPriority,
@@ -44,6 +32,23 @@ import {
     PaypalCardFieldWrapper,
 }                           from '@/components/payments/PaypalCardFieldWrapper'
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
+// internal components:
+import {
+    InputWithLabel,
+}                           from '@/components/InputWithLabel'
+import {
+    CreditCardNameEditor,
+}                           from '@/components/editors/CreditCardNameEditor'
+import {
+    type LabelHintsWithTooltipProps,
+    LabelHintsWithTooltip,
+}                           from '@/components/LabelHintsWithTooltip'
+
 // configs:
 import {
     type checkoutConfigClient,
@@ -69,12 +74,18 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     
     
     
+    // states:
+    const {
+        // payment data:
+        currency,
+    } = useCartState();
+    
     const {
         isPaymentPriorityPaypal,
         isPaymentPriorityStripe,
         isPaymentPriorityMidtrans,
     } = usePaymentProcessorPriority({
-        appropriatePaymentProcessors,
+        currency,
     });
     
     

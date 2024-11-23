@@ -54,6 +54,11 @@ import {
     useElements,
 }                           from '@stripe/react-stripe-js'
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // checkout components:
 import {
     AuthenticatedResult,
@@ -79,17 +84,15 @@ const ConditionalCreditCardButton = (props: ImplementedButtonPaymentGeneralProps
     // states:
     const {
         // payment data:
-        appropriatePaymentProcessors,
-    } = useCheckoutState();
-    
-    
+        currency,
+    } = useCartState();
     
     const {
         isPaymentPriorityPaypal,
         isPaymentPriorityStripe,
         isPaymentPriorityMidtrans,
     } = usePaymentProcessorPriority({
-        appropriatePaymentProcessors,
+        currency,
     });
     
     

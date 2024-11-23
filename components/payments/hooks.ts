@@ -1,3 +1,11 @@
+'use client'
+
+// react:
+import {
+    // hooks:
+    useMemo,
+}                           from 'react'
+
 // payment components:
 import {
     useIsInPaypalScriptProvider,
@@ -16,9 +24,44 @@ import {
 
 
 
-export interface PaymentProcessorPriorityProps {
+export interface AppropriatePaymentProcessorsProps {
     // payment data:
-    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
+    currency : string
+}
+export const useAppropriatePaymentProcessors = (props: AppropriatePaymentProcessorsProps): (typeof checkoutConfigClient.payment.preferredProcessors) => {
+    // props:
+    const {
+        // payment data:
+        currency,
+    } = props;
+    
+    
+    
+    const appropriatePaymentProcessors = useMemo<(typeof checkoutConfigClient.payment.preferredProcessors)>((): (typeof checkoutConfigClient.payment.preferredProcessors) => {
+        return (
+            checkoutConfigClient.payment.preferredProcessors
+            .map((paymentProcessorName) => [
+                paymentProcessorName,
+                checkoutConfigClient.payment.processors[paymentProcessorName]
+            ] as const)
+            .filter(([paymentProcessorName, {enabled, supportedCurrencies}]) =>
+                enabled
+                &&
+                supportedCurrencies.includes(currency)
+            )
+            .map(([name, value]) => name)
+        );
+    }, [currency]);
+    return appropriatePaymentProcessors;
+}
+
+
+
+export interface PaymentProcessorPriorityProps
+    extends
+        // bases:
+        AppropriatePaymentProcessorsProps
+{
 }
 export interface PaymentProcessorPriority {
     paymentPriorityProcessor  : string|null
@@ -27,14 +70,7 @@ export interface PaymentProcessorPriority {
     isPaymentPriorityMidtrans : boolean
 }
 export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps): PaymentProcessorPriority => {
-    // props:
-    const {
-        // payment data:
-        appropriatePaymentProcessors,
-    } = props;
-    
-    
-    
+    const appropriatePaymentProcessors = useAppropriatePaymentProcessors(props);
     const isInPaypalScriptProvider     = useIsInPaypalScriptProvider();
     const isInStripeScriptProvider     = useIsInStripeScriptProvider();
     const isInMidtransScriptProvider   = useIsInMidtransScriptProvider();
@@ -63,9 +99,12 @@ export const usePaymentProcessorPriority = (props: PaymentProcessorPriorityProps
 
 
 
-export interface PaymentProcessorAvailabilityProps {
+export interface PaymentProcessorAvailabilityProps
+    extends
+        // bases:
+        AppropriatePaymentProcessorsProps
+{
     // payment data:
-    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
     currency                     : string
 }
 export interface PaymentProcessorAvailability {
@@ -76,22 +115,14 @@ export interface PaymentProcessorAvailability {
     isPaymentAvailableCreditCard : boolean
 }
 export const usePaymentProcessorAvailability = (props: PaymentProcessorAvailabilityProps): PaymentProcessorAvailability => {
-    // props:
-    const {
-        // payment data:
-        appropriatePaymentProcessors,
-        currency,
-    } = props;
-    
-    
-    
+    const appropriatePaymentProcessors = useAppropriatePaymentProcessors(props);
     const isInPaypalScriptProvider     = useIsInPaypalScriptProvider();
     const isInStripeScriptProvider     = useIsInStripeScriptProvider();
     const isInMidtransScriptProvider   = useIsInMidtransScriptProvider();
     const isPaymentAvailablePaypal     = isInPaypalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
     const isPaymentAvailableStripe     = isInStripeScriptProvider   && appropriatePaymentProcessors.includes('stripe');
     const isPaymentAvailableMidtrans   = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
-    const isPaymentAvailableBank       = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
+    const isPaymentAvailableBank       = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(props.currency);
     const isPaymentAvailableCreditCard = (isPaymentAvailablePaypal || isPaymentAvailableStripe || isPaymentAvailableMidtrans);
     
     

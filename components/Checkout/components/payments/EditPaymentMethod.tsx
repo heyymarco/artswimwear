@@ -138,7 +138,6 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     const {
         // payment data:
-        appropriatePaymentProcessors,
         paymentMethod,
         setPaymentMethod,
         
@@ -157,7 +156,6 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
         isPaymentAvailableBank,
         isPaymentAvailableCreditCard,
     } = usePaymentProcessorAvailability({
-        appropriatePaymentProcessors,
         currency,
     });
     

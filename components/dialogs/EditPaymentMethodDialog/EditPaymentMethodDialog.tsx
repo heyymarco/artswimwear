@@ -34,6 +34,29 @@ import {
     TabPanel,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// payment components:
+import {
+    ConditionalPaymentScriptProvider,
+}                           from '@/components/payments/ConditionalPaymentScriptProvider'
+import {
+    ConditionalPaypalCardComposerProvider,
+}                           from '@/components/payments/ConditionalPaypalCardComposerProvider'
+import {
+    ConditionalCreditCardNumberEditor,
+}                           from '@/components/payments/ConditionalCreditCardNumberEditor'
+import {
+    ConditionalCreditCardNameEditor,
+}                           from '@/components/payments/ConditionalCreditCardNameEditor'
+import {
+    ConditionalCreditCardExpiryEditor,
+}                           from '@/components/payments/ConditionalCreditCardExpiryEditor'
+import {
+    ConditionalCreditCardCvvEditor,
+}                           from '@/components/payments/ConditionalCreditCardCvvEditor'
+import {
+    ConditionalCreditCardButton,
+}                           from '@/components/payments/ConditionalCreditCardButton'
+
 // internal components:
 import {
     // types:
@@ -67,6 +90,9 @@ import {
     PAGE_PAYMENT_METHODS_TAB_DATA,
     PAGE_PAYMENT_METHODS_TAB_DELETE,
 }                           from '@/website.config'
+import {
+    type checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -98,6 +124,10 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
             default        : return undefined;
         } // switch
     })();
+    
+    const appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors) = [
+        'paypal',
+    ];
     
     
     
@@ -143,7 +173,11 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     // jsx:
     const mainTabContent = (
         <>
-            <span className='name label'>Name:</span>
+            <ConditionalCreditCardNumberEditor appropriatePaymentProcessors={appropriatePaymentProcessors} />
+            <ConditionalCreditCardNameEditor   appropriatePaymentProcessors={appropriatePaymentProcessors} />
+            <ConditionalCreditCardExpiryEditor appropriatePaymentProcessors={appropriatePaymentProcessors} />
+            <ConditionalCreditCardCvvEditor    appropriatePaymentProcessors={appropriatePaymentProcessors} />
+            <ConditionalCreditCardButton />
         </>
     );
     const mainTab = (
@@ -156,50 +190,57 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         </TabPanel>
     );
     return (
-        <ComplexEditModelDialog<PaymentMethodDetail>
-            // other props:
-            {...restComplexEditModelDialogProps}
-            
-            
-            
-            // data:
-            modelName='Payment Method'
-            modelEntryName={modelAliasName}
-            model={model}
-            
-            
-            
-            // privileges:
-            privilegeAdd    = {true}
-            privilegeUpdate = {undefined}
-            privilegeDelete = {true}
-            
-            
-            
-            // stores:
-            isCommiting = {isLoadingUpdate}
-            isDeleting  = {isLoadingDelete}
-            
-            
-            
-            // tabs:
-            tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
-            
-            
-            
-            // auto focusable:
-            autoFocusOn={props.autoFocusOn ?? firstEditorRef}
-            
-            
-            
-            // handlers:
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            
-            onConfirmDelete={handleConfirmDelete}
+        <ConditionalPaymentScriptProvider
+            // required:
+            currency='USD'
         >
-            {mainTab}
-        </ComplexEditModelDialog>
+            <ConditionalPaypalCardComposerProvider>
+                <ComplexEditModelDialog<PaymentMethodDetail>
+                    // other props:
+                    {...restComplexEditModelDialogProps}
+                    
+                    
+                    
+                    // data:
+                    modelName='Payment Method'
+                    modelEntryName={modelAliasName}
+                    model={model}
+                    
+                    
+                    
+                    // privileges:
+                    privilegeAdd    = {true}
+                    privilegeUpdate = {undefined}
+                    privilegeDelete = {true}
+                    
+                    
+                    
+                    // stores:
+                    isCommiting = {isLoadingUpdate}
+                    isDeleting  = {isLoadingDelete}
+                    
+                    
+                    
+                    // tabs:
+                    tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
+                    
+                    
+                    
+                    // auto focusable:
+                    autoFocusOn={props.autoFocusOn ?? firstEditorRef}
+                    
+                    
+                    
+                    // handlers:
+                    onUpdate={handleUpdate}
+                    onDelete={handleDelete}
+                    
+                    onConfirmDelete={handleConfirmDelete}
+                >
+                    {mainTab}
+                </ComplexEditModelDialog>
+            </ConditionalPaypalCardComposerProvider>
+        </ConditionalPaymentScriptProvider>
     );
 };
 export {

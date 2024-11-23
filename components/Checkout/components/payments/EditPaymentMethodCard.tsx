@@ -14,6 +14,9 @@ import {
 
 // payment components:
 import {
+    useAppropriatePaymentProcessors,
+}                           from '@/components/payments/hooks'
+import {
     ConditionalPaypalCardComposerProvider,
 }                           from '@/components/payments/ConditionalPaypalCardComposerProvider'
 import {
@@ -31,6 +34,11 @@ import {
 import {
     ConditionalCreditCardButton,
 }                           from '@/components/payments/ConditionalCreditCardButton'
+
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
 
 // internal components:
 import {
@@ -57,9 +65,14 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     );
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {
+    // states:
     const {
         // payment data:
-        appropriatePaymentProcessors,
+        currency,
+    } = useCartState();
+    
+    const {
+        // payment data:
         paymentValidation,
         
         
@@ -67,6 +80,10 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
         // sections:
         billingAddressSectionRef,
     } = useCheckoutState();
+    
+    const appropriatePaymentProcessors = useAppropriatePaymentProcessors({
+        currency,
+    });
     
     
     
