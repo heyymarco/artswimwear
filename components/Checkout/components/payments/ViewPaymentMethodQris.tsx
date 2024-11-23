@@ -123,7 +123,6 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 </p>
             </>,
             messageCanceled      : <>
-                
                 <p>
                     The transaction has been <strong>canceled</strong> by the user.
                 </p>
@@ -132,7 +131,6 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 </p>
             </>,
             messageExpired       : <>
-                
                 <p>
                     The transaction has been <strong>canceled</strong> due to timeout.
                 </p>

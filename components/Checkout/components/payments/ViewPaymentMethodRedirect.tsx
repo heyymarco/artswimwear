@@ -19,19 +19,9 @@ import {
     
     
     
-    // dialog-components:
-    PromiseDialog,
-    
-    
-    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
-// models:
-import {
-    type PlaceOrderRequestOptions,
-}                           from '@/models'
 
 // internal components:
 import {
@@ -43,12 +33,15 @@ import {
 
 // internals:
 import {
+    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
 // models:
-import type {
-    PaymentDetail,
+import {
+    type PaymentDetail,
+    type PlaceOrderRequestOptions,
+    type PlaceOrderDetail,
 }                           from '@/models'
 
 
@@ -75,11 +68,8 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
         
         
         // actions:
-        gotoFinished,
-        
-        doTransaction,
+        startTransaction,
         doPlaceOrder,
-        doMakePayment,
     } = useCheckoutState();
     
     
@@ -87,94 +77,87 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     // dialogs:
     const {
         showDialog,
-        showMessageError,
-        showMessageFetchError,
     } = useDialogMessage();
     
     
     
     // handlers:
     const handlePayWithRedirect  = useEvent(async (): Promise<void> => {
-        doTransaction(async () => {
-            try {
+        startTransaction({
+            // handlers:
+            doPlaceOrder         : (): Promise<PlaceOrderDetail|true|false> => {
                 // createOrder:
-                const draftOrderDetail = await doPlaceOrder({
+                return doPlaceOrder({
                     paymentSource : paymentSource,
                 });
-                if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+            },
+            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+                const redirectData = placeOrderDetail.redirectData; // get the unfinished redirectData
+                if (!redirectData) return AuthenticatedResult.FAILED; // undefined|empty_string => failed
                 
                 
                 
-                const redirectData = draftOrderDetail.redirectData; // get the unfinished redirectData
-                if (redirectData) { // not undefined && not empty_string
-                    const redirectResult = await showDialog<PaymentDetail|false>(
-                        <RedirectDialog
-                            // accessibilities:
-                            title={`Redirecting to ${appName} App`}
-                            
-                            
-                            
-                            // resources:
-                            appName={appName}
-                            redirectUrl={redirectData}
-                            paymentId={draftOrderDetail.orderId}
-                        />
-                    );
-                    switch (redirectResult) {
-                        case undefined: { // payment canceled or expired
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            handleRevertDraftOrder(draftOrderDetail.orderId);
-                            
-                            
-                            
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The transaction has been <strong>canceled</strong> by the user.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
+                const redirectResult = await showDialog<PaymentDetail|false>(
+                    <RedirectDialog
+                        // accessibilities:
+                        title={`Redirecting to ${appName} App`}
                         
                         
                         
-                        case false : { // payment failed
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The transaction has been <strong>denied</strong> by the payment system.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                    <p>
-                                        Please try using another e-wallet.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
-                    } // switch
-                    
-                    
-                    
-                    gotoFinished(redirectResult, /*paid:*/true);
-                } // if
-            }
-            catch (fetchError: any) {
-                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-            } // try
-        });
-    });
-    const handleRevertDraftOrder = useEvent((rawOrderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
+                        // resources:
+                        appName={appName}
+                        redirectUrl={redirectData}
+                        paymentId={placeOrderDetail.orderId}
+                    />
+                );
+                switch (redirectResult) {
+                    case undefined : return AuthenticatedResult.CANCELED;
+                    case false     : return AuthenticatedResult.FAILED;
+                } // switch
+                return redirectResult;
+            },
+            
+            
+            
+            // messages:
+            messageFailed        : <>
+                <p>
+                    The transaction has been <strong>denied</strong> by the payment system.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
+            messageCanceled      : <>
+                <p>
+                    The transaction has been <strong>canceled</strong> by the user.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageExpired       : <>
+                <p>
+                    The transaction has been <strong>canceled</strong> due to timeout.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using {appName} App.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
         });
     });
     
