@@ -47,20 +47,16 @@ import {
 import {
     IsInStripeScriptProviderContextProvider,
 }                           from './states/isInStripeScriptProvider'
+import {
+    stripeEnabled,
+    clientId,
+    stripeCacheRef,
+}                           from './stripe-caches'
 
 // configs:
 import {
     checkoutConfigClient,
 }                           from '@/checkout.config.client'
-
-
-
-// utilities:
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-const stripeEnabled = checkoutConfigClient.payment.processors.stripe.enabled;
-const clientId      = process.env.NEXT_PUBLIC_STRIPE_ID ?? '';
-const stripePromise : Promise<Stripe|null> = (stripeEnabled && !!clientId) ? loadStripe(clientId) : Promise.resolve(null);
 
 
 
@@ -95,12 +91,31 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
     
     
     // states:
+    const [stripe, setStripe] = useState<Stripe|null>(() => stripeCacheRef.current);
     const [convertedAmount, setConvertedAmount] = useState<number|null|undefined>(undefined);
     
     
     
     // effects:
     const isMounted = useMountedFlag();
+    
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!stripeEnabled) return; // stripe is disabled => ignore
+        if (!clientId) return; // stripe's clientId is not configured => ignore
+        if (stripe) return; // already loaded => ignore
+        
+        
+        
+        // actions:
+        loadStripe(clientId)
+        .then((stripe) => {
+            stripeCacheRef.current = stripe;
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            setStripe(stripe);
+        })
+    }, [stripe]);
+    
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if ((productPriceParts === undefined) || (totalShippingCost === undefined)) {
@@ -135,9 +150,7 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
     
     // conditions:
     if (
-        !stripeEnabled
-        ||
-        !clientId
+        !stripe
         ||
         !checkoutConfigClient.payment.processors.stripe.supportedCurrencies.includes(currency) // the selected currency is not supported
         ||
@@ -160,6 +173,11 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
     // jsx:
     return (
         <ImplementedStripeScriptProvider
+            // stripe:
+            stripe={stripe}
+            
+            
+            
             // options:
             currency={currency}
             totalAmount={convertedAmount}
@@ -169,6 +187,11 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
     );
 }
 interface ImplementedStripeScriptProviderProps {
+    // stripe:
+    stripe      : Stripe
+    
+    
+    
     // options:
     currency    : string
     totalAmount : number
@@ -181,6 +204,11 @@ interface ImplementedStripeScriptProviderProps {
 const ImplementedStripeScriptProvider = (props: ImplementedStripeScriptProviderProps) => {
     // props:
     const {
+        // stripe:
+        stripe,
+        
+        
+        
         // options:
         currency,
         totalAmount,
@@ -206,7 +234,7 @@ const ImplementedStripeScriptProvider = (props: ImplementedStripeScriptProviderP
     // jsx:
     return (
         <Elements
-            stripe={stripePromise}
+            stripe={stripe}
             options={stripeOptions}
         >
             <IsInStripeScriptProviderContextProvider>
