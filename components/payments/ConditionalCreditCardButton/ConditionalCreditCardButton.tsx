@@ -632,7 +632,7 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     
     
     // handlers:
-    const handlePayButtonClick   = useEvent(async () => {
+    const handlePayButtonClick   = useEvent(() => {
         startTransaction({
             // handlers:
             doPlaceOrder         : doPlaceOrder,   // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
