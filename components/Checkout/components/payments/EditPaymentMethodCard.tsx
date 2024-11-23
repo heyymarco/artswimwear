@@ -99,10 +99,10 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 </p>
             </div>
             
-            <ConditionalCreditCardNumberEditor appropriatePaymentProcessors={appropriatePaymentProcessors} />
-            <ConditionalCreditCardNameEditor   appropriatePaymentProcessors={appropriatePaymentProcessors} />
-            <ConditionalCreditCardExpiryEditor appropriatePaymentProcessors={appropriatePaymentProcessors} />
-            <ConditionalCreditCardCvvEditor    appropriatePaymentProcessors={appropriatePaymentProcessors} />
+            <ConditionalCreditCardNumberEditor />
+            <ConditionalCreditCardNameEditor />
+            <ConditionalCreditCardExpiryEditor />
+            <ConditionalCreditCardCvvEditor />
             
             <hr className='horz1' />
             

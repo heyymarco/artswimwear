@@ -58,27 +58,10 @@ import {
     LabelHintsWithTooltip,
 }                           from '@/components/LabelHintsWithTooltip'
 
-// configs:
-import {
-    type checkoutConfigClient,
-}                           from '@/checkout.config.client'
-
 
 
 // react components:
-export interface ConditionalCreditCardNumberEditorProps {
-    // payment data:
-    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
-}
-const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEditorProps): JSX.Element|null => {
-    // props:
-    const {
-        // payment data:
-        appropriatePaymentProcessors,
-    } = props;
-    
-    
-    
+const ConditionalCreditCardNumberEditor = (): JSX.Element|null => {
     const styleSheets = useBaseCardFieldWrapperStyleSheet();
     
     
