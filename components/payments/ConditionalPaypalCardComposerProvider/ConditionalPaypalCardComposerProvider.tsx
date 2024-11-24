@@ -104,7 +104,7 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     
     // handlers:
     const handlePaymentInterfaceErrored  = useEvent((error: Record<string, unknown>) => {
-        signalApprovedOrderIdRef.current?.(null);
+        signalApprovedOrderIdRef.current?.(null); // payment failed
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
         try {
@@ -122,14 +122,14 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
             return orderId;
         }
         catch (fetchError: any) {
-            signalApprovedOrderIdRef.current?.(null);
+            signalApprovedOrderIdRef.current?.(null); // payment failed
             
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
             throw fetchError;
         } // try
     });
     const handlePaymentInterfaceApproved = useEvent((data: CardFieldsOnApproveData): void => {
-        signalApprovedOrderIdRef.current?.(data.orderID);
+        signalApprovedOrderIdRef.current?.(data.orderID); // paid => waiting for the payment to be captured on server side
     });
     
     
