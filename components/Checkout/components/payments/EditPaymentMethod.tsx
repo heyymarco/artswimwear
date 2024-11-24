@@ -474,6 +474,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodOtc
+                        // configs:
                         paymentSource='indomaret'
                         paymentInstruction={<>
                             <p>
@@ -513,6 +514,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodOtc
+                        // configs:
                         paymentSource='alfamart'
                         paymentInstruction={<>
                             <p>
@@ -552,6 +554,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodOtc
+                        // configs:
                         paymentSource='manual'
                         paymentInstruction={<>
                             <p>

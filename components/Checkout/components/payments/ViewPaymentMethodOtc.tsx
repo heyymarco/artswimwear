@@ -48,6 +48,7 @@ import {
 
 // react components:
 export interface ViewPaymentMethodOtcProps {
+    // configs:
     paymentSource      : Extract<PlaceOrderRequestOptions['paymentSource'],
         |'manual'
         |'indomaret'
@@ -60,6 +61,7 @@ export interface ViewPaymentMethodOtcProps {
 const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|null => {
     // props:
     const {
+        // configs:
         paymentSource,
         paymentInstruction,
         paymentButtonText,
