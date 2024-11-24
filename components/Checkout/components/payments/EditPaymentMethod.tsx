@@ -58,9 +58,6 @@ import {
 import {
     ViewPaymentMethodOtc,
 }                           from '../payments/ViewPaymentMethodOtc'
-import {
-    ViewPaymentMethodManual,
-}                           from '../payments/ViewPaymentMethodManual'
 
 // models:
 import type {
@@ -538,7 +535,10 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <ViewPaymentMethodManual />
+                    <ViewPaymentMethodOtc
+                        paymentSource='manual'
+                        storeName='Bank Transfer'
+                    />
                 </AccordionItem>}
             </ExclusiveAccordion>
         </>

@@ -48,7 +48,12 @@ import {
 
 // react components:
 export interface ViewPaymentMethodOtcProps {
-    paymentSource : PlaceOrderRequestOptions['paymentSource']
+    paymentSource : Extract<PlaceOrderRequestOptions['paymentSource'],
+        |'manual'
+        |'indomaret'
+        |'alfamart'
+        /* future otc_store goes here */
+    >
     storeName     : string
 }
 const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|null => {
@@ -90,27 +95,27 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                 const captcha = await showDialog<string>(
                     <CaptchaDialog />
                 );
-                if (!captcha) return false; // no captcha token => failed
+                if (!captcha) return false; // no captcha token => no need further action => aborted
                 
                 
                 
                 // createOrder:
-                return doPlaceOrder({ // will be immediately paid => no need further action
+                return doPlaceOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
                     paymentSource : paymentSource,
                     captcha       : captcha,
                 });
             },
             doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-                // this function should never called because the `doPlaceOrder({paymentSource: 'indomaret|alfamart'})` always returns `true` or throw `ErrorDeclined`
+                // this function should NEVER called because the `doPlaceOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
                 return AuthenticatedResult.FAILED;
             },
             
             
             
             // messages:
-            messageFailed        : null, // never denied
-            messageCanceled      : null, // never canceled
-            messageExpired       : null, // never expired
+            messageFailed        : null, // the payment NEVER rejected
+            messageCanceled      : null, // the payment NEVER canceled
+            messageExpired       : null, // the payment NEVER expired
             messageDeclined      : (errorMessage) => <>
                 <p>
                     Unable to make a transaction.
@@ -131,7 +136,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     return (
         <>
             <p>
-                Pay at <strong>{storeName} Store</strong>.
+                Pay {(paymentSource === 'manual') ? <>via <strong>{storeName}</strong></> : <>at <strong>{storeName} Store</strong></>}.
             </p>
             <p>
                 Click the button below. We will send <em>payment instructions</em> to your (billing) email.
@@ -159,7 +164,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                         // handlers:
                         onClick={handlePayWithOtc}
                     >
-                        Pay at {storeName} Store
+                        Pay {(paymentSource === 'manual') ? <>via {storeName}</> : <>at {storeName} Store</>}
                     </ButtonIcon>
                 }
             />
@@ -167,6 +172,6 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     );
 };
 export {
-    ViewPaymentMethodOtc,
-    ViewPaymentMethodOtc as default,
-};
+    ViewPaymentMethodOtc,            // named export for readibility
+    ViewPaymentMethodOtc as default, // default export to support React.lazy
+}
