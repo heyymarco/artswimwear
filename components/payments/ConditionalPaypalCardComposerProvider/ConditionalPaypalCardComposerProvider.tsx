@@ -108,12 +108,12 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
         try {
-            const placeOrderDetail = await doPlaceOrder();
-            if (placeOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+            const placeOrderDetailOrPaymentDetail = await doPlaceOrder();
+            if (!('orderId' in placeOrderDetailOrPaymentDetail)) throw Error('Oops, an error occured!'); // immediately paid => unexpected response (that should NOT be happened) => abort            
             
             
             
-            const rawOrderId = placeOrderDetail.orderId; // get the unfinished orderId
+            const rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // get the unfinished orderId
             const orderId = (
                 rawOrderId.startsWith('#PAYPAL_')
                 ? rawOrderId.slice(8) // remove prefix #PAYPAL_

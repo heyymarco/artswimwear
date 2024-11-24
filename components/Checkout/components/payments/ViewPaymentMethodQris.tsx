@@ -72,7 +72,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     const handlePayWithQris = useEvent(async (): Promise<void> => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : (): Promise<PlaceOrderDetail|true|false> => {
+            doPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // createOrder:
                 return doPlaceOrder({
                     paymentSource : 'midtransQris',

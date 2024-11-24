@@ -66,6 +66,13 @@ import {
     MessageError,
 }                           from '@/components/MessageError'
 
+// models:
+import {
+    // types:
+    type PaymentDetail,
+    type PlaceOrderDetail,
+}                           from '@/models'
+
 // internals:
 import {
     AuthenticatedResult,
@@ -147,49 +154,33 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         // actions:
         setIsLoaded(LoadedState.Errored);
-        signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
     });
     const handleReload  = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
         setGeneration((current) => (current + 1));
     });
     
-    const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
-    const handlePaymentInterfaceStart    = useEvent<PayPalButtonCreateOrder>(async (data, actions): Promise<string> => {
-        const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = ((): ReturnType<typeof Promise.withResolvers<string>> => { // Promise.withResolvers<string>();
-            let resolve : ReturnType<typeof Promise.withResolvers<string>>['resolve'];
-            let reject  : ReturnType<typeof Promise.withResolvers<string>>['reject' ];
-            const promise = new Promise<string>((res, rej) => {
-                resolve = res;
-                reject  = rej;
-            });
-            return { promise, resolve: resolve!, reject: reject! };
-        })();
+    const signalAuthenticatedOrPaidRef = useRef<((authenticatedResult: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
+    const handlePaymentInterfaceStart  = useEvent<PayPalButtonCreateOrder>(async (data, actions): Promise<string> => {
+        const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = Promise.withResolvers<string>();
         
-        const {promise: promiseAuthenticate , resolve: resolveAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
-            let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
-            let reject  : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['reject' ];
-            const promise = new Promise<AuthenticatedResult>((res, rej) => {
-                resolve = res;
-                reject  = rej;
-            });
-            return { promise, resolve: resolve!, reject: reject! };
-        })();
-        signalAuthenticatedRef.current = (authenticatedResult: AuthenticatedResult): void => {
-            resolveAuthenticate(authenticatedResult);   // invoke the origin_resolver
-            signalAuthenticatedRef.current = undefined; // now it's resolved => unref the proxy_resolver
+        const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
+        signalAuthenticatedOrPaidRef.current = (authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail): void => {
+            resolveAuthenticatedOrPaid(authenticatedResultOrPaymentDetail); // invoke the origin_resolver
+            signalAuthenticatedOrPaidRef.current = undefined; // now it's resolved => unref the proxy_resolver
         };
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async () => {
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 try {
-                    const placeOrderDetail = await doPlaceOrder(data);
-                    if (placeOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+                    const placeOrderDetailOrPaymentDetail = await doPlaceOrder(data);
+                    if (!('orderId' in placeOrderDetailOrPaymentDetail)) return false; // immediately paid => unexpected response (that should NOT be happened) => abort
                     
                     
                     
-                    const rawOrderId = placeOrderDetail.orderId; // get the DraftOrder's id
+                    const rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // get the DraftOrder's id
                     const orderId = (
                         rawOrderId.startsWith('#PAYPAL_')
                         ? rawOrderId.slice(8) // remove prefix #PAYPAL_
@@ -199,16 +190,16 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     
                     
-                    return placeOrderDetail; // a DraftOrder has been created
+                    return placeOrderDetailOrPaymentDetail; // a DraftOrder has been created
                 }
                 catch (fetchError: any) { // intercepts the exception
                     // DEL: if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-                    rejectPaypalOrderId(fetchError);                 // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
-                    resolveAuthenticate(AuthenticatedResult.FAILED); // the authentication  is FAILED         because an exception was thrown during DraftOrder creation
+                    rejectPaypalOrderId(fetchError); // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // the authentication is FAILED because an exception was thrown during DraftOrder creation
                     throw fetchError; // re-throw the exception
                 } // try
             },
-            doAuthenticate       : () => promiseAuthenticate,
+            doAuthenticate       : () => promiseAuthenticatedOrPaid,
             
             
             
@@ -247,7 +238,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             </>,
         })
         .finally(async () => {
-            signalAuthenticatedRef.current = undefined; // un-ref
+            signalAuthenticatedOrPaidRef.current = undefined; // un-ref
             
             
             
@@ -264,14 +255,14 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         return paypalOrderId;
     });
     const handlePaymentInterfaceAbort    = useEvent<PayPalButtonOnCancel>((data, actions): void => {
-        signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED);
     });
     const handlePaymentInterfaceApproved = useEvent<PayPalButtonOnApprove>(async (paypalAuthentication, actions): Promise<void> => {
         setIsProcessing(true);
         
         
         
-        signalAuthenticatedRef.current?.(AuthenticatedResult.AUTHORIZED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED);
     });
     const handleShippingAddressChange    = useEvent<PayPalButtonOnShippingAddressChange>(async (data, actions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:

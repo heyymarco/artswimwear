@@ -85,12 +85,12 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     const handlePayWithOtc = useEvent(async (): Promise<void> => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : async (): Promise<PlaceOrderDetail|true|false> => {
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // conditions:
                 const captcha = await showDialog<string>(
                     <CaptchaDialog />
                 );
-                if (!captcha) return false;
+                if (!captcha) return false; // no captcha token => failed
                 
                 
                 

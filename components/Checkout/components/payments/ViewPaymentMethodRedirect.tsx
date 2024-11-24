@@ -85,7 +85,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     const handlePayWithRedirect  = useEvent(async (): Promise<void> => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : (): Promise<PlaceOrderDetail|true|false> => {
+            doPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // createOrder:
                 return doPlaceOrder({
                     paymentSource : paymentSource,

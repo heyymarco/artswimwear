@@ -70,6 +70,7 @@ import {
 // models:
 import {
     // types:
+    type PaymentDetail,
     type PlaceOrderDetail,
 }                           from '@/models'
 
@@ -200,43 +201,30 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const handleErrored = useEvent((): void => {
         // actions:
         setIsLoaded(LoadedState.Errored);
-        signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
     });
     const handleReload  = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
         setGeneration((current) => (current + 1));
     });
     
-    const stripe                         = useStripe();
-    const elements                       = useElements();
+    const stripe                                   = useStripe();
+    const elements                                 = useElements();
     
-    const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
-    const throwAuthenticatedRef          = useRef<((error: unknown) => void)|undefined>(undefined);
-    const placeOrderDetailRef            = useRef<PlaceOrderDetail|undefined>(undefined);
-    const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
-        const {promise: promiseAuthenticate , resolve: resolveAuthenticate, reject: rejectAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
-            let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
-            let reject  : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['reject' ];
-            const promise = new Promise<AuthenticatedResult>((res, rej) => {
-                resolve = res;
-                reject  = rej;
-            });
-            return { promise, resolve: resolve!, reject: reject! };
-        })();
-        signalAuthenticatedRef.current = (authenticatedResult: AuthenticatedResult): void => {
-            resolveAuthenticate(authenticatedResult);   // invoke the origin_resolver
-            signalAuthenticatedRef.current = undefined; // now it's resolved => unref the proxy_resolver
-        };
-        throwAuthenticatedRef.current = (error: unknown): void => {
-            rejectAuthenticate(error);
-            throwAuthenticatedRef.current = undefined; // now it's thrown => unref the proxy_resolver
+    const signalAuthenticatedOrPaidRef = useRef<((authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
+    const placeOrderDetailRef          = useRef<PlaceOrderDetail|undefined>(undefined);
+    const handlePaymentInterfaceStart  = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
+        const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
+        signalAuthenticatedOrPaidRef.current = (authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail): void => {
+            resolveAuthenticatedOrPaid(authenticatedResultOrPaymentDetail); // invoke the origin_resolver
+            signalAuthenticatedOrPaidRef.current = undefined; // now it's resolved => unref the proxy_resolver
         };
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async () => { // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (!stripe)   throw Error('Oops, an error occured!');
-                if (!elements) throw Error('Oops, an error occured!');
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => { // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                if (!stripe)   return false; // unexpected error => abort
+                if (!elements) return false; // unexpected error => abort
                 
                 
                 
@@ -280,10 +268,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     orderId : '', // empty string, will be updated later on `doAuthenticate()`
                 } as PlaceOrderDetail;
             },
-            doAuthenticate       : (placeOrderDetail) => {
+            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
                 placeOrderDetailRef.current = placeOrderDetail; // de-ref
                 
-                return promiseAuthenticate;
+                return promiseAuthenticatedOrPaid;
             },
             
             
@@ -323,10 +311,9 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             </>,
         })
         .finally(async () => {
-            placeOrderDetailRef.current    = undefined; // un-ref
+            placeOrderDetailRef.current          = undefined; // un-ref
             
-            signalAuthenticatedRef.current = undefined; // un-ref
-            throwAuthenticatedRef.current  = undefined; // un-ref
+            signalAuthenticatedOrPaidRef.current = undefined; // un-ref
             
             
             
@@ -339,12 +326,14 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         });
     });
     const handlePaymentInterfaceAbort    = useEvent((event): void => {
-        signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED);
     });
     const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
         try {
-            if (!stripe)   throw Error('Oops, an error occured!');
-            if (!elements) throw Error('Oops, an error occured!');
+            if (!stripe || !elements) {
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected error => abort
+                return;
+            } // if
             setIsProcessing(true);
             
             
@@ -358,7 +347,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     TODO: sample error
                 */
                 
-                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
                 return;
             } // if
             
@@ -392,35 +381,35 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     TODO: sample error
                 */
                 
-                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
                 return;
             } // if
             const confirmationToken = confirmationTokenObject.id;
             
             
             
-            const placeOrderDetail = await doPlaceOrder({
+            const placeOrderDetailOrPaymentDetail = await doPlaceOrder({
                 paymentSource  : 'stripeExpress',
                 cardToken      : confirmationToken,
             });
-            if (placeOrderDetail === true) { // immediately paid => no need further action
-                signalAuthenticatedRef.current?.(AuthenticatedResult.CAPTURED);
+            if (!('orderId' in placeOrderDetailOrPaymentDetail)) { // immediately paid => no need further action
+                signalAuthenticatedOrPaidRef.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail);
                 return;
             } // if
             
             
             
             const oldPlaceOrderDetail = placeOrderDetailRef.current;
-            if (oldPlaceOrderDetail) oldPlaceOrderDetail.orderId = placeOrderDetail.orderId;
+            if (oldPlaceOrderDetail) oldPlaceOrderDetail.orderId = placeOrderDetailOrPaymentDetail.orderId;
             
             
             
-            const clientSecret = placeOrderDetail.redirectData;
+            const clientSecret = placeOrderDetailOrPaymentDetail.redirectData;
             if (clientSecret === undefined) {
-                signalAuthenticatedRef.current?.(
-                    !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
-                    ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                    : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+                signalAuthenticatedOrPaidRef.current?.(
+                    !placeOrderDetailOrPaymentDetail.orderId // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+                    ? AuthenticatedResult.CAPTURED           // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
+                    : AuthenticatedResult.AUTHORIZED         // will be manually capture on server_side
                 );
                 return;
             } // if
@@ -434,31 +423,24 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 the code below is actually never be called because the webpage is redirected to amazon's website
             */
             if (result.error || !result.paymentIntent) {
-                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
                 return;
             } // if
             switch (result.paymentIntent.status) {
-                case 'requires_capture' : {
-                    signalAuthenticatedRef.current?.(
-                        AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
-                    );
-                    return;
-                }
+                case 'requires_capture':
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually capture on server_side
+                    break;
                 
                 
                 
-                case 'succeeded'        : {
-                    signalAuthenticatedRef.current?.(
-                        AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                    );
-                    return;
-                }
+                case 'succeeded':
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CAPTURED); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                    break;
                 
                 
                 
-                default : {
-                    throw Error('Oops, an error occured!');
-                }
+                default:
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected response
             } // switch
             
             
@@ -485,7 +467,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 },
                 redirect               : 'if_required', // do not redirect for non_redirect_based payment
             });
-            signalAuthenticatedRef.current?.(
+            signalAuthenticatedOrPaidRef.current?.(
                 result.error
                 ? AuthenticatedResult.FAILED
                 : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page // TODO: display confirmed payment
@@ -493,7 +475,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             */
         }
         catch (error: any) {
-            throwAuthenticatedRef.current?.(error);
+            signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected error
         } // try
     });
     

@@ -238,7 +238,7 @@ export const enum AuthenticatedResult {
 }
 export interface StartTransactionArg {
     // handlers:
-    doPlaceOrder          : () => Promise<PlaceOrderDetail|true|false>
+    doPlaceOrder          : () => Promise<PlaceOrderDetail|PaymentDetail|false>
     doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
     
     
@@ -343,7 +343,7 @@ export interface CheckoutStateBase
     gotoFinished                 : (paymentDetail: PaymentDetail, paid: boolean) => void
     
     startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
-    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|true>
+    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
     
     refetchCheckout              : () => void
 }
@@ -1616,17 +1616,23 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return await doTransaction(async (): Promise<void> => {
             try {
                 // createOrder:
-                const placeOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (placeOrderDetail === false) return; // aborted (maybe due to validation error) => no need further action
-                if (placeOrderDetail === true ) return; // immediately paid => no need further action
+                const placeOrderDetailOrPaymentDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                if (placeOrderDetailOrPaymentDetail === false) return; // aborted (maybe due to validation error) => no need further action
                 
                 
                 
-                let rawOrderId = placeOrderDetail.orderId;
+                if (!('orderId' in placeOrderDetailOrPaymentDetail)) { // immediately paid => no need further action
+                    gotoFinished(placeOrderDetailOrPaymentDetail satisfies PaymentDetail, /*paid:*/(placeOrderDetailOrPaymentDetail.type !== 'MANUAL'));
+                    return; // paid
+                } // if
+                
+                
+                
+                let rawOrderId = placeOrderDetailOrPaymentDetail.orderId;
                 let authenticatedResultOrPaymentDetail : AuthenticatedResult|PaymentDetail;
                 try {
-                    authenticatedResultOrPaymentDetail = await doAuthenticate(placeOrderDetail);
-                    rawOrderId = placeOrderDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
+                    authenticatedResultOrPaymentDetail = await doAuthenticate(placeOrderDetailOrPaymentDetail);
+                    rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
@@ -1781,9 +1787,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|true> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         try {
-            const placeOrderDetailOrPaymentDetail = await dispatch(placeOrder({
+            return await dispatch(placeOrder({
                 // currency options:
                 currency, // informs the customer's currency, so we know the selected currency when he/she made an order
                 
@@ -1827,16 +1833,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
             })).unwrap();
-            
-            
-            
-            if (!('orderId' in placeOrderDetailOrPaymentDetail)) {
-                gotoFinished(placeOrderDetailOrPaymentDetail, /*paid:*/(placeOrderDetailOrPaymentDetail.type !== 'MANUAL')); // buggy
-                return true; // paid
-            }
-            else {
-                return placeOrderDetailOrPaymentDetail;
-            } // if
         }
         catch (fetchError: any) {
             await trimProductsFromCart(fetchError?.data?.limitedStockItems, {

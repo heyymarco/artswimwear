@@ -64,6 +64,7 @@ import {
 // models:
 import {
     // types:
+    type PaymentDetail,
     type PlaceOrderDetail,
 }                           from '@/models'
 
@@ -130,13 +131,13 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         cardFieldsForm,
     } = usePayPalCardFields();
     
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|false> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
-        if (!cardFieldsForm)        throw Error('Oops, an error occured!');
+        if (!cardFieldsForm)        return false; // unexpected error => abort
         // const paymentCardSectionElm = paymentCardSectionRef?.current;
         const paypalDoPlaceOrder    = cardFieldsForm.submit;
-        // if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
-        if (!paypalDoPlaceOrder)    throw Error('Oops, an error occured!');
+        // if (!paymentCardSectionElm) return false; // unexpected error => abort
+        if (!paypalDoPlaceOrder)    return false; // unexpected error => abort
         
         
         
@@ -147,7 +148,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         // submit card data to Paypal_API to get authentication:
-        const { promise: approvedOrderIdPromise, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
+        const { promise: promiseApprovedOrderId, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
         signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {
             await paypalDoPlaceOrder(); // triggers <PayPalCardFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
@@ -159,7 +160,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
-        const rawOrderId = await approvedOrderIdPromise;
+        const rawOrderId = await promiseApprovedOrderId;
         signalApprovedOrderIdRef.current = null;
         if (rawOrderId === null) return false; // if was error => abort
         const orderId = (
@@ -172,7 +173,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
             redirectData : undefined,
         } satisfies PlaceOrderDetail;
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         return AuthenticatedResult.AUTHORIZED;
     });
     
@@ -219,11 +220,11 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
     const stripe   = useStripe();
     const elements = useElements();
     
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|true> => {
-        if (!stripe)            throw Error('Oops, an error occured!');
-        if (!elements)          throw Error('Oops, an error occured!');
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+        if (!stripe)            return false; // unexpected error => abort
+        if (!elements)          return false; // unexpected error => abort
         const cardNumberElement = elements.getElement('cardNumber');
-        if (!cardNumberElement) throw Error('Oops, an error occured!');
+        if (!cardNumberElement) return false; // unexpected error => abort
         
         
         
@@ -269,9 +270,9 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             cardToken      : paymentMethod.id,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
-        if (!stripe)   throw Error('Oops, an error occured!');
-        if (!elements) throw Error('Oops, an error occured!');
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+        if (!stripe)   return AuthenticatedResult.FAILED; // unexpected error => abort
+        if (!elements) return AuthenticatedResult.FAILED; // unexpected error => abort
         
         
         
@@ -290,25 +291,13 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             });
             if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED;
             switch (result.paymentIntent.status) {
-                case 'requires_capture' : {
-                    return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
-                }
-                
-                
-                
-                case 'succeeded'        : {
-                    return AuthenticatedResult.CAPTURED; // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                }
-                
-                
-                
-                default : {
-                    throw Error('Oops, an error occured!');
-                }
+                case 'requires_capture' : return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
+                case 'succeeded'        : return AuthenticatedResult.CAPTURED;   // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                default                 : return AuthenticatedResult.FAILED;     // unexpected response
             } // switch
         }
         catch {
-            throw Error('Oops, an error occured!');
+            return AuthenticatedResult.FAILED; // unexpected error
         } // try
     });
     
@@ -351,9 +340,9 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|true> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
-        if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
+        if (!paymentCardSectionElm) return false; // unexpected error => abort
         
         
         
@@ -386,13 +375,13 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         const redirectData = placeOrderDetail.redirectData;
-        if (redirectData === undefined) throw Error('Oops, an error occured!');
+        if (redirectData === undefined) return AuthenticatedResult.FAILED; // unexpected error => abort
         
         
         
-        return new Promise<AuthenticatedResult>((resolve) => {
+        return new Promise<AuthenticatedResult|PaymentDetail>((resolve) => {
             try {
                 const MidtransNew3ds = (window as any).MidtransNew3ds;
                 MidtransNew3ds.authenticate(redirectData, {
@@ -489,7 +478,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                             
                             
                             default:
-                                throw Error('Oops, an error occured!');
+                                modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui'); // unexpected response
                         } // switch
                     },
                     onFailure: function(response: any){
@@ -557,7 +546,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                 });
             }
             catch {
-                throw Error('Oops, an error occured!');
+                modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui'); // unexpected error
             } // try
         });
     });
