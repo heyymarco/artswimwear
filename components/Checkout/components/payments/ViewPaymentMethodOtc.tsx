@@ -136,7 +136,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     return (
         <>
             <p>
-                Pay {(paymentSource === 'manual') ? <>via <strong>{storeName}</strong></> : <>at <strong>{storeName} Store</strong></>}.
+                Pay via <strong>{storeName}</strong>.
             </p>
             <p>
                 Click the button below. We will send <em>payment instructions</em> to your (billing) email.
@@ -164,7 +164,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                         // handlers:
                         onClick={handlePayWithOtc}
                     >
-                        Pay {(paymentSource === 'manual') ? <>via {storeName}</> : <>at {storeName} Store</>}
+                        Pay via {storeName}
                     </ButtonIcon>
                 }
             />

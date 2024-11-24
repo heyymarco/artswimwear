@@ -475,7 +475,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         paymentSource='indomaret'
-                        storeName='Indomaret'
+                        storeName='Indomaret Store'
                     />
                 </AccordionItem>}
                 
@@ -506,7 +506,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         paymentSource='alfamart'
-                        storeName='Alfamart'
+                        storeName='Alfamart Store'
                     />
                 </AccordionItem>}
                 
