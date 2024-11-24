@@ -103,7 +103,7 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     
     
     // handlers:
-    const handlePaymentInterfaceErrored  = useEvent((error: Record<string, unknown>) => {
+    const handlePaymentInterfaceErrored  = useEvent((error: Record<string, unknown>): void => {
         signalApprovedOrderIdRef.current?.(null); // payment failed
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
