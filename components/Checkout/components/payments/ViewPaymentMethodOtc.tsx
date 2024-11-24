@@ -48,19 +48,21 @@ import {
 
 // react components:
 export interface ViewPaymentMethodOtcProps {
-    paymentSource : Extract<PlaceOrderRequestOptions['paymentSource'],
+    paymentSource      : Extract<PlaceOrderRequestOptions['paymentSource'],
         |'manual'
         |'indomaret'
         |'alfamart'
         /* future otc_store goes here */
     >
-    storeName     : string
+    paymentInstruction : React.ReactNode
+    paymentButtonText  : React.ReactNode
 }
 const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|null => {
     // props:
     const {
         paymentSource,
-        storeName,
+        paymentInstruction,
+        paymentButtonText,
     } = props;
     
     
@@ -135,12 +137,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     // jsx:
     return (
         <>
-            <p>
-                Pay via <strong>{storeName}</strong>.
-            </p>
-            <p>
-                Click the button below. We will send <em>payment instructions</em> to your (billing) email.
-            </p>
+            {paymentInstruction}
             
             <ButtonWithBusy
                 // components:
@@ -164,7 +161,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                         // handlers:
                         onClick={handlePayWithOtc}
                     >
-                        Pay via {storeName}
+                        {paymentButtonText}
                     </ButtonIcon>
                 }
             />

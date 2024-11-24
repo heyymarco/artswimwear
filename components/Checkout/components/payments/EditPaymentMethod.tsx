@@ -475,7 +475,15 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         paymentSource='indomaret'
-                        storeName='Indomaret Store'
+                        paymentInstruction={<>
+                            <p>
+                                Pay at <strong>Indomaret Store</strong>.
+                            </p>
+                            <p>
+                                Click the button below. We will send <em>payment instructions</em> to your (billing) email.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay at Indomaret Store'
                     />
                 </AccordionItem>}
                 
@@ -506,7 +514,15 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         paymentSource='alfamart'
-                        storeName='Alfamart Store'
+                        paymentInstruction={<>
+                            <p>
+                                Pay at <strong>Alfamart Store</strong>.
+                            </p>
+                            <p>
+                                Click the button below. We will send <em>payment instructions</em> to your (billing) email.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay at Alfamart Store'
                     />
                 </AccordionItem>}
                 
@@ -537,7 +553,15 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         paymentSource='manual'
-                        storeName='Bank Transfer'
+                        paymentInstruction={<>
+                            <p>
+                                Pay by <strong>bank transfer</strong>.
+                            </p>
+                            <p>
+                                Click the button below. We will send <em>payment instructions</em> to your (billing) email.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay by Bank Transfer'
                     />
                 </AccordionItem>}
             </ExclusiveAccordion>
