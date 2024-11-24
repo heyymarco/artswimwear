@@ -51,8 +51,6 @@ import {
 }                           from '../payments/EditPaymentMethodCard'
 import {
     ViewPaymentMethodQris,
-}                           from '../payments/ViewPaymentMethodQris'
-import {
     ViewPaymentMethodRedirect,
 }                           from '../payments/ViewPaymentMethodRedirect'
 import {
@@ -383,7 +381,17 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <ViewPaymentMethodQris />
+                    <ViewPaymentMethodQris
+                        paymentSource='midtransQris'
+                        appName='QRIS'
+                        paymentInstruction={<>
+                            <p>
+                                Click the button below. You will be shown a <strong>QRIS code</strong> to scan the payment.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay with QRIS'
+                        paymentButtonIcon='qr_code_scanners'
+                    />
                 </AccordionItem>}
                 
                 {isPaymentAvailableMidtrans   && <AccordionItem
@@ -413,7 +421,13 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodRedirect
                         paymentSource='gopay'
-                        appName='GoPay'
+                        appName='GoPay App'
+                        paymentInstruction={<>
+                            <p>
+                                Click the button below. You will be redirected to <strong>GoPay App</strong> to process the payment.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay with GoPay'
                     />
                 </AccordionItem>}
                 
@@ -444,7 +458,13 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodRedirect
                         paymentSource='shopeepay'
-                        appName='ShopeePay'
+                        appName='ShopeePay App'
+                        paymentInstruction={<>
+                            <p>
+                                Click the button below. You will be redirected to <strong>ShopeePay App</strong> to process the payment.
+                            </p>
+                        </>}
+                        paymentButtonText='Pay with ShopeePay'
                     />
                 </AccordionItem>}
                 

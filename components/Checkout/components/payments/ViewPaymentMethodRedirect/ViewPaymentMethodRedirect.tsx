@@ -15,7 +15,13 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
+    type ButtonIconProps,
     ButtonIcon,
+    
+    
+    
+    // dialog-components:
+    type ModalExpandedChangeEvent,
     
     
     
@@ -26,16 +32,7 @@ import {
 // internal components:
 import {
     ButtonWithBusy,
-}                           from '../ButtonWithBusy'
-import {
-    RedirectDialog,
-}                           from '@/components/dialogs/RedirectDialog'
-
-// internals:
-import {
-    AuthenticatedResult,
-    useCheckoutState,
-}                           from '../../states/checkoutState'
+}                           from '../../ButtonWithBusy'
 
 // models:
 import {
@@ -44,18 +41,52 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
+// internals:
+import {
+    AuthenticatedResult,
+    useCheckoutState,
+}                           from '../../../states/checkoutState'
+import {
+    type BaseRedirectDialogProps,
+}                           from './types'
+import {
+    defaultRedirectDialogComponent,
+}                           from './defaults'
+
 
 
 // react components:
 export interface ViewPaymentMethodRedirectProps {
-    paymentSource : PlaceOrderRequestOptions['paymentSource']
-    appName       : string
+    paymentSource            : Extract<PlaceOrderRequestOptions['paymentSource'],
+        |'gopay'
+        |'shopeepay'
+        |'midtransQris'
+    >
+    // configs:
+    appName                  : string
+    paymentInstruction       : React.ReactNode
+    paymentButtonText        : React.ReactNode
+    paymentButtonIcon       ?: ButtonIconProps['icon']
+    
+    
+    
+    // components:
+    redirectDialogComponent ?: React.ReactElement<BaseRedirectDialogProps<Element, ModalExpandedChangeEvent<PaymentDetail|false|0>>>
 }
 const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.Element|null => {
     // props:
     const {
+        // configs:
         paymentSource,
         appName,
+        paymentInstruction,
+        paymentButtonText,
+        paymentButtonIcon = 'shopping_bag',
+        
+        
+        
+        // components:
+        redirectDialogComponent = defaultRedirectDialogComponent,
     } = props;
     
     
@@ -97,20 +128,31 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                 
                 
                 
-                const redirectResult = await showDialog<PaymentDetail|false>(
-                    <RedirectDialog
-                        // accessibilities:
-                        title={`Redirecting to ${appName} App`}
-                        
-                        
-                        
-                        // resources:
-                        appName={appName}
-                        redirectUrl={redirectData}
-                        paymentId={placeOrderDetail.orderId}
-                    />
+                let expires = placeOrderDetail.expires;
+                if (typeof(expires) === 'string') expires = new Date(Date.parse(expires));
+                
+                
+                
+                const redirectResult = await showDialog<PaymentDetail|false|0>(
+                    React.cloneElement<BaseRedirectDialogProps<Element, ModalExpandedChangeEvent<PaymentDetail|false|0>>>(redirectDialogComponent,
+                        // props:
+                        {
+                            // data:
+                            placeOrderDetail : {
+                                ...placeOrderDetail,
+                                redirectData,
+                                expires,
+                            },
+                            
+                            
+                            
+                            // accessibilities:
+                            appName,
+                        },
+                    )
                 );
                 switch (redirectResult) {
+                    case 0         : return AuthenticatedResult.EXPIRED;
                     case undefined : return AuthenticatedResult.CANCELED;
                     case false     : return AuthenticatedResult.FAILED;
                 } // switch
@@ -149,7 +191,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
             </>,
             messageDeclined      : (errorMessage) => <>
                 <p>
-                    Unable to make a transaction using {appName} App.
+                    Unable to make a transaction using {appName}.
                 </p>
                 {!!errorMessage && <p>
                     {errorMessage}
@@ -166,16 +208,14 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     // jsx:
     return (
         <>
-            <p>
-                Click the button below. You will be redirected to <strong>{appName} App</strong> to process the payment.
-            </p>
+            {paymentInstruction}
             
             <ButtonWithBusy
                 // components:
                 buttonComponent={
                     <ButtonIcon
                         // appearances:
-                        icon='shopping_bag'
+                        icon={paymentButtonIcon}
                         
                         
                         
@@ -192,7 +232,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                         // handlers:
                         onClick={handlePayWithRedirect}
                     >
-                        Pay with {appName}
+                        {paymentButtonText}
                     </ButtonIcon>
                 }
             />
@@ -200,6 +240,6 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     );
 };
 export {
-    ViewPaymentMethodRedirect,
-    ViewPaymentMethodRedirect as default,
-};
+    ViewPaymentMethodRedirect,            // named export for readibility
+    ViewPaymentMethodRedirect as default, // default export to support React.lazy
+}

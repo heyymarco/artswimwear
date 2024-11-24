@@ -53,6 +53,9 @@ import {
 import {
     CountDown,
 }                           from './CountDown'
+import {
+    type BaseRedirectDialogProps,
+}                           from '@/components/Checkout/components/payments/ViewPaymentMethodRedirect/types'
 
 // internals:
 import {
@@ -78,36 +81,29 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
             // children:
             |'children'        // already taken over
-        >
+        >,
+        BaseRedirectDialogProps<TElement, TModalExpandedChangeEvent>
 {
-    // accessibilities:
-    title     ?: string
-    
-    
-    
-    // resources:
-    data       : string
-    expires   ?: Date
-    paymentId  : string
 }
 const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false|0> = ModalExpandedChangeEvent<PaymentDetail|false|0>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
+        // data:
+        placeOrderDetail,
+        
+        
+        
         // accessibilities:
-        title,
-        
-        
-        
-        // resources:
-        data,
-        expires,
-        paymentId,
+        appName,
         
         
         
         // other props:
         ...restQrisDialogProps
     } = props;
+    const qrisData    = placeOrderDetail.redirectData;
+    const paymentId   = placeOrderDetail.orderId;
+    const expires     = placeOrderDetail.expires;
     
     
     
@@ -216,7 +212,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     // data:
     const [svgString, setSvgString] = useState<React.ReactNode>(null);
     useIsomorphicLayoutEffect(() => {
-        QrCode.toString(data, (error, str) => {
+        QrCode.toString(qrisData, (error, str) => {
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             
             
@@ -231,7 +227,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             setSvgString(str);
             handleLoaded();
         });
-    }, [data, generation]);
+    }, [qrisData, generation]);
     
     
     
@@ -306,7 +302,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             modalCardStyle = {modalCardStyle}
         >
             <CardHeader>
-                {!!title && <h1>{title}</h1>}
+                <h1>Pay With {appName}</h1>
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>

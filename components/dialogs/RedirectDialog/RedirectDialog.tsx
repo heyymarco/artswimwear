@@ -50,6 +50,9 @@ import {
 import {
     ErrorBlankSection,
 }                           from '@/components/BlankSection'
+import {
+    type BaseRedirectDialogProps,
+}                           from '@/components/Checkout/components/payments/ViewPaymentMethodRedirect/types'
 
 // internals:
 import {
@@ -64,42 +67,34 @@ import type {
 
 
 // react components:
-export interface RedirectDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>
+export interface RedirectDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false|0> = ModalExpandedChangeEvent<PaymentDetail|false|0>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
             // children:
             |'children'        // already taken over
-        >
+        >,
+        BaseRedirectDialogProps<TElement, TModalExpandedChangeEvent>
 {
-    // accessibilities:
-    title      ?: string
-    
-    
-    
-    // resources:
-    appName     : string
-    redirectUrl : string
-    paymentId   : string
 }
-const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>(props: RedirectDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false|0> = ModalExpandedChangeEvent<PaymentDetail|false|0>>(props: RedirectDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
+        // data:
+        placeOrderDetail,
+        
+        
+        
         // accessibilities:
-        title,
-        
-        
-        
-        // resources:
         appName,
-        redirectUrl,
-        paymentId,
         
         
         
         // other props:
         ...restRedirectDialogProps
     } = props;
+    const redirectUrl = placeOrderDetail.redirectData;
+    const paymentId   = placeOrderDetail.orderId;
     
     
     
@@ -290,7 +285,7 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
             modalCardStyle = {modalCardStyle}
         >
             <CardHeader>
-                {!!title && <h1>{title}</h1>}
+                <h1>Redirecting to {appName}</h1>
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>
@@ -312,7 +307,7 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                             href={redirectUrl}
                             target='_blank'
                         >
-                            {appName} App
+                            {appName}
                         </ButtonIcon><br />
                         <small>
                             Click the link above if you are not automatically redirected within 5 seconds.
