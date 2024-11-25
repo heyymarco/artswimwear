@@ -1,5 +1,13 @@
 'use client'
 
+// styles:
+import {
+    useViewExpressCheckoutStyleSheet,
+}                           from './styles/loader'
+import {
+    paypalButtonStyle,
+}                           from './styles'
+
 // react:
 import {
     // react:
@@ -47,15 +55,14 @@ import {
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
-import type {
-    PayPalButtonsComponentOptions,
-    PayPalButtonOnInit,
-    PayPalButtonOnError,
-    PayPalButtonCreateOrder,
-    PayPalButtonOnCancel,
-    PayPalButtonOnApprove,
-    PayPalButtonOnShippingAddressChange,
-    PayPalButtonOnShippingOptionsChange,
+import {
+    type PayPalButtonOnInit,
+    type PayPalButtonOnError,
+    type PayPalButtonCreateOrder,
+    type PayPalButtonOnCancel,
+    type PayPalButtonOnApprove,
+    type PayPalButtonOnShippingAddressChange,
+    type PayPalButtonOnShippingOptionsChange,
 }                           from '@paypal/paypal-js'
 import {
     PayPalButtons,
@@ -78,18 +85,6 @@ import {
     AuthenticatedResult,
     useCheckoutState,
 }                           from '../../../states/checkoutState'
-
-// styles:
-import {
-    useViewExpressCheckoutStyleSheet,
-}                           from './styles/loader'
-
-
-
-// styles:
-const paypalButtonStyle : PayPalButtonsComponentOptions['style'] = {
-    height: 44,
-};
 
 
 
@@ -121,6 +116,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     // states:
+    const isMounted = useMountedFlag();
+    
     const enum LoadedState {
         Loading,
         Errored,
@@ -134,40 +131,35 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
-    
-    
-    // effects:
-    const isMounted = useMountedFlag();
+    const signalAuthenticatedOrPaidRef    = useRef<((authenticatedResult: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
     
     
     
     // handlers:
-    const handlePaymentInterfaceLoaded  = useEvent<PayPalButtonOnInit>((data, actions): void => {
+    const handlePaymentInterfaceLoaded   = useEvent<PayPalButtonOnInit>((data, actions): void => {
         setIsLoaded(LoadedState.FullyLoaded);
     });
-    const handlePaymentInterfaceErrored = useEvent<PayPalButtonOnError>((error): void => {
+    const handlePaymentInterfaceErrored  = useEvent<PayPalButtonOnError>((error): void => {
         /*
             Unable to delegate rendering. Possibly the component is not loaded in the target window.
             
             Error: No ack for postMessage zoid_delegate_paypal_checkout in https://www.sandbox.paypal.com in 10000ms
         */
         
-        // actions:
         setIsLoaded(LoadedState.Errored);
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to error
     });
-    const handleReload  = useEvent((): void => {
+    const handleReload                   = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
         setGeneration((current) => (current + 1));
     });
     
-    const signalAuthenticatedOrPaidRef = useRef<((authenticatedResult: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
-    const handlePaymentInterfaceStart  = useEvent<PayPalButtonCreateOrder>(async (data, actions): Promise<string> => {
+    const handlePaymentInterfaceStart    = useEvent<PayPalButtonCreateOrder>(async (data, actions): Promise<string> => {
         const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = Promise.withResolvers<string>();
         
         const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
-        signalAuthenticatedOrPaidRef.current = (authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail): void => {
-            resolveAuthenticatedOrPaid(authenticatedResultOrPaymentDetail); // invoke the origin_resolver
+        signalAuthenticatedOrPaidRef.current = (authenticatedOrPaid: AuthenticatedResult|PaymentDetail): void => { // deref the proxy_resolver
+            resolveAuthenticatedOrPaid(authenticatedOrPaid);  // invoke the origin_resolver
             signalAuthenticatedOrPaidRef.current = undefined; // now it's resolved => unref the proxy_resolver
         };
         
@@ -193,9 +185,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     return placeOrderDetailOrPaymentDetail; // a DraftOrder has been created
                 }
                 catch (fetchError: any) { // intercepts the exception
-                    // DEL: if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
                     rejectPaypalOrderId(fetchError); // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
-                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // the authentication is FAILED because an exception was thrown during DraftOrder creation
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to exception
                     throw fetchError; // re-throw the exception
                 } // try
             },
@@ -237,78 +228,82 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 </p>
             </>,
         })
-        .finally(async () => {
-            signalAuthenticatedOrPaidRef.current = undefined; // un-ref
+        .finally(async () => { // cleanups:
+            signalAuthenticatedOrPaidRef.current = undefined; // unref the proxy_resolver
             
             
             
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             await new Promise<void>((resolve) => {
-                setTimeout(resolve, 400); // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
+                setTimeout(resolve, 400);   // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
             });
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            setIsProcessing(false);
+            setIsProcessing(false);         // reset the processing status
         });
         
-        const paypalOrderId = await promisePaypalOrderId;
-        // console.log({paypalOrderId});
-        return paypalOrderId;
+        
+        
+        return promisePaypalOrderId;
     });
     const handlePaymentInterfaceAbort    = useEvent<PayPalButtonOnCancel>((data, actions): void => {
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED); // payment failed due to canceled by user
     });
     const handlePaymentInterfaceApproved = useEvent<PayPalButtonOnApprove>(async (paypalAuthentication, actions): Promise<void> => {
-        setIsProcessing(true);
+        setIsProcessing(true); // paid => waiting for the payment to be captured on server side
         
         
         
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // paid => waiting for the payment to be captured on server side
     });
     const handleShippingAddressChange    = useEvent<PayPalButtonOnShippingAddressChange>(async (data, actions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
         const shippingAddress = data.shippingAddress;
-        if (shippingAddress) {
-            // console.log('all fields', shippingAddress);
-            const shippingFieldMap = new Map<string, keyof Exclude<typeof checkoutState.shippingAddress, null> | undefined>([
-                ['countryCode'   , 'country'],
-                ['country_code'  , 'country'],
-                ['state'         , 'state'  ],
-                ['admin_area_1'  , 'state'  ],
-                ['city'          , 'city'   ],
-                ['admin_area_2'  , 'city'   ],
-                ['postalCode'    , 'zip'    ],
-                ['postal_code'   , 'zip'    ],
-                ['address_line_1', 'address'],
-                ['address_line_2', undefined],
-            ]);
+        if (!shippingAddress) return;
+        
+        
+        
+        // console.log('all fields', shippingAddress);
+        const shippingFieldMap = new Map<string, keyof Exclude<typeof checkoutState.shippingAddress, null> | undefined>([
+            ['countryCode'   , 'country'],
+            ['country_code'  , 'country'],
+            ['state'         , 'state'  ],
+            ['admin_area_1'  , 'state'  ],
+            ['city'          , 'city'   ],
+            ['admin_area_2'  , 'city'   ],
+            ['postalCode'    , 'zip'    ],
+            ['postal_code'   , 'zip'    ],
+            ['address_line_1', 'address'],
+            ['address_line_2', undefined],
+        ]);
+        
+        
+        
+        for (const [shippingField, shippingValue] of Object.entries(shippingAddress)) {
+            if (shippingField === undefined) continue;
             
             
             
-            for (const [shippingField, shippingValue] of Object.entries(shippingAddress)) {
-                if (shippingField === undefined) continue;
-                
-                
-                
-                const mappedShippingField = shippingFieldMap.get(shippingField);
-                if (mappedShippingField === undefined) {
-                    // console.log('REJECT: unknown shipping field: ', shippingField);
-                    return actions.reject();
-                } // if
-                
-                
-                
-                const originShippingValue = checkoutState.shippingAddress?.[mappedShippingField];
-                if (originShippingValue !== shippingValue) {
-                    // console.log(`REJECT: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
-                    return actions.reject();
-                } // if
-            } // for
+            const mappedShippingField = shippingFieldMap.get(shippingField);
+            if (mappedShippingField === undefined) {
+                // console.log('REJECT: unknown shipping field: ', shippingField);
+                actions.reject();
+                return;
+            } // if
             
             
             
-            // return actions.resolve();
-            // actions.buildOrderPatchPayload({}); // nothing to build or patch, we preventing any changes
-        } // if
+            const originShippingValue = checkoutState.shippingAddress?.[mappedShippingField];
+            if (originShippingValue !== shippingValue) {
+                // console.log(`REJECT: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
+                actions.reject();
+                return;
+            } // if
+        } // for
+        
+        
+        
+        // return actions.resolve();
+        // actions.buildOrderPatchPayload({}); // nothing to build or patch, we preventing any changes
     });
     const handleShippingOptionsChange    = useEvent<PayPalButtonOnShippingOptionsChange>(async (data, actions): Promise<void> => {
         if (data.selectedShippingOption?.type === 'PICKUP') actions.reject();
@@ -335,13 +330,20 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             // classes:
             className={styleSheet.main}
         >
-            <div className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}>
+            <div
+                // classes:
+                className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}
+            >
                 <p>
                     Click the PayPal button below. You will be redirected to the PayPal&apos;s website to complete the payment.
                 </p>
                 
-                <div className={styleSheet.buttonWrapper}>
+                <div
+                    // classes:
+                    className={styleSheet.buttonWrapper}
+                >
                     <Indicator
+                        // classes:
                         className={`${styleSheet.buttonIndicator} paypal`}
                         
                         
@@ -376,19 +378,27 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 </div>
             </div>
             
-            <Content theme='danger' className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}>
+            <Content
+                // variants:
+                theme='danger'
+                
+                
+                
+                // classes:
+                className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}
+            >
                 <MessageError message={null} onRetry={handleReload} />
             </Content>
             
             <Busy
-                // classes:
-                className={styleSheet.loading}
-                
-                
-                
                 // variants:
                 size='lg'
                 theme='primary'
+                
+                
+                
+                // classes:
+                className={styleSheet.loading}
                 
                 
                 
@@ -411,11 +421,11 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                             A <strong>PayPal&apos;s payment interface</strong> is being displayed.
                         </p>
                         <p>
-                            Please follow up on the payment to complete the order.
+                            Please follow up on the payment instructions to complete the order.
                         </p>
                     </>}
                     {isProcessing && <p className={styleSheet.processingMessage}>
-                        <Busy theme='primary' size='lg' /> Processing your payment...
+                        <Busy theme='primary' size='lg' expanded={true} /> Processing your payment...
                     </p>}
                 </CardBody>
             </ModalCard>
@@ -423,6 +433,6 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     );
 };
 export {
-    ViewExpressCheckoutPaypal,
-    ViewExpressCheckoutPaypal as default,
-};
+    ViewExpressCheckoutPaypal,            // named export for readibility
+    ViewExpressCheckoutPaypal as default, // default export to support React.lazy
+}

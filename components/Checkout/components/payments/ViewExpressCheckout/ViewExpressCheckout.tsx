@@ -501,12 +501,16 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             // classes:
             className={styleSheet.main}
         >
-            <div className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}>
+            <div
+                // classes:
+                className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}
+            >
                 <p>
                     Click the {walletName} button below. You will be redirected to the {websiteName}&apos;s website to complete the payment.
                 </p>
                 
                 <Indicator
+                    // classes:
                     className={styleSheet.buttonIndicator}
                     
                     
@@ -539,25 +543,36 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 </Indicator>
             </div>
             
-            <p className={`${styleSheet.notAvailable} ${isNotAvailable ? '' : 'hidden'}`}>
+            <p
+                // classes:
+                className={`${styleSheet.notAvailable} ${isNotAvailable ? '' : 'hidden'}`}
+            >
                 Sorry, this payment method is <strong>not available</strong>.
                 <br />
                 Please choose another payment method.
             </p>
             
-            <Content theme='danger' className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}>
+            <Content
+                // variants:
+                theme='danger'
+                
+                
+                
+                // classes:
+                className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}
+            >
                 <MessageError message={null} onRetry={handleReload} />
             </Content>
             
             <Busy
-                // classes:
-                className={styleSheet.loading}
-                
-                
-                
                 // variants:
                 size='lg'
                 theme='primary'
+                
+                
+                
+                // classes:
+                className={styleSheet.loading}
                 
                 
                 
@@ -580,11 +595,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                             A <strong>{websiteName}&apos;s payment interface</strong> is being displayed.
                         </p>
                         <p>
-                            Please follow up on the payment to complete the order.
+                            Please follow up on the payment instructions to complete the order.
                         </p>
                     </>}
                     {isProcessing && <p className={styleSheet.processingMessage}>
-                        <Busy theme='primary' size='lg' /> Processing your payment...
+                        <Busy theme='primary' size='lg' expanded={true} /> Processing your payment...
                     </p>}
                 </CardBody>
             </ModalCard>
