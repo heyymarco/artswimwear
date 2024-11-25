@@ -624,8 +624,8 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     const handlePayButtonClick   = useEvent(() => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : doPlaceOrder,   // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-            doAuthenticate       : doAuthenticate, // trigger `authenticate` function
+            doPlaceOrder         : doPlaceOrder,
+            doAuthenticate       : doAuthenticate,
             
             
             

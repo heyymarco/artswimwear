@@ -1,5 +1,10 @@
 'use client'
 
+// styles:
+import {
+    useViewExpressCheckoutStyleSheet,
+}                           from './styles/loader'
+
 // react:
 import {
     // react:
@@ -8,9 +13,9 @@ import {
     
     
     // hooks:
-    useMemo,
-    useState,
     useRef,
+    useState,
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -44,11 +49,12 @@ import {
     
     // dialog-components:
     ModalCard,
-}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
 import {
     type StripeExpressCheckoutElementOptions,
+    type StripeError,
     type StripeExpressCheckoutElementReadyEvent,
     type StripeExpressCheckoutElementClickEvent,
     type StripeExpressCheckoutElementConfirmEvent,
@@ -74,16 +80,11 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
-// contexts:
+// internals:
 import {
     AuthenticatedResult,
     useCheckoutState,
 }                           from '../../../states/checkoutState'
-
-// styles:
-import {
-    useViewExpressCheckoutStyleSheet,
-}                           from './styles/loader'
 
 // configs:
 import {
@@ -171,6 +172,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     
     // states:
+    const isMounted = useMountedFlag();
+    
     const enum LoadedState {
         Loading,
         Errored,
@@ -182,52 +185,44 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
+    const signalAuthenticatedOrPaidRef    = useRef<((authenticatedOrPaid: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
     
     
-    // effects:
-    const isMounted = useMountedFlag();
+    
+    // payment components:
+    const stripe   = useStripe();
+    const elements = useElements();
     
     
     
     // handlers:
-    const handleLoaded  = useEvent((event: StripeExpressCheckoutElementReadyEvent) => {
+    const handlePaymentInterfaceErrored  = useEvent((event: { elementType: 'expressCheckout', error: StripeError }): void => {
+        setIsLoaded(LoadedState.Errored);
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to error
+    });
+    const handlePaymentInterfaceLoaded   = useEvent((event: StripeExpressCheckoutElementReadyEvent) => {
         const availablePaymentMethods = event.availablePaymentMethods;
         setIsLoaded(
-            (!!availablePaymentMethods && (Object.entries(availablePaymentMethods).filter(([, enabled]) => !!enabled).length === 1))
+            (!!availablePaymentMethods && Object.entries(availablePaymentMethods).some(([, enabled]) => !!enabled)) // at least 1 payment method must exist
             ? LoadedState.FullyLoaded
             : LoadedState.NotAvailable
         );
     });
-    const handleErrored = useEvent((): void => {
-        // actions:
-        setIsLoaded(LoadedState.Errored);
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
-    });
-    const handleReload  = useEvent((): void => {
+    const handleReload                   = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
         setGeneration((current) => (current + 1));
     });
     
-    const stripe                                   = useStripe();
-    const elements                                 = useElements();
-    
-    const signalAuthenticatedOrPaidRef = useRef<((authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
-    const placeOrderDetailRef          = useRef<PlaceOrderDetail|undefined>(undefined);
-    const handlePaymentInterfaceStart  = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
+    const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
         const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
-        signalAuthenticatedOrPaidRef.current = (authenticatedResultOrPaymentDetail: AuthenticatedResult|PaymentDetail): void => {
-            resolveAuthenticatedOrPaid(authenticatedResultOrPaymentDetail); // invoke the origin_resolver
+        signalAuthenticatedOrPaidRef.current = (authenticatedOrPaid: AuthenticatedResult|PaymentDetail): void => { // deref the proxy_resolver
+            resolveAuthenticatedOrPaid(authenticatedOrPaid);  // invoke the origin_resolver
             signalAuthenticatedOrPaidRef.current = undefined; // now it's resolved => unref the proxy_resolver
         };
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => { // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (!stripe)   return false; // unexpected error => abort
-                if (!elements) return false; // unexpected error => abort
-                
-                
-                
+            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // collect customer details and display line items:
                 event.resolve({
                     // generals:
@@ -264,15 +259,12 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 
                 
+                // just returning a dummy `PlaceOrderDetail`, so the `doAuthenticate()` will be invoked by `startTransaction()`:
                 return {
-                    orderId : '', // empty string, will be updated later on `doAuthenticate()`
+                    orderId : '',
                 } as PlaceOrderDetail;
             },
-            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-                placeOrderDetailRef.current = placeOrderDetail; // de-ref
-                
-                return promiseAuthenticatedOrPaid;
-            },
+            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
             
             
             
@@ -310,31 +302,32 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 </p>
             </>,
         })
-        .finally(async () => {
-            placeOrderDetailRef.current          = undefined; // un-ref
-            
-            signalAuthenticatedOrPaidRef.current = undefined; // un-ref
+        .finally(async () => { // cleanups:
+            signalAuthenticatedOrPaidRef.current = undefined; // unref the proxy_resolver
             
             
             
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             await new Promise<void>((resolve) => {
-                setTimeout(resolve, 400); // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
+                setTimeout(resolve, 400);   // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
             });
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            setIsProcessing(false);
+            setIsProcessing(false);         // reset the processing status
         });
     });
-    const handlePaymentInterfaceAbort    = useEvent((event): void => {
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED);
+    const handlePaymentInterfaceAbort    = useEvent((event: { elementType: 'expressCheckout' }): void => {
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED); // payment failed due to canceled by user
     });
     const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
+        setIsProcessing(true); // paid => waiting for the payment to be captured on server side
+        
+        
+        
         try {
             if (!stripe || !elements) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected error => abort
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
-            setIsProcessing(true);
             
             
             
@@ -343,11 +336,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 error : submitError,
             } = await elements.submit();
             if (submitError) {
-                /*
-                    TODO: sample error
-                */
-                
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
             
@@ -377,11 +366,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 },
             });
             if (paymentMethodError) {
-                /*
-                    TODO: sample error
-                */
-                
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
             const confirmationToken = confirmationTokenObject.id;
@@ -396,11 +381,6 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 signalAuthenticatedOrPaidRef.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail);
                 return;
             } // if
-            
-            
-            
-            const oldPlaceOrderDetail = placeOrderDetailRef.current;
-            if (oldPlaceOrderDetail) oldPlaceOrderDetail.orderId = placeOrderDetailOrPaymentDetail.orderId;
             
             
             
@@ -423,9 +403,12 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 the code below is actually never be called because the webpage is redirected to amazon's website
             */
             if (result.error || !result.paymentIntent) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED);
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
+            
+            
+            
             switch (result.paymentIntent.status) {
                 case 'requires_capture':
                     signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually capture on server_side
@@ -440,42 +423,42 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 
                 default:
-                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected response
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
             } // switch
             
             
             
             /*
-            NOT WORKING:
-            
-            
-            
-            const rawOrderId = placeOrderDetail.orderId;
-            const orderId = (
-                rawOrderId.startsWith('#STRIPE_')
-                ? rawOrderId          // not prefixed => no need to modify
-                : rawOrderId.slice(8) // is  prefixed => remove prefix #STRIPE_
-            );
-            
-            
-            
-            const result = await stripe.confirmPayment({
-                clientSecret           : clientSecret,
-                confirmParams          : {
-                    confirmation_token : confirmationToken,
-                    return_url         : `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
-                },
-                redirect               : 'if_required', // do not redirect for non_redirect_based payment
-            });
-            signalAuthenticatedOrPaidRef.current?.(
-                result.error
-                ? AuthenticatedResult.FAILED
-                : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page // TODO: display confirmed payment
-            );
+                NOT WORKING:
+                
+                
+                
+                const rawOrderId = placeOrderDetail.orderId;
+                const orderId = (
+                    rawOrderId.startsWith('#STRIPE_')
+                    ? rawOrderId.slice(8) // remove prefix #STRIPE_
+                    : rawOrderId
+                );
+                
+                
+                
+                const result = await stripe.confirmPayment({
+                    clientSecret           : clientSecret,
+                    confirmParams          : {
+                        confirmation_token : confirmationToken,
+                        return_url         : `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
+                    },
+                    redirect               : 'if_required', // do not redirect for non_redirect_based payment
+                });
+                signalAuthenticatedOrPaidRef.current?.(
+                    result.error
+                    ? AuthenticatedResult.FAILED   // payment failed due to unexpected error
+                    : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page // TODO: display confirmed payment
+                );
             */
         }
         catch (error: any) {
-            signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // unexpected error
+            signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to exception
         } // try
     });
     
@@ -487,7 +470,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     
     // jsx:
-    const isErrored      = (isLoaded === LoadedState.Errored);
+    const isErrored      =                                                (isLoaded === LoadedState.Errored     );
     const isLoading      = !isErrored &&                                  (isLoaded === LoadedState.Loading     );
     const isNotAvailable = !isErrored && !isLoading &&                    (isLoaded === LoadedState.NotAvailable);
     const isReady        = !isErrored && !isLoading && !isNotAvailable && (isLoaded === LoadedState.FullyLoaded );
@@ -509,38 +492,43 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     Click the {walletName} button below. You will be redirected to the {websiteName}&apos;s website to complete the payment.
                 </p>
                 
-                <Indicator
+                <div
                     // classes:
-                    className={styleSheet.buttonIndicator}
-                    
-                    
-                    
-                    // states:
-                    enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                    className={styleSheet.buttonWrapper}
                 >
-                    <ExpressCheckoutElement
-                        // identifiers:
-                        key={generation}
+                    <Indicator
+                        // classes:
+                        className={styleSheet.buttonIndicator}
                         
                         
                         
-                        // options:
-                        options={options}
-                        
-                        
-                        
-                        // handlers:
-                        onReady={handleLoaded}
-                        onLoadError={handleErrored}
-                        
-                        onClick={handlePaymentInterfaceStart}
-                        // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
-                        // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
-                        onCancel={handlePaymentInterfaceAbort}
-                        onEscape={undefined}
-                        onConfirm={handlePaymentInterfaceApproved}
-                    />
-                </Indicator>
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                    >
+                        <ExpressCheckoutElement
+                            // identifiers:
+                            key={generation}
+                            
+                            
+                            
+                            // options:
+                            options={options}
+                            
+                            
+                            
+                            // handlers:
+                            onLoadError={handlePaymentInterfaceErrored}
+                            onReady={handlePaymentInterfaceLoaded}
+                            
+                            onClick={handlePaymentInterfaceStart}
+                            onCancel={handlePaymentInterfaceAbort}
+                            onEscape={undefined}
+                            onConfirm={handlePaymentInterfaceApproved}
+                            // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
+                            // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
+                        />
+                    </Indicator>
+                </div>
             </div>
             
             <p
@@ -607,6 +595,6 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     );
 };
 export {
-    ViewExpressCheckout,
-    ViewExpressCheckout as default,
-};
+    ViewExpressCheckout,            // named export for readibility
+    ViewExpressCheckout as default, // default export to support React.lazy
+}

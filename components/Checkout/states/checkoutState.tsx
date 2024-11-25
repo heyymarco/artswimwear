@@ -1629,9 +1629,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 let rawOrderId = placeOrderDetailOrPaymentDetail.orderId;
-                let authenticatedResultOrPaymentDetail : AuthenticatedResult|PaymentDetail;
+                let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
                 try {
-                    authenticatedResultOrPaymentDetail = await doAuthenticate(placeOrderDetailOrPaymentDetail);
+                    authenticatedOrPaid = await doAuthenticate(placeOrderDetailOrPaymentDetail);
                     rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
@@ -1643,11 +1643,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                if (typeof(authenticatedResultOrPaymentDetail) === 'object') {
-                    gotoFinished(authenticatedResultOrPaymentDetail, /*paid:*/(authenticatedResultOrPaymentDetail.type !== 'MANUAL'));
+                if (typeof(authenticatedOrPaid) === 'object') {
+                    gotoFinished(authenticatedOrPaid, /*paid:*/(authenticatedOrPaid.type !== 'MANUAL'));
                 }
                 else {
-                    switch (authenticatedResultOrPaymentDetail) {
+                    switch (authenticatedOrPaid) {
                         case AuthenticatedResult.FAILED     : {
                             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
                             doCancelDraftOrder(rawOrderId);

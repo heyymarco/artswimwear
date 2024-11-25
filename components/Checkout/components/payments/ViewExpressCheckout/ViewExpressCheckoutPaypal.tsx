@@ -56,8 +56,8 @@ import {
 
 // payment components:
 import {
-    type PayPalButtonOnInit,
     type PayPalButtonOnError,
+    type PayPalButtonOnInit,
     type PayPalButtonCreateOrder,
     type PayPalButtonOnCancel,
     type PayPalButtonOnApprove,
@@ -123,22 +123,19 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         Errored,
         FullyLoaded,
     }
-    const [isLoaded  , setIsLoaded  ] = useState<LoadedState>(LoadedState.Loading);
-    const [generation, setGeneration] = useState<number>(1);
+    const [isLoaded    , setIsLoaded    ] = useState<LoadedState>(LoadedState.Loading);
+    const [generation  , setGeneration  ] = useState<number>(1);
     const forceReRender = useMemo(() => [
         generation,
     ], [generation]);
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
-    const signalAuthenticatedOrPaidRef    = useRef<((authenticatedResult: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
+    const signalAuthenticatedOrPaidRef    = useRef<((authenticatedOrPaid: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
     
     
     
     // handlers:
-    const handlePaymentInterfaceLoaded   = useEvent<PayPalButtonOnInit>((data, actions): void => {
-        setIsLoaded(LoadedState.FullyLoaded);
-    });
     const handlePaymentInterfaceErrored  = useEvent<PayPalButtonOnError>((error): void => {
         /*
             Unable to delegate rendering. Possibly the component is not loaded in the target window.
@@ -148,6 +145,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         setIsLoaded(LoadedState.Errored);
         signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to error
+    });
+    const handlePaymentInterfaceLoaded   = useEvent<PayPalButtonOnInit>((data, actions): void => {
+        setIsLoaded(LoadedState.FullyLoaded);
     });
     const handleReload                   = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
@@ -190,7 +190,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     throw fetchError; // re-throw the exception
                 } // try
             },
-            doAuthenticate       : () => promiseAuthenticatedOrPaid,
+            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
             
             
             
@@ -317,7 +317,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     // jsx:
-    const isErrored      = (isLoaded === LoadedState.Errored);
+    const isErrored      =                             (isLoaded === LoadedState.Errored    );
     const isLoading      = !isErrored &&               (isLoaded === LoadedState.Loading    );
     const isReady        = !isErrored && !isLoading && (isLoaded === LoadedState.FullyLoaded);
     return (
@@ -365,8 +365,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                             
                             
                             // handlers:
-                            onInit={handlePaymentInterfaceLoaded}
                             onError={handlePaymentInterfaceErrored}
+                            onInit={handlePaymentInterfaceLoaded}
                             
                             createOrder={handlePaymentInterfaceStart}
                             onCancel={handlePaymentInterfaceAbort}
