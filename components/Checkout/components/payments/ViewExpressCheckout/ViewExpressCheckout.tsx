@@ -394,16 +394,16 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             
-            const placeOrderDetailOrPaymentDetail = await doPlaceOrder({
+            const orderBookedOrPaid = await doPlaceOrder({
                 paymentSource  : 'stripeExpress',
                 cardToken      : confirmationToken,
             });
-            if (!('orderId' in placeOrderDetailOrPaymentDetail)) { // immediately paid => no need further action
-                signalOrderBookedOrPaidOrAbort.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail); // paid
+            if (!('orderId' in orderBookedOrPaid)) { // immediately paid => no need further action
+                signalOrderBookedOrPaidOrAbort.current?.(orderBookedOrPaid satisfies PaymentDetail); // paid
                 return;
             }
             else {
-                const placeOrderDetail = placeOrderDetailOrPaymentDetail satisfies PlaceOrderDetail;
+                const placeOrderDetail = orderBookedOrPaid satisfies PlaceOrderDetail;
                 signalOrderBookedOrPaidOrAbort.current?.(placeOrderDetail); // order booked
             } // if
         }

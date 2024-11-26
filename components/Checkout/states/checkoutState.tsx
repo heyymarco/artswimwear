@@ -1616,23 +1616,23 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return await doTransaction(async (): Promise<void> => {
             try {
                 // createOrder:
-                const placeOrderDetailOrPaymentDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (placeOrderDetailOrPaymentDetail === false) return; // aborted (maybe due to validation error) => no need further action
+                const orderBookedOrPaidOrAbort = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                if (orderBookedOrPaidOrAbort === false) return; // aborted (maybe due to validation error) => no need further action
                 
                 
                 
-                if (!('orderId' in placeOrderDetailOrPaymentDetail)) { // immediately paid => no need further action
-                    gotoFinished(placeOrderDetailOrPaymentDetail satisfies PaymentDetail, /*paid:*/(placeOrderDetailOrPaymentDetail.type !== 'MANUAL'));
+                if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
+                    gotoFinished(orderBookedOrPaidOrAbort satisfies PaymentDetail, /*paid:*/(orderBookedOrPaidOrAbort.type !== 'MANUAL'));
                     return; // paid
                 } // if
                 
                 
                 
-                let rawOrderId = placeOrderDetailOrPaymentDetail.orderId;
+                let rawOrderId = orderBookedOrPaidOrAbort.orderId;
                 let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
                 try {
-                    authenticatedOrPaid = await doAuthenticate(placeOrderDetailOrPaymentDetail);
-                    rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
+                    authenticatedOrPaid = await doAuthenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
+                    rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:

@@ -167,12 +167,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             // handlers:
             doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 try {
-                    const placeOrderDetailOrPaymentDetail = await doPlaceOrder(data);
-                    if (!('orderId' in placeOrderDetailOrPaymentDetail)) return false; // immediately paid => unexpected response (that should NOT be happened) => abort
+                    const orderBookedOrPaid = await doPlaceOrder(data);
+                    if (!('orderId' in orderBookedOrPaid)) return false; // immediately paid => unexpected response (that should NOT be happened) => abort
                     
                     
                     
-                    const rawOrderId = placeOrderDetailOrPaymentDetail.orderId; // get the DraftOrder's id
+                    const rawOrderId = orderBookedOrPaid.orderId; // get the DraftOrder's id
                     const orderId = (
                         rawOrderId.startsWith('#PAYPAL_')
                         ? rawOrderId.slice(8) // remove prefix #PAYPAL_
@@ -182,7 +182,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     
                     
-                    return placeOrderDetailOrPaymentDetail; // a DraftOrder has been created
+                    return orderBookedOrPaid; // a DraftOrder has been created
                 }
                 catch (fetchError: any) { // intercepts the exception
                     rejectPaypalOrderId(fetchError); // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
