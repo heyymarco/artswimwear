@@ -334,6 +334,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setIsProcessing(false);         // reset the processing status
         });
+        
+        
+        
+        // then `handlePaymentInterfaceSubmit()` will be called
     });
     const handlePaymentInterfaceAbort    = useEvent((event: { elementType: 'expressCheckout' }): void => {
         signalOrderBookedOrPaidOrAbort.current?.(false);                      // payment aborted due to canceled by user
