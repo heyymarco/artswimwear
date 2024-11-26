@@ -427,20 +427,23 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             
-            const result = await stripe.handleNextAction({
+            const {
+                error : nextActionError,
+                paymentIntent,
+            } = await stripe.handleNextAction({
                 clientSecret : clientSecret,
             });
             /*
                 the code below is actually never be called because the webpage is redirected to amazon's website
             */
-            if (result.error || !result.paymentIntent) {
+            if (nextActionError || !paymentIntent) {
                 signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
             
             
             
-            switch (result.paymentIntent.status) {
+            switch (paymentIntent.status) {
                 case 'requires_capture':
                     signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually captured on server_side
                     break;
