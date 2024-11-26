@@ -186,6 +186,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
     const signalOrderBookedOrPaidOrAbort  = useRef<((orderBookedOrPaidOrAbort: PlaceOrderDetail|PaymentDetail|false) => void)|undefined>(undefined);
+    const signalOrderError                = useRef<((error: unknown) => void)|undefined>(undefined);
     const signalAuthenticatedOrPaidRef    = useRef<((authenticatedOrPaid: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
     
     
@@ -216,10 +217,16 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     });
     
     const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
-        const {promise: promiseOrderBookedOrPaidOrAbort, resolve: resolveOrderBookedOrPaidOrAbort} = Promise.withResolvers<PlaceOrderDetail|PaymentDetail|false>();
+        const {promise: promiseOrderBookedOrPaidOrAbort, resolve: resolveOrderBookedOrPaidOrAbort, reject: rejectOrderBookedOrPaidOrAbort} = Promise.withResolvers<PlaceOrderDetail|PaymentDetail|false>();
         signalOrderBookedOrPaidOrAbort.current = (orderBookedOrPaidOrAbort: PlaceOrderDetail|PaymentDetail|false): void => { // deref the proxy_resolver
             resolveOrderBookedOrPaidOrAbort(orderBookedOrPaidOrAbort); // invoke the origin_resolver
             signalOrderBookedOrPaidOrAbort.current = undefined;        // now it's resolved => unref the proxy_resolver
+            signalOrderError.current = undefined;                      // now it's resolved => unref the proxy_resolver
+        };
+        signalOrderError.current = (error: unknown): void => {
+            rejectOrderBookedOrPaidOrAbort(error); // invoke the origin_resolver
+            signalOrderBookedOrPaidOrAbort.current = undefined;        // now it's resolved => unref the proxy_resolver
+            signalOrderError.current = undefined;                      // now it's resolved => unref the proxy_resolver
         };
         
         const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
@@ -267,13 +274,15 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 
                 
-                const orderBookedOrPaidOrAbort = await promiseOrderBookedOrPaidOrAbort;
-                if (!!orderBookedOrPaidOrAbort && ('orderId' in orderBookedOrPaidOrAbort)) {
-                    handlePaymentInterfaceApproved(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail); // fire and forget
-                } // if
-                return orderBookedOrPaidOrAbort;
+                return promiseOrderBookedOrPaidOrAbort;
             },
-            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
+            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => {
+                handlePaymentInterfaceApproved(placeOrderDetail);
+                
+                
+                
+                return promiseAuthenticatedOrPaid;
+            },
             
             
             
@@ -313,6 +322,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         })
         .finally(async () => { // cleanups:
             signalOrderBookedOrPaidOrAbort.current = undefined; // unref the proxy_resolver
+            signalOrderError.current               = undefined; // unref the proxy_resolver
             signalAuthenticatedOrPaidRef.current   = undefined; // unref the proxy_resolver
             
             
@@ -397,8 +407,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 signalOrderBookedOrPaidOrAbort.current?.(placeOrderDetail); // order booked
             } // if
         }
-        catch (error: any) {
-            signalOrderBookedOrPaidOrAbort.current?.(false); // payment aborted due to exception
+        catch (error: unknown) {
+            signalOrderError.current?.(error); // payment aborted due to exception
         } // try
     });
     const handlePaymentInterfaceApproved = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<void> => {
