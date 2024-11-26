@@ -277,6 +277,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 return promiseOrderBookedOrPaidOrAbort;
             },
             doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => {
+                // the order has been booked => now authenticate the payment so that the payment can be captured on server side
                 handlePaymentInterfaceApproved(placeOrderDetail);
                 
                 
