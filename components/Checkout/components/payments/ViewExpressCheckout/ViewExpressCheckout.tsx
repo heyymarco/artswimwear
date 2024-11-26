@@ -338,7 +338,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         
         
-        // then `handlePaymentInterfaceSubmit()` will be called
+        // after the user fulfilled the payment form, then `handlePaymentInterfaceSubmit()` will be called
     });
     const handlePaymentInterfaceAbort    = useEvent((event: { elementType: 'expressCheckout' }): void => {
         signalOrderBookedOrPaidOrAbort.current?.(false);                      // payment aborted due to canceled by user
