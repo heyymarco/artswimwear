@@ -185,6 +185,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
+    const signalOrderBookedOrPaidOrAbort  = useRef<((orderBookedOrPaidOrAbort: PlaceOrderDetail|PaymentDetail|false) => void)|undefined>(undefined);
     const signalAuthenticatedOrPaidRef    = useRef<((authenticatedOrPaid: AuthenticatedResult|PaymentDetail) => void)|undefined>(undefined);
     
     
@@ -198,7 +199,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     // handlers:
     const handlePaymentInterfaceErrored  = useEvent((event: { elementType: 'expressCheckout', error: StripeError }): void => {
         setIsLoaded(LoadedState.Errored);
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to error
+        signalOrderBookedOrPaidOrAbort.current?.(false);                    // payment aborted due to error
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed  due to error
     });
     const handlePaymentInterfaceLoaded   = useEvent((event: StripeExpressCheckoutElementReadyEvent) => {
         const availablePaymentMethods = event.availablePaymentMethods;
@@ -214,6 +216,12 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     });
     
     const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
+        const {promise: promiseOrderBookedOrPaidOrAbort, resolve: resolveOrderBookedOrPaidOrAbort} = Promise.withResolvers<PlaceOrderDetail|PaymentDetail|false>();
+        signalOrderBookedOrPaidOrAbort.current = (orderBookedOrPaidOrAbort: PlaceOrderDetail|PaymentDetail|false): void => { // deref the proxy_resolver
+            resolveOrderBookedOrPaidOrAbort(orderBookedOrPaidOrAbort); // invoke the origin_resolver
+            signalOrderBookedOrPaidOrAbort.current = undefined;        // now it's resolved => unref the proxy_resolver
+        };
+        
         const {promise: promiseAuthenticatedOrPaid , resolve: resolveAuthenticatedOrPaid} = Promise.withResolvers<AuthenticatedResult|PaymentDetail>();
         signalAuthenticatedOrPaidRef.current = (authenticatedOrPaid: AuthenticatedResult|PaymentDetail): void => { // deref the proxy_resolver
             resolveAuthenticatedOrPaid(authenticatedOrPaid);  // invoke the origin_resolver
@@ -259,10 +267,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 
                 
-                // just returning a dummy `PlaceOrderDetail`, so the `doAuthenticate()` will be invoked by `startTransaction()`:
-                return {
-                    orderId : '',
-                } as PlaceOrderDetail;
+                const orderBookedOrPaidOrAbort = await promiseOrderBookedOrPaidOrAbort;
+                if (!!orderBookedOrPaidOrAbort && ('orderId' in orderBookedOrPaidOrAbort)) {
+                    handlePaymentInterfaceApproved(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail); // fire and forget
+                } // if
+                return orderBookedOrPaidOrAbort;
             },
             doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
             
@@ -303,7 +312,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             </>,
         })
         .finally(async () => { // cleanups:
-            signalAuthenticatedOrPaidRef.current = undefined; // unref the proxy_resolver
+            signalOrderBookedOrPaidOrAbort.current = undefined; // unref the proxy_resolver
+            signalAuthenticatedOrPaidRef.current   = undefined; // unref the proxy_resolver
             
             
             
@@ -316,16 +326,17 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         });
     });
     const handlePaymentInterfaceAbort    = useEvent((event: { elementType: 'expressCheckout' }): void => {
-        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED); // payment failed due to canceled by user
+        signalOrderBookedOrPaidOrAbort.current?.(false);                      // payment aborted due to canceled by user
+        signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.CANCELED); // payment failed  due to canceled by user
     });
-    const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
-        setIsProcessing(true); // paid => waiting for the payment to be captured on server side
+    const handlePaymentInterfaceSubmit   = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
+        setIsProcessing(true); // the payment is being processed => waiting for the payment to be captured on server side
         
         
         
         try {
             if (!stripe || !elements) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+                signalOrderBookedOrPaidOrAbort.current?.(false); // payment aborted due to unexpected error
                 return;
             } // if
             
@@ -336,7 +347,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 error : submitError,
             } = await elements.submit();
             if (submitError) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+                signalOrderBookedOrPaidOrAbort.current?.(false); // payment aborted due to unexpected error
                 return;
             } // if
             
@@ -366,7 +377,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 },
             });
             if (paymentMethodError) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+                signalOrderBookedOrPaidOrAbort.current?.(false); // payment aborted due to unexpected error
                 return;
             } // if
             const confirmationToken = confirmationTokenObject.id;
@@ -378,10 +389,24 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 cardToken      : confirmationToken,
             });
             if (!('orderId' in placeOrderDetailOrPaymentDetail)) { // immediately paid => no need further action
-                signalAuthenticatedOrPaidRef.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail);
+                signalOrderBookedOrPaidOrAbort.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail); // paid
+                return;
+            }
+            else {
+                const placeOrderDetail = placeOrderDetailOrPaymentDetail satisfies PlaceOrderDetail;
+                signalOrderBookedOrPaidOrAbort.current?.(placeOrderDetail); // order booked
+            } // if
+        }
+        catch (error: any) {
+            signalOrderBookedOrPaidOrAbort.current?.(false); // payment aborted due to exception
+        } // try
+    });
+    const handlePaymentInterfaceApproved = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<void> => {
+        try {
+            if (!stripe) {
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
-            const placeOrderDetail = placeOrderDetailOrPaymentDetail satisfies PlaceOrderDetail;
             
             
             
@@ -460,7 +485,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         }
         catch (error: any) {
             signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to exception
-        } // try
+        } // tr
     });
     
     
@@ -524,7 +549,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                             onClick={handlePaymentInterfaceStart}
                             onCancel={handlePaymentInterfaceAbort}
                             onEscape={undefined}
-                            onConfirm={handlePaymentInterfaceApproved}
+                            onConfirm={handlePaymentInterfaceSubmit}
                             // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
                             // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
                         />
