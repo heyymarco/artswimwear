@@ -1,5 +1,4 @@
 [high prior] verify: AuthenticatedResult.PENDING && AuthenticatedResult.CAPTURED
-[high prior] rename: authenticatedResultOrPaymentDetail to authenticatedOrPaid
 
 [high prior] protect payment confirmation page using captcha
 [high prior] verify 3DS implementation of paypal_card_payment
