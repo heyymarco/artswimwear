@@ -421,11 +421,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             const clientSecret = placeOrderDetail.redirectData;
             if (clientSecret === undefined) {
-                signalAuthenticatedOrPaidRef.current?.(
-                    !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
-                    ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                    : AuthenticatedResult.AUTHORIZED // will be manually captured on server_side
-                );
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
                 return;
             } // if
             
