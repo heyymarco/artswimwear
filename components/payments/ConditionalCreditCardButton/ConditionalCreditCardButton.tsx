@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -26,7 +21,7 @@ import {
     
     
     // dialog-components:
-    PromiseDialog,
+    type PromiseDialog,
     
     
     
@@ -93,9 +88,9 @@ const ConditionalCreditCardButton = (props: ImplementedButtonPaymentGeneralProps
     return null;
 };
 export {
-    ConditionalCreditCardButton,
-    ConditionalCreditCardButton as default,
-};
+    ConditionalCreditCardButton,            // named export for readibility
+    ConditionalCreditCardButton as default, // default export to support React.lazy
+}
 
 
 
@@ -118,26 +113,24 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
     //     paymentCardSectionRef,
     // } = useCheckoutState();
     
+    // const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    
     const {
         signalApprovedOrderIdRef,
     } = usePaypalCardComposerState();
     
-    // const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
-    
-    
-    
-    // handlers:
     const {
         cardFieldsForm,
     } = usePayPalCardFields();
     
+    
+    
+    // handlers:
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
-        if (!cardFieldsForm)        return false; // unexpected error => abort
         // const paymentCardSectionElm = paymentCardSectionRef?.current;
-        const paypalDoPlaceOrder    = cardFieldsForm.submit;
         // if (!paymentCardSectionElm) return false; // unexpected error => abort
-        if (!paypalDoPlaceOrder)    return false; // unexpected error => abort
+        if (!cardFieldsForm)        return false; // unexpected error => abort
         
         
         
@@ -151,30 +144,31 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         const { promise: promiseApprovedOrderId, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
         signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {
-            await paypalDoPlaceOrder(); // triggers <PayPalCardFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
+            await cardFieldsForm.submit(); // triggers <PayPalCardFieldsProvider> => handlePaymentInterfaceStart() => doPlaceOrder()
+            
+            
+            
+            const rawOrderId = await promiseApprovedOrderId; // waiting for <PayPalCardFieldsProvider> to approve|decline the payment
+            if (rawOrderId === null) return false; // if was error => abort
+            const orderId = (
+                rawOrderId.startsWith('#PAYPAL_')
+                ? rawOrderId              // already prefixed => no need to modify
+                : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+            );
+            return {
+                orderId      : orderId,
+                redirectData : undefined,
+            } satisfies PlaceOrderDetail;
         }
         catch {
-            signalApprovedOrderIdRef.current = null;
-            return false;
+            return false; // unexpected error => abort
+        }
+        finally {
+            signalApprovedOrderIdRef.current = null; // unref the proxy_resolver
         } // try
-        
-        
-        
-        const rawOrderId = await promiseApprovedOrderId;
-        signalApprovedOrderIdRef.current = null;
-        if (rawOrderId === null) return false; // if was error => abort
-        const orderId = (
-            rawOrderId.startsWith('#PAYPAL_')
-            ? rawOrderId              // already prefixed => no need to modify
-            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-        );
-        return {
-            orderId      : orderId,
-            redirectData : undefined,
-        } satisfies PlaceOrderDetail;
     });
     const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-        return AuthenticatedResult.AUTHORIZED;
+        return AuthenticatedResult.AUTHORIZED; // will be manually captured on server_side
     });
     
     
@@ -214,12 +208,12 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
     
     const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
     
-    
-    
-    // handlers:
     const stripe   = useStripe();
     const elements = useElements();
     
+    
+    
+    // handlers:
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         if (!stripe)            return false; // unexpected error => abort
         if (!elements)          return false; // unexpected error => abort
@@ -253,26 +247,23 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             ),
         });
         if (paymentMethodError) {
-            /*
-                TODO: sample error
-            */
-            
-            throw new ErrorDeclined({
+            throw new ErrorDeclined({ // payment failed due to card declined
                 message     : paymentMethodError.message,
                 shouldRetry : (paymentMethodError as any).shouldRetry ?? false, // default: please use another card
             });
         } // if
+        const cardToken = paymentMethod.id;
         
         
         
         return await doPlaceOrder({
             paymentSource  : 'stripeCard',
-            cardToken      : paymentMethod.id,
+            cardToken      : cardToken,
         });
     });
     const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-        if (!stripe)   return AuthenticatedResult.FAILED; // unexpected error => abort
-        if (!elements) return AuthenticatedResult.FAILED; // unexpected error => abort
+        if (!stripe)   return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+        if (!elements) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         
         
         
@@ -280,7 +271,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         if (clientSecret === undefined) return (
             !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
             ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-            : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+            : AuthenticatedResult.AUTHORIZED // will be manually captured on server_side
         );
         
         
@@ -289,15 +280,18 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             const result = await stripe.handleNextAction({
                 clientSecret : clientSecret,
             });
-            if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED;
+            if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+            
+            
+            
             switch (result.paymentIntent.status) {
-                case 'requires_capture' : return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
+                case 'requires_capture' : return AuthenticatedResult.AUTHORIZED; // will be manually captured on server_side
                 case 'succeeded'        : return AuthenticatedResult.CAPTURED;   // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                default                 : return AuthenticatedResult.FAILED;     // unexpected response
+                default                 : return AuthenticatedResult.FAILED;     // payment failed due to unexpected error
             } // switch
         }
         catch {
-            return AuthenticatedResult.FAILED; // unexpected error
+            return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         } // try
     });
     
@@ -335,62 +329,84 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
     const {
         showDialog,
     } = useDialogMessage();
-    const modal3dsRef = useRef<PromiseDialog<AuthenticatedResult>|null>(null);
     
     
     
     // handlers:
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+        // conditions:
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         if (!paymentCardSectionElm) return false; // unexpected error => abort
         
         
         
-        const MidtransNew3ds = (window as any).MidtransNew3ds;
-        const cardToken = await new Promise<string>((resolve, reject) => {
-            const formData = new FormData(paymentCardSectionElm);
-            const card = {
-                card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
-                card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
-                card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
-                card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
-                // bank_one_time_token : "12345678"
-            };
-            MidtransNew3ds.getCardToken(card, {
-                onSuccess : (response: any) => {
-                    resolve(response.token_id);
-                },
-                onFailure : (response: any) => {
-                    reject(new ErrorDeclined({
-                        shouldRetry : false, // please use another card
-                    }));
-                },
-            })
+        // validations:
+        const cardToken = await new Promise<string|false>((resolve, reject) => {
+            const MidtransNew3ds = (window as any).MidtransNew3ds;
+            if (!MidtransNew3ds) {
+                resolve(false); // unexpected error => abort
+                return;
+            } // if
+            
+            
+            
+            try {
+                const formData       = new FormData(paymentCardSectionElm);
+                const cardData       = {
+                    card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                    card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
+                    card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
+                    card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
+                    // bank_one_time_token : "12345678"
+                };
+                MidtransNew3ds.getCardToken(cardData, {
+                    onSuccess : (response: any): void => {
+                        resolve(response.token_id);
+                    },
+                    onFailure : (response: any): void => {
+                        reject(new ErrorDeclined({
+                            shouldRetry : false, // please use another card
+                        }));
+                    },
+                });
+            }
+            catch {
+                resolve(false); // unexpected error => abort
+            } // try
         });
+        if (cardToken === false) return false;
         
         
         
-        return await doPlaceOrder({ // may require further action -OR- immediately paid
+        return await doPlaceOrder({
             paymentSource  : 'midtransCard',
             cardToken      : cardToken,
         });
     });
     const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         const redirectData = placeOrderDetail.redirectData;
-        if (redirectData === undefined) return AuthenticatedResult.FAILED; // unexpected error => abort
+        if (redirectData === undefined) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         
         
         
         return new Promise<AuthenticatedResult|PaymentDetail>((resolve) => {
+            const MidtransNew3ds = (window as any).MidtransNew3ds;
+            if (!MidtransNew3ds) {
+                resolve(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+                return;
+            } // if
+            
+            
+            
             try {
-                const MidtransNew3ds = (window as any).MidtransNew3ds;
+                let modal3dsPromiseDialog : PromiseDialog<AuthenticatedResult|PaymentDetail>|undefined = undefined; // holds the current shown 3ds_modal_dialog (if any)
                 MidtransNew3ds.authenticate(redirectData, {
-                    performAuthentication: function(redirectUrl: string){
-                        // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                        modal3dsRef.current = showDialog<AuthenticatedResult>(
+                    performAuthentication: (redirectUrl: string): void => {
+                        // displays 3ds authentication redirectUrl to customer:
+                        modal3dsPromiseDialog = showDialog<AuthenticatedResult|PaymentDetail>( // deref the promise_dialog
                             <IframeDialog
                                 // accessibilities:
-                                title='3DS Verification'
+                                title='3DS Card Verification'
                                 
                                 
                                 
@@ -398,12 +414,16 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                                 src={redirectUrl}
                             />
                         );
-                        modal3dsRef.current.collapseEndEvent().then(({data}) => {
-                            resolve(data ?? AuthenticatedResult.CANCELED /* undefined => escape the dialog => CANCELED */);
-                            modal3dsRef.current = null;
+                        modal3dsPromiseDialog.collapseEndEvent().then(({data}) => {
+                            resolve(
+                                data
+                                ??
+                                AuthenticatedResult.CANCELED // undefined => escape the dialog => CANCELED
+                            );
+                            modal3dsPromiseDialog = undefined; // unref the promise_dialog
                         });
                     },
-                    onSuccess: function(response: any){
+                    onSuccess: (response: any): void => {
                         // 3ds authentication success, implement payment success scenario
                         /*
                             with feature type: 'authorize'
@@ -466,22 +486,22 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                         */
                         switch (response?.transaction_status?.toLowerCase?.()) {
                             case 'authorize':
-                                modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually capture on server_side
+                                modal3dsPromiseDialog?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually captured on server_side
                                 break;
                             
                             
                             
                             case 'capture':
-                                modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                                modal3dsPromiseDialog?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
                                 break;
                             
                             
                             
                             default:
-                                modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui'); // unexpected response
+                                modal3dsPromiseDialog?.closeDialog(AuthenticatedResult.FAILED, 'ui'); // payment failed due to unexpected error
                         } // switch
                     },
-                    onFailure: function(response: any){
+                    onFailure: (response: any): void => {
                         /*
                             {
                                 status_code: "202",
@@ -535,18 +555,18 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                             }
                         */
                         // 3ds authentication failure, implement payment failure scenario
-                        modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui');
+                        modal3dsPromiseDialog?.closeDialog(AuthenticatedResult.FAILED, 'ui');
                     },
-                    onPending: function(response: any){
+                    onPending: (response: any): void => {
                         // transaction is pending, transaction result will be notified later via 
                         // HTTP POST notification, implement as you wish here
-                        modal3dsRef.current?.closeDialog(AuthenticatedResult.PENDING, 'ui');
+                        modal3dsPromiseDialog?.closeDialog(AuthenticatedResult.PENDING, 'ui');
                         // TODO: handle pending transaction
                     },
                 });
             }
             catch {
-                modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui'); // unexpected error
+                resolve(AuthenticatedResult.FAILED); // payment failed due to unexpected error
             } // try
         });
     });
@@ -596,6 +616,7 @@ interface ImplementedButtonPaymentGeneralProps
 const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
     const {
+        // handlers:
         doPlaceOrder,
         doAuthenticate,
         
@@ -692,6 +713,7 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
         
         // states:
         enabled   = (totalShippingCostStatus !== 'ready') ? false : undefined,
+        
         
         
         // children:

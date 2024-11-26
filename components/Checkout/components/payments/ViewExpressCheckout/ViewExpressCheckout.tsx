@@ -381,15 +381,16 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 signalAuthenticatedOrPaidRef.current?.(placeOrderDetailOrPaymentDetail satisfies PaymentDetail);
                 return;
             } // if
+            const placeOrderDetail = placeOrderDetailOrPaymentDetail satisfies PlaceOrderDetail;
             
             
             
-            const clientSecret = placeOrderDetailOrPaymentDetail.redirectData;
+            const clientSecret = placeOrderDetail.redirectData;
             if (clientSecret === undefined) {
                 signalAuthenticatedOrPaidRef.current?.(
-                    !placeOrderDetailOrPaymentDetail.orderId // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
-                    ? AuthenticatedResult.CAPTURED           // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                    : AuthenticatedResult.AUTHORIZED         // will be manually capture on server_side
+                    !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+                    ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
+                    : AuthenticatedResult.AUTHORIZED // will be manually captured on server_side
                 );
                 return;
             } // if
@@ -411,7 +412,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             switch (result.paymentIntent.status) {
                 case 'requires_capture':
-                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually capture on server_side
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually captured on server_side
                     break;
                 
                 

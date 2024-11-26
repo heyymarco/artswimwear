@@ -1685,7 +1685,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         
                         
                         
-                        case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
+                        case AuthenticatedResult.AUTHORIZED : { // will be manually captured on server_side
                             // then forward the authentication to backend_API to receive the fund:
                             if (rawOrderId /* ignore empty string */) await doMakePayment(rawOrderId, /*paid:*/true);
                             break;
