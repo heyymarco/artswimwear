@@ -445,7 +445,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             switch (paymentIntent.status) {
                 case 'requires_capture':
-                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // will be manually captured on server_side
+                    signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // paid => waiting for the payment to be captured on server side
                     break;
                 
                 
