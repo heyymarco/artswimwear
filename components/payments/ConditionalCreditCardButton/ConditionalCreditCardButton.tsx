@@ -268,11 +268,9 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         const clientSecret = placeOrderDetail.redirectData;
-        if (clientSecret === undefined) return (
-            !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
-            ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-            : AuthenticatedResult.AUTHORIZED // paid => waiting for the payment to be captured on server side
-        );
+        if (clientSecret === undefined) {
+            return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+        } // if
         
         
         
