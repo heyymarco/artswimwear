@@ -182,7 +182,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     
                     
-                    return orderBookedOrPaid; // a DraftOrder has been created
+                    return orderBookedOrPaid satisfies PlaceOrderDetail; // a DraftOrder has been created
                 }
                 catch (fetchError: any) { // intercepts the exception
                     rejectPaypalOrderId(fetchError); // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
