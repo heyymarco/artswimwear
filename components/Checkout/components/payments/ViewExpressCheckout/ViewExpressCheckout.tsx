@@ -420,8 +420,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             const clientSecret = placeOrderDetail.redirectData;
-            if (clientSecret === undefined) {
-                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+            if (clientSecret === undefined) { // if no clientSecret => no need 3ds verification but the payment needs to be captured on server side
+                signalAuthenticatedOrPaidRef.current?.(AuthenticatedResult.AUTHORIZED); // paid => waiting for the payment to be captured on server side
                 return;
             } // if
             

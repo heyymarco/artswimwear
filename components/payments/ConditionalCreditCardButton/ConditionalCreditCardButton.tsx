@@ -268,8 +268,8 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         const clientSecret = placeOrderDetail.redirectData;
-        if (clientSecret === undefined) {
-            return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+        if (clientSecret === undefined) { // if no clientSecret => no need 3ds verification but the payment needs to be captured on server side
+            return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
         } // if
         
         
