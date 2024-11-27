@@ -129,8 +129,8 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
         // const paymentCardSectionElm = paymentCardSectionRef?.current;
-        // if (!paymentCardSectionElm) return false; // unexpected error => abort
-        if (!cardFieldsForm)        return false; // unexpected error => abort
+        // if (!paymentCardSectionElm) return false; // payment aborted due to unexpected error
+        if (!cardFieldsForm)        return false; // payment aborted due to unexpected error
         
         
         
@@ -161,7 +161,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
             } satisfies PlaceOrderDetail;
         }
         catch {
-            return false; // unexpected error => abort
+            return false; // payment aborted due to unexpected error
         }
         finally {
             signalApprovedOrderIdRef.current = null; // unref the proxy_resolver
@@ -215,10 +215,10 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
     
     // handlers:
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
-        if (!stripe)            return false; // unexpected error => abort
-        if (!elements)          return false; // unexpected error => abort
+        if (!stripe)            return false; // payment aborted due to unexpected error
+        if (!elements)          return false; // payment aborted due to unexpected error
         const cardNumberElement = elements.getElement('cardNumber');
-        if (!cardNumberElement) return false; // unexpected error => abort
+        if (!cardNumberElement) return false; // payment aborted due to unexpected error
         
         
         
@@ -336,7 +336,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
     const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
         const paymentCardSectionElm = paymentCardSectionRef?.current;
-        if (!paymentCardSectionElm) return false; // unexpected error => abort
+        if (!paymentCardSectionElm) return false; // payment aborted due to unexpected error
         
         
         
@@ -344,7 +344,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         const cardToken = await new Promise<string|false>((resolve, reject) => {
             const MidtransNew3ds = (window as any).MidtransNew3ds;
             if (!MidtransNew3ds) {
-                resolve(false); // unexpected error => abort
+                resolve(false); // payment aborted due to unexpected error
                 return;
             } // if
             
@@ -371,7 +371,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                 });
             }
             catch {
-                resolve(false); // unexpected error => abort
+                resolve(false); // payment aborted due to unexpected error
             } // try
         });
         if (cardToken === false) return false;
