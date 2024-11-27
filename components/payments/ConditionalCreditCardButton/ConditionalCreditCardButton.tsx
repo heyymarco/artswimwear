@@ -275,14 +275,17 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         try {
-            const result = await stripe.handleNextAction({
+            const {
+                error : nextActionError,
+                paymentIntent,
+            } = await stripe.handleNextAction({
                 clientSecret : clientSecret,
             });
-            if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+            if (nextActionError || !paymentIntent) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
             
             
             
-            switch (result.paymentIntent.status) {
+            switch (paymentIntent.status) {
                 case 'requires_capture' : return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
                 case 'succeeded'        : return AuthenticatedResult.CAPTURED;   // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
                 default                 : return AuthenticatedResult.FAILED;     // payment failed due to unexpected error
