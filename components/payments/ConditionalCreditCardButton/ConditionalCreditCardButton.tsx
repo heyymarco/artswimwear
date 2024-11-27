@@ -289,7 +289,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             } // switch
         }
         catch {
-            return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+            return AuthenticatedResult.FAILED; // payment failed due to exception
         } // try
     });
     
@@ -564,7 +564,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
                 });
             }
             catch {
-                resolve(AuthenticatedResult.FAILED); // payment failed due to unexpected error
+                resolve(AuthenticatedResult.FAILED); // payment failed due to exception
             } // try
         });
     });
