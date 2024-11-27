@@ -106,7 +106,7 @@ const ConditionalCreditCardNameEditor = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'name' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
+                    className={'name ' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     

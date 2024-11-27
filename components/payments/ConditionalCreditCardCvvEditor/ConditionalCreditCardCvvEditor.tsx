@@ -114,7 +114,7 @@ const ConditionalCreditCardCvvEditor = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'csc' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
+                    className={'csc ' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     

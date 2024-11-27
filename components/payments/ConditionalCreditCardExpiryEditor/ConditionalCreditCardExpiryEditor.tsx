@@ -114,7 +114,7 @@ const ConditionalCreditCardExpiryEditor = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'expiry' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
+                    className={'expiry ' + (isPaymentPriorityPaypal ? '' : styleSheets.hidden)}
                     
                     
                     
