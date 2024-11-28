@@ -39,6 +39,11 @@ import {
     usePaymentProcessorPriority,
 }                           from '@/components/payments/hooks'
 import {
+    AuthenticatedResult,
+    type StartTransactionArg,
+    useTransactionState,
+}                           from '@/components/payments/states'
+import {
     usePaypalCardComposerState,
 }                           from '@/components/payments/ConditionalPaypalCardComposerProvider/states/paypalCardComposerState'
 import {
@@ -48,13 +53,6 @@ import {
     useStripe,
     useElements,
 }                           from '@stripe/react-stripe-js'
-
-// checkout components:
-import {
-    AuthenticatedResult,
-    type StartTransactionArg,
-    useCheckoutState,
-}                           from '@/components/Checkout/states/checkoutState'
 
 // models:
 import {
@@ -97,23 +95,14 @@ export {
 const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): JSX.Element|null => {
     // // states:
     // const {
-    //     // shipping data:
-    //     shippingAddress,
-    //     
-    //     
-    //     
     //     // billing data:
-    //     billingAsShipping,
-    //     
     //     billingAddress,
     //     
     //     
     //     
     //     // sections:
     //     paymentCardSectionRef,
-    // } = useCheckoutState();
-    
-    // const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    // } = useTransactionState();
     
     const {
         signalApprovedOrderIdRef,
@@ -190,23 +179,14 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
 const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): JSX.Element|null => {
     // states:
     const {
-        // shipping data:
-        shippingAddress,
-        
-        
-        
         // billing data:
-        billingAsShipping,
-        
         billingAddress,
         
         
         
         // actions:
         doPlaceOrder,
-    } = useCheckoutState();
-    
-    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    } = useTransactionState();
     
     const stripe   = useStripe();
     const elements = useElements();
@@ -230,18 +210,18 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             type            : 'card',
             card            : cardNumberElement,
             billing_details : (
-                !!finalBillingAddress
+                !!billingAddress
                 ? {
                     address : {
-                        country     : finalBillingAddress.country,
-                        state       : finalBillingAddress.state,
-                        city        : finalBillingAddress.city,
-                        postal_code : finalBillingAddress.zip ?? undefined,
-                        line1       : finalBillingAddress.address,
+                        country     : billingAddress.country,
+                        state       : billingAddress.state,
+                        city        : billingAddress.city,
+                        postal_code : billingAddress.zip ?? undefined,
+                        line1       : billingAddress.address,
                         line2       : undefined,
                     },
-                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
-                    phone           : finalBillingAddress.phone,
+                    name            : (billingAddress.firstName ?? '') + ((!!billingAddress.firstName && !!billingAddress.lastName) ? ' ' : '') + (billingAddress.lastName ?? ''),
+                    phone           : billingAddress.phone,
                 }
                 : undefined
             ),
@@ -322,7 +302,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         
         // actions:
         doPlaceOrder,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
@@ -633,14 +613,14 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     
     // states:
     const {
-        // shipping data:
-        totalShippingCostStatus,
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
         startTransaction,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
@@ -715,7 +695,7 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
         
         
         // states:
-        enabled   = (totalShippingCostStatus !== 'ready') ? false : undefined,
+        enabled   = isTransactionReady,
         
         
         

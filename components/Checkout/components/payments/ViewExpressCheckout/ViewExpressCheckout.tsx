@@ -80,11 +80,14 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
-// internals:
+// states:
 import {
-    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../../states/checkoutState'
+import {
+    AuthenticatedResult,
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 // configs:
 import {
@@ -160,14 +163,18 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         // shipping data:
         shippingAddress,
-        totalShippingCostStatus,
+    } = useCheckoutState();
+    
+    const {
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
         startTransaction,
         doPlaceOrder,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
@@ -537,7 +544,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                         
                         
                         // states:
-                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                        enabled={isTransactionReady}
                     >
                         <ExpressCheckoutElement
                             // identifiers:

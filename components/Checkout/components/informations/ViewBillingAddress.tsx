@@ -10,9 +10,14 @@ import {
 import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
+
+// states:
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+import {
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 // others:
 import {
@@ -30,26 +35,19 @@ const ViewBillingAddress = (): JSX.Element|null => {
     
     // states:
     const {
-        // shipping data:
-        shippingAddress,
-        
-        
-        
         // billing data:
         isBillingAddressRequired,
-        
-        billingAsShipping,
-        
-        billingAddress,
     } = useCheckoutState();
     
-    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    const {
+        billingAddress,
+    } = useTransactionState();
     
     
     
     // jsx:
     if (!isBillingAddressRequired) return null;
-    if (!finalBillingAddress) return null;
+    if (!billingAddress) return null;
     const {
         country,
         state,
@@ -60,7 +58,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
         firstName,
         lastName,
         phone,
-    } = finalBillingAddress;
+    } = billingAddress;
     return (
         <>
             <p>

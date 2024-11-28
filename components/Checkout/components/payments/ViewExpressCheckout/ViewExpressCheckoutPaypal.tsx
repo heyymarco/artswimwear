@@ -80,11 +80,14 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
-// internals:
+// states:
 import {
-    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../../states/checkoutState'
+import {
+    AuthenticatedResult,
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 
 
@@ -100,18 +103,18 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     const {
         // states:
         isBusy,
-        
-        
-        
-        // shipping data:
-        totalShippingCostStatus,
+    } = checkoutState;
+    
+    const {
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
         startTransaction,
         doPlaceOrder,
-    } = checkoutState;
+    } = useTransactionState();
     
     
     
@@ -349,7 +352,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                         
                         
                         // states:
-                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                        enabled={isTransactionReady}
                     >
                         <PayPalButtons
                             // identifiers:

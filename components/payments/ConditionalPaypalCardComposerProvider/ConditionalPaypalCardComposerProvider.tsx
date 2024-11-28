@@ -20,6 +20,9 @@ import {
 
 // payment components:
 import {
+    useTransactionState,
+}                           from '@/components/payments/states'
+import {
     CardFieldsOnApproveData,
 }                           from '@paypal/paypal-js'
 import {
@@ -28,12 +31,6 @@ import {
 import {
     useIsInPaypalScriptProvider,
 }                           from '@/components/payments/ConditionalPaypalScriptProvider'
-
-// checkout components:
-import {
-    // states:
-    useCheckoutState,
-}                           from '@/components/Checkout/states/checkoutState'
 
 // internals:
 import {
@@ -87,7 +84,7 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     const {
         // actions:
         doPlaceOrder,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     const {
         signalApprovedOrderIdRef,

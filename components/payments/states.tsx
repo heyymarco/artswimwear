@@ -103,16 +103,12 @@ export interface TransactionState
 {
     // billing data:
     billingValidation        : boolean
-    setBillingValidation     : (billingValidation : boolean) => void
-    
     billingAddress           : BillingAddressDetail|null
-    setBillingAddress        : (billingAddress: BillingAddressDetail|null) => void
     
     
     
     // payment data:
     paymentValidation        : boolean
-    setPaymentValidation     : (paymentValidation : boolean) => void
     
     
     
@@ -122,8 +118,12 @@ export interface TransactionState
     
     
     
-    // actions:
+    // states:
     isTransactionReady       : boolean
+    
+    
+    
+    // actions:
     startTransaction         : (arg: StartTransactionArg) => Promise<boolean>
     doPlaceOrder             : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
 }
@@ -132,16 +132,12 @@ const noopHandler = () => { throw Error('not inside <TransactionStateProvider>')
 const TransactionStateContext = createContext<TransactionState>({
     // billing data:
     billingValidation        : false,
-    setBillingValidation     : noopHandler,
-    
     billingAddress           : null,
-    setBillingAddress        : noopHandler,
     
     
     
     // payment data:
     paymentValidation        : false,
-    setPaymentValidation     : noopHandler,
     
     
     
@@ -151,8 +147,12 @@ const TransactionStateContext = createContext<TransactionState>({
     
     
     
-    // actions:
+    // states:
     isTransactionReady       : false,
+    
+    
+    
+    // actions:
     startTransaction         : noopHandler,
     doPlaceOrder             : noopHandler,
 });
@@ -171,23 +171,28 @@ export interface TransactionStateProps
         Pick<TransactionState,
             // billing data:
             |'billingValidation'
-            |'setBillingValidation'
-            
             |'billingAddress'
-            |'setBillingAddress'
             
             
             
             // payment data:
             |'paymentValidation'
-            |'setPaymentValidation'
+            
+            
+            
+            // states:
+            |'isTransactionReady'
             
             
             
             // actions:
-            |'isTransactionReady'
             |'doPlaceOrder'
-        >
+        >,
+        Partial<Pick<TransactionState,
+            // sections:
+            |'billingAddressSectionRef'
+            |'paymentCardSectionRef'
+        >>
 {
     // actions:
     doTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
@@ -196,25 +201,37 @@ export interface TransactionStateProps
     doFinishOrder : (paymentDetail: PaymentDetail) => void
 }
 const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
+    // refs:
+    const defaultBillingAddressSectionRef  = useRef<HTMLElement|null>(null);
+    const defaultPaymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
+    
+    
+    
     // props:
     const {
         // billing data:
         billingValidation,
-        setBillingValidation,
-        
         billingAddress,
-        setBillingAddress,
         
         
         
         // payment data:
         paymentValidation,
-        setPaymentValidation,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef = defaultBillingAddressSectionRef,
+        paymentCardSectionRef    = defaultPaymentCardSectionRef,
+        
+        
+        
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
-        isTransactionReady,
         doTransaction,
         doPlaceOrder,
         doCancelOrder,
@@ -229,9 +246,11 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     
     
-    // refs:
-    const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
-    const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
+    // dialogs:
+    const {
+        showMessageError,
+        showMessageFetchError,
+    } = useDialogMessage();
     
     
     
@@ -259,14 +278,6 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
             messageDeclined,
             messageDeclinedRetry = messageDeclined,
         } = arg;
-        
-        
-        
-        // dialogs:
-        const {
-            showMessageError,
-            showMessageFetchError,
-        } = useDialogMessage();
         
         
         
@@ -395,16 +406,12 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     const transactionState = useMemo<TransactionState>(() => ({
         // billing data:
         billingValidation,
-        setBillingValidation,
-        
         billingAddress,
-        setBillingAddress,
         
         
         
         // payment data:
         paymentValidation,
-        setPaymentValidation,
         
         
         
@@ -414,23 +421,23 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         
-        // actions:
+        // states:
         isTransactionReady,
+        
+        
+        
+        // actions:
         startTransaction,            // stable ref
         doPlaceOrder,                // may NOT stable ref
     }), [
         // billing data:
         billingValidation,
-        setBillingValidation,
-        
         billingAddress,
-        setBillingAddress,
         
         
         
         // payment data:
         paymentValidation,
-        setPaymentValidation,
         
         
         
@@ -440,8 +447,12 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         
-        // actions:
+        // states:
         isTransactionReady,
+        
+        
+        
+        // actions:
         // startTransaction,         // stable ref
         doPlaceOrder,                // may NOT stable ref
     ]);

@@ -41,11 +41,13 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
-// internals:
+// states:
 import {
     AuthenticatedResult,
-    useCheckoutState,
-}                           from '../../../states/checkoutState'
+    useTransactionState,
+}                           from '@/components/payments/states'
+
+// internals:
 import {
     type BaseRedirectDialogProps,
 }                           from './types'
@@ -93,15 +95,15 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     
     // states:
     const {
-        // shipping data:
-        totalShippingCostStatus,
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
         startTransaction,
         doPlaceOrder,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
@@ -225,7 +227,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                         
                         
                         // states:
-                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                        enabled={isTransactionReady}
                         
                         
                         

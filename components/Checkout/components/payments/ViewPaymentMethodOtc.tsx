@@ -31,11 +31,11 @@ import {
     CaptchaDialog,
 }                           from '@/components/dialogs/CaptchaDialog'
 
-// internals:
+// states:
 import {
     AuthenticatedResult,
-    useCheckoutState,
-}                           from '../../states/checkoutState'
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 // models:
 import {
@@ -71,15 +71,15 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     
     // states:
     const {
-        // shipping data:
-        totalShippingCostStatus,
+        // states:
+        isTransactionReady,
         
         
         
         // actions:
         startTransaction,
         doPlaceOrder,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
@@ -156,7 +156,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                         
                         
                         // states:
-                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                        enabled={isTransactionReady}
                         
                         
                         

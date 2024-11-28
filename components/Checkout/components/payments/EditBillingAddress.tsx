@@ -55,9 +55,14 @@ import {
 import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
+
+// states:
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+import {
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 // models:
 import {
@@ -199,11 +204,14 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
     // states:
     const {
         // billing data:
-        billingValidation,
-        
         billingAddress,
         setBillingAddress,
     } = useCheckoutState();
+    
+    const {
+        // billing data:
+        billingValidation,
+    } = useTransactionState();
     
     const editorAddress = useMemo((): EditorAddress|null => {
         if (!billingAddress) return null;

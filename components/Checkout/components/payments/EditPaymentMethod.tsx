@@ -62,14 +62,19 @@ import type {
     PaymentMethod,
 }                           from '@/models'
 
-// internals:
-import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
+// states:
 import {
     // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
+import {
+    useTransactionState,
+}                           from '@/components/payments/states'
+
+// internals:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
 
 
 
@@ -110,12 +115,12 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
         // payment data:
         paymentMethod,
         setPaymentMethod,
-        
-        
-        
+    } = useCheckoutState();
+    
+    const {
         // sections:
         paymentCardSectionRef,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     

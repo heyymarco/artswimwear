@@ -14,9 +14,6 @@ import {
 
 // payment components:
 import {
-    useAppropriatePaymentProcessors,
-}                           from '@/components/payments/hooks'
-import {
     ConditionalPaypalCardComposerProvider,
 }                           from '@/components/payments/ConditionalPaypalCardComposerProvider'
 import {
@@ -43,10 +40,10 @@ import {
     EditBillingAddress,
 }                           from './EditBillingAddress'
 
-// internals:
+// states:
 import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
+    useTransactionState,
+}                           from '@/components/payments/states'
 
 
 
@@ -69,7 +66,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
         
         // sections:
         billingAddressSectionRef,
-    } = useCheckoutState();
+    } = useTransactionState();
     
     
     
