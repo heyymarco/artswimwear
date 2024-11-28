@@ -1,0 +1,462 @@
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // contexts:
+    createContext,
+    
+    
+    
+    // hooks:
+    useContext,
+    useMemo,
+    useRef,
+}                           from 'react'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // utility-components:
+    useDialogMessage,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// models:
+import {
+    // types:
+    type BillingAddressDetail,
+    
+    type PaymentDetail,
+    
+    type PlaceOrderRequestOptions,
+    type PlaceOrderDetail,
+}                           from '@/models'
+
+// errors:
+import {
+    ErrorDeclined,
+}                           from '@/errors'
+
+
+
+// hooks:
+
+// states:
+
+//#region transactionState
+
+// types:
+export const enum AuthenticatedResult {
+    /**
+     * The user is not authenticated until the timeout expires.
+     */
+    EXPIRED    = -2,
+    /**
+     * The user has decided to cancel the transaction.
+     */
+    CANCELED   = -1,
+    /**
+     * An error occured.  
+     * Usually using invalid card.
+     */
+    FAILED     = 0,
+    
+    /**
+     * Requires to capture the funds in server side.
+     */
+    AUTHORIZED = 1,
+    /**
+     * The transaction was successful but the funds have not yet settled your account.
+     */
+    PENDING    = 2,
+    /**
+     * The transaction was successful and the funds have settled your account.
+     */
+    CAPTURED   = 3,
+}
+export interface StartTransactionArg {
+    // handlers:
+    doPlaceOrder          : () => Promise<PlaceOrderDetail|PaymentDetail|false>
+    doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
+    
+    
+    
+    // messages:
+    messageFailed         : React.ReactNode
+    messageCanceled      ?: React.ReactNode
+    messageExpired       ?: React.ReactNode
+    messageDeclined       : React.ReactNode | ((errorMessage: string) => React.ReactNode)
+    messageDeclinedRetry ?: React.ReactNode | ((errorMessage: string) => React.ReactNode)
+}
+
+
+
+// contexts:
+export interface TransactionState
+{
+    // billing data:
+    billingValidation        : boolean
+    setBillingValidation     : (billingValidation : boolean) => void
+    
+    billingAddress           : BillingAddressDetail|null
+    setBillingAddress        : (billingAddress: BillingAddressDetail|null) => void
+    
+    
+    
+    // payment data:
+    paymentValidation        : boolean
+    setPaymentValidation     : (paymentValidation : boolean) => void
+    
+    
+    
+    // sections:
+    billingAddressSectionRef : React.MutableRefObject<HTMLElement|null>     | undefined
+    paymentCardSectionRef    : React.MutableRefObject<HTMLFormElement|null> | undefined
+    
+    
+    
+    // actions:
+    isTransactionReady       : boolean
+    startTransaction         : (arg: StartTransactionArg) => Promise<boolean>
+    doPlaceOrder             : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
+}
+
+const noopHandler = () => { throw Error('not inside <TransactionStateProvider>'); };
+const TransactionStateContext = createContext<TransactionState>({
+    // billing data:
+    billingValidation        : false,
+    setBillingValidation     : noopHandler,
+    
+    billingAddress           : null,
+    setBillingAddress        : noopHandler,
+    
+    
+    
+    // payment data:
+    paymentValidation        : false,
+    setPaymentValidation     : noopHandler,
+    
+    
+    
+    // sections:
+    billingAddressSectionRef : undefined,
+    paymentCardSectionRef    : undefined,
+    
+    
+    
+    // actions:
+    isTransactionReady       : false,
+    startTransaction         : noopHandler,
+    doPlaceOrder             : noopHandler,
+});
+TransactionStateContext.displayName  = 'TransactionState';
+
+export const useTransactionState = (): TransactionState => {
+    return useContext(TransactionStateContext);
+}
+
+
+
+// react components:
+export interface TransactionStateProps
+    extends
+        // bases:
+        Pick<TransactionState,
+            // billing data:
+            |'billingValidation'
+            |'setBillingValidation'
+            
+            |'billingAddress'
+            |'setBillingAddress'
+            
+            
+            
+            // payment data:
+            |'paymentValidation'
+            |'setPaymentValidation'
+            
+            
+            
+            // actions:
+            |'isTransactionReady'
+            |'doPlaceOrder'
+        >
+{
+    // actions:
+    doTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
+    doCancelOrder : (orderId: string) => Promise<void>
+    doMakePayment : (orderId: string) => Promise<PaymentDetail>
+    doFinishOrder : (paymentDetail: PaymentDetail) => void
+}
+const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
+    // props:
+    const {
+        // billing data:
+        billingValidation,
+        setBillingValidation,
+        
+        billingAddress,
+        setBillingAddress,
+        
+        
+        
+        // payment data:
+        paymentValidation,
+        setPaymentValidation,
+        
+        
+        
+        // actions:
+        isTransactionReady,
+        doTransaction,
+        doPlaceOrder,
+        doCancelOrder,
+        doMakePayment,
+        doFinishOrder,
+        
+        
+        
+        // children:
+        children,
+    } = props;
+    
+    
+    
+    // refs:
+    const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
+    const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
+    
+    
+    
+    // stable callbacks:
+    const startTransaction = useEvent(async (arg: StartTransactionArg): Promise<boolean> => {
+        // args:
+        const {
+            // handlers:
+            doPlaceOrder,
+            doAuthenticate,
+            
+            
+            
+            // messages:
+            messageFailed,
+            messageCanceled      = <>
+                <p>
+                    The transaction has been <strong>canceled</strong> by the user.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageExpired       = messageCanceled,
+            messageDeclined,
+            messageDeclinedRetry = messageDeclined,
+        } = arg;
+        
+        
+        
+        // dialogs:
+        const {
+            showMessageError,
+            showMessageFetchError,
+        } = useDialogMessage();
+        
+        
+        
+        // actions:
+        return await doTransaction(async (): Promise<void> => {
+            try {
+                // createOrder:
+                const orderBookedOrPaidOrAbort = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                if (orderBookedOrPaidOrAbort === false) return; // aborted (maybe due to validation error) => no need further action
+                
+                
+                
+                if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
+                    doFinishOrder(orderBookedOrPaidOrAbort satisfies PaymentDetail);
+                    return; // paid
+                } // if
+                
+                
+                
+                let rawOrderId = orderBookedOrPaidOrAbort.orderId;
+                let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
+                try {
+                    authenticatedOrPaid = await doAuthenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
+                    rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
+                }
+                catch (error: any) { // an unexpected authentication error occured
+                    // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                    doCancelOrder(rawOrderId);
+                    
+                    throw error;
+                } // try
+                
+                
+                
+                if (typeof(authenticatedOrPaid) === 'object') {
+                    doFinishOrder(authenticatedOrPaid satisfies PaymentDetail);
+                }
+                else {
+                    switch (authenticatedOrPaid) {
+                        case AuthenticatedResult.FAILED     : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageFailed,
+                            });
+                            break;
+                        }
+                        
+                        case AuthenticatedResult.CANCELED   : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageCanceled,
+                            });
+                            break;
+                        }
+                        case AuthenticatedResult.EXPIRED    : {
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelOrder(rawOrderId);
+                            
+                            
+                            
+                            showMessageError({
+                                error: messageExpired,
+                            });
+                            break;
+                        }
+                        
+                        
+                        
+                        case AuthenticatedResult.AUTHORIZED : { // paid => waiting for the payment to be captured on server side
+                            // then forward the authentication to backend_API to receive the fund:
+                            if (rawOrderId /* ignore empty string */) {
+                                const paymentDetail = await doMakePayment(rawOrderId);
+                                doFinishOrder(paymentDetail);
+                            } // if
+                            break;
+                        }
+                        
+                        
+                        
+                        case AuthenticatedResult.PENDING    :
+                        case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                            // doFinishOrder(); // TODO: DISPLAY paid page
+                            break;
+                        }
+                        
+                        
+                        
+                        default : { // an unexpected authentication result occured
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            doCancelOrder(rawOrderId);
+                            
+                            
+                            
+                            throw Error('Oops, an error occured!');
+                        }
+                    } // switch
+                } // if
+            }
+            catch (fetchError: any) {
+                if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
+                    const errorMessage : string = fetchError?.message ?? fetchError?.data?.error ?? '';
+                    showMessageError({
+                        error : (
+                            fetchError.shouldRetry
+                            ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(errorMessage))
+                            : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(errorMessage))
+                        ),
+                    });
+                }
+                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' /* context: 'order' */ });
+            } // try
+        });
+    });
+    
+    
+    
+    // states:
+    const transactionState = useMemo<TransactionState>(() => ({
+        // billing data:
+        billingValidation,
+        setBillingValidation,
+        
+        billingAddress,
+        setBillingAddress,
+        
+        
+        
+        // payment data:
+        paymentValidation,
+        setPaymentValidation,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,    // stable ref
+        paymentCardSectionRef,       // stable ref
+        
+        
+        
+        // actions:
+        isTransactionReady,
+        startTransaction,            // stable ref
+        doPlaceOrder,                // may NOT stable ref
+    }), [
+        // billing data:
+        billingValidation,
+        setBillingValidation,
+        
+        billingAddress,
+        setBillingAddress,
+        
+        
+        
+        // payment data:
+        paymentValidation,
+        setPaymentValidation,
+        
+        
+        
+        // sections:
+        // billingAddressSectionRef, // stable ref
+        // paymentCardSectionRef,    // stable ref
+        
+        
+        
+        // actions:
+        isTransactionReady,
+        // startTransaction,         // stable ref
+        doPlaceOrder,                // may NOT stable ref
+    ]);
+    
+    
+    
+    // jsx:
+    return (
+        <TransactionStateContext.Provider value={transactionState}>
+            {children}
+        </TransactionStateContext.Provider>
+    );
+};
+export {
+    TransactionStateProvider,
+    TransactionStateProvider as default,
+}
+//#endregion transactionState
