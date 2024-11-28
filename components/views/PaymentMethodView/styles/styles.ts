@@ -27,7 +27,7 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         gridTemplate: [[
             '"cardNumber  "', 'auto',
             '"............"', spacers.md,
-            '"cardExpires "', 'auto',
+            '"cardExpiry  "', 'auto',
             '"............"', spacers.md,
             '"cardCurrency"', 'auto',
             '"............"', spacers.md,
@@ -63,8 +63,8 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
             // typos:
             fontSize: typos.fontSizeXl,
         }),
-        ...children('.cardExpires', {
-            gridArea: 'cardExpires',
+        ...children('.cardExpiry', {
+            gridArea: 'cardExpiry',
             
             
             

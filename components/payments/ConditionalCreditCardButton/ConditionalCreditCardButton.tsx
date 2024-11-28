@@ -354,10 +354,10 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
             try {
                 const formData       = new FormData(paymentCardSectionElm);
                 const cardData       = {
-                    card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
-                    card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
-                    card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
-                    card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
+                    card_number         : formData.get('cardNumber')?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                    card_exp_month      : formData.get('cardExpiry')?.toString()?.trim()?.split('/')?.[0] || undefined,
+                    card_exp_year       : formData.get('cardExpiry')?.toString()?.trim()?.split('/')?.[1] || undefined,
+                    card_cvv            : formData.get('cardCvv'   )?.toString()?.trim(),
                     // bank_one_time_token : "12345678"
                 };
                 MidtransNew3ds.getCardToken(cardData, {
@@ -386,7 +386,9 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
     });
     const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         const redirectData = placeOrderDetail.redirectData;
-        if (redirectData === undefined) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
+        if (redirectData === undefined) { // if no redirectData => no need 3ds verification but the payment needs to be captured on server side
+            return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
+        } // if
         
         
         

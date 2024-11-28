@@ -116,7 +116,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                 />}
             </p>
             
-            {!!expiresAt && <p className='cardExpires'>
+            {!!expiresAt && <p className='cardExpiry'>
                 <span>
                     {expiresAt.getUTCMonth()}
                 </span>

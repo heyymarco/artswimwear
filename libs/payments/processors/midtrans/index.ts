@@ -511,7 +511,7 @@ export const midtransCreateOrderWithCard      = async (cardToken: string, orderI
         payment_type         : 'credit_card',
         credit_card          : {
             token_id         : cardToken,
-            authentication   : true,
+            authentication   : true, // Flag to enable the 3D secure authentication. Default value is false.
             callback_type    : 'js_event',
             
             // features:
