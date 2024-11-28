@@ -26,6 +26,9 @@ import {
 
 // redux:
 import {
+    produce,
+}                           from 'immer'
+import {
     type EntityState
 }                           from '@reduxjs/toolkit'
 import {
@@ -74,6 +77,8 @@ import {
 // models:
 import {
     // types:
+    type ProductPreview,
+    
     type ShippingAddressDetail,
     type BillingAddressDetail,
     
@@ -871,12 +876,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // const isPaymentStep                  = (checkoutStep === 'PAYMENT');
     const isLastCheckoutStep             = (checkoutStep === 'PENDING') || (checkoutStep === 'PAID');
     const isCheckoutEmpty                = (
-        // isCartEmpty     // do NOT rely on `isCartEmpty`
-        !cartItems.length  // instead use own `cartItems.length`, because when the order is finished, the cartItem(s) will be GONE, we need to see the LAST state stored in `finishedOrderState`
-        
-        /* isOther1Empty */
-        /* isOther2Empty */
-        /* isOther3Empty */
+        !(isPrevOrderLoading || isPrevOrderError) // assumes as NOT_EMPTY is restoring prev order
+        &&
+        (
+            // isCartEmpty     // do NOT rely on `isCartEmpty`
+            !cartItems.length  // instead use own `cartItems.length`, because when the order is finished, the cartItem(s) will be GONE, we need to see the LAST state stored in `finishedOrderState`
+            
+            /* isOther1Empty */
+            /* isOther2Empty */
+            /* isOther3Empty */
+        )
     );
     const isCheckoutLoading              = (
         !isCheckoutEmpty // has cartItem(s) to display, if no cartItem(s) => nothing to load
@@ -980,7 +989,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        setFinishedOrderState(prevOrderData); // restore the cart & checkout states from fetch to react state
+        const prevOrderDataFixed = produce(prevOrderData, (draft) => {
+            if (!(draft.productPreviews instanceof Map)) {
+                draft.productPreviews = new Map<string, ProductPreview>(draft.productPreviews );
+            } // if
+        });
+        setFinishedOrderState(prevOrderDataFixed); // restore the cart & checkout states from fetch to react state
     }, [prevOrderData]);
     
     // auto reset reduct state if was invalid:

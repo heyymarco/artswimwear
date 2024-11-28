@@ -1908,12 +1908,13 @@ router
     const order = await prisma.order.findFirst({
         where  : {
             orderId   : orderId,
-            // updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
+            updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
         },
         select : {
             currency : {
                 select : {
                     currency : true,
+                    rate     : true,
                 },
             },
             items : {
@@ -2089,7 +2090,7 @@ router
             items    : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
             currency : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
         },
-        productPreviews           : new Map<string, ProductPreview>(
+        productPreviews           : /* cannot using Map in JSON new Map<string, ProductPreview> */(
             items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))
             .map((product): [string, ProductPreview] => {
                 const {
@@ -2116,7 +2117,7 @@ router
                     }
                 ];
             })
-        ),
+        ) as unknown as Map<string, ProductPreview>,
         checkoutSession           : {
             // extra data:
             marketingOpt       : customer?.preference?.marketingOpt ?? guest?.preference?.marketingOpt ?? true,
@@ -2172,7 +2173,7 @@ router
             paymentValidation  : true,
             paymentMethod      : null,
         },
-        totalShippingCost         : shippingCost,
+        totalShippingCost         : (shippingCost === null) ? null : (shippingCost / (currency?.rate ?? 1)),
         paymentDetail             : paymentDetail,
         
         isShippingAddressRequired : items.some(({quantity, product}) => (quantity > 0) && product && (product.shippingWeight !== null)),
