@@ -340,7 +340,6 @@ export interface CheckoutStateBase
     gotoStepInformation          : (focusTo?: 'contactInfo'|'shippingAddress') => void
     gotoStepShipping             : () => Promise<boolean>
     gotoPayment                  : () => Promise<boolean>
-    gotoFinished                 : (paymentDetail: PaymentDetail, paid: boolean) => void
     
     startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
     doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
@@ -491,7 +490,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     gotoStepInformation          : noopCallback,
     gotoStepShipping             : noopCallback as any,
     gotoPayment                  : noopCallback as any,
-    gotoFinished                 : noopCallback as any,
     
     startTransaction             : noopCallback as any,
     doPlaceOrder                 : noopCallback as any,
@@ -1622,7 +1620,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
-                    gotoFinished(orderBookedOrPaidOrAbort satisfies PaymentDetail, /*paid:*/(orderBookedOrPaidOrAbort.type !== 'MANUAL'));
+                    gotoFinished(orderBookedOrPaidOrAbort satisfies PaymentDetail);
                     return; // paid
                 } // if
                 
@@ -1644,7 +1642,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 if (typeof(authenticatedOrPaid) === 'object') {
-                    gotoFinished(authenticatedOrPaid, /*paid:*/(authenticatedOrPaid.type !== 'MANUAL'));
+                    gotoFinished(authenticatedOrPaid satisfies PaymentDetail);
                 }
                 else {
                     switch (authenticatedOrPaid) {
@@ -1687,7 +1685,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         
                         case AuthenticatedResult.AUTHORIZED : { // paid => waiting for the payment to be captured on server side
                             // then forward the authentication to backend_API to receive the fund:
-                            if (rawOrderId /* ignore empty string */) await doMakePayment(rawOrderId, /*paid:*/true);
+                            if (rawOrderId /* ignore empty string */) {
+                                const paymentDetail = await doMakePayment(rawOrderId);
+                                gotoFinished(paymentDetail);
+                            } // if
                             break;
                         }
                         
@@ -1906,8 +1907,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
-    const doMakePayment        = useEvent(async (orderId: string, paid: boolean, options?: MakePaymentOptions): Promise<void> => {
-        if (options?.cancelOrder) {
+    const doMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+        return dispatch(makePayment({
+            orderId,
+            
+            
+            
+            // billing data:
+            ...(isBillingAddressRequired ? {
+                billingAddress : billingAsShipping ? shippingAddress : billingAddress,
+            } : undefined),
+        })).unwrap();
+    });
+    const doCancelDraftOrder   = useEvent(async (orderId: string): Promise<void> => {
+        // conditions:
+        if (!orderId) return; // empty string => ignore
+        
+        
+        
+        try {
+            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
             console.log('canceling order...');
             await dispatch(makePayment({
                 orderId,
@@ -1918,46 +1937,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 cancelOrder: true,
             })).unwrap();
             console.log('canceled');
-            return;
-        } // if
-        
-        
-        
-        const paymentDetail = await dispatch(makePayment({
-            orderId,
-            
-            
-            
-            // billing data:
-            ...(isBillingAddressRequired ? {
-                billingAddress : billingAsShipping ? shippingAddress : billingAddress,
-            } : undefined),
-            
-            
-            
-            // options: cancelOrder
-            ...options,
-        })).unwrap();
-        
-        
-        
-        gotoFinished(paymentDetail, paid);
-    });
-    const doCancelDraftOrder   = useEvent(async (orderId: string): Promise<void> => {
-        // conditions:
-        if (!orderId) return; // empty string => ignore
-        
-        
-        
-        try {
-            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            await doMakePayment(orderId, /*paid:*/false, { cancelOrder: true });
         }
         catch {
             // ignore any error
         } // try
     });
-    const gotoFinished         = useEvent((paymentDetail: PaymentDetail, paid: boolean): void => {
+    const gotoFinished         = useEvent((paymentDetail: PaymentDetail): void => {
         // save the finished order states:
         // setCheckoutStep(paid ? 'PAID' : 'PENDING'); // not needed this code, already handled by `setFinishedOrderState` below:
         const soldProductIds = new Set<string|number>(
@@ -1974,7 +1959,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             checkoutSession : {
                 ...localCheckoutSession,
                 customer     : session?.user ? ({ name: session.user.name, email: session.user.email } satisfies CustomerOrGuestPreview) : localCheckoutSession.customer,
-                checkoutStep : (paid ? 'PAID' : 'PENDING'),
+                checkoutStep : ((paymentDetail.type !== 'MANUAL') ? 'PAID' : 'PENDING'),
             },
             totalShippingCost,
             paymentDetail,
@@ -2103,7 +2088,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         gotoStepInformation,          // stable ref
         gotoStepShipping,             // stable ref
         gotoPayment,                  // stable ref
-        gotoFinished,                 // stable ref
         
         startTransaction,             // stable ref
         doPlaceOrder,                 // stable ref
@@ -2205,7 +2189,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // gotoStepInformation,       // stable ref
         // gotoStepShipping,          // stable ref
         // gotoPayment,               // stable ref
-        // gotoFinished,              // stable ref
         
         // startTransaction,          // stable ref
         // doPlaceOrder,              // stable ref
