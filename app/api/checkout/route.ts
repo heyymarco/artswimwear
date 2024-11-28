@@ -1908,7 +1908,7 @@ router
     const order = await prisma.order.findFirst({
         where  : {
             orderId   : orderId,
-            // updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
+            updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
         },
         select : {
             currency : {
@@ -2089,34 +2089,6 @@ router
             items    : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
             currency : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
         },
-        productPreviews           : new Map<string, ProductPreview>(
-            items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))
-            .map((product): [string, ProductPreview] => {
-                const {
-                    images,        // take
-                    variantGroups, // take
-                ...restProduct} = product;
-                
-                return [
-                    restProduct.id,
-                    {
-                        ...restProduct,
-                        image         : images?.[0],
-                        variantGroups : (
-                            variantGroups
-                            .map(({variants}) =>
-                                variants
-                                .map(({images, ...restVariantPreview}) => ({
-                                    ...restVariantPreview,
-                                    image : images?.[0],
-                                }))
-                            )
-                        ),
-                        wished        : undefined, // no need to check wished status, so just simply reported as false
-                    }
-                ];
-            })
-        ),
         checkoutSession           : {
             // extra data:
             marketingOpt       : customer?.preference?.marketingOpt ?? guest?.preference?.marketingOpt ?? true,

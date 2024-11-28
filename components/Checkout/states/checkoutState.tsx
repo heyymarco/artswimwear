@@ -509,11 +509,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // relation data:
-        productPreviews: globalProductPreviews,
-        
-        
-        
         // actions:
         trimProductsFromCart,
         
@@ -523,7 +518,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = cartState;
     const currency              = finishedOrderState ? finishedOrderState.cartState.currency : globalCartCurrency;
     const cartItems             = finishedOrderState ? finishedOrderState.cartState.items    : globalCartItems;
-    const productPreviews       = finishedOrderState ? finishedOrderState.productPreviews    : globalProductPreviews;
     
     
     
@@ -1749,7 +1743,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 items    : cartItems,
                 currency : currency,
             },
-            productPreviews : productPreviews,
             
             checkoutSession : {
                 ...localCheckoutSession,
@@ -1982,8 +1975,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finishedOrderState
         ? <CartStateProvider
             // mocks:
-            mockCartState       = {finishedOrderState.cartState}
-            mockProductPreviews = {finishedOrderState.productPreviews}
+            mockCartState={finishedOrderState.cartState}
         >
             {children}
         </CartStateProvider>

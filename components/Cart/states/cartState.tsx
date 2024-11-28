@@ -340,15 +340,13 @@ export const useRestoredCartEvent = (eventHandler: EventHandler<(CartDetail & Pi
 // react components:
 export interface CartStateProps {
     // mocks:
-    mockCartState       ?: Pick<CartState, 'items'|'currency'>
-    mockProductPreviews ?: CartState['productPreviews']
+    mockCartState ?: Pick<CartState, 'items'|'currency'>
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // rest props:
     const {
         // mocks:
         mockCartState,
-        mockProductPreviews,
         
         
         
@@ -493,7 +491,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         productPreviewSelect,
         productPreviewSelect,
     );
-    const realProductPreviews        = useMemo<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(() => {
+    const productPreviews            = useMemo<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(() => {
         // use LIVE data when error|loading|uninitialized:
         if (!productPreviewMapRef.current) return productPreviewMapRef.current;
         
@@ -501,12 +499,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // use DELAYED data when ready:
         return realProductPreviewsDelayed;
-    }, [items, productPreviewGeneration, realProductPreviewsDelayed]);// re-create the `realProductPreviews` when the items|productPreviewGeneration|realProductPreviewsDelayed are changed
-    const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
-    const realIsProductError         = (realProductPreviews === /* = error */ null);
-    const productPreviews            = mockProductPreviews        ??        realProductPreviews;
-    const isProductLoading           = mockProductPreviews ?    false     : realIsProductLoading;
-    const isProductError             = mockProductPreviews ?    false     : realIsProductError;
+    }, [items, productPreviewGeneration, realProductPreviewsDelayed]);// re-create the `productPreviews` when the items|productPreviewGeneration|realProductPreviewsDelayed are changed
+    const isProductLoading           = (productPreviews === /* = loading|uninitialized */ undefined);
+    const isProductError             = (productPreviews === /* = error */ null);
     
     
     
@@ -982,7 +977,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     
     const refetchCart           = useEvent((): void => {
-        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewGeneration({}); // force to re-create the `productPreviewPromises`
+        if (isProductError && !isProductLoading) setProductPreviewGeneration({}); // force to re-create the `productPreviewPromises`
     });
     const resetCart             = useEvent((): void => {
         lastRestoredCartDetailRef.current = undefined;
