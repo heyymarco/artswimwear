@@ -83,8 +83,8 @@ export const enum AuthenticatedResult {
 }
 export interface StartTransactionArg {
     // handlers:
-    doPlaceOrder          : () => Promise<PlaceOrderDetail|PaymentDetail|false>
-    doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
+    onPlaceOrder          : () => Promise<PlaceOrderDetail|PaymentDetail|false>
+    onAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
     
     
     
@@ -125,7 +125,7 @@ export interface TransactionState
     
     // actions:
     startTransaction         : (arg: StartTransactionArg) => Promise<boolean>
-    doPlaceOrder             : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
+    onPlaceOrder             : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
 }
 
 const noopHandler = () => { throw Error('not inside <TransactionStateProvider>'); };
@@ -154,7 +154,7 @@ const TransactionStateContext = createContext<TransactionState>({
     
     // actions:
     startTransaction         : noopHandler,
-    doPlaceOrder             : noopHandler,
+    onPlaceOrder             : noopHandler,
 });
 TransactionStateContext.displayName  = 'TransactionState';
 
@@ -186,7 +186,7 @@ export interface TransactionStateProps
             
             
             // actions:
-            |'doPlaceOrder'
+            |'onPlaceOrder'
         >,
         Partial<Pick<TransactionState,
             // sections:
@@ -195,10 +195,10 @@ export interface TransactionStateProps
         >>
 {
     // actions:
-    doTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doCancelOrder : (orderId: string) => Promise<void>
-    doMakePayment : (orderId: string) => Promise<PaymentDetail>
-    doFinishOrder : (paymentDetail: PaymentDetail) => void
+    onTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
+    onCancelOrder : (orderId: string) => Promise<void>
+    onMakePayment : (orderId: string) => Promise<PaymentDetail>
+    onFinishOrder : (paymentDetail: PaymentDetail) => void
 }
 const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
     // refs:
@@ -232,11 +232,11 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         // actions:
-        doTransaction,
-        doPlaceOrder,
-        doCancelOrder,
-        doMakePayment,
-        doFinishOrder,
+        onTransaction,
+        onPlaceOrder,
+        onCancelOrder,
+        onMakePayment,
+        onFinishOrder,
         
         
         
@@ -259,8 +259,8 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         // args:
         const {
             // handlers:
-            doPlaceOrder,
-            doAuthenticate,
+            onPlaceOrder,
+            onAuthenticate,
             
             
             
@@ -282,16 +282,16 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         // actions:
-        return await doTransaction(async (): Promise<void> => {
+        return await onTransaction(async (): Promise<void> => {
             try {
                 // createOrder:
-                const orderBookedOrPaidOrAbort = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                const orderBookedOrPaidOrAbort = await onPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
                 if (orderBookedOrPaidOrAbort === false) return; // aborted (maybe due to validation error) => no need further action
                 
                 
                 
                 if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
-                    doFinishOrder(orderBookedOrPaidOrAbort satisfies PaymentDetail);
+                    onFinishOrder(orderBookedOrPaidOrAbort satisfies PaymentDetail);
                     return; // paid
                 } // if
                 
@@ -300,12 +300,12 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                 let rawOrderId = orderBookedOrPaidOrAbort.orderId;
                 let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
                 try {
-                    authenticatedOrPaid = await doAuthenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
-                    rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
+                    authenticatedOrPaid = await onAuthenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
+                    rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `onAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                    doCancelOrder(rawOrderId);
+                    onCancelOrder(rawOrderId);
                     
                     throw error;
                 } // try
@@ -313,13 +313,13 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                 
                 
                 if (typeof(authenticatedOrPaid) === 'object') {
-                    doFinishOrder(authenticatedOrPaid satisfies PaymentDetail);
+                    onFinishOrder(authenticatedOrPaid satisfies PaymentDetail);
                 }
                 else {
                     switch (authenticatedOrPaid) {
                         case AuthenticatedResult.FAILED     : {
                             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            doCancelOrder(rawOrderId);
+                            onCancelOrder(rawOrderId);
                             
                             
                             
@@ -331,7 +331,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                         
                         case AuthenticatedResult.CANCELED   : {
                             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            doCancelOrder(rawOrderId);
+                            onCancelOrder(rawOrderId);
                             
                             
                             
@@ -342,7 +342,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                         }
                         case AuthenticatedResult.EXPIRED    : {
                             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            doCancelOrder(rawOrderId);
+                            onCancelOrder(rawOrderId);
                             
                             
                             
@@ -357,8 +357,8 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                         case AuthenticatedResult.AUTHORIZED : { // paid => waiting for the payment to be captured on server side
                             // then forward the authentication to backend_API to receive the fund:
                             if (rawOrderId /* ignore empty string */) {
-                                const paymentDetail = await doMakePayment(rawOrderId);
-                                doFinishOrder(paymentDetail);
+                                const paymentDetail = await onMakePayment(rawOrderId);
+                                onFinishOrder(paymentDetail);
                             } // if
                             break;
                         }
@@ -367,7 +367,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                         
                         case AuthenticatedResult.PENDING    :
                         case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                            // doFinishOrder(); // TODO: DISPLAY paid page
+                            // onFinishOrder(); // TODO: DISPLAY paid page
                             break;
                         }
                         
@@ -375,7 +375,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                         
                         default : { // an unexpected authentication result occured
                             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            doCancelOrder(rawOrderId);
+                            onCancelOrder(rawOrderId);
                             
                             
                             
@@ -428,7 +428,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         // actions:
         startTransaction,            // stable ref
-        doPlaceOrder,                // may NOT stable ref
+        onPlaceOrder,                // may NOT stable ref
     }), [
         // billing data:
         billingValidation,
@@ -454,7 +454,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         // actions:
         // startTransaction,         // stable ref
-        doPlaceOrder,                // may NOT stable ref
+        onPlaceOrder,                // may NOT stable ref
     ]);
     
     

@@ -115,7 +115,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+    const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
         // const paymentCardSectionElm = paymentCardSectionRef?.current;
         // if (!paymentCardSectionElm) return false; // payment aborted due to unexpected error
@@ -125,7 +125,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         
         // validations:
         const formState = await cardFieldsForm.getState();
-        if (!formState.isFormValid) return false; // no need to show invalid fields, already handled by `checkoutState::doTransaction()`
+        if (!formState.isFormValid) return false; // no need to show invalid fields, already handled by `checkoutState::onTransaction()`
         
         
         
@@ -133,7 +133,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         const { promise: promiseApprovedOrderId, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
         signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {
-            await cardFieldsForm.submit(); // triggers <PayPalCardFieldsProvider> => handlePaymentInterfaceStart() => doPlaceOrder()
+            await cardFieldsForm.submit(); // triggers <PayPalCardFieldsProvider> => handlePaymentInterfaceStart() => onPlaceOrder()
             
             
             
@@ -156,7 +156,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
             signalApprovedOrderIdRef.current = null; // unref the proxy_resolver
         } // try
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+    const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
     });
     
@@ -171,8 +171,8 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
             
             
             // handlers:
-            doPlaceOrder={proxyDoPlaceOrder}
-            doAuthenticate={proxyDoAuthenticate}
+            onPlaceOrder={handlePlaceOrder}
+            onAuthenticate={handleAuthenticate}
         />
     );
 };
@@ -185,7 +185,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         // actions:
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     const stripe   = useStripe();
@@ -194,7 +194,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+    const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         if (!stripe)            return false; // payment aborted due to unexpected error
         if (!elements)          return false; // payment aborted due to unexpected error
         const cardNumberElement = elements.getElement('cardNumber');
@@ -236,12 +236,12 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
-        return await doPlaceOrder({
+        return await onPlaceOrder({
             paymentSource  : 'stripeCard',
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+    const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         if (!stripe)   return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         if (!elements) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         
@@ -287,8 +287,8 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
             
             
             // handlers:
-            doPlaceOrder={proxyDoPlaceOrder}
-            doAuthenticate={proxyDoAuthenticate}
+            onPlaceOrder={handlePlaceOrder}
+            onAuthenticate={handleAuthenticate}
         />
     );
 };
@@ -301,7 +301,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         // actions:
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     
@@ -314,7 +314,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+    const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
         // conditions:
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         if (!paymentCardSectionElm) return false; // payment aborted due to unexpected error
@@ -359,12 +359,12 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
-        return await doPlaceOrder({
+        return await onPlaceOrder({
             paymentSource  : 'midtransCard',
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+    const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         const redirectData = placeOrderDetail.redirectData;
         if (redirectData === undefined) { // if no redirectData => no need 3ds verification but the payment needs to be captured on server side
             return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
@@ -565,8 +565,8 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
             
             
             // handlers:
-            doPlaceOrder={proxyDoPlaceOrder}
-            doAuthenticate={proxyDoAuthenticate}
+            onPlaceOrder={handlePlaceOrder}
+            onAuthenticate={handleAuthenticate}
         />
     );
 };
@@ -581,8 +581,8 @@ interface ButtonPaymentGeneralProps
         // handlers:
         Pick<StartTransactionArg,
             // handlers:
-            |'doPlaceOrder'
-            |'doAuthenticate'
+            |'onPlaceOrder'
+            |'onAuthenticate'
         >
 {
 }
@@ -591,8 +591,8 @@ interface ImplementedButtonPaymentGeneralProps
         // bases:
         Omit<ButtonPaymentGeneralProps,
             // handlers:
-            |'doPlaceOrder'
-            |'doAuthenticate'
+            |'onPlaceOrder'
+            |'onAuthenticate'
         >
 {
 }
@@ -600,8 +600,8 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     // props:
     const {
         // handlers:
-        doPlaceOrder,
-        doAuthenticate,
+        onPlaceOrder   : handlePlaceOrder,
+        onAuthenticate : handleAuthenticate,
         
         
         
@@ -628,8 +628,8 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     const handlePayButtonClick   = useEvent(() => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : doPlaceOrder,
-            doAuthenticate       : doAuthenticate,
+            onPlaceOrder         : handlePlaceOrder,
+            onAuthenticate       : handleAuthenticate,
             
             
             

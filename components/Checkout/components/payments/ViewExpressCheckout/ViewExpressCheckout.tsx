@@ -173,7 +173,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         // actions:
         startTransaction,
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     
@@ -244,7 +244,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+            onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // collect customer details and display line items:
                 event.resolve({
                     // generals:
@@ -283,7 +283,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 return promiseOrderBookedOrPaidOrAbort;
             },
-            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => {
+            onAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => {
                 // the order has been booked => now authenticate the payment so that the payment can be captured on server side
                 handlePaymentInterfaceApproved(placeOrderDetail);
                 
@@ -407,7 +407,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             signalOrderBookedOrPaidOrAbort.current?.( // order booked -or- paid
-                await doPlaceOrder({
+                await onPlaceOrder({
                     paymentSource  : 'stripeExpress',
                     cardToken      : confirmationToken,
                 })

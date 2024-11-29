@@ -78,7 +78,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
         
         // actions:
         startTransaction,
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     
@@ -94,7 +94,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     const handlePayWithOtc = useEvent(async (): Promise<void> => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+            onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // conditions:
                 const captcha = await showDialog<string>(
                     <CaptchaDialog />
@@ -104,13 +104,13 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                 
                 
                 // createOrder:
-                return doPlaceOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
+                return onPlaceOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
                     paymentSource : paymentSource,
                     captcha       : captcha,
                 });
             },
-            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-                // this function should NEVER called because the `doPlaceOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
+            onAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+                // this function should NEVER called because the `onPlaceOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
                 return AuthenticatedResult.FAILED;
             },
             

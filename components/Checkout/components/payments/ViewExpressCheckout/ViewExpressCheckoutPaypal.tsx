@@ -113,7 +113,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         // actions:
         startTransaction,
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     
@@ -168,9 +168,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+            onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 try {
-                    const orderBookedOrPaid = await doPlaceOrder(data);
+                    const orderBookedOrPaid = await onPlaceOrder(data);
                     if (!('orderId' in orderBookedOrPaid)) return false; // immediately paid => unexpected response (that should NOT be happened) => abort
                     
                     
@@ -193,7 +193,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     throw fetchError; // re-throw the exception
                 } // try
             },
-            doAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
+            onAuthenticate       : (placeOrderDetail: PlaceOrderDetail) => promiseAuthenticatedOrPaid,
             
             
             

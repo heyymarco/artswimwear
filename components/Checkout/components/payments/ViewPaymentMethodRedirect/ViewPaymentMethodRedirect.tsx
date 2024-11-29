@@ -102,7 +102,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
         
         // actions:
         startTransaction,
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     
@@ -118,13 +118,13 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     const handlePayWithRedirect  = useEvent(async (): Promise<void> => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+            onPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // createOrder:
-                return doPlaceOrder({
+                return onPlaceOrder({
                     paymentSource : paymentSource,
                 });
             },
-            doAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+            onAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
                 const redirectData = placeOrderDetail.redirectData; // get the unfinished redirectData
                 if (!redirectData) return AuthenticatedResult.FAILED; // undefined|empty_string => failed
                 

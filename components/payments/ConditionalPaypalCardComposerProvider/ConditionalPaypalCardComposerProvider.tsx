@@ -83,7 +83,7 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     // states:
     const {
         // actions:
-        doPlaceOrder,
+        onPlaceOrder,
     } = useTransactionState();
     
     const {
@@ -105,7 +105,7 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
         try {
-            const orderBookedOrPaid = await doPlaceOrder();
+            const orderBookedOrPaid = await onPlaceOrder();
             if (!('orderId' in orderBookedOrPaid)) throw Error('Oops, an error occured!'); // immediately paid => unexpected response (that should NOT be happened) => abort            
             
             
