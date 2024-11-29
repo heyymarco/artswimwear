@@ -187,12 +187,7 @@ export interface TransactionStateProps
             
             // states:
             |'isTransactionReady'
-        >,
-        Partial<Pick<TransactionState,
-            // sections:
-            |'billingAddressSectionRef'
-            |'paymentCardSectionRef'
-        >>
+        >
 {
     // actions:
     onPrepareTransaction ?: () => Promise<boolean>
@@ -203,12 +198,6 @@ export interface TransactionStateProps
     onFinishOrder         : (paymentDetail: PaymentDetail) => void
 }
 const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
-    // refs:
-    const defaultBillingAddressSectionRef  = useRef<HTMLElement|null>(null);
-    const defaultPaymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
-    
-    
-    
     // props:
     const {
         // payment data:
@@ -219,12 +208,6 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         // billing data:
         billingValidation,
         billingAddress,
-        
-        
-        
-        // sections:
-        billingAddressSectionRef = defaultBillingAddressSectionRef,
-        paymentCardSectionRef    = defaultPaymentCardSectionRef,
         
         
         
@@ -246,6 +229,12 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         // children:
         children,
     } = props;
+    
+    
+    
+    // refs:
+    const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
+    const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
     
     
     

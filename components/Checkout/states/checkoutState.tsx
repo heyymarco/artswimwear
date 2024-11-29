@@ -1299,8 +1299,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const customerInfoSectionRef    = useRef<HTMLElement|null>(null);
     const shippingAddressSectionRef = useRef<HTMLElement|null>(null);
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
-    const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
-    const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
     const currentStepSectionRef     = useRef<HTMLElement|null>(null);
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
@@ -1998,12 +1996,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     // billing data:
                     billingValidation={billingValidation}
                     billingAddress={billingAsShipping ? shippingAddress : billingAddress}
-                    
-                    
-                    
-                    // sections:
-                    billingAddressSectionRef={billingAddressSectionRef}
-                    paymentCardSectionRef={paymentCardSectionRef}
                     
                     
                     
