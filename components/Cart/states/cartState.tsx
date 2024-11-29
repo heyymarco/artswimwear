@@ -413,14 +413,52 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // apis:
     const [productPreviewGeneration, setProductPreviewGeneration] = useState<{}>({});
     const productPreviewMapRef       = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
-    const productPreviewPromises     = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
+    /*
+        Error:
+        Warning: Cannot update a component (`CheckoutStateProvider`) while rendering a different component (`CartStateProvider`). To locate the bad setState() call inside `CartStateProvider`
+    */
+    // const productPreviewPromises     = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
+    //     // reset:
+    //     productPreviewMapRef.current = /* = loading|uninitialized */ undefined;
+    //     
+    //     
+    //     
+    //     // computes:
+    //     return (
+    //         items
+    //         .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
+    //             dispatch(getProductPreview(productId, {
+    //                 forceRefetch           : false,              // take from cache (if available)
+    //                 subscribe              : true,               // must be true in order to get the response result
+    //                 subscriptionOptions    : {
+    //                     pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
+    //                     refetchOnFocus     : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after the application window regains focus.
+    //                     refetchOnReconnect : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after regaining a network connection.
+    //                 },
+    //             }))
+    //         )
+    //     );
+    // }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
+    // useIsomorphicLayoutEffect(() => {
+    //     // cleanups:
+    //     return () => {
+    //         for (const productPreviewPromise of productPreviewPromises) {
+    //             productPreviewPromise.unsubscribe();
+    //         } // for
+    //     };
+    // }, [productPreviewPromises]); // unsubscribes the `productPreviewPromises` when the cartState unmounted
+    /*
+        No error: using useState + useIsomorphicLayoutEffect pair instead of useMemo:
+    */
+    const [productPreviewPromises, setProductPreviewPromises] = useState<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>([]);
+    useIsomorphicLayoutEffect(() => {
         // reset:
         productPreviewMapRef.current = /* = loading|uninitialized */ undefined;
         
         
         
         // computes:
-        return (
+        const newProductPreviewPromises = (
             items
             .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
                 dispatch(getProductPreview(productId, {
@@ -434,15 +472,17 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 }))
             )
         );
-    }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
-    useIsomorphicLayoutEffect(() => {
+        setProductPreviewPromises(newProductPreviewPromises);
+        
+        
+        
         // cleanups:
         return () => {
-            for (const productPreviewPromise of productPreviewPromises) {
+            for (const productPreviewPromise of newProductPreviewPromises) {
                 productPreviewPromise.unsubscribe();
             } // for
         };
-    }, [productPreviewPromises]); // unsubscribes the `productPreviewPromises` when the cartState unmounted
+    }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
     
     const productPreviewWatchdog     = useCallback((onChange: () => void): (() => void) => {
         // reset:
