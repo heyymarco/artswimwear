@@ -16,25 +16,32 @@ import {
 export default () => [
     scope('collectionTab', {
         // layout:
-        display      : 'grid',
-        alignContent : 'start',
-        gridTemplate : [[
-            '"name-label      "', 'auto',
-            '"name-editor     "', 'auto',
-            '/',
-            '1fr'
-        ]],
-        
-        
-        
-        // spacings:
-        gapInline    : spacers.md,
-        gapBlock     : spacers.xs,
+        display: 'grid',
         
         
         
         // children:
-        ...children('.name.label' , { gridArea: 'name-label'  }),
-        ...children('.name.editor', { gridArea: 'name-editor' }),
+        ...children('*', { // * = a <div> by <PayPalCardFieldsProvider>
+            // layout:
+            display      : 'grid',
+            alignContent : 'start',
+            gridTemplate : [[
+                '"name-label      "', 'auto',
+                '"name-editor     "', 'auto',
+                '/',
+                '1fr'
+            ]],
+            
+            
+            
+            // spacings:
+            gap: spacers.md,
+            
+            
+            
+            // children:
+            ...children('.name.label' , { gridArea: 'name-label'  }),
+            ...children('.name.editor', { gridArea: 'name-editor' }),
+        }),
     }),
 ];

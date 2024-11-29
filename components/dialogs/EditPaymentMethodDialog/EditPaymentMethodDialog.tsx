@@ -62,6 +62,11 @@ import {
     CartStateProvider,
 }                           from '@/components/Cart/states/cartState'
 
+// transaction components:
+import {
+    TransactionStateProvider,
+}                           from '@/components/payments/states'
+
 // internal components:
 import {
     // types:
@@ -80,6 +85,29 @@ import {
 
 // models:
 import {
+    // types:
+    type ProductPreview,
+    
+    type ShippingAddressDetail,
+    type BillingAddressDetail,
+    
+    type PaymentDetail,
+    
+    type CustomerOrGuestPreview,
+    type CustomerPreferenceDetail,
+    
+    type CheckoutStep,
+    type TotalShippingCostStatus,
+    type PaymentMethod,
+    type PlaceOrderRequestOptions,
+    type PlaceOrderDetail,
+    type FinishedOrderState,
+    type BusyState,
+    type CheckoutSession,
+    
+    type CartDetail,
+    type CartUpdateRequest,
+    
     type PaymentMethodDetail,
 }                           from '@/models'
 
@@ -106,21 +134,6 @@ export interface EditPaymentMethodDialogProps
 {
 }
 const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
-    // jsx:
-    return (
-        <CartStateProvider>
-            <ConditionalPaymentScriptProvider
-                // required for purchasing:
-                totalShippingCost={null} // not_physical_product
-            >
-                <ConditionalPaypalCardComposerProvider>
-                    <EditPaymentMethodDialogInternal {...props} />
-                </ConditionalPaypalCardComposerProvider>
-            </ConditionalPaymentScriptProvider>
-        </CartStateProvider>
-    );
-};
-const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
     // styles:
     const styleSheet = useEditPaymentMethodDialogStyleSheet();
     
@@ -181,23 +194,82 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         };
     });
     
+    const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
+        return true;
+    });
+    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+        await transaction();
+        return true;
+    });
+    const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+        return {
+            orderId : 'abc123',
+        } satisfies PlaceOrderDetail;
+    });
+    const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
+    });
+    const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+        return {
+            type       : 'CUSTOM',
+            brand      : null,
+            identifier : null,
+            amount     : 0,
+            fee        : 0,
+        } satisfies PaymentDetail;
+    });
+    const handleFinishOrder        = useEvent((paymentDetail: PaymentDetail): void => {
+    });
+    
     
     
     // jsx:
     const mainTabContent = (
-        <>
-            <ConditionalCreditCardNumberEditor />
-            <ConditionalCreditCardNameEditor />
-            <ConditionalCreditCardExpiryEditor />
-            <ConditionalCreditCardCvvEditor />
-            <ConditionalCreditCardButton />
-        </>
+        <CartStateProvider>
+            <TransactionStateProvider
+                // payment data:
+                paymentValidation={false}
+                
+                
+                
+                // billing data:
+                billingValidation={false}
+                billingAddress={null}
+                
+                
+                
+                // states:
+                isTransactionReady={true}
+                
+                
+                
+                // actions:
+                onPrepareTransaction={handlePrepareTransaction}
+                onTransaction={handleTransaction}
+                onPlaceOrder={handlePlaceOrder}
+                onCancelOrder={handleCancelOrder}
+                onMakePayment={handleMakePayment}
+                onFinishOrder={handleFinishOrder}
+            >
+                <ConditionalPaymentScriptProvider
+                    // required for purchasing:
+                    totalShippingCost={null} // not_physical_product
+                >
+                    <ConditionalPaypalCardComposerProvider>
+                        <ConditionalCreditCardNumberEditor />
+                        <ConditionalCreditCardNameEditor />
+                        <ConditionalCreditCardExpiryEditor />
+                        <ConditionalCreditCardCvvEditor />
+                        <ConditionalCreditCardButton />
+                    </ConditionalPaypalCardComposerProvider>
+                </ConditionalPaymentScriptProvider>
+            </TransactionStateProvider>
+        </CartStateProvider>
     );
     const mainTab = (
         !model
-        ? <form className={styleSheet.collectionTab}>
+        ? <div className={styleSheet.collectionTab}>
             {mainTabContent}
-        </form>
+        </div>
         : <TabPanel label={PAGE_PAYMENT_METHODS_TAB_DATA} panelComponent={<Generic className={styleSheet.collectionTab} />}>
             {mainTabContent}
         </TabPanel>

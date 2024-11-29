@@ -593,69 +593,86 @@ export default () => {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
-            ...children('article>*', { // added * because <PayPalCardFieldsProvider> render as <div>
+            ...children('article', {
+                // layout:
                 display: 'grid',
-                gridTemplate: [[
-                    '"instruct " auto',
-                    '"number   " auto',
-                    '"name     " auto',
-                    '"expiry   " auto',
-                    '"csc      " auto',
-                    '"horz1    " auto',
-                    '"billing  " auto',
-                    '"horz2    " auto',
-                    '"verify   " auto',
-                    '"payButton" auto',
-                    '/',
-                    '1fr'
-                ]],
-                ...ifScreenWidthAtLeast('md', {
+                
+                
+                
+                // children:
+                ...children('*', { // * = a <div> by <PayPalCardFieldsProvider>
+                    // layout:
+                    display: 'grid',
                     gridTemplate: [[
-                        '"instruct   instruct" auto',
-                        '"number       number" auto',
-                        '"name           name" auto',
-                        '"expiry          csc" auto',
-                        '"horz1         horz1" auto',
-                        '"billing     billing" auto',
-                        '"horz2         horz2" auto',
-                        '"verify       verify" auto',
-                        '"payButton payButton" auto',
+                        '"instruct " auto',
+                        '"number   " auto',
+                        '"name     " auto',
+                        '"expiry   " auto',
+                        '"csc      " auto',
+                        '"horz1    " auto',
+                        '"billing  " auto',
+                        '"horz2    " auto',
+                        '"verify   " auto',
+                        '"payButton" auto',
                         '/',
-                        '1fr 1fr'
+                        '1fr'
                     ]],
-                }),
-                gap: '1rem',
-                ...children('.instruct', {
-                    gridArea: 'instruct',
-                }),
-                ...children('.number', {
-                    gridArea: 'number',
-                }),
-                ...children('.name', {
-                    gridArea: 'name',
-                }),
-                ...children('.expiry', {
-                    gridArea: 'expiry',
-                }),
-                ...children('.csc', {
-                    gridArea: 'csc',
-                }),
-                ...children('.horz1', {
-                    gridArea: 'horz1',
-                    marginBlock: 0,
-                }),
-                ...children('.billing', {
-                    gridArea: 'billing',
-                }),
-                ...children('.horz2', {
-                    gridArea: 'horz2',
-                    marginBlock: 0,
-                }),
-                ...children('.verify', {
-                    gridArea: 'verify',
-                }),
-                ...children('.payButton', {
-                    gridArea: 'payButton',
+                    ...ifScreenWidthAtLeast('md', {
+                        gridTemplate: [[
+                            '"instruct   instruct" auto',
+                            '"number       number" auto',
+                            '"name           name" auto',
+                            '"expiry          csc" auto',
+                            '"horz1         horz1" auto',
+                            '"billing     billing" auto',
+                            '"horz2         horz2" auto',
+                            '"verify       verify" auto',
+                            '"payButton payButton" auto',
+                            '/',
+                            '1fr 1fr'
+                        ]],
+                    }),
+                    
+                    
+                    
+                    // spacings:
+                    gap: spacers.md,
+                    
+                    
+                    
+                    // children:
+                    ...children('.instruct', {
+                        gridArea: 'instruct',
+                    }),
+                    ...children('.number', {
+                        gridArea: 'number',
+                    }),
+                    ...children('.name', {
+                        gridArea: 'name',
+                    }),
+                    ...children('.expiry', {
+                        gridArea: 'expiry',
+                    }),
+                    ...children('.csc', {
+                        gridArea: 'csc',
+                    }),
+                    ...children('.horz1', {
+                        gridArea: 'horz1',
+                        marginBlock: 0,
+                    }),
+                    ...children('.billing', {
+                        gridArea: 'billing',
+                    }),
+                    ...children('.horz2', {
+                        gridArea: 'horz2',
+                        marginBlock: 0,
+                    }),
+                    ...children('.verify', {
+                        gridArea: 'verify',
+                    }),
+                    ...children('.payButton', {
+                        gridArea: 'payButton',
+                    }),
                 }),
             }),
         }, {specificityWeight: 2}),
