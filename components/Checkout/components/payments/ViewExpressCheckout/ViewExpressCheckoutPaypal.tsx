@@ -113,7 +113,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         // actions:
         startTransaction,
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -170,7 +170,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             // handlers:
             onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 try {
-                    const orderBookedOrPaid = await onPlaceOrder(data);
+                    const orderBookedOrPaid = await placeOrder(data);
                     if (!('orderId' in orderBookedOrPaid)) return false; // immediately paid => unexpected response (that should NOT be happened) => abort
                     
                     

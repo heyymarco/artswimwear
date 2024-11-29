@@ -133,7 +133,7 @@ const CreditCardButtonPaypal   = (props: ImplementedButtonPaymentGeneralProps): 
         const { promise: promiseApprovedOrderId, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
         signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {
-            await cardFieldsForm.submit(); // triggers <PayPalCardFieldsProvider> => handlePaymentInterfaceStart() => onPlaceOrder()
+            await cardFieldsForm.submit(); // triggers <PayPalCardFieldsProvider> => handlePaymentInterfaceStart() => placeOrder()
             
             
             
@@ -185,7 +185,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         // actions:
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     const stripe   = useStripe();
@@ -236,7 +236,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
-        return await onPlaceOrder({
+        return await placeOrder({
             paymentSource  : 'stripeCard',
             cardToken      : cardToken,
         });
@@ -301,7 +301,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         // actions:
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -359,7 +359,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
-        return await onPlaceOrder({
+        return await placeOrder({
             paymentSource  : 'midtransCard',
             cardToken      : cardToken,
         });

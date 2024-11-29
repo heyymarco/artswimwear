@@ -78,7 +78,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
         
         // actions:
         startTransaction,
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -104,13 +104,13 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                 
                 
                 // createOrder:
-                return onPlaceOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
+                return placeOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
                     paymentSource : paymentSource,
                     captcha       : captcha,
                 });
             },
             onAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-                // this function should NEVER called because the `onPlaceOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
+                // this function should NEVER called because the `placeOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
                 return AuthenticatedResult.FAILED;
             },
             

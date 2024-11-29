@@ -173,7 +173,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         // actions:
         startTransaction,
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -407,7 +407,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             signalOrderBookedOrPaidOrAbort.current?.( // order booked -or- paid
-                await onPlaceOrder({
+                await placeOrder({
                     paymentSource  : 'stripeExpress',
                     cardToken      : confirmationToken,
                 })

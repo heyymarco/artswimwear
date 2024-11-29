@@ -125,7 +125,7 @@ export interface TransactionState
     
     // actions:
     startTransaction         : (arg: StartTransactionArg) => Promise<boolean>
-    onPlaceOrder             : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
+    placeOrder               : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
 }
 
 const noopHandler = () => { throw Error('not inside <TransactionStateProvider>'); };
@@ -154,7 +154,7 @@ const TransactionStateContext = createContext<TransactionState>({
     
     // actions:
     startTransaction         : noopHandler,
-    onPlaceOrder             : noopHandler,
+    placeOrder               : noopHandler,
 });
 TransactionStateContext.displayName  = 'TransactionState';
 
@@ -182,11 +182,6 @@ export interface TransactionStateProps
             
             // states:
             |'isTransactionReady'
-            
-            
-            
-            // actions:
-            |'onPlaceOrder'
         >,
         Partial<Pick<TransactionState,
             // sections:
@@ -196,6 +191,7 @@ export interface TransactionStateProps
 {
     // actions:
     onTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
+    onPlaceOrder  : TransactionState['placeOrder']
     onCancelOrder : (orderId: string) => Promise<void>
     onMakePayment : (orderId: string) => Promise<PaymentDetail>
     onFinishOrder : (paymentDetail: PaymentDetail) => void
@@ -233,7 +229,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         // actions:
         onTransaction,
-        onPlaceOrder,
+        onPlaceOrder : handlePlaceOrder,
         onCancelOrder,
         onMakePayment,
         onFinishOrder,
@@ -255,7 +251,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     
     // stable callbacks:
-    const startTransaction = useEvent(async (arg: StartTransactionArg): Promise<boolean> => {
+    const startTransaction = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
         // args:
         const {
             // handlers:
@@ -399,6 +395,9 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
             } // try
         });
     });
+    const placeOrder       = useEvent<TransactionState['placeOrder']>((options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+        return handlePlaceOrder(options); // convert unstable `handlePlaceOrder()` to stable `placeOrder()`
+    });
     
     
     
@@ -428,7 +427,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         // actions:
         startTransaction,            // stable ref
-        onPlaceOrder,                // may NOT stable ref
+        placeOrder,                  // stable ref
     }), [
         // billing data:
         billingValidation,
@@ -454,7 +453,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         // actions:
         // startTransaction,         // stable ref
-        onPlaceOrder,                // may NOT stable ref
+        // placeOrder,               // stable ref
     ]);
     
     

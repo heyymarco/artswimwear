@@ -102,7 +102,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
         
         // actions:
         startTransaction,
-        onPlaceOrder,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -120,7 +120,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
             // handlers:
             onPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // createOrder:
-                return onPlaceOrder({
+                return placeOrder({
                     paymentSource : paymentSource,
                 });
             },
