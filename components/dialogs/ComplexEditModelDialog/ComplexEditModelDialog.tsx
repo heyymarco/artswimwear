@@ -110,6 +110,9 @@ import {
     type ConfirmDeleteHandler,
     type ConfirmUnsavedHandler,
 }                           from './types'
+import {
+    invalidSelector,
+}                           from '@/libs/css-selectors'
 
 
 
@@ -328,7 +331,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             }, 0);
         });
         const editorElm = editorRef.current;
-        const fieldErrors = editorElm?.querySelectorAll?.(':is(.invalidating, .invalidated):not([aria-invalid="false"])');
+        const fieldErrors = editorElm?.querySelectorAll?.(invalidSelector);
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
             return;

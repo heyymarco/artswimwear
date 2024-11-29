@@ -114,6 +114,11 @@ import {
     usePaymentConfirmation,
 }                           from '@/store/features/api/apiSlice'
 
+// internals:
+import {
+    invalidSelector,
+}                           from '@/libs/css-selectors'
+
 // configs:
 import {
     checkoutConfigShared,
@@ -126,11 +131,6 @@ const usePaymentConfirmationPageStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'ztb0mar5a4' });
 import './page-styles';
-
-
-
-// utilities:
-const invalidSelector = ':is(.invalidating, .invalidated):not([aria-invalid="false"])';
 
 
 

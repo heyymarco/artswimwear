@@ -189,11 +189,9 @@ import {
 import {
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
-
-
-
-// utilities:
-const invalidSelector = ':is(.invalidating, .invalidated):not([aria-invalid="false"])';
+import {
+    invalidSelector,
+}                           from '@/libs/css-selectors'
 
 
 
@@ -577,7 +575,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        paymentValidation,
+        paymentValidation  : paymentValidationRaw,
         
         paymentMethod,
     } = localCheckoutSession;
@@ -854,6 +852,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         !isShippingError            // the matching shippingList is not error
         &&
         !shippingList?.entities?.[shippingProviderId ?? ''] // no longer having a valid matching shippingProvider
+    );
+    
+    const paymentValidation              = (
+        paymentValidationRaw
+        &&
+        (paymentMethod === 'card')
     );
     
     const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is REQUIRED for 'card'
@@ -2010,14 +2014,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 enabled={!isBusy} // disabled if busy
             >
                 <TransactionStateProvider
+                    // payment data:
+                    paymentValidation={paymentValidation}
+                    
+                    
+                    
                     // billing data:
                     billingValidation={billingValidation}
                     billingAddress={billingAsShipping ? shippingAddress : billingAddress}
-                    
-                    
-                    
-                    // payment data:
-                    paymentValidation={paymentValidation}
                     
                     
                     
