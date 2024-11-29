@@ -23,6 +23,7 @@ import {
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
+    SetupPaymentRequestTypeSchema,
     
     
     
@@ -43,6 +44,7 @@ import {
 // internals:
 import {
     // utilities:
+    paypalCreateSetupPayment,
     paypalListPaymentMethods,
 }                           from '@/libs/payments/processors/paypal'
 
@@ -357,4 +359,41 @@ router
         return Response.json({ error: error }, { status: 500 }); // handled with error
     } // try
     //#endregion save changes
+})
+.get(async (req) => {
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+            return {
+                type : SetupPaymentRequestTypeSchema.parse(data?.type),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        type,
+    } = requestData;
+    //#endregion parsing and validating request
+    
+    
+    
+    switch (type) {
+        case 'paypal': {
+            const token = await paypalCreateSetupPayment();
+            return new Response(token);
+        }
+        
+        default:
+            return Response.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+    } // switch
 });

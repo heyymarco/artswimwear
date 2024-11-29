@@ -51,3 +51,12 @@ export interface PaymentMethodUpdateRequest
         >
 {
 }
+
+
+
+export type SetupPaymentRequestType =
+    |'paypal'
+    |'stripe'
+export interface SetupPaymentRequest {
+    type : SetupPaymentRequestType
+}

@@ -116,6 +116,7 @@ import {
     // hooks:
     useUpdatePaymentMethod,
     useDeletePaymentMethod,
+    useCreateSetupPayment,
 }                           from '@/store/features/api/apiSlice'
 
 // configs:
@@ -160,6 +161,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     // stores:
     const [updatePaymentMethod, {isLoading : isLoadingUpdate}] = useUpdatePaymentMethod();
     const [deletePaymentMethod, {isLoading : isLoadingDelete}] = useDeletePaymentMethod();
+    const [createSetupPayment] = useCreateSetupPayment();
     
     
     
@@ -202,7 +204,9 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return {
-            orderId : 'abc123',
+            orderId : await createSetupPayment({
+                type: 'paypal',
+            }).unwrap(),
         } satisfies PlaceOrderDetail;
     });
     const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {

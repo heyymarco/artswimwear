@@ -82,6 +82,7 @@ import {
     
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
+    type SetupPaymentRequest,
 }                           from '@/models'
 
 import {
@@ -732,6 +733,12 @@ export const apiSlice = createApi({
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
             },
         }),
+        createSetupPayment          : builder.query<string, SetupPaymentRequest>({
+            query : (arg) => ({
+                url    : `customer/payment-methods?type=${encodeURIComponent(arg.type)}`,
+                method : 'GET',
+            }),
+        }),
     }),
 });
 
@@ -814,6 +821,7 @@ export const {
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
     useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
     useDeletePaymentMethodMutation         : useDeletePaymentMethod,
+    useLazyCreateSetupPaymentQuery         : useCreateSetupPayment,
 } = apiSlice;
 
 export const {

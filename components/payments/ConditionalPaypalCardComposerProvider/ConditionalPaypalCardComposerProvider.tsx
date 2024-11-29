@@ -129,7 +129,7 @@ const ImplementedPaypalCardComposerProvider = (props: React.PropsWithChildren<Co
         } // try
     });
     const handlePaymentInterfaceApproved = useEvent((data: CardFieldsOnApproveData): void => {
-        signalApprovedOrderIdRef.current?.(data.orderID); // paid => waiting for the payment to be captured on server side
+        signalApprovedOrderIdRef.current?.(data.orderID ?? (data as any).vaultSetupToken); // paid => waiting for the payment to be captured on server side
     });
     
     

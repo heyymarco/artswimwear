@@ -5,6 +5,7 @@ import {
 import {
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
+    type SetupPaymentRequestType,
 }                           from './types'
 import {
     CurrencySchema,
@@ -43,3 +44,10 @@ export const PaymentMethodDetailSchema = z.object({
 export const PaymentMethodUpdateRequestSchema = MutationArgsSchema<Pick<PaymentMethodDetail, 'id'>>(
     PaymentMethodDetailSchema.pick({ id: true })
 ) satisfies z.Schema<PaymentMethodUpdateRequest>;
+
+
+
+export const SetupPaymentRequestTypeSchema = z.enum([
+    'paypal',
+    'stripe',
+]) satisfies z.Schema<SetupPaymentRequestType>;

@@ -433,6 +433,74 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
     } satisfies AuthorizedFundData;
 }
+export const paypalCreateSetupPayment = async (): Promise<string> => {
+    const paypalResponse = await fetch(`${paypalUrl}/v3/vault/setup-tokens`, {
+        method  : 'POST',
+        headers : {
+            'Content-Type'    : 'application/json',
+            'Accept'          : 'application/json',
+            'Accept-Language' : 'en_US',
+            'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+        },
+        body    : JSON.stringify({
+            payment_source: {
+                card : {
+                    attributes : {
+                        verification : {
+                            // UNCOMMENT to test 3DS scenario:
+                            // method: 'SCA_ALWAYS', // triggers 3D Secure for every transaction, regardless of SCA requirements.
+                            
+                            method : 'SCA_WHEN_REQUIRED', // triggers 3D Secure contingency when it is a mandate in the region where you operate
+                        },
+                        
+                        
+                        
+                        // TODO: save payment method during purchase:
+                        // customer : isExistingCustomer ? {
+                        //     id : 'Paypal-generated customer id',
+                        // } : undefined,
+                        // vault : {
+                        //     store_in_vault : 'ON_SUCCESS',
+                        // },
+                    },
+                },
+                
+                
+                
+                // paypal : {
+                //     experience_context : {
+                //         // doesn't work:
+                //         // shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                //         shipping_preference : 'NO_SHIPPING', // if has shipping adress => the shipping address is editable in app only
+                //     },
+                // },
+            },
+            
+            
+            
+            application_context : {
+                brand_name          : checkoutConfigServer.business.name || undefined,
+                
+                // doesn't work too:
+                // shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                shipping_preference : 'NO_SHIPPING', // if has shipping adress => the shipping address is editable in app only
+            },
+        }),
+    });
+    const paypalOrderData = await paypalHandleResponse(paypalResponse);
+    if ((paypalOrderData?.status !== 'CREATED')) {
+        // TODO: log unexpected response
+        console.log('unexpected response: ', paypalOrderData);
+        throw Error('unexpected API response');
+    } // if
+    const setupId = paypalOrderData.id;
+    if (typeof(setupId) !== 'string') {
+        // TODO: log unexpected response
+        console.log('unexpected response: ', paypalOrderData);
+        throw Error('unexpected API response');
+    } // if
+    return setupId;
+}
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
     const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
