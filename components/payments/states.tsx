@@ -44,6 +44,11 @@ import {
     ErrorDeclined,
 }                           from '@/errors'
 
+// internals:
+import {
+    invalidSelector,
+}                           from '@/libs/css-selectors'
+
 
 
 // hooks:
@@ -101,14 +106,14 @@ export interface StartTransactionArg {
 // contexts:
 export interface TransactionState
 {
+    // payment data:
+    paymentValidation        : boolean
+    
+    
+    
     // billing data:
     billingValidation        : boolean
     billingAddress           : BillingAddressDetail|null
-    
-    
-    
-    // payment data:
-    paymentValidation        : boolean
     
     
     
@@ -130,14 +135,14 @@ export interface TransactionState
 
 const noopHandler = () => { throw Error('not inside <TransactionStateProvider>'); };
 const TransactionStateContext = createContext<TransactionState>({
+    // payment data:
+    paymentValidation        : false,
+    
+    
+    
     // billing data:
     billingValidation        : false,
     billingAddress           : null,
-    
-    
-    
-    // payment data:
-    paymentValidation        : false,
     
     
     
@@ -169,14 +174,14 @@ export interface TransactionStateProps
     extends
         // bases:
         Pick<TransactionState,
+            // payment data:
+            |'paymentValidation'
+            
+            
+            
             // billing data:
             |'billingValidation'
             |'billingAddress'
-            
-            
-            
-            // payment data:
-            |'paymentValidation'
             
             
             
@@ -190,11 +195,12 @@ export interface TransactionStateProps
         >>
 {
     // actions:
-    onTransaction : (transaction: (() => Promise<void>)) => Promise<boolean>
-    onPlaceOrder  : TransactionState['placeOrder']
-    onCancelOrder : (orderId: string) => Promise<void>
-    onMakePayment : (orderId: string) => Promise<PaymentDetail>
-    onFinishOrder : (paymentDetail: PaymentDetail) => void
+    onPrepareTransaction ?: () => Promise<boolean>
+    onTransaction         : (transaction: (() => Promise<void>)) => Promise<boolean>
+    onPlaceOrder          : TransactionState['placeOrder']
+    onCancelOrder         : (orderId: string) => Promise<void>
+    onMakePayment         : (orderId: string) => Promise<PaymentDetail>
+    onFinishOrder         : (paymentDetail: PaymentDetail) => void
 }
 const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
     // refs:
@@ -205,14 +211,14 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     // props:
     const {
+        // payment data:
+        paymentValidation,
+        
+        
+        
         // billing data:
         billingValidation,
         billingAddress,
-        
-        
-        
-        // payment data:
-        paymentValidation,
         
         
         
@@ -228,11 +234,12 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         // actions:
-        onTransaction : transaction,
-        onPlaceOrder  : handlePlaceOrder,
-        onCancelOrder : cancelOrder,
-        onMakePayment : makePayment,
-        onFinishOrder : finishOrder,
+        onPrepareTransaction : prepareTransaction,
+        onTransaction        : transaction,
+        onPlaceOrder         : handlePlaceOrder,
+        onCancelOrder        : cancelOrder,
+        onMakePayment        : makePayment,
+        onFinishOrder        : finishOrder,
         
         
         
@@ -245,6 +252,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     // dialogs:
     const {
         showMessageError,
+        showMessageFieldError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -252,6 +260,45 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     // stable callbacks:
     const startTransaction = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
+        if ((await prepareTransaction?.() === false)) return false;
+        
+        
+        
+        // the `useEvent()` will automatically re-reference the latest callback when the props changed (re-render):
+        return startTransactionPhase2(arg);
+    });
+    const startTransactionPhase2 = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
+        // validations:
+        const fieldErrors = [
+            // validate card:
+            ...(
+                (
+                    paymentValidation
+                    ? paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    : undefined
+                )
+                ??
+                []
+            ),
+            
+            // validate billing address:
+            ...(
+                (
+                    billingValidation
+                    ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    : undefined
+                )
+                ??
+                []
+            ),
+        ];
+        if (fieldErrors.length) { // there is an/some invalid field
+            showMessageFieldError(fieldErrors);
+            return false; // transaction aborted due to validation error
+        } // if
+        
+        
+        
         // args:
         const {
             // handlers:
@@ -278,7 +325,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         // actions:
-        return await transaction(async (): Promise<void> => {
+        return transaction(async (): Promise<void> => {
             try {
                 // createOrder:
                 const orderBookedOrPaidOrAbort = await placeOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
@@ -403,14 +450,14 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     // states:
     const transactionState = useMemo<TransactionState>(() => ({
+        // payment data:
+        paymentValidation,
+        
+        
+        
         // billing data:
         billingValidation,
         billingAddress,
-        
-        
-        
-        // payment data:
-        paymentValidation,
         
         
         
@@ -429,14 +476,14 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         startTransaction,            // stable ref
         placeOrder,                  // stable ref
     }), [
+        // payment data:
+        paymentValidation,
+        
+        
+        
         // billing data:
         billingValidation,
         billingAddress,
-        
-        
-        
-        // payment data:
-        paymentValidation,
         
         
         

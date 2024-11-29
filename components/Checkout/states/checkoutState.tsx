@@ -1317,12 +1317,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const setIsBusy             = useEvent((isBusy: BusyState) => {
+    const setIsBusy                = useEvent((isBusy: BusyState) => {
         checkoutState.isBusy = isBusy; /* instant update without waiting for (slow|delayed) re-render */
         setIsBusyInternal(isBusy);
     });
     
-    const gotoStepInformation   = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
+    const gotoStepInformation      = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
         setCheckoutStep('INFO');
         
         
@@ -1357,7 +1357,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             });
         } // if
     });
-    const gotoStepShipping      = useEvent(async (): Promise<boolean> => {
+    const gotoStepShipping         = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'INFO');
         if (goForward) { // go forward from 'INFO' => do validate shipping carriers
             // validate:
@@ -1500,7 +1500,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const gotoPayment           = useEvent(async (): Promise<boolean> => {
+    const gotoPayment              = useEvent(async (): Promise<boolean> => {
         // const goForward = ... // always go_forward, never go_backward after finishing the payment
         if (!isShippingAddressRequired) { // if only digital products => validate the customer account
             // validate:
@@ -1530,10 +1530,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return true; // transaction completed
     });
     
-    const setShippingProviderId = useEvent((shippingProviderId: string|null): void => {
+    const setShippingProviderId    = useEvent((shippingProviderId: string|null): void => {
         dispatch(reduxSetShippingProviderId(shippingProviderId));
     });
-    const setPaymentMethod      = useEvent((paymentMethod: PaymentMethod|null): void => {
+    const setPaymentMethod         = useEvent((paymentMethod: PaymentMethod|null): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
         
         // reset:
@@ -1541,55 +1541,31 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             dispatch(reduxSetPaymentValidation(false));
         } // if
     });
-    const setBillingAsShipping  = useEvent((billingAsShipping: boolean): void => {
+    const setBillingAsShipping     = useEvent((billingAsShipping: boolean): void => {
         dispatch(reduxSetBillingAsShipping(billingAsShipping));
     });
     
-    const handleTransaction     = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+    const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
+        // conditions:
+        if (checkoutState.isBusy)     return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
+        if (paymentMethod !== 'card') return true; // not a card payment => nothing to prepare => always ready
+        
+        
+        
+        // validate:
+        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+        dispatch(reduxSetPaymentValidation(true)); // enable paymentForm validation
+        dispatch(reduxSetBillingValidation(true)); // enable billingAddress validation
+        
+        // wait for a validation state applied:
+        if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+        if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+        
+        return true; // ready
+    });
+    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
         // conditions:
         if (checkoutState.isBusy) return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
-        
-        
-        
-        if (isBillingAddressRequired) {
-            // validate:
-            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-            if (!billingAsShipping) { // use dedicated billingAddress => enable billingAddress validation
-                dispatch(reduxSetBillingValidation(true)); // enable billingAddress validation
-            } // if
-            dispatch(reduxSetPaymentValidation(true)); // enable paymentForm validation
-            
-            // wait for a validation state applied:
-            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
-            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
-            const fieldErrors = [
-                // card fields:
-                ...(
-                    (
-                        (paymentMethod === 'card')
-                        ? paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector)
-                        : undefined
-                    )
-                    ??
-                    []
-                ),
-                
-                // billing address fields:
-                ...(
-                    (
-                        !billingAsShipping
-                        ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
-                        : undefined
-                    )
-                    ??
-                    []
-                ),
-            ];
-            if (fieldErrors?.length) { // there is an/some invalid field
-                showMessageFieldError(fieldErrors);
-                return false; // transaction aborted due to validation error
-            } // if
-        } // if
         
         
         
@@ -1605,7 +1581,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const handlePlaceOrder      = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+    const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         try {
             return await dispatch(placeOrder({
                 // currency options:
@@ -1663,8 +1639,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             throw fetchError;
         } // try
     });
-    const verifyStockPromise    = useRef<Promise<boolean>|number|undefined>(undefined);
-    const verifyStock           = useEvent(async (): Promise<boolean> => {
+    const verifyStockPromise       = useRef<Promise<boolean>|number|undefined>(undefined);
+    const verifyStock              = useEvent(async (): Promise<boolean> => {
         const verifyStockPromised = verifyStockPromise.current;
         if (verifyStockPromised instanceof Promise) { // if prev verifyStock is already running => wait until resolved
             console.log('bulk await');
@@ -1724,7 +1700,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
-    const handleMakePayment     = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+    const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
         return dispatch(makePayment({
             orderId,
             
@@ -1736,7 +1712,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             } : undefined),
         })).unwrap();
     });
-    const handleCancelOrder     = useEvent(async (orderId: string): Promise<void> => {
+    const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
         // conditions:
         if (!orderId) return; // empty string => ignore
         
@@ -1759,7 +1735,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // ignore any error
         } // try
     });
-    const handleFinishOrder     = useEvent((paymentDetail: PaymentDetail): void => {
+    const handleFinishOrder        = useEvent((paymentDetail: PaymentDetail): void => {
         // save the finished order states:
         // setCheckoutStep(paid ? 'PAID' : 'PENDING'); // not needed this code, already handled by `setFinishedOrderState` below:
         const finishedOrderState : FinishedOrderState = {
@@ -1788,7 +1764,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxResetCheckout());
     });
     
-    const refetchCheckout       = useEvent((): void => {
+    const refetchCheckout          = useEvent((): void => {
         refetchCart();
         
         if (isPrevOrderError && !isPrevOrderLoading && prevOrderId) {
@@ -2037,6 +2013,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     
                     // actions:
+                    onPrepareTransaction={handlePrepareTransaction}
                     onTransaction={handleTransaction}
                     onPlaceOrder={handlePlaceOrder}
                     onCancelOrder={handleCancelOrder}
