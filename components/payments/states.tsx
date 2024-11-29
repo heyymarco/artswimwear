@@ -259,7 +259,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     
     // stable callbacks:
-    const startTransaction = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
+    const startTransaction       = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
         if ((await prepareTransaction?.() === false)) return false;
         
         
@@ -442,7 +442,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
             } // try
         });
     });
-    const placeOrder       = useEvent<TransactionState['placeOrder']>((options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+    const placeOrder             = useEvent<TransactionState['placeOrder']>((options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return handlePlaceOrder(options); // convert unstable `handlePlaceOrder()` to stable `placeOrder()`
     });
     
