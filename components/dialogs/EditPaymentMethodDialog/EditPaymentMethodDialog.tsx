@@ -197,9 +197,8 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
         return true;
     });
-    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
         await transaction();
-        return true;
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return {
@@ -207,6 +206,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         } satisfies PlaceOrderDetail;
     });
     const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
+        console.log('error: ', orderId);
     });
     const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
         return {
@@ -254,12 +254,14 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                     // required for purchasing:
                     totalShippingCost={null} // not_physical_product
                 >
-                    <ConditionalPaypalCardComposerProvider>
+                    <ConditionalPaypalCardComposerProvider saveCardMode={true}>
                         <ConditionalCreditCardNumberEditor />
                         <ConditionalCreditCardNameEditor />
                         <ConditionalCreditCardExpiryEditor />
                         <ConditionalCreditCardCvvEditor />
-                        <ConditionalCreditCardButton />
+                        <ConditionalCreditCardButton>
+                            Save
+                        </ConditionalCreditCardButton>
                     </ConditionalPaypalCardComposerProvider>
                 </ConditionalPaymentScriptProvider>
             </TransactionStateProvider>

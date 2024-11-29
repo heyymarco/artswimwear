@@ -43,7 +43,11 @@ import {
 
 
 
-const ConditionalPaypalCardComposerProvider = ({children}: React.PropsWithChildren) => {
+export interface ConditionalPaypalCardComposerProviderProps {
+    // behaviors:
+    saveCardMode ?: boolean
+}
+const ConditionalPaypalCardComposerProvider = (props: React.PropsWithChildren<ConditionalPaypalCardComposerProviderProps>) => {
     // conditions:
     const isInPaypalScriptProvider = useIsInPaypalScriptProvider();
     if (!isInPaypalScriptProvider) {
@@ -51,7 +55,7 @@ const ConditionalPaypalCardComposerProvider = ({children}: React.PropsWithChildr
         return (
             /* the <div> is for preserving the layout */
             <div>
-                {children}
+                {props.children}
             </div>
         );
     } // if
@@ -61,19 +65,18 @@ const ConditionalPaypalCardComposerProvider = ({children}: React.PropsWithChildr
     // jsx:
     return (
         <PaypalCardComposerStateProvider>
-            <ImplementedPaypalCardComposerProvider>
-                {children}
-            </ImplementedPaypalCardComposerProvider>
+            <ImplementedPaypalCardComposerProvider {...props} />
         </PaypalCardComposerStateProvider>
     );
 }
-interface ImplementedPaypalCardComposerProviderProps {
-    // children:
-    children : React.ReactNode
-}
-const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardComposerProviderProps) => {
+const ImplementedPaypalCardComposerProvider = (props: React.PropsWithChildren<ConditionalPaypalCardComposerProviderProps>) => {
     // props:
     const {
+        // behaviors:
+        saveCardMode = false,
+        
+        
+        
         // children:
         children,
     } = props;
@@ -141,7 +144,8 @@ const ImplementedPaypalCardComposerProvider = (props: ImplementedPaypalCardCompo
             
             // handlers:
             onError={handlePaymentInterfaceErrored}
-            createOrder={handlePaymentInterfaceStart}
+            createOrder={!saveCardMode ? handlePaymentInterfaceStart : (undefined as any)}
+            createVaultSetupToken={saveCardMode ? handlePaymentInterfaceStart : undefined}
             onApprove={handlePaymentInterfaceApproved}
         >
             {children}

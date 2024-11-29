@@ -129,7 +129,7 @@ export interface TransactionState
     
     
     // actions:
-    startTransaction         : (arg: StartTransactionArg) => Promise<boolean>
+    startTransaction         : (arg: StartTransactionArg) => Promise<void>
     placeOrder               : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
 }
 
@@ -191,7 +191,7 @@ export interface TransactionStateProps
 {
     // actions:
     onPrepareTransaction ?: () => Promise<boolean>
-    onTransaction         : (transaction: (() => Promise<void>)) => Promise<boolean>
+    onTransaction         : (transaction: (() => Promise<void>)) => Promise<void>
     onPlaceOrder          : TransactionState['placeOrder']
     onCancelOrder         : (orderId: string) => Promise<void>
     onMakePayment         : (orderId: string) => Promise<PaymentDetail>
@@ -248,15 +248,15 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     
     // stable callbacks:
-    const startTransaction       = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
-        if ((await prepareTransaction?.() === false)) return false;
+    const startTransaction       = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<void> => {
+        if ((await prepareTransaction?.() === false)) return;
         
         
         
         // the `useEvent()` will automatically re-reference the latest callback when the props changed (re-render):
         return startTransactionPhase2(arg);
     });
-    const startTransactionPhase2 = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<boolean> => {
+    const startTransactionPhase2 = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<void> => {
         // validations:
         const fieldErrors = [
             // validate card:
@@ -283,7 +283,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         ];
         if (fieldErrors.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
-            return false; // transaction aborted due to validation error
+            return; // transaction aborted due to validation error
         } // if
         
         

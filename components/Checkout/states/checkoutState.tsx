@@ -1561,9 +1561,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // ready
     });
-    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
         // conditions:
-        if (checkoutState.isBusy) return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
+        if (checkoutState.isBusy) return; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
         
         
         
@@ -1574,10 +1574,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finally {
             setIsBusy(false);
         } // try
-        
-        
-        
-        return true; // transaction completed
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         try {
