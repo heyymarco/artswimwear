@@ -1637,6 +1637,70 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             throw fetchError;
         } // try
     });
+    const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
+        // conditions:
+        if (!orderId) return; // empty string => ignore
+        
+        
+        
+        try {
+            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+            console.log('canceling order...');
+            await dispatch(makePayment({
+                orderId,
+                
+                
+                
+                // options: cancel the order
+                cancelOrder: true,
+            })).unwrap();
+            console.log('canceled');
+        }
+        catch {
+            // ignore any error
+        } // try
+    });
+    const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+        return dispatch(makePayment({
+            orderId,
+            
+            
+            
+            // billing data:
+            ...(isBillingAddressRequired ? {
+                billingAddress : billingAsShipping ? shippingAddress : billingAddress,
+            } : undefined),
+        })).unwrap();
+    });
+    const handleFinishOrder        = useEvent((paymentDetail: PaymentDetail): void => {
+        // save the finished order states:
+        // setCheckoutStep(paid ? 'PAID' : 'PENDING'); // not needed this code, already handled by `setFinishedOrderState` below:
+        const finishedOrderState : FinishedOrderState = {
+            cartState       : {
+                items    : cartItems,
+                currency : currency,
+            },
+            productPreviews : productPreviews,
+            
+            checkoutSession : {
+                ...localCheckoutSession,
+                customer     : session?.user ? ({ name: session.user.name, email: session.user.email } satisfies CustomerOrGuestPreview) : localCheckoutSession.customer,
+                checkoutStep : ((paymentDetail.type !== 'MANUAL') ? 'PAID' : 'PENDING'),
+            },
+            totalShippingCost,
+            paymentDetail,
+            
+            isShippingAddressRequired,
+        };
+        setFinishedOrderState(finishedOrderState); // backup the cart & checkout states from redux to react state
+        
+        
+        
+        // clear the cart & checkout states in redux:
+        resetCart();
+        dispatch(reduxResetCheckout());
+    });
+    
     const verifyStockPromise       = useRef<Promise<boolean>|number|undefined>(undefined);
     const verifyStock              = useEvent(async (): Promise<boolean> => {
         const verifyStockPromised = verifyStockPromise.current;
@@ -1697,69 +1761,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finally {
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
-    });
-    const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
-        return dispatch(makePayment({
-            orderId,
-            
-            
-            
-            // billing data:
-            ...(isBillingAddressRequired ? {
-                billingAddress : billingAsShipping ? shippingAddress : billingAddress,
-            } : undefined),
-        })).unwrap();
-    });
-    const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
-        // conditions:
-        if (!orderId) return; // empty string => ignore
-        
-        
-        
-        try {
-            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            console.log('canceling order...');
-            await dispatch(makePayment({
-                orderId,
-                
-                
-                
-                // options: cancel the order
-                cancelOrder: true,
-            })).unwrap();
-            console.log('canceled');
-        }
-        catch {
-            // ignore any error
-        } // try
-    });
-    const handleFinishOrder        = useEvent((paymentDetail: PaymentDetail): void => {
-        // save the finished order states:
-        // setCheckoutStep(paid ? 'PAID' : 'PENDING'); // not needed this code, already handled by `setFinishedOrderState` below:
-        const finishedOrderState : FinishedOrderState = {
-            cartState       : {
-                items    : cartItems,
-                currency : currency,
-            },
-            productPreviews : productPreviews,
-            
-            checkoutSession : {
-                ...localCheckoutSession,
-                customer     : session?.user ? ({ name: session.user.name, email: session.user.email } satisfies CustomerOrGuestPreview) : localCheckoutSession.customer,
-                checkoutStep : ((paymentDetail.type !== 'MANUAL') ? 'PAID' : 'PENDING'),
-            },
-            totalShippingCost,
-            paymentDetail,
-            
-            isShippingAddressRequired,
-        };
-        setFinishedOrderState(finishedOrderState); // backup the cart & checkout states from redux to react state
-        
-        
-        
-        // clear the cart & checkout states in redux:
-        resetCart();
-        dispatch(reduxResetCheckout());
     });
     
     const refetchCheckout          = useEvent((): void => {
