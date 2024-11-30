@@ -42,14 +42,11 @@ export interface PaymentMethodUpdateRequest
             Pick<PaymentMethodDetail,
                 // records:
                 |'id'
-                
-                
-                
-                // data:
-                // |'name'
             >
         >
 {
+    // data:
+    vaultToken : string // required
 }
 
 
@@ -59,4 +56,11 @@ export type SetupPaymentRequestType =
     |'stripe'
 export interface SetupPaymentRequest {
     type : SetupPaymentRequestType
+}
+
+
+
+export interface PaymentMethodTokenDetail {
+    providerCustomerId      : string
+    providerPaymentMethodId : string
 }

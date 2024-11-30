@@ -5,6 +5,8 @@ import {
     type PaymentDetail,
     
     type PaymentMethodDetail,
+    
+    type PaymentMethodTokenDetail,
 }                           from '@/models'
 
 // configs:
@@ -488,18 +490,42 @@ export const paypalCreateSetupPayment = async (): Promise<string> => {
         }),
     });
     const paypalOrderData = await paypalHandleResponse(paypalResponse);
+    /*
+        example:
+        {
+            id: "3GE0311150974704P",
+            customer: {
+                id: "eoKqXUaRLi",
+            },
+            status: "CREATED",
+            payment_source: {
+                card: {
+                },
+            },
+            links: [
+                {
+                    href: "https://api.sandbox.paypal.com/v3/vault/setup-tokens/3GE0311150974704P",
+                    rel: "self",
+                    method: "GET",
+                    encType: "application/json",
+                },
+            ],
+        }
+    */
     if ((paypalOrderData?.status !== 'CREATED')) {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
-    const setupId = paypalOrderData.id;
-    if (typeof(setupId) !== 'string') {
+    const {
+        id : setupToken,
+    } = paypalOrderData;
+    if (typeof(setupToken) !== 'string') {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
-    return setupId;
+    return setupToken;
 }
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
@@ -816,6 +842,74 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
             throw Error('unexpected API response');
         }
     } // switch
+}
+export const paypalCapturePaymentMethod = async (vaultToken: string, paypalCustomerId?: string): Promise<PaymentMethodTokenDetail> => {
+    const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens`, {
+        method  : 'POST',
+        headers : {
+            'Content-Type'    : 'application/json',
+            'Accept'          : 'application/json',
+            'Accept-Language' : 'en_US',
+            'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+        },
+        body    : JSON.stringify({
+            payment_source: {
+                token : {
+                    type : 'SETUP_TOKEN',
+                    id   : vaultToken,
+                },
+            },
+            customer : (paypalCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
+                id : paypalCustomerId,
+            },
+        }),
+    });
+    const paypalPaymentData = await paypalHandleResponse(response);
+    /*
+        {
+            id: "7tc409525d432030y",
+            customer: {
+                id: "VecXibSgbC",
+            },
+            payment_source: {
+                card: {
+                    name: "John Doe",
+                    last_digits: "6961",
+                    brand: "AMEX",
+                    expiry: "2025-01",
+                },
+            },
+            links: [
+                {
+                    href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/7tc409525d432030y",
+                    rel: "self",
+                    method: "GET",
+                    encType: "application/json",
+                },
+                {
+                    href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/7tc409525d432030y",
+                    rel: "delete",
+                    method: "DELETE",
+                    encType: "application/json",
+                },
+            ],
+        }
+    */
+    const {
+        id : providerPaymentMethodId,
+        customer : {
+            id : providerCustomerId,
+        },
+    } = paypalPaymentData;
+    if ((typeof(providerPaymentMethodId) !== 'string') || (typeof(providerCustomerId) !== 'string')) {
+        // TODO: log unexpected response
+        console.log('unexpected response: ', paypalPaymentData);
+        throw Error('unexpected API response');
+    } // if
+    return {
+        providerCustomerId,
+        providerPaymentMethodId,
+    } satisfies PaymentMethodTokenDetail;
 }
 
 

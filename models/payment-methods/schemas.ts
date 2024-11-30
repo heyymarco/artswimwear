@@ -10,6 +10,7 @@ import {
 import {
     CurrencySchema,
     ModelIdSchema,
+    PublicIdSchema,
     ModelNameSchema,
     
     MutationArgsSchema,
@@ -43,6 +44,11 @@ export const PaymentMethodDetailSchema = z.object({
 
 export const PaymentMethodUpdateRequestSchema = MutationArgsSchema<Pick<PaymentMethodDetail, 'id'>>(
     PaymentMethodDetailSchema.pick({ id: true })
+)
+.and(
+    z.object({
+        vaultToken : PublicIdSchema,
+    })
 ) satisfies z.Schema<PaymentMethodUpdateRequest>;
 
 

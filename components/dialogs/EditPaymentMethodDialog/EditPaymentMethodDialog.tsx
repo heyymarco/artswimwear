@@ -175,7 +175,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         return await updatePaymentMethod({
             id : id ?? '',
             
-            // name,
+            vaultToken : '', // TODO create|update the card with vaultToken
         }).unwrap();
     });
     
@@ -213,10 +213,34 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         console.log('error: ', orderId);
     });
     const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+        const vaultToken = orderId;
+        const newPaymentMethod = await updatePaymentMethod({
+            id : '',
+            
+            vaultToken,
+        }).unwrap();
+        
+        const {
+            // records:
+            id,
+            
+            
+            
+            // data:
+            currency,
+            
+            type,
+            brand,
+            identifier,
+            
+            expiresAt,
+            
+            billingAddress,
+        } = newPaymentMethod;
         return {
-            type       : 'CUSTOM',
-            brand      : null,
-            identifier : null,
+            type       : type,
+            brand      : brand,
+            identifier : identifier,
             amount     : 0,
             fee        : 0,
         } satisfies PaymentDetail;

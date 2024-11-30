@@ -20,10 +20,12 @@ import {
     type Pagination,
     PaginationArgSchema,
     
+    type PaymentMethodProvider,
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
     SetupPaymentRequestTypeSchema,
+    type PaymentMethodTokenDetail,
     
     
     
@@ -45,6 +47,7 @@ import {
 import {
     // utilities:
     paypalCreateSetupPayment,
+    paypalCapturePaymentMethod,
     paypalListPaymentMethods,
 }                           from '@/libs/payments/processors/paypal'
 
@@ -131,6 +134,7 @@ router
     //#region query result
     try {
         const [customerIds, total, paged] = await prisma.$transaction([
+            //#region find existing providerCustomerId
             prisma.customer.findUnique({
                 where  : {
                     id : customerId, // important: the signedIn customerId
@@ -141,6 +145,8 @@ router
                     midtransCustomerId : true,
                 },
             }),
+            //#endregion find existing providerCustomerId
+            
             prisma.paymentMethod.count({
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
@@ -166,11 +172,13 @@ router
         
         
         //#region query api
+        //#region find existing providerCustomerId
         const {
             paypalCustomerId,
             // stripeCustomerId,
             // midtransCustomerId,
         } = customerIds;
+        //#endregion find existing providerCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
             ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId) : []),
@@ -196,12 +204,6 @@ router
     //#endregion query result
 })
 .patch(async (req) => {
-    // await new Promise<void>((resolve) => {
-    //     setTimeout(resolve, 1000);
-    // });
-    
-    
-    
     //#region parsing and validating request
     const requestData = await (async () => {
         try {
@@ -223,8 +225,41 @@ router
         arg: {
             // records:
             id,
+            vaultToken,
         },
     } = requestData;
+    const paymentData = ((): [PaymentMethodProvider, string]|null => {
+        if (vaultToken.startsWith('#PAYPAL_')) {
+            return [
+                'PAYPAL',
+                vaultToken.slice(8), // remove prefix #PAYPAL_
+            ];
+        }
+        else if (vaultToken.startsWith('#STRIPE_')) {
+            return [
+                'STRIPE',
+                vaultToken.slice(8), // remove prefix #STRIPE_
+            ];
+        }
+        else if (vaultToken.startsWith('#MIDTRANS_')) {
+            return [
+                'MIDTRANS',
+                vaultToken.slice(10), // remove prefix #MIDTRANS_
+            ];
+        }
+        else {
+            return null;
+        } // if
+    })();
+    if (!paymentData) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const [
+        provider,
+        providerVaultToken,
+    ] = paymentData;
     //#endregion parsing and validating request
     
     
@@ -239,61 +274,104 @@ router
     
     //#region save changes
     try {
-        const [customerIds, paymentMethodData] = await prisma.$transaction([
-            prisma.customer.findUnique({
+        //#region find existing providerCustomerId
+        const providerCustomerIds = await prisma.customer.findUnique({
+            where  : {
+                id : customerId, // important: the signedIn customerId
+            },
+            select : {
+                paypalCustomerId   : true,
+                stripeCustomerId   : true,
+                midtransCustomerId : true,
+            },
+        });
+        //#endregion find existing providerCustomerId
+        
+        
+        
+        //#region process the vault token
+        const paymentMethodToken = await (async (): Promise<PaymentMethodTokenDetail|null> => {
+            switch (provider) {
+                case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken, providerCustomerIds?.paypalCustomerId ?? undefined) : null;
+                default      : return null;
+            } // switch
+        })();
+        if (!paymentMethodToken) {
+            return Response.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        const {
+            providerCustomerId,
+            providerPaymentMethodId,
+        } = paymentMethodToken;
+        //#endregion process the vault token
+        
+        
+        
+        //#region save the new generated providerCustomerId
+        if (
+            ((provider ===   'PAYPAL') && !providerCustomerIds?.paypalCustomerId)
+            ||
+            ((provider ===   'STRIPE') && !providerCustomerIds?.stripeCustomerId)
+            ||
+            ((provider === 'MIDTRANS') && !providerCustomerIds?.midtransCustomerId)
+        ) {
+            await prisma.customer.update({
                 where  : {
                     id : customerId, // important: the signedIn customerId
                 },
-                select : {
-                    paypalCustomerId   : true,
-                    stripeCustomerId   : true,
-                    midtransCustomerId : true,
+                data   : {
+                    paypalCustomerId   : (provider ===   'PAYPAL') ? providerCustomerId : undefined,
+                    stripeCustomerId   : (provider ===   'STRIPE') ? providerCustomerId : undefined,
+                    midtransCustomerId : (provider === 'MIDTRANS') ? providerCustomerId : undefined,
                 },
-            }),
-            (
-                !id
-                ? prisma.paymentMethod.create({
-                    data   : {
-                        sort                    : 0,
-                        
-                        provider                : 'PAYPAL',
-                        providerPaymentMethodId : '',
-                        
-                        currency                : 'USD',
-                        
-                        parentId                : customerId, // important: the signedIn customerId
-                    },
-                    select : paymentMethodDetailSelect,
-                })
-                : prisma.paymentMethod.update({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                    },
-                    data   : {
-                        sort                    : 0,
-                    },
-                    select : paymentMethodDetailSelect,
-                })
-            ),
-        ]);
-        if (!customerIds) return Response.json(null);
+                select : {
+                    id : true,
+                },
+            });
+        } // if
+        //#endregion save the new generated providerCustomerId
         
         
         
-        //#region query api
-        const {
-            paypalCustomerId,
-            // stripeCustomerId,
-            // midtransCustomerId,
-        } = customerIds;
+        const paymentMethodData = (
+            !id
+            ? await prisma.paymentMethod.create({
+                data   : {
+                    parentId                : customerId, // important: the signedIn customerId
+                    
+                    sort                    : 0,
+                    
+                    provider                : provider,
+                    providerPaymentMethodId : providerPaymentMethodId,
+                    
+                    currency                : 'USD',
+                },
+                select : paymentMethodDetailSelect,
+            })
+            : await prisma.paymentMethod.update({
+                where  : {
+                    id                      : id,
+                    parentId                : customerId, // important: the signedIn customerId
+                },
+                data   : {
+                    sort                    : 0,
+                    
+                    provider                : provider,
+                    providerPaymentMethodId : providerPaymentMethodId,
+                    
+                    currency                : 'USD',
+                },
+                select : paymentMethodDetailSelect,
+            })
+        );
+        
+        
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId) : []),
+            ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId) : []),
         ]);
-        //#endregion query api
-        
-        
-        
         const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
         return Response.json(paymentMethod); // handled with success
     }
@@ -387,8 +465,8 @@ router
     
     switch (type) {
         case 'paypal': {
-            const token = await paypalCreateSetupPayment();
-            return new Response(token);
+            const setupToken = await paypalCreateSetupPayment();
+            return new Response(setupToken);
         }
         
         default:
