@@ -961,7 +961,7 @@ model PaymentMethod {
     currency                        String                          // minLength: 3, maxLength: 3
     
     // relations:
-    parentId                        String                          @unique
+    parentId                        String
     parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related PaymentMethod(s) if the Customer deleted
 }
 enum PaymentMethodProvider {
