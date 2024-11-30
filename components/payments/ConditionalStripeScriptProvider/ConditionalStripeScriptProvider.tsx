@@ -120,6 +120,9 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setStripe(stripe);
         })
+        .catch((error: any) => {
+            // ignore any error
+        });
     }, [stripe]);
     
     useIsomorphicLayoutEffect(() => {
