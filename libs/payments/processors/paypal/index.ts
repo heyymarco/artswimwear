@@ -1158,14 +1158,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string): Promis
                     last_digits,
                     expiry,
                     
-                    billing_address : {
-                        country_code,
-                        admin_area_1,
-                        admin_area_2,
-                        postal_code,
-                        address_line_1,
-                        address_line_2,
-                    },
+                    billing_address,
                 } = card;
                 
                 
@@ -1179,17 +1172,27 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string): Promis
                         identifier     : last_digits,
                         expiresAt      : new Date(Date.parse(expiry)),
                         
-                        billingAddress : {
-                            country   : `${country_code}`.toUpperCase(),
-                            state     : admin_area_1,
-                            city      : admin_area_2,
-                            zip       : postal_code,
-                            address   : address_line_1 + (address_line_2 ? ` ${address_line_2}` : ''),
-                            
-                            firstName : '',
-                            lastName  : '',
-                            phone     : '',
-                        },
+                        billingAddress : !billing_address ? null : (() => {
+                            const {
+                                country_code,
+                                admin_area_1,
+                                admin_area_2,
+                                postal_code,
+                                address_line_1,
+                                address_line_2,
+                            } = billing_address;
+                            return {
+                                country   : `${country_code}`.toUpperCase(),
+                                state     : admin_area_1,
+                                city      : admin_area_2,
+                                zip       : postal_code,
+                                address   : address_line_1 + (address_line_2 ? ` ${address_line_2}` : ''),
+                                
+                                firstName : '',
+                                lastName  : '',
+                                phone     : '',
+                            };
+                        })(),
                     },
                 ];
             } // if
