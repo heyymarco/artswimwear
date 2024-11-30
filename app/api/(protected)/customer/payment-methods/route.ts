@@ -24,8 +24,9 @@ import {
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
-    SetupPaymentRequestTypeSchema,
-    type PaymentMethodTokenDetail,
+    PaymentMethodProviderSchema,
+    type PaymentMethodSetupDetail,
+    type PaymentMethodCaptureDetail,
     
     
     
@@ -274,64 +275,23 @@ router
     
     //#region save changes
     try {
-        //#region find existing providerCustomerId
-        const providerCustomerIds = await prisma.customer.findUnique({
-            where  : {
-                id : customerId, // important: the signedIn customerId
-            },
-            select : {
-                paypalCustomerId   : true,
-                stripeCustomerId   : true,
-                midtransCustomerId : true,
-            },
-        });
-        //#endregion find existing providerCustomerId
-        
-        
-        
         //#region process the vault token
-        const paymentMethodToken = await (async (): Promise<PaymentMethodTokenDetail|null> => {
+        const paymentMethodCapture = await (async (): Promise<PaymentMethodCaptureDetail|null> => {
             switch (provider) {
-                case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken, providerCustomerIds?.paypalCustomerId ?? undefined) : null;
+                case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken) : null;
                 default      : return null;
             } // switch
         })();
-        if (!paymentMethodToken) {
+        if (!paymentMethodCapture) {
             return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
         const {
-            providerCustomerId,
             providerPaymentMethodId,
-        } = paymentMethodToken;
+            providerCustomerId,
+        } = paymentMethodCapture;
         //#endregion process the vault token
-        
-        
-        
-        //#region save the new generated providerCustomerId
-        if (
-            ((provider ===   'PAYPAL') && !providerCustomerIds?.paypalCustomerId)
-            ||
-            ((provider ===   'STRIPE') && !providerCustomerIds?.stripeCustomerId)
-            ||
-            ((provider === 'MIDTRANS') && !providerCustomerIds?.midtransCustomerId)
-        ) {
-            await prisma.customer.update({
-                where  : {
-                    id : customerId, // important: the signedIn customerId
-                },
-                data   : {
-                    paypalCustomerId   : (provider ===   'PAYPAL') ? providerCustomerId : undefined,
-                    stripeCustomerId   : (provider ===   'STRIPE') ? providerCustomerId : undefined,
-                    midtransCustomerId : (provider === 'MIDTRANS') ? providerCustomerId : undefined,
-                },
-                select : {
-                    id : true,
-                },
-            });
-        } // if
-        //#endregion save the new generated providerCustomerId
         
         
         
@@ -369,11 +329,25 @@ router
         
         
         
-        const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-            ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId) : []),
-        ]);
-        const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
-        return Response.json(paymentMethod); // handled with success
+        for (let attempts = 10; attempts > 0; attempts--) {
+            const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+                ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId) : []),
+            ]);
+            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
+            if (paymentMethod) return Response.json(paymentMethod); // handled with success
+            
+            
+            
+            if (attempts > 0) {
+                // wait for 1 sec before running the next attempts:
+                await new Promise<void>((resolve) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000);
+                });
+            } // if
+        } // for
+        return Response.json({ error: 'Unexpected error' }, { status: 500 }); // handled with error: unauthorized
     }
     catch (error: any) {
         console.log('ERROR: ', error);
@@ -444,7 +418,7 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                type : SetupPaymentRequestTypeSchema.parse(data?.type),
+                provider : PaymentMethodProviderSchema.parse(data?.provider),
             };
         }
         catch {
@@ -457,21 +431,78 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        type,
+        provider,
     } = requestData;
     //#endregion parsing and validating request
     
     
     
-    switch (type) {
-        case 'paypal': {
-            const setupToken = await paypalCreateSetupPayment();
-            return new Response(setupToken);
-        }
-        
-        default:
-            return Response.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-    } // switch
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    //#endregion validating privileges
+    
+    
+    
+    //#region find existing providerCustomerId
+    const providerCustomerIds = await prisma.customer.findUnique({
+        where  : {
+            id : customerId, // important: the signedIn customerId
+        },
+        select : {
+            paypalCustomerId   : true,
+            stripeCustomerId   : true,
+            midtransCustomerId : true,
+        },
+    });
+    //#endregion find existing providerCustomerId
+    
+    
+    
+    const paymentMethodSetup = await (async (): Promise<PaymentMethodSetupDetail|null> => {
+        switch (provider) {
+            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreateSetupPayment(providerCustomerIds?.paypalCustomerId ?? undefined) : null;
+            default       : return null;
+        } // switch
+    })();
+    if (!paymentMethodSetup) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        setupToken,
+        providerCustomerId,
+    } = paymentMethodSetup;
+    
+    
+    
+    //#region save the new generated providerCustomerId
+    if (
+        ((provider ===   'PAYPAL') && !providerCustomerIds?.paypalCustomerId)
+        ||
+        ((provider ===   'STRIPE') && !providerCustomerIds?.stripeCustomerId)
+        ||
+        ((provider === 'MIDTRANS') && !providerCustomerIds?.midtransCustomerId)
+    ) {
+        await prisma.customer.update({
+            where  : {
+                id : customerId, // important: the signedIn customerId
+            },
+            data   : {
+                paypalCustomerId   : (provider ===   'PAYPAL') ? providerCustomerId : undefined,
+                stripeCustomerId   : (provider ===   'STRIPE') ? providerCustomerId : undefined,
+                midtransCustomerId : (provider === 'MIDTRANS') ? providerCustomerId : undefined,
+            },
+            select : {
+                id : true,
+            },
+        });
+    } // if
+    //#endregion save the new generated providerCustomerId
+    
+    
+    
+    return new Response(setupToken); // handled with success
 });

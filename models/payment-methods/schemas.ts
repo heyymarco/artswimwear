@@ -2,10 +2,14 @@
 import {
     z,
 }                           from 'zod'
+
+// models:
+import {
+    type PaymentMethodProvider,
+}                           from '@prisma/client'
 import {
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
-    type SetupPaymentRequestType,
 }                           from './types'
 import {
     CurrencySchema,
@@ -53,7 +57,8 @@ export const PaymentMethodUpdateRequestSchema = MutationArgsSchema<Pick<PaymentM
 
 
 
-export const SetupPaymentRequestTypeSchema = z.enum([
-    'paypal',
-    'stripe',
-]) satisfies z.Schema<SetupPaymentRequestType>;
+export const PaymentMethodProviderSchema = z.enum([
+    'PAYPAL',
+    'STRIPE',
+    'MIDTRANS',
+]) satisfies z.Schema<PaymentMethodProvider>;

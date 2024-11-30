@@ -6,7 +6,8 @@ import {
     
     type PaymentMethodDetail,
     
-    type PaymentMethodTokenDetail,
+    type PaymentMethodSetupDetail,
+    type PaymentMethodCaptureDetail,
 }                           from '@/models'
 
 // configs:
@@ -435,7 +436,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
     } satisfies AuthorizedFundData;
 }
-export const paypalCreateSetupPayment = async (): Promise<string> => {
+export const paypalCreateSetupPayment = async (paypalCustomerId?: string): Promise<PaymentMethodSetupDetail> => {
     const paypalResponse = await fetch(`${paypalUrl}/v3/vault/setup-tokens`, {
         method  : 'POST',
         headers : {
@@ -445,6 +446,12 @@ export const paypalCreateSetupPayment = async (): Promise<string> => {
             'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
         },
         body    : JSON.stringify({
+            customer : (paypalCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
+                id : paypalCustomerId,
+            },
+            
+            
+            
             payment_source: {
                 card : {
                     attributes : {
@@ -519,13 +526,19 @@ export const paypalCreateSetupPayment = async (): Promise<string> => {
     } // if
     const {
         id : setupToken,
+        customer : {
+            id : providerCustomerId,
+        },
     } = paypalOrderData;
-    if (typeof(setupToken) !== 'string') {
+    if ((typeof(setupToken) !== 'string') || (typeof(providerCustomerId) !== 'string')) {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
-    return setupToken;
+    return {
+        setupToken,
+        providerCustomerId,
+    } satisfies PaymentMethodSetupDetail;
 }
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
@@ -843,7 +856,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
         }
     } // switch
 }
-export const paypalCapturePaymentMethod = async (vaultToken: string, paypalCustomerId?: string): Promise<PaymentMethodTokenDetail> => {
+export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<PaymentMethodCaptureDetail> => {
     const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens`, {
         method  : 'POST',
         headers : {
@@ -858,9 +871,6 @@ export const paypalCapturePaymentMethod = async (vaultToken: string, paypalCusto
                     type : 'SETUP_TOKEN',
                     id   : vaultToken,
                 },
-            },
-            customer : (paypalCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
-                id : paypalCustomerId,
             },
         }),
     });
@@ -907,9 +917,9 @@ export const paypalCapturePaymentMethod = async (vaultToken: string, paypalCusto
         throw Error('unexpected API response');
     } // if
     return {
-        providerCustomerId,
         providerPaymentMethodId,
-    } satisfies PaymentMethodTokenDetail;
+        providerCustomerId,
+    } satisfies PaymentMethodCaptureDetail;
 }
 
 

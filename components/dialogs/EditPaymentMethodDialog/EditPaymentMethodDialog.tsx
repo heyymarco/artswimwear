@@ -205,7 +205,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return {
             orderId : await createSetupPayment({
-                type: 'paypal',
+                provider: 'PAYPAL',
             }).unwrap(),
         } satisfies PlaceOrderDetail;
     });

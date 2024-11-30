@@ -2,6 +2,7 @@
 import {
     type PaymentType,
     type PaymentMethod,
+    type PaymentMethodProvider,
 }                           from '@prisma/client'
 import {
     type MutationArgs,
@@ -51,16 +52,17 @@ export interface PaymentMethodUpdateRequest
 
 
 
-export type SetupPaymentRequestType =
-    |'paypal'
-    |'stripe'
 export interface SetupPaymentRequest {
-    type : SetupPaymentRequestType
+    provider : PaymentMethodProvider
 }
 
 
 
-export interface PaymentMethodTokenDetail {
+export interface PaymentMethodSetupDetail {
+    providerCustomerId : string
+    setupToken         : string
+}
+export interface PaymentMethodCaptureDetail {
     providerCustomerId      : string
     providerPaymentMethodId : string
 }

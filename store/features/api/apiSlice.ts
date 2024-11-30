@@ -735,7 +735,7 @@ export const apiSlice = createApi({
         }),
         createSetupPayment          : builder.query<string, SetupPaymentRequest>({
             query : (arg) => ({
-                url    : `customer/payment-methods?type=${encodeURIComponent(arg.type)}`,
+                url    : `customer/payment-methods?provider=${encodeURIComponent(arg.provider)}`,
                 method : 'GET',
             }),
         }),
