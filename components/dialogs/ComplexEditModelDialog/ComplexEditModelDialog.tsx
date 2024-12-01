@@ -165,9 +165,9 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // components:
-    modalCardComponent    ?: React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>
     buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
     buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
+    modalCardComponent    ?: React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>
     
     
     
@@ -267,9 +267,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // components:
-        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>),
         buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>),
         
         
         
@@ -540,6 +540,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         if (!React.isValidElement<TabPanelProps>(child)) return false;
         return !!child.props.label; // has <TabPanel>'s label
     })();
+    
     const {
         contentDelete = !whenDelete ? undefined : <>
             <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
@@ -553,18 +554,6 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             </ButtonIcon>
         </>,
     } = { contentDelete: contentDeleteRaw };
-    
-    const {
-        // variants:
-        theme          = 'primary',
-        backdropStyle  = 'static',
-        modalCardStyle = 'scrollable',
-        
-        
-        
-        // other props:
-        ...restModalCardProps
-    } = restComplexEditModelDialogProps;
     
     const {
         // appearances:
@@ -655,6 +644,18 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         // other props:
         ...restButtonCancelComponentProps
     } = buttonCancelComponent.props;
+    
+    const {
+        // variants:
+        theme          = 'primary',
+        backdropStyle  = 'static',
+        modalCardStyle = 'scrollable',
+        
+        
+        
+        // other props:
+        ...restModalCardProps
+    } = restComplexEditModelDialogProps;
     
     const {
         // variants:
