@@ -7,6 +7,17 @@ import {
 }                           from '@cssfn/core'          // writes css in javascript
 
 import {
+    // configs:
+    secondaries,
+    
+    
+    
+    // a border (stroke) management system:
+    borders,
+    borderRadiuses,
+    
+    
+    
     // a spacer (gap) management system:
     spacers,
     
@@ -14,27 +25,52 @@ import {
     
     // a typography management system:
     typos,
+    
+    
+    
+    // border (stroke) stuff of UI:
+    usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
+    // groups a list of UIs into a single UI:
+    usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
 
 // styles:
 const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
+    // dependencies:
+    
+    // features:
+    const {borderVars } = usesBorder();
+    const {paddingVars} = usesPadding();
+    
+    
+    
     return style({
         // layouts:
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            '"cardNumber  "', 'auto',
-            '"............"', spacers.md,
-            '"cardExpiry  "', 'auto',
-            '"............"', spacers.md,
-            '"cardCurrency"', 'auto',
-            '"............"', spacers.md,
-            '"cardBilling "', 'auto',
+            '"label data"', 'auto',
             '/',
-            '1fr',
+            '72px 1fr',
         ]],
+        
+        
+        
+        // spacings:
+        columnGap : spacers.md,
+        rowGap    : spacers.sm,
+        [paddingVars.paddingInline] : spacers.md,
+        [paddingVars.paddingBlock ] : spacers.md,
         
         
         
@@ -42,61 +78,119 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         ...descendants('p', {
             margin: 0,
         }),
-        ...children('.cardNumber', {
+        ...children('[class^=card]', {
             // positions:
-            gridArea       : 'cardNumber',
+            gridColumn : '1 / -1',
             
             
             
             // layouts:
-            display        : 'grid',
-            gridAutoFlow   : 'column',
-            justifyContent : 'space-between',
+            display : 'grid',
+            gridTemplateColumns: 'subgrid',
+            alignItems : 'center',
             
             
             
-            // spacings:
-            gap            : '0.25em',
-            
-            
-            
-            // typos:
-            fontSize: typos.fontSizeXl,
+            // children:
+            ...children('.label', {
+                // positions:
+                gridColumn: '1 / 1',
+                justifySelf: 'end',
+                
+                
+                
+                // typos:
+                fontWeight : typos.fontWeightSemibold,
+            }),
+            ...children('.data', {
+                // positions:
+                gridColumn: '2 / -1',
+                justifySelf: 'start',
+            }),
+        }),
+        ...children('.cardNumber', {
+            // children:
+            ...children('.cardBrand', {
+                // backgrounds:
+                backgroundColor : 'white',
+                
+                
+                
+                // borders:
+                border          : borderVars.border,
+                borderWidth     : borders.defaultWidth,
+                borderRadius    : borderRadiuses.sm,
+            }),
+            ...children('.data', {
+                // positions:
+                justifySelf: 'stretch',
+                
+                
+                
+                // layouts:
+                display: 'grid',
+                gridAutoFlow: 'column',
+                justifyContent: 'space-between',
+                
+                
+                
+                // children:
+                ...children('.cardNumberParts', {
+                    // layouts:
+                    display: 'grid',
+                    gridAutoFlow: 'column',
+                    gap: spacers.sm,
+                    
+                    
+                    
+                    // typos:
+                    fontSize: typos.fontSizeXl,
+                    
+                    
+                    
+                    // children:
+                    ...children('.mask', {
+                        opacity: secondaries.opacity,
+                    }),
+                }),
+            }),
         }),
         ...children('.cardExpiry', {
-            gridArea: 'cardExpiry',
-            
-            
-            
-            // layouts:
-            display        : 'grid',
-            gridAutoFlow   : 'column',
-            
-            
-            
-            // spacings:
-            gap            : '0.25em',
-            
-            
-            
-            // typos:
-            fontSize: typos.fontSizeSm,
+            // children:
+            ...children('.data', {
+                // layouts:
+                display: 'grid',
+                gridAutoFlow: 'column',
+                gap: spacers.sm,
+            }),
         }),
         ...children('.cardCurrency', {
-            gridArea: 'cardCurrency',
-            
-            
-            
-            // typos:
-            fontSize: typos.fontSizeSm,
+            // children:
+            ...children('.data', {
+                // layouts:
+                display: 'grid',
+                gridAutoFlow: 'column',
+                gap: spacers.sm,
+            }),
         }),
         ...children('.cardBilling', {
-            gridArea: 'cardBilling',
-            
-            
-            
-            // typos:
-            fontSize: typos.fontSizeSm,
+            // children:
+            ...children('.data', {
+                // layouts:
+                display: 'grid',
+                gridAutoFlow: 'row',
+                gap: spacers.sm,
+                
+                
+                
+                // typos:
+                fontSize: typos.fontSizeSm,
+            }),
+        }),
+        ...descendants('[role="dialog"]', {
+            // remove the padding of <Dialog>'s backdrop:
+            [paddingVars.paddingInline] : '0px',
+            [paddingVars.paddingBlock ] : '0px',
         }),
     });
 };

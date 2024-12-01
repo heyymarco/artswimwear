@@ -145,7 +145,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         // data:
         model = null,
     ...restComplexEditModelDialogProps} = props;
-    const modelAliasName = model ? `${model.brand} •••${model.identifier}` : undefined;
+    const modelAliasName = model ? `${model.brand} •••• •••• •••• ${model.identifier}` : undefined;
     const modelType = ((): string|undefined => {
         if (!model) return undefined;
         switch(model.type) {

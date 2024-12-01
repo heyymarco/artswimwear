@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useRef,
 }                           from 'react'
 
 // styles:
@@ -11,16 +16,36 @@ import {
     usePaymentMethodViewStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // layout-components:
     ListItem,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
 import {
     type ModelPreviewProps,
 }                           from '@/components/explorers/PaginationList'
+import {
+    EditButton,
+}                           from '@/components/EditButton'
+import {
+    DummyDialog,
+}                           from '@/components/dialogs/DummyDialog'
+import {
+    EditPaymentMethodDialog,
+}                           from '@/components/dialogs/EditPaymentMethodDialog'
 
 // models:
 import {
@@ -83,6 +108,44 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
     
     
     
+    // refs:
+    const listItemRef = useRef<HTMLElement|null>(null);
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const handleEdit = useEvent(() => {
+        // just for cosmetic backdrop:
+        const dummyPromise = (
+            showDialog(
+                <DummyDialog
+                    // global stackable:
+                    viewport={listItemRef}
+                />
+            )
+        );
+        
+        const dialogPromise = showDialog(
+            <EditPaymentMethodDialog
+                // data:
+                model={model} // modify current model
+            />
+        );
+        
+        if (dummyPromise) {
+            dialogPromise.collapseStartEvent().then(() => dummyPromise.closeDialog(undefined));
+        } // if
+    });
+    
+    
+    
     // jsx:
     return (
         <ListItem
@@ -91,17 +154,15 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             
             
             
+            // refs:
+            elmRef={listItemRef}
+            
+            
+            
             // classes:
             className={styleSheets.main}
         >
             <p className='cardNumber'>
-                <span className='cardNumberParts'>
-                    <span>••••</span>
-                    <span>••••</span>
-                    <span>••••</span>
-                    <span>{identifier}</span>
-                </span>
-                
                 {(!!brand && isKnownPaymentBrand(brand)) && <img
                     // appearances:
                     alt={brand}
@@ -112,38 +173,66 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                     
                     
                     // classes:
-                    className='cardBrand'
+                    className='label cardBrand'
                 />}
+                
+                <span className='data'>
+                    <span className='cardNumberParts'>
+                        <span className='mask'>••••</span>
+                        <span className='mask'>••••</span>
+                        <span className='mask'>••••</span>
+                        <span>{identifier}</span>
+                    </span>
+                    
+                    <EditButton title='Edit' className='edit' onClick={handleEdit}>
+                        Edit
+                    </EditButton>
+                </span>
             </p>
             
             {!!expiresAt && <p className='cardExpiry'>
-                <span>
-                    {expiresAt.getUTCMonth()}
+                <span className='label'>
+                    Expiry
                 </span>
-                <span>
-                    {expiresAt.getUTCFullYear()}
+                <span className='data'>
+                    <span>
+                        {expiresAt.toLocaleString('default', { month: 'short' })}
+                    </span>
+                    <span>
+                        {expiresAt.getUTCFullYear()}
+                    </span>
                 </span>
             </p>}
             
             <p className='cardCurrency'>
-                <span>
-                    {currency}
+                <span className='label'>
+                    Currency
                 </span>
-                <span>
-                    {getCurrencySign(currency)}
+                <span className='data'>
+                    <span>
+                        {getCurrencySign(currency)}
+                    </span>
+                    <span>
+                        {currency}
+                    </span>
                 </span>
             </p>
             
-            <div className='cardBilling'>
-                <p>
-                    <span className={styleSheets.data}>{firstName} {lastName} ({phone})</span>
-                </p>
-                <p>
-                    <span className={styleSheets.data}>
-                        {address}, {city}, {state} ({zip}), {Country.getCountryByCode(country ?? '')?.name ?? country}
-                    </span>
-                </p>
-            </div>
+            {!!billingAddress && <div className='cardBilling'>
+                <span className='label'>
+                    Billing
+                </span>
+                <div className='data'>
+                    <p>
+                        <span className={styleSheets.data}>{firstName} {lastName} ({phone})</span>
+                    </p>
+                    <p>
+                        <span className={styleSheets.data}>
+                            {address}, {city}, {state} ({zip}), {Country.getCountryByCode(country ?? '')?.name ?? country}
+                        </span>
+                    </p>
+                </div>
+            </div>}
         </ListItem>
     );
 };
