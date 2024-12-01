@@ -6,6 +6,7 @@ import {
     
     type PaymentMethodDetail,
     
+    type PaymentMethodSetupOptions,
     type PaymentMethodSetupDetail,
     type PaymentMethodCaptureDetail,
 }                           from '@/models'
@@ -436,7 +437,14 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
     } satisfies AuthorizedFundData;
 }
-export const paypalCreateSetupPayment = async (paypalCustomerId?: string): Promise<PaymentMethodSetupDetail> => {
+export const paypalCreateSetupPayment = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetupDetail> => {
+    const {
+        providerCustomerId: existingProviderCustomerId,
+        billingAddress,
+    } = options;
+    
+    
+    
     const paypalResponse = await fetch(`${paypalUrl}/v3/vault/setup-tokens`, {
         method  : 'POST',
         headers : {
@@ -446,14 +454,55 @@ export const paypalCreateSetupPayment = async (paypalCustomerId?: string): Promi
             'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
         },
         body    : JSON.stringify({
-            customer : (paypalCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
-                id : paypalCustomerId,
+            customer : (existingProviderCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
+                id : existingProviderCustomerId,
             },
             
             
             
             payment_source: {
                 card : {
+                    billing_address : (
+                        !!billingAddress
+                        ? {
+                            // country_code string required
+                            // The two-character ISO 3166-1 code that identifies the country or region.
+                            country_code      : billingAddress.country,
+                            
+                            // admin_area_1 string|undefined
+                            // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
+                            /*
+                                Value, by country, is:
+                                * UK. A county.
+                                * US. A state.
+                                * Canada. A province.
+                                * Japan. A prefecture.
+                                * Switzerland. A kanton.
+                            */
+                            admin_area_1      : billingAddress.state,
+                            
+                            // admin_area_2 string|undefined
+                            // A city, town, or village.
+                            admin_area_2      : billingAddress.city,
+                            
+                            // postal_code string
+                            // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
+                            postal_code       : billingAddress.zip,
+                            
+                            // address_line_1 string|undefined
+                            // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                            // Required for data entry and compliance and risk checks. Must contain the full address.
+                            address_line_1    : billingAddress.address,
+                            
+                            // address_line_2 string|undefined
+                            // The second line of the address. For example, suite or apartment number.
+                            address_line_2    : undefined,
+                        }
+                        : undefined
+                    ),
+                    
+                    
+                    
                     attributes : {
                         verification : {
                             // UNCOMMENT to test 3DS scenario:

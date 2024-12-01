@@ -52,6 +52,11 @@ import {
     TabPanel,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
 // internal components:
 import {
     type Address as EditorAddress,
@@ -197,6 +202,16 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     let [isLoadingTransaction, setIsLoadingTransaction] = useState<boolean>(false);
     const [enableValidation, setEnableValidation] = useState<boolean>(false);
     
+    const [billingAddress  , setBillingAddress  ] = useState<BillingAddressDetail|null>(model?.billingAddress ?? null);
+    const editorAddress = useMemo((): EditorAddress|null => {
+        if (!billingAddress) return null;
+        return {
+            ...billingAddress,
+            company : '',
+            zip: billingAddress.zip ?? '',
+        };
+    }, [billingAddress]);
+    
     
     
     // stores:
@@ -227,6 +242,24 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                 </p>
             </>,
         };
+    });
+    
+    const handleEditorAddressChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>>((newValue, event) => {
+        const address : BillingAddressDetail|null = (
+            !newValue
+            ? null
+            : (() => {
+                const {
+                    company : _company,
+                    ...restValue
+                } = newValue;
+                return {
+                    ...restValue,
+                    zip : newValue.zip.trim() || null,
+                } satisfies BillingAddressDetail;
+            })()
+        );
+        setBillingAddress(address);
     });
     
     const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
@@ -262,6 +295,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         return {
             orderId : await createSetupPayment({
                 provider: 'PAYPAL',
+                billingAddress,
             }).unwrap(),
         } satisfies PlaceOrderDetail;
     });
@@ -311,7 +345,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
             enableValidation={enableValidation}
             inheritValidation={false}
         >
-            <CreditCardLayout />
+            <CreditCardLayout editorAddress={editorAddress} onEditorAddressChange={handleEditorAddressChange} />
         </ValidationProvider>
     );
     const mainTab = (
@@ -423,7 +457,19 @@ export {
 
 
 
-const CreditCardLayout = (): JSX.Element|null => {
+interface CreditCardLayoutProps {
+    editorAddress         : EditorAddress|null
+    onEditorAddressChange : EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>
+}
+const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
+    // props:
+    const {
+        editorAddress,
+        onEditorAddressChange,
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useEditPaymentMethodDialogStyleSheet();
     
@@ -477,8 +523,8 @@ const CreditCardLayout = (): JSX.Element|null => {
                     
                     
                     // values:
-                    // value       = {editorAddress}
-                    // onChange    = {handleChange}
+                    value       = {editorAddress}
+                    onChange    = {onEditorAddressChange}
                     
                     
                     

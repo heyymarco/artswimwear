@@ -53,16 +53,21 @@ export interface PaymentMethodUpdateRequest
 
 
 export interface SetupPaymentRequest {
-    provider : PaymentMethodProvider
+    provider                 : PaymentMethodProvider
+    billingAddress          ?: BillingAddressDetail|null
 }
 
 
 
+export interface PaymentMethodSetupOptions {
+    providerCustomerId      ?: string
+    billingAddress          ?: BillingAddressDetail|null
+}
 export interface PaymentMethodSetupDetail {
-    providerCustomerId : string
-    setupToken         : string
+    providerCustomerId       : string
+    setupToken               : string
 }
 export interface PaymentMethodCaptureDetail {
-    providerCustomerId      : string
-    providerPaymentMethodId : string
+    providerCustomerId       : string
+    providerPaymentMethodId  : string
 }

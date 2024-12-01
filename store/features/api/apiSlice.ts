@@ -713,11 +713,18 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'PaymentMethod', id: arg.page }],
         }),
+        createSetupPayment          : builder.query<string, SetupPaymentRequest>({
+            query : (arg) => ({
+                url    : 'customer/payment-methods/setup',
+                method : 'POST',
+                body   : arg
+            }),
+        }),
         updatePaymentMethod         : builder.mutation<PaymentMethodDetail, PaymentMethodUpdateRequest>({
             query: (arg) => ({
-                url         : 'customer/payment-methods',
-                method      : 'PATCH',
-                body        : arg,
+                url    : 'customer/payment-methods',
+                method : 'PATCH',
+                body   : arg,
             }),
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod');
@@ -732,12 +739,6 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
             },
-        }),
-        createSetupPayment          : builder.query<string, SetupPaymentRequest>({
-            query : (arg) => ({
-                url    : `customer/payment-methods?provider=${encodeURIComponent(arg.provider)}`,
-                method : 'GET',
-            }),
         }),
     }),
 });

@@ -10,6 +10,7 @@ import {
 import {
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
+    type SetupPaymentRequest,
 }                           from './types'
 import {
     CurrencySchema,
@@ -62,3 +63,8 @@ export const PaymentMethodProviderSchema = z.enum([
     'STRIPE',
     'MIDTRANS',
 ]) satisfies z.Schema<PaymentMethodProvider>;
+
+export const SetupPaymentRequestSchema = z.object({
+    provider       : PaymentMethodProviderSchema,
+    billingAddress : BillingAddressDetailSchema.nullable(),
+}) satisfies z.Schema<SetupPaymentRequest>;
