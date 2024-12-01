@@ -38,6 +38,11 @@ import {
     
     
     
+    // simple-components:
+    type ButtonIconProps,
+    
+    
+    
     // dialog-components:
     ModalCard,
     
@@ -84,6 +89,7 @@ import {
 // transaction components:
 import {
     TransactionStateProvider,
+    useOnFinishOrder,
 }                           from '@/components/payments/states'
 
 // internal components:
@@ -205,14 +211,6 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     
     
     // handlers:
-    const handleUpdate         = useEvent<UpdateHandler<PaymentMethodDetail>>(async ({id}) => {
-        return await updatePaymentMethod({
-            id : id ?? '',
-            
-            vaultToken : '', // TODO create|update the card with vaultToken
-        }).unwrap();
-    });
-    
     const handleDelete         = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
         await deletePaymentMethod({
             id : id,
@@ -287,8 +285,6 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
             fee        : 0,
         } satisfies PaymentDetail;
     });
-    const handleFinishOrder        = useEvent((paymentDetail: PaymentDetail): void => {
-    });
     
     
     
@@ -336,7 +332,6 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                 onPlaceOrder={handlePlaceOrder}
                 onCancelOrder={handleCancelOrder}
                 onMakePayment={handleMakePayment}
-                onFinishOrder={handleFinishOrder}
             >
                 <ConditionalPaymentScriptProvider
                     // required for purchasing:
@@ -387,17 +382,12 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                             
                             
                             // components:
-                            buttonSaveComponent={
-                                <ConditionalCreditCardButton gradient={false}>
-                                    Save
-                                </ConditionalCreditCardButton>
-                            }
+                            buttonSaveComponent={<ButtonSaveIntercept />}
                             modalCardComponent={<ModalCard className={styleSheet.dialog} />}
                             
                             
                             
                             // handlers:
-                            onUpdate={handleUpdate}
                             onDelete={handleDelete}
                             
                             onConfirmDelete={handleConfirmDelete}
@@ -476,10 +466,69 @@ const CreditCardLayout = (): JSX.Element|null => {
                     
                     
                     
+                    // validations:
+                    required={false}
+                    
+                    
+                    
                     // components:
                     companyEditorComponent={null}
                 />
             </section>
         </form>
+    );
+};
+
+
+
+const ButtonSaveIntercept = (props: ButtonIconProps): JSX.Element|null => {
+    // props:
+    const {
+        // varaints:
+        gradient = false,
+        
+        
+        
+        // handlers:
+        onClick,
+        
+        
+        
+        // children:
+        children = 'Save',
+        
+        
+        
+        // other props:
+        ...restButtonSaveProps
+    } = props;
+    
+    
+    
+    // handlers:
+    const handleFinishOrder = useEvent((paymentDetail: PaymentDetail): void => {
+        onClick?.(undefined as any);
+    });
+    
+    
+    
+    // states:
+    useOnFinishOrder(handleFinishOrder);
+    
+    
+    
+    // jsx:
+    return (
+        <ConditionalCreditCardButton
+            // other props:
+            {...restButtonSaveProps}
+            
+            
+            
+            // varaints:
+            gradient={gradient}
+        >
+            {children}
+        </ConditionalCreditCardButton>
     );
 };

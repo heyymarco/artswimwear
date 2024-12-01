@@ -14,6 +14,8 @@ import {
     useContext,
     useMemo,
     useRef,
+    useState,
+    useEffect,
 }                           from 'react'
 
 // reusable-ui core:
@@ -131,6 +133,11 @@ export interface TransactionState
     // actions:
     startTransaction         : (arg: StartTransactionArg) => Promise<void>
     placeOrder               : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|PaymentDetail>
+    
+    
+    
+    // events:
+    _onFinishOrderListeners  : Set<(paymentDetail: PaymentDetail) => void>
 }
 
 const noopHandler = () => { throw Error('not inside <TransactionStateProvider>'); };
@@ -160,11 +167,43 @@ const TransactionStateContext = createContext<TransactionState>({
     // actions:
     startTransaction         : noopHandler,
     placeOrder               : noopHandler,
+    
+    
+    
+    // events:
+    _onFinishOrderListeners  : undefined as any,
 });
 TransactionStateContext.displayName  = 'TransactionState';
 
 export const useTransactionState = (): TransactionState => {
     return useContext(TransactionStateContext);
+}
+export const useOnFinishOrder = (onFinishOrder: (paymentDetail: PaymentDetail) => void): void => {
+    // handlers:
+    const onFinishOrderStable = useEvent(onFinishOrder);
+    
+    
+    
+    // states:
+    const {
+        // events:
+        _onFinishOrderListeners,
+    } = useContext(TransactionStateContext);
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // setups:
+        _onFinishOrderListeners.add(onFinishOrderStable);
+        
+        
+        
+        // cleanups:
+        return () => {
+            _onFinishOrderListeners.delete(onFinishOrderStable);
+        };
+    }, []);
 }
 
 
@@ -195,7 +234,7 @@ export interface TransactionStateProps
     onPlaceOrder          : TransactionState['placeOrder']
     onCancelOrder         : (orderId: string) => Promise<void>
     onMakePayment         : (orderId: string) => Promise<PaymentDetail>
-    onFinishOrder         : (paymentDetail: PaymentDetail) => void
+    onFinishOrder        ?: (paymentDetail: PaymentDetail) => void
 }
 const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStateProps>): JSX.Element|null => {
     // props:
@@ -222,7 +261,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         onPlaceOrder         : handlePlaceOrder,
         onCancelOrder        : cancelOrder,
         onMakePayment        : makePayment,
-        onFinishOrder        : finishOrder,
+        onFinishOrder        : handleFinishOrder,
         
         
         
@@ -434,6 +473,15 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     const placeOrder             = useEvent<TransactionState['placeOrder']>((options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return handlePlaceOrder(options); // convert unstable `handlePlaceOrder()` to stable `placeOrder()`
     });
+    const finishOrder            = useEvent((paymentDetail: PaymentDetail): void => {
+        handleFinishOrder?.(paymentDetail);
+        for (const onFinishOrderListener of onFinishOrderListeners) onFinishOrderListener(paymentDetail);
+    });
+    
+    
+    
+    // events:
+    const [onFinishOrderListeners] = useState(() => new Set<(paymentDetail: PaymentDetail) => void>());
     
     
     
@@ -464,6 +512,11 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         // actions:
         startTransaction,            // stable ref
         placeOrder,                  // stable ref
+        
+        
+        
+        // events:
+        _onFinishOrderListeners : onFinishOrderListeners, // stable ref
     }), [
         // payment data:
         paymentValidation,
@@ -490,6 +543,10 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         // actions:
         // startTransaction,         // stable ref
         // placeOrder,               // stable ref
+        
+        
+        
+        // onFinishOrderListeners,   // stable ref
     ]);
     
     
