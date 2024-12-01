@@ -40,6 +40,7 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
+    type ButtonIconProps,
     ButtonIcon,
     
     
@@ -107,32 +108,38 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
         >
 {
     // data:
-    model             : TModel
-    edit              : TEdit
-    initialValue     ?: InitialValueHandler<TModel, TEdit>
-    transformValue   ?: TransformValueHandler<TModel, TEdit>
-    useUpdateModel   ?: UseUpdateModel<TModel> | UpdateModelApi<TModel>
+    model                  : TModel
+    edit                   : TEdit
+    initialValue          ?: InitialValueHandler<TModel, TEdit>
+    transformValue        ?: TransformValueHandler<TModel, TEdit>
+    useUpdateModel        ?: UseUpdateModel<TModel> | UpdateModelApi<TModel>
     
     
     
     // stores:
-    isCommiting      ?: boolean
-    isReverting      ?: boolean
+    isCommiting           ?: boolean
+    isReverting           ?: boolean
     
     
     
     // components:
-    editorComponent   : React.ReactComponentElement<any, EditorProps<Element, ValueOfModel<TModel>>>
+    editorComponent        : React.ReactComponentElement<any, EditorProps<Element, ValueOfModel<TModel>>>
+    
+    
+    
+    // components:
+    buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
+    buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
     
     
     
     // handlers:
-    onAfterUpdate    ?: AfterUpdateHandler
+    onAfterUpdate         ?: AfterUpdateHandler
     
-    onSideUpdate     ?: UpdateSideHandler
-    onSideDelete     ?: DeleteSideHandler
+    onSideUpdate          ?: UpdateSideHandler
+    onSideDelete          ?: DeleteSideHandler
     
-    onConfirmUnsaved ?: ConfirmUnsavedHandler<TModel>
+    onConfirmUnsaved      ?: ConfirmUnsavedHandler<TModel>
 }
 export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = Omit<SimpleEditModelDialogProps<TModel, TEdit>,
     // data:
@@ -181,6 +188,12 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         
+        // components:
+        buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        
+        
+        
         // handlers:
         onAfterUpdate,
         
@@ -190,7 +203,12 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         onConfirmUnsaved,
         
         onExpandedChange,
-    ...restModalCardProps} = props;
+        
+        
+        
+        // other props:
+        ...restSimpleEditModelDialogProps
+    } = props;
     
     
     
@@ -384,6 +402,94 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     
     
+    // default props:
+    const {
+        // variants:
+        theme          = 'primary',
+        backdropStyle  = 'static',
+        modalCardStyle = 'scrollable',
+        
+        
+        
+        // auto focusable:
+        autoFocusOn    = autoFocusEditorRef,
+        
+        
+        
+        // other props:
+        ...restModalCardProps
+    } = restSimpleEditModelDialogProps;
+    
+    const {
+        // appearances:
+        icon      : buttonSaveComponentIcon        = (
+            isCommiting
+            ? 'busy'
+            : 'save'
+        ),
+        
+        
+        
+        // variants:
+        theme     : buttonSaveComponentTheme       = 'success',
+        size      : buttonSaveComponentSize        = 'sm',
+        
+        
+        
+        // classes:
+        className : buttonSaveComponentClassName   = '',
+        
+        
+        
+        // children:
+        children  : buttonSaveComponentChildren    = <>
+            Save
+        </>,
+        
+        
+        
+        // other props:
+        ...restButtonSaveComponentProps
+    } = buttonSaveComponent.props;
+    
+    const {
+        // appearances:
+        icon      : buttonCancelComponentIcon      = (
+            isReverting
+            ? 'busy'
+            : 'cancel'
+        ),
+        
+        
+        
+        // variants:
+        theme     : buttonCancelComponentTheme     = 'danger',
+        size      : buttonCancelComponentSize      = 'sm',
+        
+        
+        
+        // classes:
+        className : buttonCancelComponentClassName = '',
+        
+        
+        
+        // children:
+        children  : buttonCancelComponentChildren  = <>
+            {
+                isReverting
+                ? 'Reverting'
+                : 'Cancel'
+            }
+        </>,
+        
+        
+        
+        // other props:
+        ...restButtonCancelComponentProps
+    } = buttonCancelComponent.props;
+    
+    
+    
     // jsx:
     return (
         <AccessibilityProvider enabled={!isLoading}>
@@ -394,14 +500,14 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                 
                 
                 // variants:
-                theme          = {props.theme          ?? 'primary'   }
-                backdropStyle  = {props.backdropStyle  ?? 'static'    }
-                modalCardStyle = {props.modalCardStyle ?? 'scrollable'}
+                theme          = {theme}
+                backdropStyle  = {backdropStyle}
+                modalCardStyle = {modalCardStyle}
                 
                 
                 
                 // auto focusable:
-                autoFocusOn={props.autoFocusOn ?? autoFocusEditorRef}
+                autoFocusOn={autoFocusOn}
                 
                 
                 
@@ -435,14 +541,82 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                             },
                         )}
                     </ValidationProvider>
-                    <ButtonIcon className='btnSave' icon={isCommiting ? 'busy' : 'save'} theme='success' size='sm' onClick={handleSave}>Save</ButtonIcon>
-                    <ButtonIcon className='btnCancel' icon={isReverting ? 'busy' : 'cancel'} theme='danger' size='sm' onClick={handleCloseDialog}>{isReverting ? 'Reverting' : 'Cancel'}</ButtonIcon>
+                    
+                    {/* <ButtonSave> */}
+                    {React.cloneElement<ButtonIconProps>(buttonSaveComponent,
+                        // props:
+                        {
+                            // other props:
+                            ...restButtonSaveComponentProps,
+                            
+                            
+                            
+                            // appearances:
+                            icon      : buttonSaveComponentIcon,
+                            
+                            
+                            
+                            // variants:
+                            theme     : buttonSaveComponentTheme,
+                            size      : buttonSaveComponentSize,
+                            
+                            
+                            
+                            // classes:
+                            className : `btnSave ${buttonSaveComponentClassName}`,
+                            
+                            
+                            
+                            // handlers:
+                            onClick   : handleSave,
+                        },
+                        
+                        
+                        
+                        // children:
+                        buttonSaveComponentChildren,
+                    )}
+                    
+                    {/* <ButtonCancel> */}
+                    {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
+                        // props:
+                        {
+                            // other props:
+                            ...restButtonCancelComponentProps,
+                            
+                            
+                            
+                            // appearances:
+                            icon      : buttonCancelComponentIcon,
+                            
+                            
+                            
+                            // variants:
+                            theme     : buttonCancelComponentTheme,
+                            size      : buttonCancelComponentSize,
+                            
+                            
+                            
+                            // classes:
+                            className : `btnCancel ${buttonCancelComponentClassName}`,
+                            
+                            
+                            
+                            // handlers:
+                            onClick   : handleCloseDialog,
+                        },
+                        
+                        
+                        
+                        // children:
+                        buttonCancelComponentChildren,
+                    )}
                 </CardBody>
             </ModalCard>
         </AccessibilityProvider>
     );
 };
 export {
-    SimpleEditModelDialog,
-    SimpleEditModelDialog as default,
+    SimpleEditModelDialog,            // named export for readibility
+    SimpleEditModelDialog as default, // default export to support React.lazy
 }
