@@ -165,7 +165,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // components:
-    modalCardComponent    ?: React.ReactElement<ModalCardProps>
+    modalCardComponent    ?: React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>
     buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
     buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
     
@@ -267,7 +267,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // components:
-        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps>),
+        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>),
         buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         
@@ -527,6 +527,33 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     
     
     // default props:
+    const children = flattenChildren(
+        (typeof(childrenFn) === 'function')
+        ? childrenFn?.({
+            whenAdd,
+            whenUpdate,
+        })
+        : childrenFn
+    );
+    const isMultiTabs = whenDelete || ((children.length) > 1) || (() => {
+        const child = children[0]
+        if (!React.isValidElement<TabPanelProps>(child)) return false;
+        return !!child.props.label; // has <TabPanel>'s label
+    })();
+    const {
+        contentDelete = !whenDelete ? undefined : <>
+            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
+                Delete {!modelEntryName ? 'this ' : ''}<strong>{
+                    // the model name is entered:
+                    modelEntryName
+                    ||
+                    // the model name is blank:
+                    modelName
+                }</strong>
+            </ButtonIcon>
+        </>,
+    } = { contentDelete: contentDeleteRaw };
+    
     const {
         // variants:
         theme          = 'primary',
@@ -538,17 +565,6 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         // other props:
         ...restModalCardProps
     } = restComplexEditModelDialogProps;
-    
-    const {
-        // variants:
-        theme          : modalCardComponentTheme          = theme,
-        backdropStyle  : modalCardComponentBackdropStyle  = backdropStyle,
-        modalCardStyle : modalCardComponentModalCardStyle = modalCardStyle,
-        
-        
-        
-        ...restModalCardComponentProps
-    } = modalCardComponent.props;
     
     const {
         // appearances:
@@ -640,210 +656,208 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         ...restButtonCancelComponentProps
     } = buttonCancelComponent.props;
     
-    
-    
-    // jsx:
-    const children = flattenChildren(
-        (typeof(childrenFn) === 'function')
-        ? childrenFn?.({
-            whenAdd,
-            whenUpdate,
-        })
-        : childrenFn
-    );
-    const isMultiTabs = whenDelete || ((children.length) > 1) || (() => {
-        const child = children[0]
-        if (!React.isValidElement<TabPanelProps>(child)) return false;
-        return !!child.props.label; // has <TabPanel>'s label
-    })();
     const {
-        contentDelete = !whenDelete ? undefined : <>
-            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
-                Delete {!modelEntryName ? 'this ' : ''}<strong>{
+        // variants:
+        theme          : modalCardComponentTheme          = theme,
+        backdropStyle  : modalCardComponentBackdropStyle  = backdropStyle,
+        modalCardStyle : modalCardComponentModalCardStyle = modalCardStyle,
+        
+        
+        
+        // children:
+        children       : modalCardComponentChildren = <>
+            <CardHeader>
+                <h1>{
                     // the model name is entered:
                     modelEntryName
                     ||
                     // the model name is blank:
-                    modelName
-                }</strong>
-            </ButtonIcon>
-        </>,
-    } = { contentDelete: contentDeleteRaw };
-    return (
-        <AccessibilityProvider enabled={!isLoading}>
-            <ModalCard
-                // other props:
-                {...restModalCardProps}
-                {...restModalCardComponentProps} // overwrites restModalCardProps (if any conflics)
-                
-                
-                
+                    (
+                        !model
+                        ? `Add New ${modelName}` // create new model, if no  model
+                        : `Edit ${modelName}`    // edit model      , if has model
+                    )
+                }</h1>
+                <CloseButton onClick={handleCloseDialog} />
+            </CardHeader>
+            
+            {isModelNoData && <Content
                 // variants:
-                theme          = {modalCardComponentTheme}
-                backdropStyle  = {modalCardComponentBackdropStyle}
-                modalCardStyle = {modalCardComponentModalCardStyle}
+                theme={isModelError ? 'danger' : undefined}
                 
                 
                 
-                // handlers:
-                onExpandedChange = {handleExpandedChange}
+                // classes:
+                className={`${styleSheet.cardBody} body noData`}
             >
-                <CardHeader>
-                    <h1>{
-                        // the model name is entered:
-                        modelEntryName
-                        ||
-                        // the model name is blank:
-                        (
-                            !model
-                            ? `Add New ${modelName}` // create new model, if no  model
-                            : `Edit ${modelName}`    // edit model      , if has model
-                        )
-                    }</h1>
-                    <CloseButton onClick={handleCloseDialog} />
-                </CardHeader>
-                
-                {isModelNoData && <Content
-                    // variants:
-                    theme={isModelError ? 'danger' : undefined}
+                {!isModelError && <MessageLoading />}
+                {isModelError  && <MessageError onRetry={onModelRetry} />}
+            </Content>}
+            
+            {!isModelNoData && <ValidationProvider
+                // validations:
+                enableValidation={enableValidation}
+                inheritValidation={false}
+            >
+                {!isMultiTabs && <CardBody
+                    // refs:
+                    elmRef={editorRef} // use elmRef, to validate all input(s) inside <CardBody>
                     
                     
                     
                     // classes:
-                    className={`${styleSheet.cardBody} body noData`}
+                    className={styleSheet.cardBody}
                 >
-                    {!isModelError && <MessageLoading />}
-                    {isModelError  && <MessageError onRetry={onModelRetry} />}
-                </Content>}
-                
-                {!isModelNoData && <ValidationProvider
-                    // validations:
-                    enableValidation={enableValidation}
-                    inheritValidation={false}
-                >
-                    {!isMultiTabs && <CardBody
-                        // refs:
-                        elmRef={editorRef} // use elmRef, to validate all input(s) inside <CardBody>
-                        
-                        
-                        
-                        // classes:
-                        className={styleSheet.cardBody}
-                    >
-                        {children}
-                    </CardBody>}
-                    {isMultiTabs && <Tab
-                        // variants:
-                        mild='inherit'
-                        
-                        
-                        
-                        // classes:
-                        className={`${styleSheet.cardBody} tabs`}
-                        
-                        
-                        
-                        // states:
-                        defaultExpandedTabIndex={defaultExpandedTabIndex}
-                        
-                        
-                        
-                        // components:
-                        listComponent={
-                            <List
-                                // classes:
-                                className={styleSheet.tabList}
-                            />
-                        }
-                        bodyComponent={
-                            <Content
-                                // refs:
-                                elmRef={editorRef} // use elmRef, to validate all input(s) inside <Tab>'s body
-                                
-                                
-                                
-                                // classes:
-                                className={styleSheet.tabBody}
-                            />
-                        }
-                    >
-                        {children}
-                        {whenDelete && <TabPanel label={tabDelete} panelComponent={<Content theme='warning' className={styleSheet.tabDelete} />}>
-                            {(typeof(contentDelete) === 'function') ? contentDelete({ handleDelete }) : contentDelete}
-                        </TabPanel>}
-                    </Tab>}
-                </ValidationProvider>}
-                
-                <CardFooter>
-                    {/* <ButtonSave> */}
-                    {whenWrite && !isModelNoData && React.cloneElement<ButtonIconProps>(buttonSaveComponent,
-                        // props:
-                        {
-                            // other props:
-                            ...restButtonSaveComponentProps,
-                            
-                            
-                            
-                            // appearances:
-                            icon      : buttonSaveComponentIcon,
-                            
-                            
-                            
-                            // variants:
-                            theme     : buttonSaveComponentTheme,
-                            
-                            
-                            
-                            // classes:
-                            className : `btnSave ${buttonSaveComponentClassName}`,
-                            
-                            
-                            
-                            // handlers:
-                            onClick   : handleSave,
-                        },
-                        
-                        
-                        
-                        // children:
-                        buttonSaveComponentChildren,
-                    )}
+                    {children}
+                </CardBody>}
+                {isMultiTabs && <Tab
+                    // variants:
+                    mild='inherit'
                     
-                    {/* <ButtonCancel> */}
-                    {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
-                        // props:
-                        {
-                            // other props:
-                            ...restButtonCancelComponentProps,
-                            
-                            
-                            
-                            // appearances:
-                            icon      : buttonCancelComponentIcon,
-                            
-                            
-                            
-                            // variants:
-                            theme     : buttonCancelComponentTheme,
+                    
+                    
+                    // classes:
+                    className={`${styleSheet.cardBody} tabs`}
+                    
+                    
+                    
+                    // states:
+                    defaultExpandedTabIndex={defaultExpandedTabIndex}
+                    
+                    
+                    
+                    // components:
+                    listComponent={
+                        <List
+                            // classes:
+                            className={styleSheet.tabList}
+                        />
+                    }
+                    bodyComponent={
+                        <Content
+                            // refs:
+                            elmRef={editorRef} // use elmRef, to validate all input(s) inside <Tab>'s body
                             
                             
                             
                             // classes:
-                            className : `btnCancel ${buttonCancelComponentClassName}`,
-                            
-                            
-                            
-                            // handlers:
-                            onClick   : handleCloseDialog,
-                        },
+                            className={styleSheet.tabBody}
+                        />
+                    }
+                >
+                    {children}
+                    {whenDelete && <TabPanel label={tabDelete} panelComponent={<Content theme='warning' className={styleSheet.tabDelete} />}>
+                        {(typeof(contentDelete) === 'function') ? contentDelete({ handleDelete }) : contentDelete}
+                    </TabPanel>}
+                </Tab>}
+            </ValidationProvider>}
+            
+            <CardFooter>
+                {/* <ButtonSave> */}
+                {whenWrite && !isModelNoData && React.cloneElement<ButtonIconProps>(buttonSaveComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restButtonSaveComponentProps,
                         
                         
                         
-                        // children:
-                        buttonCancelComponentChildren,
-                    )}
-                </CardFooter>
-            </ModalCard>
+                        // appearances:
+                        icon      : buttonSaveComponentIcon,
+                        
+                        
+                        
+                        // variants:
+                        theme     : buttonSaveComponentTheme,
+                        
+                        
+                        
+                        // classes:
+                        className : `btnSave ${buttonSaveComponentClassName}`,
+                        
+                        
+                        
+                        // handlers:
+                        onClick   : handleSave,
+                    },
+                    
+                    
+                    
+                    // children:
+                    buttonSaveComponentChildren,
+                )}
+                
+                {/* <ButtonCancel> */}
+                {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restButtonCancelComponentProps,
+                        
+                        
+                        
+                        // appearances:
+                        icon      : buttonCancelComponentIcon,
+                        
+                        
+                        
+                        // variants:
+                        theme     : buttonCancelComponentTheme,
+                        
+                        
+                        
+                        // classes:
+                        className : `btnCancel ${buttonCancelComponentClassName}`,
+                        
+                        
+                        
+                        // handlers:
+                        onClick   : handleCloseDialog,
+                    },
+                    
+                    
+                    
+                    // children:
+                    buttonCancelComponentChildren,
+                )}
+            </CardFooter>
+        </>,
+        
+        
+        
+        ...restModalCardComponentProps
+    } = modalCardComponent.props;
+    
+    
+    
+    // jsx:
+    return (
+        <AccessibilityProvider enabled={!isLoading}>
+            {React.cloneElement<ModalCardProps<HTMLElement, ComplexEditModelDialogExpandedChangeEvent<TModel>>>(modalCardComponent,
+                // props:
+                {
+                    // other props:
+                    ...restModalCardProps,
+                    ...restModalCardComponentProps, // overwrites restModalCardProps (if any conflics)
+                    
+                    
+                    
+                    // variants:
+                    theme            : modalCardComponentTheme,
+                    backdropStyle    : modalCardComponentBackdropStyle,
+                    modalCardStyle   : modalCardComponentModalCardStyle,
+                    
+                    
+                    
+                    // handlers:
+                    onExpandedChange : handleExpandedChange,
+                },
+                
+                
+                
+                // children:
+                modalCardComponentChildren,
+            )}
         </AccessibilityProvider>
     );
 };
