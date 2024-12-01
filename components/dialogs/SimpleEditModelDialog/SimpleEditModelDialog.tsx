@@ -130,6 +130,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     // components:
     buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
     buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
+    modalCardComponent    ?: React.ReactElement<ModalCardProps<HTMLElement, SimpleEditModelDialogExpandedChangeEvent<TModel>>>
     
     
     
@@ -191,6 +192,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         // components:
         buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps<HTMLElement, SimpleEditModelDialogExpandedChangeEvent<TModel>>>),
         
         
         
@@ -404,23 +406,6 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     // default props:
     const {
-        // variants:
-        theme          = 'primary',
-        backdropStyle  = 'static',
-        modalCardStyle = 'scrollable',
-        
-        
-        
-        // auto focusable:
-        autoFocusOn    = autoFocusEditorRef,
-        
-        
-        
-        // other props:
-        ...restModalCardProps
-    } = restSimpleEditModelDialogProps;
-    
-    const {
         // appearances:
         icon      : buttonSaveComponentIcon        = (
             isCommiting
@@ -488,131 +473,178 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         ...restButtonCancelComponentProps
     } = buttonCancelComponent.props;
     
+    const {
+        // variants:
+        theme          = 'primary',
+        backdropStyle  = 'static',
+        modalCardStyle = 'scrollable',
+        
+        
+        
+        // auto focusable:
+        autoFocusOn    = autoFocusEditorRef,
+        
+        
+        
+        // other props:
+        ...restModalCardProps
+    } = restSimpleEditModelDialogProps;
+    
+    const {
+        // variants:
+        theme          : modalCardComponentTheme          = theme,
+        backdropStyle  : modalCardComponentBackdropStyle  = backdropStyle,
+        modalCardStyle : modalCardComponentModalCardStyle = modalCardStyle,
+        
+        
+        
+        // auto focusable:
+        autoFocusOn    : modalCardComponentAutoFocusOn    = autoFocusOn,
+        
+        
+        
+        // children:
+        children       : modalCardComponentChildren = <>
+            <CardBody className={styleSheet.main}>
+                <ValidationProvider
+                    // validations:
+                    enableValidation={enableValidation}
+                    inheritValidation={false}
+                >
+                    {React.cloneElement<EditorProps<Element, ValueOfModel<TModel>>>(editorComponent,
+                        // props:
+                        {
+                            elmRef    : autoFocusEditorRef, // focus on the first_important editor, if the editor is a <form>, not the primary input
+                            outerRef  : editorRef, // use outerRef instead of elmRef, to validate all input(s), if the editor is a <form>, not the primary input
+                            
+                            
+                            
+                            size      : 'sm',
+                            
+                            
+                            
+                            className : 'editor',
+                            
+                            
+                            
+                            value     : editorComponent.props.value ?? editorValue,
+                            onChange  : handleChange,
+                        },
+                    )}
+                </ValidationProvider>
+                
+                {/* <ButtonSave> */}
+                {React.cloneElement<ButtonIconProps>(buttonSaveComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restButtonSaveComponentProps,
+                        
+                        
+                        
+                        // appearances:
+                        icon      : buttonSaveComponentIcon,
+                        
+                        
+                        
+                        // variants:
+                        theme     : buttonSaveComponentTheme,
+                        size      : buttonSaveComponentSize,
+                        
+                        
+                        
+                        // classes:
+                        className : `btnSave ${buttonSaveComponentClassName}`,
+                        
+                        
+                        
+                        // handlers:
+                        onClick   : handleSave,
+                    },
+                    
+                    
+                    
+                    // children:
+                    buttonSaveComponentChildren,
+                )}
+                
+                {/* <ButtonCancel> */}
+                {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restButtonCancelComponentProps,
+                        
+                        
+                        
+                        // appearances:
+                        icon      : buttonCancelComponentIcon,
+                        
+                        
+                        
+                        // variants:
+                        theme     : buttonCancelComponentTheme,
+                        size      : buttonCancelComponentSize,
+                        
+                        
+                        
+                        // classes:
+                        className : `btnCancel ${buttonCancelComponentClassName}`,
+                        
+                        
+                        
+                        // handlers:
+                        onClick   : handleCloseDialog,
+                    },
+                    
+                    
+                    
+                    // children:
+                    buttonCancelComponentChildren,
+                )}
+            </CardBody>
+        </>,
+        
+        
+        
+        ...restModalCardComponentProps
+    } = modalCardComponent.props;
+    
     
     
     // jsx:
     return (
         <AccessibilityProvider enabled={!isLoading}>
-            <ModalCard
-                // other props:
-                {...restModalCardProps}
-                
-                
-                
-                // variants:
-                theme          = {theme}
-                backdropStyle  = {backdropStyle}
-                modalCardStyle = {modalCardStyle}
-                
-                
-                
-                // auto focusable:
-                autoFocusOn={autoFocusOn}
-                
-                
-                
-                // handlers:
-                onExpandedChange = {handleExpandedChange}
-            >
-                <CardBody className={styleSheet.main}>
-                    <ValidationProvider
-                        // validations:
-                        enableValidation={enableValidation}
-                        inheritValidation={false}
-                    >
-                        {React.cloneElement<EditorProps<Element, ValueOfModel<TModel>>>(editorComponent,
-                            // props:
-                            {
-                                elmRef    : autoFocusEditorRef, // focus on the first_important editor, if the editor is a <form>, not the primary input
-                                outerRef  : editorRef, // use outerRef instead of elmRef, to validate all input(s), if the editor is a <form>, not the primary input
-                                
-                                
-                                
-                                size      : 'sm',
-                                
-                                
-                                
-                                className : 'editor',
-                                
-                                
-                                
-                                value     : editorComponent.props.value ?? editorValue,
-                                onChange  : handleChange,
-                            },
-                        )}
-                    </ValidationProvider>
+            {React.cloneElement<ModalCardProps<HTMLElement, SimpleEditModelDialogExpandedChangeEvent<TModel>>>(modalCardComponent,
+                // props:
+                {
+                    // other props:
+                    ...restModalCardProps,
+                    ...restModalCardComponentProps, // overwrites restModalCardProps (if any conflics)
                     
-                    {/* <ButtonSave> */}
-                    {React.cloneElement<ButtonIconProps>(buttonSaveComponent,
-                        // props:
-                        {
-                            // other props:
-                            ...restButtonSaveComponentProps,
-                            
-                            
-                            
-                            // appearances:
-                            icon      : buttonSaveComponentIcon,
-                            
-                            
-                            
-                            // variants:
-                            theme     : buttonSaveComponentTheme,
-                            size      : buttonSaveComponentSize,
-                            
-                            
-                            
-                            // classes:
-                            className : `btnSave ${buttonSaveComponentClassName}`,
-                            
-                            
-                            
-                            // handlers:
-                            onClick   : handleSave,
-                        },
-                        
-                        
-                        
-                        // children:
-                        buttonSaveComponentChildren,
-                    )}
                     
-                    {/* <ButtonCancel> */}
-                    {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
-                        // props:
-                        {
-                            // other props:
-                            ...restButtonCancelComponentProps,
-                            
-                            
-                            
-                            // appearances:
-                            icon      : buttonCancelComponentIcon,
-                            
-                            
-                            
-                            // variants:
-                            theme     : buttonCancelComponentTheme,
-                            size      : buttonCancelComponentSize,
-                            
-                            
-                            
-                            // classes:
-                            className : `btnCancel ${buttonCancelComponentClassName}`,
-                            
-                            
-                            
-                            // handlers:
-                            onClick   : handleCloseDialog,
-                        },
-                        
-                        
-                        
-                        // children:
-                        buttonCancelComponentChildren,
-                    )}
-                </CardBody>
-            </ModalCard>
+                    
+                    // variants:
+                    theme            : modalCardComponentTheme,
+                    backdropStyle    : modalCardComponentBackdropStyle,
+                    modalCardStyle   : modalCardComponentModalCardStyle,
+                    
+                    
+                    
+                    // auto focusable:
+                    autoFocusOn      : modalCardComponentAutoFocusOn,
+                    
+                    
+                    
+                    // handlers:
+                    onExpandedChange : handleExpandedChange,
+                },
+                
+                
+                
+                // children:
+                modalCardComponentChildren,
+            )}
         </AccessibilityProvider>
     );
 };
