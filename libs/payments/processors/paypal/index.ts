@@ -1238,3 +1238,15 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string): Promis
         .filter((item): item is Exclude<typeof item, null> => (item !== null))
     );
 }
+export const paypalDeletePaymentMethod = async (paypalPaymentMethodId: string): Promise<void> => {
+    const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens/${encodeURIComponent(paypalPaymentMethodId)}`, {
+        method  : 'DELETE',
+        headers : {
+            'Content-Type'    : 'application/json',
+            'Accept'          : 'application/json',
+            'Accept-Language' : 'en_US',
+            'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+        },
+    });
+    if (response.status !== 204) throw Error('Unable to delete.');
+}

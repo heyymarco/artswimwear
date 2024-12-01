@@ -50,6 +50,7 @@ import {
     paypalCreateSetupPayment,
     paypalCapturePaymentMethod,
     paypalListPaymentMethods,
+    paypalDeletePaymentMethod,
 }                           from '@/libs/payments/processors/paypal'
 
 // configs:
@@ -392,6 +393,38 @@ router
     
     //#region save changes
     try {
+        //#region find existing paymentMethod
+        const existingPaymentMethod = await prisma.paymentMethod.findUnique({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+                id       : id,
+            },
+            select : {
+                provider                : true,
+                providerPaymentMethodId : true,
+            },
+        });
+        if (!existingPaymentMethod) {
+            return Response.json({
+                id : id,
+            } satisfies Pick<PaymentMethodDetail, 'id'>); // handled with success
+        } // if
+        const {
+            provider,
+            providerPaymentMethodId,
+        } = existingPaymentMethod;
+        //#endregion find existing paymentMethod
+        
+        
+        
+        //#region process the vault token
+        switch (provider) {
+            case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && paypalDeletePaymentMethod(providerPaymentMethodId);
+        } // switch
+        //#endregion process the vault token
+        
+        
+        
         const deletedPaymentMethod : Pick<PaymentMethodDetail, 'id'> = (
             await prisma.paymentMethod.delete({
                 where  : {
