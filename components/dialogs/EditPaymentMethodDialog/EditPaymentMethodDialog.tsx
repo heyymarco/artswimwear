@@ -194,6 +194,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     
     
     // states:
+    let [isLoadingTransaction, setIsLoadingTransaction] = useState<boolean>(false);
     const [enableValidation, setEnableValidation] = useState<boolean>(false);
     
     
@@ -240,7 +241,22 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
         return true; // ready
     });
     const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
-        await transaction();
+        // conditions:
+        if (isLoadingTransaction) return; // prevents for accidentally double transactions
+        
+        
+        
+        // actions:
+        setIsLoadingTransaction(isLoadingTransaction = true); /* instant update without waiting for (slow|delayed) re-render */
+        try {
+            await transaction();
+        }
+        catch {
+            // ignore any error
+        }
+        finally {
+            setIsLoadingTransaction(isLoadingTransaction = false); /* instant update without waiting for (slow|delayed) re-render */
+        } // try
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return {
@@ -361,7 +377,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                             
                             
                             // stores:
-                            isCommiting = {isLoadingUpdate}
+                            isCommiting = {isLoadingUpdate || isLoadingTransaction}
                             isDeleting  = {isLoadingDelete}
                             
                             
