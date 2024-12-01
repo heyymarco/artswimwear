@@ -165,6 +165,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // components:
+    modalCardComponent    ?: React.ReactElement<ModalCardProps>
     buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
     buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
     
@@ -266,6 +267,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // components:
+        modalCardComponent    = (<ModalCard  /> as React.ReactElement<ModalCardProps>),
         buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         
@@ -538,6 +540,17 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     } = restComplexEditModelDialogProps;
     
     const {
+        // variants:
+        theme          : modalCardComponentTheme          = theme,
+        backdropStyle  : modalCardComponentBackdropStyle  = backdropStyle,
+        modalCardStyle : modalCardComponentModalCardStyle = modalCardStyle,
+        
+        
+        
+        ...restModalCardComponentProps
+    } = modalCardComponent.props;
+    
+    const {
         // appearances:
         icon      : buttonSaveComponentIcon        = (
             isCommiting
@@ -661,13 +674,14 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             <ModalCard
                 // other props:
                 {...restModalCardProps}
+                {...restModalCardComponentProps} // overwrites restModalCardProps (if any conflics)
                 
                 
                 
                 // variants:
-                theme          = {theme}
-                backdropStyle  = {backdropStyle}
-                modalCardStyle = {modalCardStyle}
+                theme          = {modalCardComponentTheme}
+                backdropStyle  = {modalCardComponentBackdropStyle}
+                modalCardStyle = {modalCardComponentModalCardStyle}
                 
                 
                 
