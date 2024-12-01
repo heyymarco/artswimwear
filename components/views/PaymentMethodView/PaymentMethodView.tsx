@@ -223,9 +223,9 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                     Billing
                 </span>
                 <div className='data'>
-                    <p>
-                        <span className={styleSheets.data}>{firstName} {lastName} ({phone})</span>
-                    </p>
+                    {(!!firstName && !!lastName && !!phone) && <p>
+                        <span className={styleSheets.data}>{[firstName, lastName, phone ? `(${phone})` : ''].filter((item) => !!item).join(' ')}</span>
+                    </p>}
                     <p>
                         <span className={styleSheets.data}>
                             {address}, {city}, {state} ({zip}), {Country.getCountryByCode(country ?? '')?.name ?? country}
