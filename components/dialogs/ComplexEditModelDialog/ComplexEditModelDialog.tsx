@@ -48,6 +48,7 @@ import {
     
     
     // simple-components:
+    type ButtonIconProps,
     ButtonIcon,
     CloseButton,
     
@@ -132,54 +133,60 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
         >
 {
     // data:
-    modelName         : string
-    modelEntryName   ?: string|null
-    model             : TModel|null
+    modelName              : string
+    modelEntryName        ?: string|null
+    model                  : TModel|null
     
     
     
     // privileges:
-    privilegeAdd     ?: boolean
-    privilegeUpdate  ?: Record<string, boolean>
-    privilegeDelete  ?: boolean
+    privilegeAdd          ?: boolean
+    privilegeUpdate       ?: Record<string, boolean>
+    privilegeDelete       ?: boolean
     
     
     
     // stores:
-    isModelLoading   ?: boolean
-    isModelError     ?: boolean
-    onModelRetry     ?: MessageErrorProps['onRetry']
+    isModelLoading        ?: boolean
+    isModelError          ?: boolean
+    onModelRetry          ?: MessageErrorProps['onRetry']
     
-    isModified       ?: boolean
-    isCommiting      ?: boolean
-    isReverting      ?: boolean
-    isDeleting       ?: boolean
+    isModified            ?: boolean
+    isCommiting           ?: boolean
+    isReverting           ?: boolean
+    isDeleting            ?: boolean
     
     
     
     // tabs:
-    tabDelete        ?: React.ReactNode
-    contentDelete    ?: React.ReactNode | ((props: { handleDelete: (arg?: unknown|undefined) => Promise<false|undefined> }) => React.ReactNode),
+    tabDelete             ?: React.ReactNode
+    contentDelete         ?: React.ReactNode | ((props: { handleDelete: (arg?: unknown|undefined) => Promise<false|undefined> }) => React.ReactNode),
     
     
     
     // handlers:
-    onUpdate         ?: UpdateHandler<TModel>
-    onAfterUpdate    ?: AfterUpdateHandler
+    onUpdate              ?: UpdateHandler<TModel>
+    onAfterUpdate         ?: AfterUpdateHandler
     
-    onDelete         ?: DeleteHandler<TModel>
-    onAfterDelete    ?: AfterDeleteHandler
+    onDelete              ?: DeleteHandler<TModel>
+    onAfterDelete         ?: AfterDeleteHandler
     
-    onSideUpdate     ?: UpdateSideHandler
-    onSideDelete     ?: DeleteSideHandler
+    onSideUpdate          ?: UpdateSideHandler
+    onSideDelete          ?: DeleteSideHandler
     
-    onConfirmDelete  ?: ConfirmDeleteHandler<TModel>
-    onConfirmUnsaved ?: ConfirmUnsavedHandler<TModel>
+    onConfirmDelete       ?: ConfirmDeleteHandler<TModel>
+    onConfirmUnsaved      ?: ConfirmUnsavedHandler<TModel>
+    
+    
+    
+    // components:
+    buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
+    buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
     
     
     
     // children:
-    children          : React.ReactNode | ((args: { whenAdd: boolean, whenUpdate: Record<string, boolean> }) => React.ReactNode)
+    children               : React.ReactNode | ((args: { whenAdd: boolean, whenUpdate: Record<string, boolean> }) => React.ReactNode)
 }
 export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<ComplexEditModelDialogProps<TModel>,
     // data:
@@ -219,7 +226,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     
     
     
-    // rest props:
+    // props:
     const {
         // data:
         modelName,
@@ -275,9 +282,20 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         
+        // components:
+        buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        
+        
+        
         // children:
         children : childrenFn,
-    ...restModalCardProps} = props;
+        
+        
+        
+        // other props:
+        ...restComplexEditModelDialogProps
+    } = props;
     const isModelNoData = isModelLoading || isModelError;
     
     const whenAdd    : boolean                 =   !model && privilegeAdd;
@@ -506,6 +524,111 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     
     
     
+    // default props:
+    const {
+        // variants:
+        theme          = 'primary',
+        backdropStyle  = 'static',
+        modalCardStyle = 'scrollable',
+        
+        
+        
+        // other props:
+        ...restModalCardProps
+    } = restComplexEditModelDialogProps;
+    
+    const {
+        // appearances:
+        icon      : buttonSaveComponentIcon        = (
+            isCommiting
+            ? 'busy'
+            : 'save'
+        ),
+        
+        
+        
+        // variants:
+        theme     : buttonSaveComponentTheme       = 'success',
+        
+        
+        
+        // classes:
+        className : buttonSaveComponentClassName   = '',
+        
+        
+        
+        // children:
+        children  : buttonSaveComponentChildren    = <>
+            Save
+        </>,
+        
+        
+        
+        // other props:
+        ...restButtonSaveComponentProps
+    } = buttonSaveComponent.props;
+    
+    const {
+        // appearances:
+        icon      : buttonCancelComponentIcon      = (
+            isModelNoData
+            ? 'cancel'
+            : (
+                whenWrite
+                ? (
+                    isReverting
+                    ? 'busy'
+                    : 'cancel'
+                )
+                : 'done'
+            )
+        ),
+        
+        
+        
+        // variants:
+        theme     : buttonCancelComponentTheme     = (
+            isModelNoData
+            ? 'primary'
+            : (
+                whenWrite
+                ? 'danger'
+                : 'primary'
+            )
+        ),
+        
+        
+        
+        // classes:
+        className : buttonCancelComponentClassName = '',
+        
+        
+        
+        // children:
+        children  : buttonCancelComponentChildren  = <>
+            {
+                isModelNoData
+                ? 'Close'
+                : (
+                    isReverting
+                    ? 'Reverting'
+                    : (
+                        whenWrite
+                        ? 'Cancel'
+                        : 'Close'
+                    )
+                )
+            }
+        </>,
+        
+        
+        
+        // other props:
+        ...restButtonCancelComponentProps
+    } = buttonCancelComponent.props;
+    
+    
+    
     // jsx:
     const children = flattenChildren(
         (typeof(childrenFn) === 'function')
@@ -542,9 +665,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 
                 
                 // variants:
-                theme          = {props.theme          ?? 'primary'   }
-                backdropStyle  = {props.backdropStyle  ?? 'static'    }
-                modalCardStyle = {props.modalCardStyle ?? 'scrollable'}
+                theme          = {theme}
+                backdropStyle  = {backdropStyle}
+                modalCardStyle = {modalCardStyle}
                 
                 
                 
@@ -639,83 +762,57 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 
                 <CardFooter>
                     {whenWrite && !isModelNoData && <ButtonIcon
+                        // other props:
+                        {...restButtonSaveComponentProps}
+                        
+                        
+                        
                         // appearances:
-                        icon={
-                            isCommiting
-                            ? 'busy'
-                            : 'save'
-                        }
+                        icon={buttonSaveComponentIcon}
                         
                         
                         
                         // variants:
-                        theme='success'
+                        theme={buttonSaveComponentTheme}
                         
                         
                         
                         // classes:
-                        className='btnSave'
+                        className={`btnSave ${buttonSaveComponentClassName}`}
                         
                         
                         
                         // handlers:
                         onClick={handleSave}
                     >
-                        Save
+                        {buttonSaveComponentChildren}
                     </ButtonIcon>}
                     
                     <ButtonIcon
+                        // other props:
+                        {...restButtonCancelComponentProps}
+                        
+                        
+                        
                         // appearances:
-                        icon={
-                            isModelNoData
-                            ? 'cancel'
-                            : (
-                                whenWrite
-                                ? (
-                                    isReverting
-                                    ? 'busy'
-                                    : 'cancel'
-                                )
-                                : 'done'
-                            )
-                        }
+                        icon={buttonCancelComponentIcon}
                         
                         
                         
                         // variants:
-                        theme={
-                            isModelNoData
-                            ? 'primary'
-                            : (
-                                whenWrite
-                                ? 'danger'
-                                : 'primary'
-                            )
-                        }
+                        theme={buttonCancelComponentTheme}
                         
                         
                         
                         // classes:
-                        className='btnCancel'
+                        className={`btnCancel ${buttonCancelComponentClassName}`}
                         
                         
                         
                         // handlers:
                         onClick={handleCloseDialog}
                     >
-                        {
-                            isModelNoData
-                            ? 'Close'
-                            : (
-                                isReverting
-                                ? 'Reverting'
-                                : (
-                                    whenWrite
-                                    ? 'Cancel'
-                                    : 'Close'
-                                )
-                            )
-                        }
+                        {buttonCancelComponentChildren}
                     </ButtonIcon>
                 </CardFooter>
             </ModalCard>
