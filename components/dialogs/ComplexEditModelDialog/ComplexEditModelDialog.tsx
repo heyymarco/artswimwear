@@ -164,6 +164,12 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     
+    // components:
+    buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
+    buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
+    
+    
+    
     // handlers:
     onUpdate              ?: UpdateHandler<TModel>
     onAfterUpdate         ?: AfterUpdateHandler
@@ -176,12 +182,6 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     onConfirmDelete       ?: ConfirmDeleteHandler<TModel>
     onConfirmUnsaved      ?: ConfirmUnsavedHandler<TModel>
-    
-    
-    
-    // components:
-    buttonSaveComponent   ?: React.ReactElement<ButtonIconProps>
-    buttonCancelComponent ?: React.ReactElement<ButtonIconProps>
     
     
     
@@ -265,6 +265,12 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         
+        // components:
+        buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
+        
+        
+        
         // handlers:
         onUpdate,
         onAfterUpdate,
@@ -279,12 +285,6 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onConfirmUnsaved,
         
         onExpandedChange,
-        
-        
-        
-        // components:
-        buttonSaveComponent   = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
-        buttonCancelComponent = (<ButtonIcon /> as React.ReactElement<ButtonIconProps>),
         
         
         
@@ -761,65 +761,79 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 </ValidationProvider>}
                 
                 <CardFooter>
-                    {whenWrite && !isModelNoData && <ButtonIcon
-                        // other props:
-                        {...restButtonSaveComponentProps}
+                    {/* <ButtonSave> */}
+                    {whenWrite && !isModelNoData && React.cloneElement<ButtonIconProps>(buttonSaveComponent,
+                        // props:
+                        {
+                            // other props:
+                            ...restButtonSaveComponentProps,
+                            
+                            
+                            
+                            // appearances:
+                            icon      : buttonSaveComponentIcon,
+                            
+                            
+                            
+                            // variants:
+                            theme     : buttonSaveComponentTheme,
+                            
+                            
+                            
+                            // classes:
+                            className : `btnSave ${buttonSaveComponentClassName}`,
+                            
+                            
+                            
+                            // handlers:
+                            onClick   : handleSave,
+                        },
                         
                         
                         
-                        // appearances:
-                        icon={buttonSaveComponentIcon}
-                        
-                        
-                        
-                        // variants:
-                        theme={buttonSaveComponentTheme}
-                        
-                        
-                        
-                        // classes:
-                        className={`btnSave ${buttonSaveComponentClassName}`}
-                        
-                        
-                        
-                        // handlers:
-                        onClick={handleSave}
-                    >
-                        {buttonSaveComponentChildren}
-                    </ButtonIcon>}
+                        // children:
+                        buttonSaveComponentChildren,
+                    )}
                     
-                    <ButtonIcon
-                        // other props:
-                        {...restButtonCancelComponentProps}
+                    {/* <ButtonCancel> */}
+                    {React.cloneElement<ButtonIconProps>(buttonCancelComponent,
+                        // props:
+                        {
+                            // other props:
+                            ...restButtonCancelComponentProps,
+                            
+                            
+                            
+                            // appearances:
+                            icon      : buttonCancelComponentIcon,
+                            
+                            
+                            
+                            // variants:
+                            theme     : buttonCancelComponentTheme,
+                            
+                            
+                            
+                            // classes:
+                            className : `btnCancel ${buttonCancelComponentClassName}`,
+                            
+                            
+                            
+                            // handlers:
+                            onClick   : handleCloseDialog,
+                        },
                         
                         
                         
-                        // appearances:
-                        icon={buttonCancelComponentIcon}
-                        
-                        
-                        
-                        // variants:
-                        theme={buttonCancelComponentTheme}
-                        
-                        
-                        
-                        // classes:
-                        className={`btnCancel ${buttonCancelComponentClassName}`}
-                        
-                        
-                        
-                        // handlers:
-                        onClick={handleCloseDialog}
-                    >
-                        {buttonCancelComponentChildren}
-                    </ButtonIcon>
+                        // children:
+                        buttonCancelComponentChildren,
+                    )}
                 </CardFooter>
             </ModalCard>
         </AccessibilityProvider>
     );
 };
 export {
-    ComplexEditModelDialog,
-    ComplexEditModelDialog as default,
+    ComplexEditModelDialog,            // named export for readibility
+    ComplexEditModelDialog as default, // default export to support React.lazy
 }
