@@ -9,6 +9,8 @@ import {
     
     // hooks:
     useRef,
+    useState,
+    useMemo,
 }                           from 'react'
 
 // cssfn:
@@ -21,6 +23,12 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useSetTimeout,
+    
+    
+    
+    // a validation management system:
+    ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -30,9 +38,20 @@ import {
     
     
     
+    // dialog-components:
+    ModalCard,
+    
+    
+    
     // composite-components:
     TabPanel,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internal components:
+import {
+    type Address as EditorAddress,
+    AddressEditor,
+}                           from '@/components/editors/AddressEditor'
 
 // payment components:
 import {
@@ -111,6 +130,11 @@ import {
     type PaymentMethodDetail,
 }                           from '@/models'
 
+// states:
+import {
+    useTransactionState,
+}                           from '@/components/payments/states'
+
 // stores:
 import {
     // hooks:
@@ -140,7 +164,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     
     
     
-    // rest props:
+    // props:
     const {
         // data:
         model = null,
@@ -155,6 +179,16 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
             default        : return undefined;
         } // switch
     })();
+    
+    
+    
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
+    // states:
+    const [enableValidation, setEnableValidation] = useState<boolean>(false);
     
     
     
@@ -197,7 +231,15 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     });
     
     const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
-        return true;
+        // validate:
+        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+        setEnableValidation(true); // enable paymentForm & billingAddress validation
+        
+        // wait for a validation state applied:
+        if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+        if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+        
+        return true; // ready
     });
     const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
         await transaction();
@@ -252,15 +294,33 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
     
     // jsx:
     const mainTabContent = (
+        <ValidationProvider
+            // validations:
+            enableValidation={enableValidation}
+            inheritValidation={false}
+        >
+            <CreditCardLayout />
+        </ValidationProvider>
+    );
+    const mainTab = (
+        !model
+        ? <div className={styleSheet.creditCardTab}>
+            {mainTabContent}
+        </div>
+        : <TabPanel label={PAGE_PAYMENT_METHODS_TAB_DATA} panelComponent={<Generic className={styleSheet.creditCardTab} />}>
+            {mainTabContent}
+        </TabPanel>
+    );
+    return (
         <CartStateProvider>
             <TransactionStateProvider
                 // payment data:
-                paymentValidation={false}
+                paymentValidation={enableValidation}
                 
                 
                 
                 // billing data:
-                billingValidation={false}
+                billingValidation={enableValidation}
                 billingAddress={null}
                 
                 
@@ -283,75 +343,143 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
                     totalShippingCost={null} // not_physical_product
                 >
                     <ConditionalPaypalCardComposerProvider saveCardMode={true}>
-                        <ConditionalCreditCardNumberEditor />
-                        <ConditionalCreditCardNameEditor />
-                        <ConditionalCreditCardExpiryEditor />
-                        <ConditionalCreditCardCvvEditor />
-                        <ConditionalCreditCardButton>
-                            Save
-                        </ConditionalCreditCardButton>
+                        <ComplexEditModelDialog<PaymentMethodDetail>
+                            // other props:
+                            {...restComplexEditModelDialogProps}
+                            
+                            
+                            
+                            // data:
+                            modelName='Payment Method'
+                            modelEntryName={modelAliasName}
+                            model={model}
+                            
+                            
+                            
+                            // privileges:
+                            privilegeAdd    = {true}
+                            privilegeUpdate = {useMemo(() => ({
+                                any : true,
+                            }), [])}
+                            privilegeDelete = {true}
+                            
+                            
+                            
+                            // stores:
+                            isCommiting = {isLoadingUpdate}
+                            isDeleting  = {isLoadingDelete}
+                            
+                            
+                            
+                            // variants:
+                            horzAlign='stretch'
+                            
+                            
+                            
+                            // tabs:
+                            tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
+                            
+                            
+                            
+                            // auto focusable:
+                            autoFocusOn={props.autoFocusOn ?? firstEditorRef}
+                            
+                            
+                            
+                            // components:
+                            buttonSaveComponent={
+                                <ConditionalCreditCardButton gradient={false}>
+                                    Save
+                                </ConditionalCreditCardButton>
+                            }
+                            modalCardComponent={<ModalCard className={styleSheet.dialog} />}
+                            
+                            
+                            
+                            // handlers:
+                            onUpdate={handleUpdate}
+                            onDelete={handleDelete}
+                            
+                            onConfirmDelete={handleConfirmDelete}
+                        >
+                            {mainTab}
+                        </ComplexEditModelDialog>
                     </ConditionalPaypalCardComposerProvider>
                 </ConditionalPaymentScriptProvider>
             </TransactionStateProvider>
         </CartStateProvider>
     );
-    const mainTab = (
-        !model
-        ? <div className={styleSheet.collectionTab}>
-            {mainTabContent}
-        </div>
-        : <TabPanel label={PAGE_PAYMENT_METHODS_TAB_DATA} panelComponent={<Generic className={styleSheet.collectionTab} />}>
-            {mainTabContent}
-        </TabPanel>
-    );
-    return (
-        <ComplexEditModelDialog<PaymentMethodDetail>
-            // other props:
-            {...restComplexEditModelDialogProps}
-            
-            
-            
-            // data:
-            modelName='Payment Method'
-            modelEntryName={modelAliasName}
-            model={model}
-            
-            
-            
-            // privileges:
-            privilegeAdd    = {true}
-            privilegeUpdate = {undefined}
-            privilegeDelete = {true}
-            
-            
-            
-            // stores:
-            isCommiting = {isLoadingUpdate}
-            isDeleting  = {isLoadingDelete}
-            
-            
-            
-            // tabs:
-            tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
-            
-            
-            
-            // auto focusable:
-            autoFocusOn={props.autoFocusOn ?? firstEditorRef}
-            
-            
-            
-            // handlers:
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            
-            onConfirmDelete={handleConfirmDelete}
-        >
-            {mainTab}
-        </ComplexEditModelDialog>
-    );
 };
 export {
-    EditPaymentMethodDialog,
-    EditPaymentMethodDialog as default,
+    EditPaymentMethodDialog,            // named export for readibility
+    EditPaymentMethodDialog as default, // default export to support React.lazy
 }
+
+
+
+const CreditCardLayout = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useEditPaymentMethodDialogStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        // sections:
+        paymentCardSectionRef,
+        billingAddressSectionRef,
+    } = useTransactionState();
+    
+    
+    
+    // jsx:
+    return (
+        <form ref={paymentCardSectionRef} className={styleSheet.creditCardForm}>
+            <section>
+                <p>
+                    Enter your card information:
+                </p>
+                <div className={styleSheet.creditCardLayout}>
+                    <ConditionalCreditCardNumberEditor />
+                    <ConditionalCreditCardNameEditor />
+                    <ConditionalCreditCardExpiryEditor />
+                    <ConditionalCreditCardCvvEditor />
+                    {/* <ConditionalCreditCardButton>
+                        Save
+                    </ConditionalCreditCardButton> */}
+                </div>
+            </section>
+            
+            <hr />
+            
+            <section
+                // refs:
+                ref={billingAddressSectionRef}
+                
+                
+                
+                // classes:
+                className='billing'
+            >
+                <p>
+                    <em>Optionally</em>, enter the address that matches your card&apos;s billing address:
+                </p>
+                <AddressEditor
+                    // types:
+                    addressType       = 'billing'
+                    
+                    
+                    
+                    // values:
+                    // value       = {editorAddress}
+                    // onChange    = {handleChange}
+                    
+                    
+                    
+                    // components:
+                    companyEditorComponent={null}
+                />
+            </section>
+        </form>
+    );
+};

@@ -6,6 +6,11 @@ import {
     scope,
 }                           from '@cssfn/core'          // writes css in javascript
 import {
+    // a responsive management system:
+    breakpoints,
+    
+    
+    
     // a spacer (gap) management system:
     spacers,
 }                           from '@reusable-ui/core'    // a set of reusable-ui packages which are responsible for building any component
@@ -14,34 +19,27 @@ import {
 
 // styles:
 export default () => [
-    scope('collectionTab', {
+    scope('dialog', {
+        boxSizing     : 'border-box',
+        maxInlineSize : `${breakpoints.md}px`,
+        // maxBlockSize  : `${breakpoints.sm}px`, // unlimited for max height
+    }, {specificityWeight: 4}),
+    scope('creditCardTab', {
         // layout:
-        display: 'grid',
+        display      : 'grid',
+    }),
+    scope('creditCardForm', {
+        // layout:
+        display      : 'grid',
+    }),
+    scope('creditCardLayout', {
+        // layout:
+        display      : 'grid',
+        alignContent : 'start',
         
         
         
-        // children:
-        ...children('*', { // * = a <div> by <PayPalCardFieldsProvider>
-            // layout:
-            display      : 'grid',
-            alignContent : 'start',
-            gridTemplate : [[
-                '"name-label      "', 'auto',
-                '"name-editor     "', 'auto',
-                '/',
-                '1fr'
-            ]],
-            
-            
-            
-            // spacings:
-            gap: spacers.md,
-            
-            
-            
-            // children:
-            ...children('.name.label' , { gridArea: 'name-label'  }),
-            ...children('.name.editor', { gridArea: 'name-editor' }),
-        }),
+        // spacings:
+        gap: spacers.md,
     }),
 ];
