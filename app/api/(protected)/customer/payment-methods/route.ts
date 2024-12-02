@@ -164,7 +164,7 @@ router
                 },
                 select : paymentMethodDetailSelect,
                 orderBy : {
-                    sort: 'asc',
+                    sort: 'desc',
                 },
                 skip    : page * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
                 take    : perPage,
@@ -301,6 +301,7 @@ router
         
         
         
+        let paymentMethodCount : number|undefined = undefined;
         if (id) { // updating only
             //#region delete prev payment token
             const existingPaymentMethod = await prisma.paymentMethod.findUnique({
@@ -333,7 +334,7 @@ router
         }
         else {
             //#region limits max payment method count
-            const paymentMethodCount = await prisma.paymentMethod.count({
+            paymentMethodCount = await prisma.paymentMethod.count({
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
                 },
@@ -355,7 +356,7 @@ router
                 data   : {
                     parentId                : customerId, // important: the signedIn customerId
                     
-                    sort                    : 0,
+                    sort                    : paymentMethodCount ?? 0,
                     
                     provider                : provider,
                     providerPaymentMethodId : providerPaymentMethodId,
@@ -370,8 +371,6 @@ router
                     parentId                : customerId, // important: the signedIn customerId
                 },
                 data   : {
-                    sort                    : 0,
-                    
                     provider                : provider,
                     providerPaymentMethodId : providerPaymentMethodId,
                     
