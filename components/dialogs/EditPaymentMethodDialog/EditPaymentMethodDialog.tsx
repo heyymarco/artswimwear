@@ -159,7 +159,9 @@ export interface EditPaymentMethodDialogProps
 const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
     // jsx:
     return (
-        <EditPaymentMethodDialogInternal {...props} />
+        <CartStateProvider>
+            <EditPaymentMethodDialogInternal {...props} />
+        </CartStateProvider>
     );
 };
 const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
@@ -205,6 +207,11 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         };
     }, [billingAddress]);
     
+    const {
+        // accessibilities:
+        currency,
+    } = useCartState();
+    
     
     
     // stores:
@@ -227,6 +234,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         
         
         
+        // downgrade PaymentDetail (more data) to PaymentMethodDetail (less data):
         const {
             // data:
             type,
@@ -236,22 +244,21 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             expiresAt,
             
             billingAddress,
+            
+            paymentId,
+            
+            amount,
+            fee,
         } = paymentDetail;
         return {
-            // records:
             id : '',
-            
-            
-            
-            // data:
-            type           : type,
+            currency,
+            ...paymentDetail,
             brand          : brand          ?? '',
             identifier     : identifier     ?? '',
-            
             expiresAt      : expiresAt      ?? null,
-            
             billingAddress : billingAddress ?? null,
-        };
+        } satisfies PaymentMethodDetail;
     });
     
     const handleDelete         = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
@@ -332,32 +339,14 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
         const vaultToken = orderId;
         const newPaymentMethod = await updatePaymentMethod({
-            id : '',
+            id : model?.id ?? '',
             
             vaultToken,
+            currency,
         }).unwrap();
         
-        const {
-            // records:
-            id,
-            
-            
-            
-            // data:
-            currency,
-            
-            type,
-            brand,
-            identifier,
-            
-            expiresAt,
-            
-            billingAddress,
-        } = newPaymentMethod;
         return {
-            type       : type,
-            brand      : brand,
-            identifier : identifier,
+            ...newPaymentMethod,
             amount     : 0,
             fee        : 0,
         } satisfies PaymentDetail;
@@ -401,89 +390,87 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         </TabPanel>
     );
     return (
-        <CartStateProvider>
-            <TransactionStateProvider
-                // payment data:
-                paymentValidation={enableValidation}
+        <TransactionStateProvider
+            // payment data:
+            paymentValidation={enableValidation}
+            
+            
+            
+            // billing data:
+            billingValidation={enableValidation}
+            billingAddress={null}
+            
+            
+            
+            // states:
+            isTransactionReady={true}
+            
+            
+            
+            // actions:
+            onPrepareTransaction={handlePrepareTransaction}
+            onTransaction={handleTransaction}
+            onPlaceOrder={handlePlaceOrder}
+            onCancelOrder={handleCancelOrder}
+            onMakePayment={handleMakePayment}
+        >
+            <ComplexEditModelDialog<PaymentMethodDetail>
+                // other props:
+                {...restComplexEditModelDialogProps}
                 
                 
                 
-                // billing data:
-                billingValidation={enableValidation}
-                billingAddress={null}
+                // data:
+                modelName='Payment Method'
+                modelEntryName={modelAliasName}
+                model={model}
                 
                 
                 
-                // states:
-                isTransactionReady={true}
+                // privileges:
+                privilegeAdd    = {true}
+                privilegeUpdate = {useMemo(() => ({
+                    any : true,
+                }), [])}
+                privilegeDelete = {true}
                 
                 
                 
-                // actions:
-                onPrepareTransaction={handlePrepareTransaction}
-                onTransaction={handleTransaction}
-                onPlaceOrder={handlePlaceOrder}
-                onCancelOrder={handleCancelOrder}
-                onMakePayment={handleMakePayment}
+                // stores:
+                isCommiting = {isLoadingUpdate || isLoadingTransaction}
+                isDeleting  = {isLoadingDelete}
+                
+                
+                
+                // variants:
+                horzAlign='stretch'
+                
+                
+                
+                // tabs:
+                tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
+                
+                
+                
+                // auto focusable:
+                autoFocusOn={props.autoFocusOn ?? firstEditorRef}
+                
+                
+                
+                // components:
+                modalCardComponent={<ModalCard className={styleSheet.dialog} />}
+                
+                
+                
+                // handlers:
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+                
+                onConfirmDelete={handleConfirmDelete}
             >
-                <ComplexEditModelDialog<PaymentMethodDetail>
-                    // other props:
-                    {...restComplexEditModelDialogProps}
-                    
-                    
-                    
-                    // data:
-                    modelName='Payment Method'
-                    modelEntryName={modelAliasName}
-                    model={model}
-                    
-                    
-                    
-                    // privileges:
-                    privilegeAdd    = {true}
-                    privilegeUpdate = {useMemo(() => ({
-                        any : true,
-                    }), [])}
-                    privilegeDelete = {true}
-                    
-                    
-                    
-                    // stores:
-                    isCommiting = {isLoadingUpdate || isLoadingTransaction}
-                    isDeleting  = {isLoadingDelete}
-                    
-                    
-                    
-                    // variants:
-                    horzAlign='stretch'
-                    
-                    
-                    
-                    // tabs:
-                    tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
-                    
-                    
-                    
-                    // auto focusable:
-                    autoFocusOn={props.autoFocusOn ?? firstEditorRef}
-                    
-                    
-                    
-                    // components:
-                    modalCardComponent={<ModalCard className={styleSheet.dialog} />}
-                    
-                    
-                    
-                    // handlers:
-                    onUpdate={handleUpdate}
-                    onDelete={handleDelete}
-                    
-                    onConfirmDelete={handleConfirmDelete}
-                >
-                    {mainTab}
-                </ComplexEditModelDialog>
-            </TransactionStateProvider>
-        </CartStateProvider>
+                {mainTab}
+            </ComplexEditModelDialog>
+        </TransactionStateProvider>
     );
 };
 export {

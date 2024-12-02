@@ -229,6 +229,7 @@ router
             // records:
             id,
             vaultToken,
+            currency,
         },
     } = requestData;
     const paymentData = ((): [PaymentMethodProvider, string]|null => {
@@ -308,7 +309,7 @@ router
                     provider                : provider,
                     providerPaymentMethodId : providerPaymentMethodId,
                     
-                    currency                : 'USD',
+                    currency                : currency,
                 },
                 select : paymentMethodDetailSelect,
             })
@@ -323,7 +324,7 @@ router
                     provider                : provider,
                     providerPaymentMethodId : providerPaymentMethodId,
                     
-                    currency                : 'USD',
+                    currency                : currency,
                 },
                 select : paymentMethodDetailSelect,
             })

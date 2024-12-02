@@ -53,6 +53,7 @@ export const PaymentMethodUpdateRequestSchema = MutationArgsSchema<Pick<PaymentM
 .and(
     z.object({
         vaultToken : PublicIdSchema,
+        currency   : CurrencySchema,
     })
 ) satisfies z.Schema<PaymentMethodUpdateRequest>;
 

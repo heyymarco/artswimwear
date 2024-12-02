@@ -15,24 +15,8 @@ import {
 
 // models:
 import {
-    ModelIdSchema,
-    
-    type Pagination,
-    PaginationArgSchema,
-    
-    type PaymentMethodProvider,
-    type PaymentMethodDetail,
-    paymentMethodDetailSelect,
-    PaymentMethodUpdateRequestSchema,
-    PaymentMethodProviderSchema,
     SetupPaymentRequestSchema,
     type PaymentMethodSetupDetail,
-    type PaymentMethodCaptureDetail,
-    
-    
-    
-    // utilities:
-    convertPaymentMethodDetailDataToPaymentMethodDetail,
 }                           from '@/models'
 
 // ORMs:
@@ -49,9 +33,6 @@ import {
 import {
     // utilities:
     paypalCreateSetupPayment,
-    paypalCapturePaymentMethod,
-    paypalListPaymentMethods,
-    paypalDeletePaymentMethod,
 }                           from '@/libs/payments/processors/paypal'
 
 // configs:

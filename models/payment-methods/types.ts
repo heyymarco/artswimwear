@@ -48,6 +48,7 @@ export interface PaymentMethodUpdateRequest
 {
     // data:
     vaultToken : string // required
+    currency   : string // required
 }
 
 
