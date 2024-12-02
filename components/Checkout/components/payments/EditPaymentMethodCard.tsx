@@ -99,7 +99,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 className='billing'
             >
                 <p>
-                    Enter the address that matches your card&apos;s billing address.
+                    Enter your billing address as it appears on your credit card statement for successful processing:
                 </p>
                 <EditBillingAddress />
             </section>

@@ -514,7 +514,7 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
                 className='billing'
             >
                 <p>
-                    <em>Optionally</em>, enter the address that matches your card&apos;s billing address:
+                    <em>Optionally</em>, enter your billing address as it appears on your credit card statement for successful processing:
                 </p>
                 <AddressEditor
                     // types:
