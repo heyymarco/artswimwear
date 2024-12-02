@@ -300,6 +300,40 @@ router
         
         
         
+        //#region delete prev payment token
+        if (id) { // updating only
+            const existingPaymentMethod = await prisma.paymentMethod.findUnique({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                    id       : id,
+                },
+                select : {
+                    provider                : true,
+                    providerPaymentMethodId : true,
+                },
+            });
+            if (existingPaymentMethod) {
+                const {
+                    provider                : existingProvider,
+                    providerPaymentMethodId : existingProviderPaymentMethodId,
+                } = existingPaymentMethod;
+                
+                
+                
+                if ((existingProvider !== provider) || (existingProviderPaymentMethodId !== providerPaymentMethodId)) {
+                    //#region process the vault token
+                    switch (existingProvider) {
+                        case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && await paypalDeletePaymentMethod(existingProviderPaymentMethodId);
+                    } // switch
+                    //#endregion process the vault token
+                } // if
+            } // if
+        } // if
+        //#endregion delete prev payment token
+        
+        
+        
+        //#region update the db
         const paymentMethodData = (
             !id
             ? await prisma.paymentMethod.create({
@@ -331,6 +365,7 @@ router
                 select : paymentMethodDetailSelect,
             })
         );
+        //#endregion update the db
         
         
         
@@ -430,7 +465,7 @@ router
         
         //#region process the vault token
         switch (provider) {
-            case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && paypalDeletePaymentMethod(providerPaymentMethodId);
+            case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && await paypalDeletePaymentMethod(providerPaymentMethodId);
         } // switch
         //#endregion process the vault token
         
