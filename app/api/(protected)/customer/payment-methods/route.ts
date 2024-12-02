@@ -65,6 +65,8 @@ import {
 export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
+const limitMaxPaymentMethodList = 50;
+
 
 
 // routers:
@@ -184,7 +186,7 @@ router
         //#endregion find existing providerCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId) : []),
+            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
         ]);
         //#endregion query api
         
@@ -334,10 +336,13 @@ router
         
         for (let attempts = 10; attempts > 0; attempts--) {
             const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-                ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId) : []),
+                ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
             ]);
             const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
-            if (paymentMethod) return Response.json(paymentMethod); // handled with success
+            if (paymentMethod) {
+                await deleteNonRelatedAccounts(customerId);
+                return Response.json(paymentMethod); // handled with success
+            } // if
             
             
             
@@ -350,6 +355,10 @@ router
                 });
             } // if
         } // for
+        
+        
+        
+        await deleteNonRelatedAccounts(customerId);
         return Response.json({ error: 'Unexpected error' }, { status: 500 }); // handled with error: unauthorized
     }
     catch (error: any) {
@@ -438,6 +447,10 @@ router
                 },
             })
         );
+        
+        
+        
+        await deleteNonRelatedAccounts(customerId);
         return Response.json(deletedPaymentMethod); // handled with success
     }
     catch (error: any) {
@@ -447,3 +460,70 @@ router
     } // try
     //#endregion save changes
 });
+
+
+
+const deleteNonRelatedAccounts = async (customerId: string): Promise<void> => {
+    try {
+        //#region find existing providerCustomerId
+        const providerCustomerIds = await prisma.customer.findUnique({
+            where  : {
+                id : customerId, // important: the signedIn customerId
+            },
+            select : {
+                paypalCustomerId   : true,
+                stripeCustomerId   : true,
+                midtransCustomerId : true,
+                
+                // relations:
+                paymentMethods : {
+                    select : {
+                        id                      : true,
+                        provider                : true,
+                        providerPaymentMethodId : true,
+                    },
+                },
+            },
+        });
+        if (!providerCustomerIds) return;
+        const {
+            paypalCustomerId,
+            stripeCustomerId,
+            midtransCustomerId,
+        } = providerCustomerIds;
+        //#endregion find existing providerCustomerId
+        
+        
+        
+        await Promise.allSettled([
+            checkoutConfigServer.payment.processors.paypal.enabled && paypalCustomerId && (async (): Promise<void> => {
+                const allInternalPaymentMethods       = providerCustomerIds.paymentMethods.filter(({provider}) => (provider === 'PAYPAL')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
+                const allExternalPaymentMethods       = Array.from((await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
+                const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
+                const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
+                
+                await Promise.allSettled([
+                    excessInternalPaymentMethodIds.length && prisma.paymentMethod.deleteMany({
+                        where  : {
+                            parentId : customerId, // important: the signedIn customerId
+                            provider : 'PAYPAL',
+                            id       : { in: excessInternalPaymentMethodIds },
+                        },
+                    }),
+                    
+                    ...
+                    excessExternalPaymentMethodsIds
+                    .map((excessExternalPaymentMethodsId) =>
+                        paypalDeletePaymentMethod(excessExternalPaymentMethodsId)
+                    ),
+                ]);
+            })(),
+            // TODO: api for stripe
+            // TODO: api for midtrans
+        ]);
+    }
+    catch (error: any) {
+        console.log(error);
+        // ignore any error
+    } // try
+};

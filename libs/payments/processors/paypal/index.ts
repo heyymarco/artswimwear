@@ -972,8 +972,8 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
 }
 
 
-export const paypalListPaymentMethods = async (paypalCustomerId: string): Promise<Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>> => {
-    const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens?page=1&page_size=20&customer_id=${encodeURIComponent(paypalCustomerId)}`, {
+export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMax: number): Promise<Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>> => {
+    const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens?page=1&page_size=${encodeURIComponent(limitMax)}&customer_id=${encodeURIComponent(paypalCustomerId)}`, {
         method  : 'GET',
         headers : {
             'Content-Type'    : 'application/json',
