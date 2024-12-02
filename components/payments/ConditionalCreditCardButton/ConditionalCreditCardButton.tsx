@@ -4,6 +4,12 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useImperativeHandle,
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -42,6 +48,7 @@ import {
     AuthenticatedResult,
     type StartTransactionArg,
     useTransactionState,
+    useOnFinishOrder,
 }                           from '@/components/payments/states'
 import {
     usePaypalCardComposerState,
@@ -573,6 +580,9 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
 
 
 
+export interface ImperativeClick {
+    click: (event?: React.MouseEvent<HTMLButtonElement>) => Promise<PaymentDetail|null>
+}
 interface ButtonPaymentGeneralProps
     extends
         // bases:
@@ -585,6 +595,8 @@ interface ButtonPaymentGeneralProps
             |'onAuthenticate'
         >
 {
+    // refs:
+    clickRef ?: React.Ref<ImperativeClick>
 }
 interface ImplementedButtonPaymentGeneralProps
     extends
@@ -599,6 +611,11 @@ interface ImplementedButtonPaymentGeneralProps
 const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
     const {
+        // refs:
+        clickRef,
+        
+        
+        
         // handlers:
         onPlaceOrder   : handlePlaceOrder,
         onAuthenticate : handleAuthenticate,
@@ -624,8 +641,21 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     
     
     
+    // refs:
+    const signalFinishOrderRef = useRef<((paymentDetail: PaymentDetail|null) => void)|undefined>(undefined);
+    
+    
+    
     // handlers:
-    const handlePayButtonClick   = useEvent(() => {
+    const handlePayButtonClick = useEvent(async (event?: React.MouseEvent<HTMLButtonElement>): Promise<PaymentDetail|null> => {
+        const { promise: promiseFinishOrder, resolve: resolveFinishOrder } = Promise.withResolvers<PaymentDetail|null>();
+        signalFinishOrderRef.current = (paymentDetail: PaymentDetail|null): void => { // deref the proxy_resolver
+            resolveFinishOrder(paymentDetail);        // invoke the origin_resolver
+            signalFinishOrderRef.current = undefined; // now it's resolved => unref the proxy_resolver
+        };
+        
+        
+        
         startTransaction({
             // handlers:
             onPlaceOrder         : handlePlaceOrder,
@@ -672,8 +702,28 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
                     Please <strong>try again</strong> in a few minutes.
                 </p>
             </>,
+        })
+        .finally(() => { // cleanups:
+            signalFinishOrderRef.current?.(null);     // notify the handleFinishOrder is never called (if never signaled)
+            signalFinishOrderRef.current = undefined; // unref the proxy_resolver
         });
+        
+        
+        
+        return promiseFinishOrder;
     });
+    
+    const handleFinishOrder    = useEvent((paymentDetail: PaymentDetail): void => {
+        signalFinishOrderRef.current?.(paymentDetail);
+    });
+    useOnFinishOrder(handleFinishOrder);
+    
+    
+    
+    // imperatives:
+    useImperativeHandle(clickRef, () => ({
+        click : handlePayButtonClick,
+    }), []);
     
     
     
@@ -713,6 +763,7 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
     
     
     // jsx:
+    if (clickRef) return null; // do not render anything if `clickRef` is provided
     return (
         <ButtonIcon
             // other props:

@@ -38,11 +38,6 @@ import {
     
     
     
-    // simple-components:
-    type ButtonIconProps,
-    
-    
-    
     // dialog-components:
     ModalCard,
     
@@ -63,7 +58,6 @@ import {
     AddressEditor,
 }                           from '@/components/editors/AddressEditor'
 import {
-    SelectCurrencyEditorProps,
     SelectCurrencyEditor,
 }                           from '@/components/editors/SelectCurrencyEditor'
 
@@ -87,6 +81,7 @@ import {
     ConditionalCreditCardCvvEditor,
 }                           from '@/components/payments/ConditionalCreditCardCvvEditor'
 import {
+    type ImperativeClick,
     ConditionalCreditCardButton,
 }                           from '@/components/payments/ConditionalCreditCardButton'
 
@@ -99,7 +94,6 @@ import {
 // transaction components:
 import {
     TransactionStateProvider,
-    useOnFinishOrder,
 }                           from '@/components/payments/states'
 
 // internal components:
@@ -121,27 +115,12 @@ import {
 // models:
 import {
     // types:
-    type ProductPreview,
-    
-    type ShippingAddressDetail,
     type BillingAddressDetail,
     
     type PaymentDetail,
     
-    type CustomerOrGuestPreview,
-    type CustomerPreferenceDetail,
-    
-    type CheckoutStep,
-    type TotalShippingCostStatus,
-    type PaymentMethod,
     type PlaceOrderRequestOptions,
     type PlaceOrderDetail,
-    type FinishedOrderState,
-    type BusyState,
-    type CheckoutSession,
-    
-    type CartDetail,
-    type CartUpdateRequest,
     
     type PaymentMethodDetail,
 }                           from '@/models'
@@ -236,11 +215,45 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // refs:
-    const firstEditorRef = useRef<HTMLInputElement|null>(null);
+    const firstEditorRef     = useRef<HTMLInputElement|null>(null);
+    const imperativeClickRef = useRef<ImperativeClick>(null);
     
     
     
     // handlers:
+    const handleUpdate         = useEvent<UpdateHandler<PaymentMethodDetail>>(async ({id}) => {
+        const paymentDetail = await imperativeClickRef.current?.click();
+        if (!paymentDetail) throw undefined;
+        
+        
+        
+        const {
+            // data:
+            type,
+            brand,
+            identifier,
+            
+            expiresAt,
+            
+            billingAddress,
+        } = paymentDetail;
+        return {
+            // records:
+            id : '',
+            
+            
+            
+            // data:
+            type           : type,
+            brand          : brand          ?? '',
+            identifier     : identifier     ?? '',
+            
+            expiresAt      : expiresAt      ?? null,
+            
+            billingAddress : billingAddress ?? null,
+        };
+    });
+    
     const handleDelete         = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
         await deletePaymentMethod({
             id : id,
@@ -354,13 +367,29 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     // jsx:
     const mainTabContent = (
-        <ValidationProvider
-            // validations:
-            enableValidation={enableValidation}
-            inheritValidation={false}
-        >
-            <CreditCardLayout editorAddress={editorAddress} onEditorAddressChange={handleEditorAddressChange} />
-        </ValidationProvider>
+        <ConditionalPaymentScriptProvider
+        // required for purchasing:
+        totalShippingCost={null} // not_physical_product
+    >
+        <ConditionalPaypalCardComposerProvider saveCardMode={true}>
+            <ValidationProvider
+                // validations:
+                enableValidation={enableValidation}
+                inheritValidation={false}
+            >
+                <CreditCardLayout
+                    // data:
+                    editorAddress={editorAddress}
+                    onEditorAddressChange={handleEditorAddressChange}
+                    
+                    
+                    
+                    // refs:
+                    imperativeClickRef={imperativeClickRef}
+                />
+            </ValidationProvider>
+        </ConditionalPaypalCardComposerProvider>
+    </ConditionalPaymentScriptProvider>
     );
     const mainTab = (
         !model
@@ -397,69 +426,62 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 onCancelOrder={handleCancelOrder}
                 onMakePayment={handleMakePayment}
             >
-                <ConditionalPaymentScriptProvider
-                    // required for purchasing:
-                    totalShippingCost={null} // not_physical_product
+                <ComplexEditModelDialog<PaymentMethodDetail>
+                    // other props:
+                    {...restComplexEditModelDialogProps}
+                    
+                    
+                    
+                    // data:
+                    modelName='Payment Method'
+                    modelEntryName={modelAliasName}
+                    model={model}
+                    
+                    
+                    
+                    // privileges:
+                    privilegeAdd    = {true}
+                    privilegeUpdate = {useMemo(() => ({
+                        any : true,
+                    }), [])}
+                    privilegeDelete = {true}
+                    
+                    
+                    
+                    // stores:
+                    isCommiting = {isLoadingUpdate || isLoadingTransaction}
+                    isDeleting  = {isLoadingDelete}
+                    
+                    
+                    
+                    // variants:
+                    horzAlign='stretch'
+                    
+                    
+                    
+                    // tabs:
+                    tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
+                    
+                    
+                    
+                    // auto focusable:
+                    autoFocusOn={props.autoFocusOn ?? firstEditorRef}
+                    
+                    
+                    
+                    // components:
+                    modalCardComponent={<ModalCard className={styleSheet.dialog} />}
+                    
+                    
+                    
+                    // handlers:
+                    onUpdate={handleUpdate}
+                    onDelete={handleDelete}
+                    
+                    onConfirmDelete={handleConfirmDelete}
                 >
-                    <ConditionalPaypalCardComposerProvider saveCardMode={true}>
-                        <ComplexEditModelDialog<PaymentMethodDetail>
-                            // other props:
-                            {...restComplexEditModelDialogProps}
-                            
-                            
-                            
-                            // data:
-                            modelName='Payment Method'
-                            modelEntryName={modelAliasName}
-                            model={model}
-                            
-                            
-                            
-                            // privileges:
-                            privilegeAdd    = {true}
-                            privilegeUpdate = {useMemo(() => ({
-                                any : true,
-                            }), [])}
-                            privilegeDelete = {true}
-                            
-                            
-                            
-                            // stores:
-                            isCommiting = {isLoadingUpdate || isLoadingTransaction}
-                            isDeleting  = {isLoadingDelete}
-                            
-                            
-                            
-                            // variants:
-                            horzAlign='stretch'
-                            
-                            
-                            
-                            // tabs:
-                            tabDelete   = {PAGE_PAYMENT_METHODS_TAB_DELETE}
-                            
-                            
-                            
-                            // auto focusable:
-                            autoFocusOn={props.autoFocusOn ?? firstEditorRef}
-                            
-                            
-                            
-                            // components:
-                            buttonSaveComponent={<ButtonSaveIntercept />}
-                            modalCardComponent={<ModalCard className={styleSheet.dialog} />}
-                            
-                            
-                            
-                            // handlers:
-                            onDelete={handleDelete}
-                            
-                            onConfirmDelete={handleConfirmDelete}
-                        >
-                            {mainTab}
-                        </ComplexEditModelDialog>
-                    </ConditionalPaypalCardComposerProvider>
-                </ConditionalPaymentScriptProvider>
+                    {mainTab}
+                </ComplexEditModelDialog>
             </TransactionStateProvider>
         </CartStateProvider>
     );
@@ -472,14 +494,26 @@ export {
 
 
 interface CreditCardLayoutProps {
+    // data:
     editorAddress         : EditorAddress|null
     onEditorAddressChange : EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>
+    
+    
+    
+    // refs:
+    imperativeClickRef    : React.RefObject<ImperativeClick> // getter ref
 }
 const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
     // props:
     const {
+        // data:
         editorAddress,
         onEditorAddressChange,
+        
+        
+        
+        // refs:
+        imperativeClickRef,
     } = props;
     
     
@@ -519,9 +553,7 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
                     <ConditionalCreditCardNameEditor />
                     <ConditionalCreditCardExpiryEditor />
                     <ConditionalCreditCardCvvEditor />
-                    {/* <ConditionalCreditCardButton>
-                        Save
-                    </ConditionalCreditCardButton> */}
+                    <ConditionalCreditCardButton clickRef={imperativeClickRef} />
                 </div>
             </section>
             
@@ -603,59 +635,5 @@ const SelectCurrencyImplementation = (): JSX.Element|null => {
             // floatable:
             floatingPlacement='bottom'
         />
-    );
-};
-
-
-
-const ButtonSaveIntercept = (props: ButtonIconProps): JSX.Element|null => {
-    // props:
-    const {
-        // varaints:
-        gradient = false,
-        
-        
-        
-        // handlers:
-        onClick,
-        
-        
-        
-        // children:
-        children = 'Save',
-        
-        
-        
-        // other props:
-        ...restButtonSaveProps
-    } = props;
-    
-    
-    
-    // handlers:
-    const handleFinishOrder = useEvent((paymentDetail: PaymentDetail): void => {
-        onClick?.(undefined as any);
-    });
-    
-    
-    
-    // states:
-    useOnFinishOrder(handleFinishOrder);
-    
-    
-    
-    // jsx:
-    return (
-        <ConditionalCreditCardButton
-            // other props:
-            {...restButtonSaveProps}
-            
-            
-            
-            // varaints:
-            gradient={gradient}
-        >
-            {children}
-        </ConditionalCreditCardButton>
     );
 };
