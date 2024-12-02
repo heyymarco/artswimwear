@@ -571,7 +571,7 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
                     
                     
                     // validations:
-                    required={false}
+                    required={!!editorAddress} // leave all the address field blank or fill all the address field
                     
                     
                     
