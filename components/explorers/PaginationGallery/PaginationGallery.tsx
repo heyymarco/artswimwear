@@ -482,6 +482,21 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
     
     // default props:
     const {
+        // accessibilities:
+        createItemText : modelAddComponentCreateItemText = createItemText,
+        
+        
+        
+        // states:
+        enabled        : modelAddComponentEnabled        = data !== undefined, /* data is fully loaded even if empty data */
+        
+        
+        
+        // other props:
+        ...restModelAddComponentProps
+    } = modelAddComponent?.props ?? {};
+    
+    const {
         // semantics:
         tag       = 'article',
         
@@ -535,13 +550,18 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 {!!modelAddComponent && !!modelCreateComponent  && React.cloneElement<ModelAddProps<TModel, Element>>(modelAddComponent,
                     // props:
                     {
+                        // other props:
+                        ...restModelAddComponentProps,
+                        
+                        
+                        
                         // accessibilities:
-                        createItemText       : createItemText,
+                        createItemText       : modelAddComponentCreateItemText,
                         
                         
                         
                         // states:
-                        enabled              : data !== undefined, /* data is fully loaded even if empty data */
+                        enabled              : modelAddComponentEnabled,
                         
                         
                         
