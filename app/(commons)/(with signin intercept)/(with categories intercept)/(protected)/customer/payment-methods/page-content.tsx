@@ -26,6 +26,7 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
+    ModelCreateOuter,
     PaginationList,
 }                           from '@/components/explorers/PaginationList'
 import {
@@ -38,6 +39,7 @@ import {
 // models:
 import {
     type PaymentMethodDetail,
+    paymentMethodLimitMax,
 }                           from '@/models'
 
 // stores:
@@ -74,6 +76,7 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
         refetch,
     } = usePaginationState<PaymentMethodDetail>();
     const isErrorAndNoData = isError && !data;
+    const isMaxLimitReached = ((data?.total ?? 0) >= paymentMethodLimitMax);
     
     
     
@@ -91,7 +94,7 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
                     
                     
                     // accessibilities:
-                    createItemText='Add New Payment Method'
+                    createItemText={isMaxLimitReached ? `Max Payment Method is ${paymentMethodLimitMax}` : 'Add New Payment Method'}
                     textEmpty='Your payment method is empty'
                     
                     
@@ -108,6 +111,11 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
                             // data:
                             model={null} // create a new model
                         />
+                    }
+                    modelAddComponent={
+                        isMaxLimitReached
+                        ? <ModelCreateOuter enabled={false} />
+                        : undefined
                     }
                 />
             </Section>

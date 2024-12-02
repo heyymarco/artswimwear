@@ -17,6 +17,7 @@ import {
 import {
     SetupPaymentRequestSchema,
     type PaymentMethodSetupDetail,
+    paymentMethodLimitMax,
 }                           from '@/models'
 
 // ORMs:
@@ -114,16 +115,31 @@ router
     
     
     //#region find existing providerCustomerId
-    const providerCustomerIds = await prisma.customer.findUnique({
-        where  : {
-            id : customerId, // important: the signedIn customerId
-        },
-        select : {
-            paypalCustomerId   : true,
-            stripeCustomerId   : true,
-            midtransCustomerId : true,
-        },
-    });
+    const [providerCustomerIds, paymentMethodCount] = await prisma.$transaction([
+        prisma.customer.findUnique({
+            where  : {
+                id : customerId, // important: the signedIn customerId
+            },
+            select : {
+                paypalCustomerId   : true,
+                stripeCustomerId   : true,
+                midtransCustomerId : true,
+            },
+        }),
+        prisma.paymentMethod.count({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+            },
+        }),
+    ]);
+    
+    //#region limits max payment method count
+    if (paymentMethodCount >= paymentMethodLimitMax) {
+        return Response.json({
+            error: 'Max payment method count has been reached.',
+        }, { status: 400 }); // handled with error
+    } // if
+    //#endregion limits max payment method count
     //#endregion find existing providerCustomerId
     
     

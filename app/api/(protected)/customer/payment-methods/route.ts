@@ -28,6 +28,7 @@ import {
     SetupPaymentRequestSchema,
     type PaymentMethodSetupDetail,
     type PaymentMethodCaptureDetail,
+    paymentMethodLimitMax,
     
     
     
@@ -65,7 +66,7 @@ import {
 export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-const limitMaxPaymentMethodList = 50;
+const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
 
 
 
@@ -300,8 +301,8 @@ router
         
         
         
-        //#region delete prev payment token
         if (id) { // updating only
+            //#region delete prev payment token
             const existingPaymentMethod = await prisma.paymentMethod.findUnique({
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
@@ -328,8 +329,22 @@ router
                     //#endregion process the vault token
                 } // if
             } // if
+            //#endregion delete prev payment token
+        }
+        else {
+            //#region limits max payment method count
+            const paymentMethodCount = await prisma.paymentMethod.count({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                },
+            });
+            if (paymentMethodCount >= paymentMethodLimitMax) {
+                return Response.json({
+                    error: 'Max payment method count has been reached.',
+                }, { status: 400 }); // handled with error
+            } // if
+            //#endregion limits max payment method count
         } // if
-        //#endregion delete prev payment token
         
         
         
