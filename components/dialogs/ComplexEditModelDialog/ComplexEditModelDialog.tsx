@@ -381,7 +381,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             await handleFinalizing(updatingModelTask, /*commitSides = */true, [updatingModelAndOthersTask]); // result: created|mutated
         }
         catch (fetchError: any) {
-            showMessageFetchError(fetchError);
+            if ((fetchError !== null) && (fetchError !== undefined)) showMessageFetchError(fetchError);
         } // try
     });
     const handleDelete         = useEvent(async (arg?: unknown|undefined) => {
