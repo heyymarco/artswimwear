@@ -62,6 +62,10 @@ import {
     type Address as EditorAddress,
     AddressEditor,
 }                           from '@/components/editors/AddressEditor'
+import {
+    SelectCurrencyEditorProps,
+    SelectCurrencyEditor,
+}                           from '@/components/editors/SelectCurrencyEditor'
 
 // payment components:
 import {
@@ -88,6 +92,7 @@ import {
 
 // cart components:
 import {
+    useCartState,
     CartStateProvider,
 }                           from '@/components/Cart/states/cartState'
 
@@ -159,6 +164,9 @@ import {
     PAGE_PAYMENT_METHODS_TAB_DATA,
     PAGE_PAYMENT_METHODS_TAB_DELETE,
 }                           from '@/website.config'
+import {
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -170,6 +178,12 @@ export interface EditPaymentMethodDialogProps
 {
 }
 const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
+    // jsx:
+    return (
+        <EditPaymentMethodDialogInternal {...props} />
+    );
+};
+const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
     // styles:
     const styleSheet = useEditPaymentMethodDialogStyleSheet();
     
@@ -489,6 +503,15 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
         <form ref={paymentCardSectionRef} className={styleSheet.creditCardForm}>
             <section>
                 <p>
+                    Please select the currency you wish to use for your transactions:
+                </p>
+                <SelectCurrencyImplementation />
+            </section>
+            
+            <hr />
+            
+            <section>
+                <p>
                     Enter your card information:
                 </p>
                 <div className={styleSheet.creditCardLayout}>
@@ -538,6 +561,48 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
                 />
             </section>
         </form>
+    );
+};
+
+
+
+const SelectCurrencyImplementation = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useEditPaymentMethodDialogStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        // accessibilities:
+        currency,
+        setCurrency,
+    } = useCartState();
+    
+    
+    
+    return (
+        <SelectCurrencyEditor
+            // variants:
+            theme='primary'
+            
+            
+            
+            // classes:
+            className={styleSheet.selectCurrency}
+            
+            
+            
+            // values:
+            valueOptions      = {checkoutConfigClient.payment.currencyOptions}
+            value             = {currency}
+            onChange          = {setCurrency}
+            
+            
+            
+            // floatable:
+            floatingPlacement='bottom'
+        />
     );
 };
 

@@ -42,4 +42,8 @@ export default () => [
         // spacings:
         gap: spacers.md,
     }),
+    scope('selectCurrency', {
+        // sizes:
+        minInlineSize: '5rem',
+    }),
 ];
