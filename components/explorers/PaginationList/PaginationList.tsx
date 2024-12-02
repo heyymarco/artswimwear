@@ -498,6 +498,26 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     
     // default props:
     const {
+        // accessibilities:
+        createItemText : modelAddComponentCreateItemText = createItemText,
+        
+        
+        
+        // classes:
+        className      : modelAddComponentClassName      = '',
+        
+        
+        
+        // states:
+        enabled        : modelAddComponentEnabled        = data !== undefined, /* data is fully loaded even if empty data */
+        
+        
+        
+        // other props:
+        ...restModelAddComponentProps
+    } = modelAddComponent?.props ?? {};
+    
+    const {
         // semantics:
         tag       = 'article',
         
@@ -531,18 +551,23 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             {!!modelAddComponent && !!modelCreateComponent  && React.cloneElement<ModelAddProps<TModel, Element>>(modelAddComponent,
                 // props:
                 {
+                    // other props:
+                    ...restModelAddComponentProps,
+                    
+                    
+                    
                     // accessibilities:
-                    createItemText       : createItemText,
+                    createItemText       : modelAddComponentCreateItemText,
                     
                     
                     
                     // classes:
-                    className            : 'solid',
+                    className            : `solid ${modelAddComponentClassName}`,
                     
                     
                     
                     // states:
-                    enabled              : data !== undefined, /* data is fully loaded even if empty data */
+                    enabled              : modelAddComponentEnabled,
                     
                     
                     
