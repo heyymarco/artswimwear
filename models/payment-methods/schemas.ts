@@ -46,6 +46,8 @@ export const PaymentMethodDetailSchema = z.object({
     expiresAt      : z.date().nullable(),
     
     billingAddress : BillingAddressDetailSchema.nullable(),
+    
+    priority       : z.number().finite().nonnegative(),
 }) satisfies z.Schema<PaymentMethodDetail>;
 
 export const PaymentMethodUpdateRequestSchema = MutationArgsSchema<Pick<PaymentMethodDetail, 'id'>>(

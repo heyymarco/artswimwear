@@ -24,11 +24,14 @@ export const paymentMethodDetailSelect = {
     
     provider                : true,
     providerPaymentMethodId : true,
+    
+    sort                    : true,
 } satisfies Prisma.PaymentMethodSelect;
-export const convertPaymentMethodDetailDataToPaymentMethodDetail = (paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, resolver: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>): PaymentMethodDetail|null => {
+export const convertPaymentMethodDetailDataToPaymentMethodDetail = (paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, totalRecords: number, resolver: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>): PaymentMethodDetail|null => {
     const {
         provider,                // take
         providerPaymentMethodId, // take
+        sort,                    // take
     ...restPaymentMethodDetail} = paymentMethodDetailData;
     
     
@@ -52,5 +55,6 @@ export const convertPaymentMethodDetailDataToPaymentMethodDetail = (paymentMetho
         identifier,
         expiresAt,
         billingAddress,
+        priority : totalRecords - sort - 1,
     };
 };

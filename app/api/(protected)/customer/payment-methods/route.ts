@@ -197,7 +197,7 @@ router
             total    : total,
             entities : (
                 paged
-                .map((item) => convertPaymentMethodDetailDataToPaymentMethodDetail(item, resolver))
+                .map((item) => convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, resolver))
                 .filter((item): item is Exclude<typeof item, null> => (item !== null))
             ) satisfies PaymentMethodDetail[],
         };
@@ -334,7 +334,7 @@ router
         
         
         
-        const paymentMethodData = await prisma.$transaction(async (prismaTransaction): Promise<Parameters<typeof convertPaymentMethodDetailDataToPaymentMethodDetail>[0] | false> => {
+        const [paymentMethodData, paymentMethodCount] = await prisma.$transaction(async (prismaTransaction): Promise<[Parameters<typeof convertPaymentMethodDetailDataToPaymentMethodDetail>[0] | false, number]> => {
             const [maxSort, paymentMethodCount] = await Promise.all([
                 prismaTransaction.paymentMethod.findFirst({
                     where  : {
@@ -348,16 +348,16 @@ router
                     },
                 }),
                 
-                !id /* creating only */ && prismaTransaction.paymentMethod.count({
+                prismaTransaction.paymentMethod.count({
                     where  : {
                         parentId : customerId, // important: the signedIn customerId
                     },
                 }),
             ]);
-            if (paymentMethodCount !== false) { // creating only
+            if (!id) { // creating only
                 //#region limits max payment method count
                 if (paymentMethodCount >= paymentMethodLimitMax) {
-                    return false;
+                    return [false, paymentMethodCount];
                 } // if
                 //#endregion limits max payment method count
             } // if
@@ -398,7 +398,7 @@ router
             
             
             
-            return paymentMethodData;
+            return [paymentMethodData, paymentMethodCount + (!id ? 1 /* creating */ : 0 /* updating */)];
         });
         if (!paymentMethodData) {
             return Response.json({
@@ -412,7 +412,7 @@ router
             const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
                 ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
             ]);
-            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, resolver);
+            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
             if (paymentMethod) {
                 await deleteNonRelatedAccounts(customerId);
                 return Response.json(paymentMethod); // handled with success

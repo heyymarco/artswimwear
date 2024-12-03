@@ -33,6 +33,8 @@ export interface PaymentMethodDetail
     expiresAt      : Date|null
     
     billingAddress : BillingAddressDetail|null
+    
+    priority       : number
 }
 
 

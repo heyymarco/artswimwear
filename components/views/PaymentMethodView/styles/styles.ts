@@ -59,8 +59,9 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            '"label data edit"', 'auto',
-            '"label data grip"', 'auto',
+            '"label data     edit"', 'auto',
+            '"label data     grip"', 'auto',
+            '"label data priority"', 'auto',
             '/',
             '72px 1fr max-content',
         ]],
@@ -194,6 +195,9 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         }),
         ...children('.grip', {
             gridArea: 'grip',
+        }),
+        ...children('.priority', {
+            gridArea: 'priority',
         }),
         ...descendants('[role="dialog"]', {
             // remove the padding of <Dialog>'s backdrop:

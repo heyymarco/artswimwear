@@ -799,7 +799,7 @@ export const apiSlice = createApi({
                             const indexStart = page * perPage;
                             
                             
-                            
+                            const totalRecords = currentQueryCacheData.total;
                             currentQueryCacheData.entities = (
                                 currentQueryCacheData.entities
                                 .map((item, indexAsc, array) => ({
@@ -807,6 +807,10 @@ export const apiSlice = createApi({
                                     sort : optimisticSortIndices.get(item.id) ?? (array.length - indexAsc - 1) + indexStart, // descending index
                                 }))
                                 .sort(({sort: sortA}, {sort: sortB}) => (sortB - sortA)) // sort descending
+                                .map(({sort, ...restPaymentMethodDetail}) => ({
+                                    ...restPaymentMethodDetail,
+                                    priority : totalRecords - sort - 1,
+                                }))
                             );
                         })
                     );

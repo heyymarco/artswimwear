@@ -24,8 +24,8 @@ import {
 
 // reusable-ui components:
 import {
-    // layout-components:
-    ListItem,
+    // base-components:
+    Basic,
     
     
     
@@ -100,6 +100,8 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
         identifier,
         
         billingAddress,
+        
+        priority,
     } = model;
     const expiresAt = (typeof(expiresAtRaw) === 'string') ? new Date(Date.parse(expiresAtRaw)) : expiresAtRaw;
     const {
@@ -250,6 +252,9 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                 Edit
             </EditButton>
             <Grip className='grip' />
+            <Basic className='priority' size='sm' theme={(priority === 0) ? 'success' : 'secondary'}>
+                {(priority === 0) ? 'Primary' : `Priority ${priority + 1}`}
+            </Basic>
         </OrderableListItem>
     );
 };
