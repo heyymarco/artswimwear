@@ -69,7 +69,7 @@ export function PaymentMethodPageContent(): JSX.Element|null {
     return (
         <PaginationStateProvider<PaymentMethodDetail>
             // states:
-            initialPerPage={10}
+            initialPerPage={paymentMethodLimitMax}
             
             
             

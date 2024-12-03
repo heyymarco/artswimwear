@@ -748,6 +748,99 @@ export const apiSlice = createApi({
                 method : 'POST',
                 body   : arg
             }),
+            onQueryStarted: async (arg, api) => {
+                const sortedIds = arg.ids;
+                const optimisticSortIndices = new Map<string, number>(
+                    sortedIds
+                    .map((id, indexAsc, array) =>
+                        [
+                            id,                            // the id
+                            (array.length - indexAsc - 1), // descending index
+                        ]
+                    )
+                );
+                
+                
+                
+                // find related TModel data(s):
+                const state          = api.getState();
+                const allQueryCaches = state.api.queries;
+                const endpointName   = 'getPaymentMethodPage';
+                const queryCaches    = (
+                    Object.values(allQueryCaches)
+                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
+                        (allQueryCache !== undefined)
+                        &&
+                        (allQueryCache.endpointName === endpointName)
+                        &&
+                        (allQueryCache.data !== undefined)
+                    )
+                );
+                
+                
+                
+                const updatedCollectionQueryCaches = (
+                    queryCaches
+                    .filter(({originalArgs, data}) =>
+                        (data !== undefined)
+                        &&
+                        (data as Pagination<PaymentMethodDetail>).entities.some(({id}) => sortedIds.includes(id))
+                    )
+                );
+                
+                // reconstructuring the mutated model, so the invalidatesTag can be avoided:
+                for (const { originalArgs } of updatedCollectionQueryCaches) {
+                    api.dispatch(
+                        apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                            const {
+                                page,
+                                perPage,
+                            } = originalArgs as PaginationArgs;
+                            const indexStart = page * perPage;
+                            
+                            
+                            
+                            currentQueryCacheData.entities = (
+                                currentQueryCacheData.entities
+                                .map((item, indexAsc, array) => ({
+                                    ...item,
+                                    sort : optimisticSortIndices.get(item.id) ?? (array.length - indexAsc - 1) + indexStart, // descending index
+                                }))
+                                .sort(({sort: sortA}, {sort: sortB}) => (sortB - sortA)) // sort descending
+                            );
+                        })
+                    );
+                } // for
+                
+                
+                
+                // verify optimistic vs real data from the server:
+                let isUpdateSucceeded = true;
+                try {
+                    const { data: { ids: serverSortIndices } } = await api.queryFulfilled;
+                    isUpdateSucceeded = (
+                        (optimisticSortIndices.size === serverSortIndices.length)
+                        &&
+                        serverSortIndices.every((serverSortIndex) => optimisticSortIndices.has(serverSortIndex))
+                    )
+                }
+                catch {
+                    isUpdateSucceeded = false;
+                } // try
+                
+                if (!isUpdateSucceeded) {
+                    // when the optimistic update fails => invalidates the related pagination of PaymentMethod(s):
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(
+                            updatedCollectionQueryCaches
+                            .map(({originalArgs}) => ({
+                                type : 'PaymentMethod',
+                                id   : (originalArgs as PaginationArgs).page,
+                            }))
+                        )
+                    );
+                } // if
+            },
         }),
     }),
 });
