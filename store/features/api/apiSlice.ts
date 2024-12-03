@@ -83,6 +83,8 @@ import {
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
     type SetupPaymentRequest,
+    type PaymentMethodSortRequest,
+    type PaymentMethodSortDetail,
 }                           from '@/models'
 
 import {
@@ -740,6 +742,13 @@ export const apiSlice = createApi({
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
             },
         }),
+        sortPaymentMethod           : builder.mutation<PaymentMethodSortDetail, PaymentMethodSortRequest>({
+            query : (arg) => ({
+                url    : 'customer/payment-methods/sort',
+                method : 'POST',
+                body   : arg
+            }),
+        }),
     }),
 });
 
@@ -820,9 +829,10 @@ export const {
     
     
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
+    useLazyCreateSetupPaymentQuery         : useCreateSetupPayment,
     useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
     useDeletePaymentMethodMutation         : useDeletePaymentMethod,
-    useLazyCreateSetupPaymentQuery         : useCreateSetupPayment,
+    useSortPaymentMethodMutation           : useSortPaymentMethod,
 } = apiSlice;
 
 export const {

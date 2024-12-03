@@ -301,7 +301,6 @@ router
         
         
         
-        let paymentMethodCount : number|undefined = undefined;
         if (id) { // updating only
             //#region delete prev payment token
             const existingPaymentMethod = await prisma.paymentMethod.findUnique({
@@ -331,55 +330,81 @@ router
                 } // if
             } // if
             //#endregion delete prev payment token
-        }
-        else {
-            //#region limits max payment method count
-            paymentMethodCount = await prisma.paymentMethod.count({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                },
-            });
-            if (paymentMethodCount >= paymentMethodLimitMax) {
-                return Response.json({
-                    error: 'Max payment method count has been reached.',
-                }, { status: 400 }); // handled with error
-            } // if
-            //#endregion limits max payment method count
         } // if
         
         
         
-        //#region update the db
-        const paymentMethodData = (
-            !id
-            ? await prisma.paymentMethod.create({
-                data   : {
-                    parentId                : customerId, // important: the signedIn customerId
-                    
-                    sort                    : paymentMethodCount ?? 0,
-                    
-                    provider                : provider,
-                    providerPaymentMethodId : providerPaymentMethodId,
-                    
-                    currency                : currency,
-                },
-                select : paymentMethodDetailSelect,
-            })
-            : await prisma.paymentMethod.update({
-                where  : {
-                    id                      : id,
-                    parentId                : customerId, // important: the signedIn customerId
-                },
-                data   : {
-                    provider                : provider,
-                    providerPaymentMethodId : providerPaymentMethodId,
-                    
-                    currency                : currency,
-                },
-                select : paymentMethodDetailSelect,
-            })
-        );
-        //#endregion update the db
+        const paymentMethodData = await prisma.$transaction(async (prismaTransaction): Promise<Parameters<typeof convertPaymentMethodDetailDataToPaymentMethodDetail>[0] | false> => {
+            const [maxSort, paymentMethodCount] = await Promise.all([
+                prismaTransaction.paymentMethod.findFirst({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                    },
+                    select  : {
+                        sort : true,
+                    },
+                    orderBy : {
+                        sort: 'desc',
+                    },
+                }),
+                
+                !id /* creating only */ && prismaTransaction.paymentMethod.count({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                    },
+                }),
+            ]);
+            if (paymentMethodCount !== false) { // creating only
+                //#region limits max payment method count
+                if (paymentMethodCount >= paymentMethodLimitMax) {
+                    return false;
+                } // if
+                //#endregion limits max payment method count
+            } // if
+            
+            
+            
+            //#region update the db
+            const paymentMethodData = (
+                !id
+                ? await prismaTransaction.paymentMethod.create({
+                    data   : {
+                        parentId                : customerId, // important: the signedIn customerId
+                        
+                        sort                    : (maxSort?.sort ?? -1) + 1,
+                        
+                        provider                : provider,
+                        providerPaymentMethodId : providerPaymentMethodId,
+                        
+                        currency                : currency,
+                    },
+                    select : paymentMethodDetailSelect,
+                })
+                : await prismaTransaction.paymentMethod.update({
+                    where  : {
+                        id                      : id,
+                        parentId                : customerId, // important: the signedIn customerId
+                    },
+                    data   : {
+                        provider                : provider,
+                        providerPaymentMethodId : providerPaymentMethodId,
+                        
+                        currency                : currency,
+                    },
+                    select : paymentMethodDetailSelect,
+                })
+            );
+            //#endregion update the db
+            
+            
+            
+            return paymentMethodData;
+        });
+        if (!paymentMethodData) {
+            return Response.json({
+                error: 'Max payment method count has been reached.',
+            }, { status: 400 }); // handled with error
+        } // if
         
         
         

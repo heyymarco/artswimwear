@@ -72,3 +72,12 @@ export interface PaymentMethodCaptureDetail {
     providerCustomerId       : string
     providerPaymentMethodId  : string
 }
+
+
+
+export interface PaymentMethodSortRequest {
+    ids                      : string[]
+}
+export interface PaymentMethodSortDetail {
+    ids                      : string[]
+}

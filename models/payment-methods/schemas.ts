@@ -11,6 +11,7 @@ import {
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
     type SetupPaymentRequest,
+    type PaymentMethodSortRequest,
 }                           from './types'
 import {
     CurrencySchema,
@@ -69,3 +70,9 @@ export const SetupPaymentRequestSchema = z.object({
     provider       : PaymentMethodProviderSchema,
     billingAddress : BillingAddressDetailSchema.nullable(),
 }) satisfies z.Schema<SetupPaymentRequest>;
+
+
+
+export const PaymentMethodSortRequestSchema = z.object({
+    ids : z.array(ModelIdSchema).min(2),
+}) satisfies z.Schema<PaymentMethodSortRequest>;

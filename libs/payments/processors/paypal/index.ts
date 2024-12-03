@@ -1198,7 +1198,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMa
     
     
     
-    const paymentTokens = paypalPaymentMethodsData.payment_tokens as any[];
+    const paymentTokens = (paypalPaymentMethodsData.payment_tokens ?? []) as any[];
     return new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>(
         paymentTokens
         .map((paymentToken): [string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>]|null => {

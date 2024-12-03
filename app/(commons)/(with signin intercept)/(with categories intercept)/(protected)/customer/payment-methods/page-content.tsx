@@ -58,6 +58,7 @@ import {
 import {
     // hooks:
     useGetPaymentMethodPage,
+    useSortPaymentMethod,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -92,9 +93,17 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
     
     
     
+    // stores:
+    const [sortPaymentMethod] = useSortPaymentMethod();
+    
+    
+    
     // handlers:
     const handleChildrenChange = useEvent((children: React.ReactElement<OrderableListItemProps<HTMLElement, unknown>>[]) => {
         const orderedIds = children.map(({props}) => props).filter((props): props is ModelPreviewProps<PaymentMethodDetail> => 'model' in props).map(({model}) => model.id);
+        sortPaymentMethod({
+            ids : orderedIds,
+        });
         console.log('moved: ', orderedIds);
     });
     
