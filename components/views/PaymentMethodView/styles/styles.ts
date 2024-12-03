@@ -59,9 +59,10 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            '"label data"', 'auto',
+            '"label data edit"', 'auto',
+            '"label data grip"', 'auto',
             '/',
-            '72px 1fr',
+            '72px 1fr max-content',
         ]],
         
         
@@ -80,7 +81,7 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         }),
         ...children('[class^=card]', {
             // positions:
-            gridColumn : '1 / -1',
+            gridColumn : '1 / -2',
             
             
             
@@ -186,6 +187,13 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
                 // typos:
                 fontSize: typos.fontSizeSm,
             }),
+        }),
+        ...children('.edit', {
+            gridArea: 'edit',
+            alignSelf: 'start',
+        }),
+        ...children('.grip', {
+            gridArea: 'grip',
         }),
         ...descendants('[role="dialog"]', {
             // remove the padding of <Dialog>'s backdrop:

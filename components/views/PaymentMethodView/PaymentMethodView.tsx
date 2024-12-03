@@ -33,6 +33,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+import {
+    OrderableListItem,
+    type OrderableListItemDragStartEvent,
+}                           from '@heymarco/orderable-list'
+
 // internal components:
 import {
     type ModelPreviewProps,
@@ -46,6 +51,9 @@ import {
 import {
     EditPaymentMethodDialog,
 }                           from '@/components/dialogs/EditPaymentMethodDialog'
+import {
+    Grip,
+}                           from '@/components/Grip'
 
 // models:
 import {
@@ -143,12 +151,15 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             dialogPromise.collapseStartEvent().then(() => dummyPromise.closeDialog(undefined));
         } // if
     });
+    const handleOrderStart = (event: OrderableListItemDragStartEvent<HTMLElement>): void => {
+        if (!(event.target as HTMLElement)?.classList?.contains?.('grip')) event.response = false;
+    };
     
     
     
     // jsx:
     return (
-        <ListItem
+        <OrderableListItem
             // other props:
             {...restListItemProps}
             
@@ -161,6 +172,11 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             
             // classes:
             className={styleSheets.main}
+            
+            
+            
+            // handlers:
+            onOrderStart={handleOrderStart}
         >
             <p className='cardNumber'>
                 {(!!brand && isKnownPaymentBrand(brand)) && <img
@@ -183,10 +199,6 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                         <span className='mask'>••••</span>
                         <span>{identifier}</span>
                     </span>
-                    
-                    <EditButton title='Edit' className='edit' onClick={handleEdit}>
-                        Edit
-                    </EditButton>
                 </span>
             </p>
             
@@ -233,7 +245,12 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                     </p>
                 </div>
             </div>}
-        </ListItem>
+            
+            <EditButton title='Edit' className='edit' onClick={handleEdit}>
+                Edit
+            </EditButton>
+            <Grip className='grip' />
+        </OrderableListItem>
     );
 };
 export {

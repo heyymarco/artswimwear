@@ -6,10 +6,21 @@ import {
     default as React,
 }                           from 'react'
 
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // heymarco components:
 import {
     Section,
 }                           from '@heymarco/section'
+import {
+    OrderableList,
+    type OrderableListItemProps,
+}                           from '@heymarco/orderable-list'
 
 // internal components:
 import {
@@ -27,6 +38,7 @@ import {
 }                           from '@/components/explorers/Pagination'
 import {
     ModelCreateOuter,
+    type ModelPreviewProps,
     PaginationList,
 }                           from '@/components/explorers/PaginationList'
 import {
@@ -80,6 +92,14 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
     
     
     
+    // handlers:
+    const handleChildrenChange = useEvent((children: React.ReactElement<OrderableListItemProps<HTMLElement, unknown>>[]) => {
+        const orderedIds = children.map(({props}) => props).filter((props): props is ModelPreviewProps<PaymentMethodDetail> => 'model' in props).map(({model}) => model.id);
+        console.log('moved: ', orderedIds);
+    });
+    
+    
+    
     // jsx:
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
@@ -116,6 +136,12 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
                         isMaxLimitReached
                         ? <ModelCreateOuter enabled={false} />
                         : undefined
+                    }
+                    listComponent={
+                        <OrderableList
+                            // handlers:
+                            onChildrenChange={handleChildrenChange}
+                        />
                     }
                 />
             </Section>
