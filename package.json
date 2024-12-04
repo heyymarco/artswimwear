@@ -28,7 +28,7 @@
     "@heymarco/name-editor": "^6.10.0",
     "@heymarco/next-auth": "^7.0.4",
     "@heymarco/number-editor": "^6.10.0",
-    "@heymarco/orderable-list": "^6.10.1",
+    "@heymarco/orderable-list": "^6.10.2",
     "@heymarco/phone-editor": "^6.10.0",
     "@heymarco/quantity-input": "^6.5.0",
     "@heymarco/radio-decorator": "^6.8.0",
