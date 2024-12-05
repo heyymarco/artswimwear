@@ -258,7 +258,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             identifier     : identifier     ?? '',
             expiresAt      : expiresAt      ?? null,
             billingAddress : billingAddress ?? null,
-        } satisfies PaymentMethodDetail;
+        } satisfies Omit<PaymentMethodDetail, 'priority'>;
     });
     
     const handleDelete         = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
