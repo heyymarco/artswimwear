@@ -59,11 +59,11 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            '"label data     edit"', 'auto',
-            '"label data     grip"', 'auto',
-            '"label data priority"', 'auto',
+            '"label data actions"', 'auto',
+            '"label data actions"', '1fr',
+            '"label data actions"', 'auto',
             '/',
-            '72px 1fr max-content',
+            '72px 1fr minmax(5rem, max-content)',
         ]],
         
         
@@ -189,15 +189,40 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
                 fontSize: typos.fontSizeSm,
             }),
         }),
-        ...children('.edit', {
-            gridArea: 'edit',
-            alignSelf: 'start',
-        }),
-        ...children('.grip', {
-            gridArea: 'grip',
-        }),
-        ...children('.priority', {
-            gridArea: 'priority',
+        ...children('.actions', {
+            // positions:
+            gridArea: 'actions',
+            
+            
+            
+            // layouts:
+            display      : 'grid',
+            gridTemplate : [[
+                '"edit    " auto',
+                '"grip    " minmax(2rem, 1fr)',
+                '"priority" auto',
+                '/',
+                '1fr',
+            ]],
+            
+            
+            
+            // spacings:
+            gap: spacers.md,
+            
+            
+            
+            // children:
+            ...children('.edit', {
+                gridArea: 'edit',
+                alignSelf: 'start',
+            }),
+            ...children('.grip', {
+                gridArea: 'grip',
+            }),
+            ...children('.priority', {
+                gridArea: 'priority',
+            }),
         }),
         ...descendants('[role="dialog"]', {
             // remove the padding of <Dialog>'s backdrop:

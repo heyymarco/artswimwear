@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useState,
 }                           from 'react'
 
 // styles:
@@ -36,6 +37,7 @@ import {
 import {
     OrderableListItem,
     type OrderableListItemDragStartEvent,
+    type OrderableListItemDropHandshakeEvent,
 }                           from '@heymarco/orderable-list'
 
 // internal components:
@@ -101,7 +103,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
         
         billingAddress,
         
-        priority,
+        priority : realPriority,
     } = model;
     const expiresAt = (typeof(expiresAtRaw) === 'string') ? new Date(Date.parse(expiresAtRaw)) : expiresAtRaw;
     const {
@@ -118,6 +120,12 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
     
     
     
+    // states:
+    const [previewPriority, setPreviewPriority] = useState<number|undefined>(undefined);
+    const priority = previewPriority ?? realPriority;
+    
+    
+    
     // refs:
     const listItemRef = useRef<HTMLElement|null>(null);
     
@@ -131,7 +139,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleEdit = useEvent(() => {
+    const handleEdit           = useEvent(() => {
         // just for cosmetic backdrop:
         const dummyPromise = (
             showDialog(
@@ -153,15 +161,31 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             dialogPromise.collapseStartEvent().then(() => dummyPromise.closeDialog(undefined));
         } // if
     });
-    const handleOrderStart = (event: OrderableListItemDragStartEvent<HTMLElement>): void => {
+    const handleOrderStart     = useEvent((event: OrderableListItemDragStartEvent<HTMLElement>): void => {
         if (!(event.target as HTMLElement)?.classList?.contains?.('grip')) event.response = false;
-    };
+    });
+    const handleOrderHandshake = useEvent((event: OrderableListItemDropHandshakeEvent<HTMLElement, number>): void => {
+        const {
+            pairListIndex,
+        } = event;
+        
+        
+        
+        // conditions:
+        if (pairListIndex === undefined) return; // ignore dropping on itself
+        const newPreviewPriority = pairListIndex - 1;
+        if (previewPriority === newPreviewPriority) return;
+        
+        
+        
+        setPreviewPriority(newPreviewPriority);
+    });
     
     
     
     // jsx:
     return (
-        <OrderableListItem
+        <OrderableListItem<HTMLElement, number>
             // other props:
             {...restListItemProps}
             
@@ -179,6 +203,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             
             // handlers:
             onOrderStart={handleOrderStart}
+            onOrderHandshake={handleOrderHandshake}
         >
             <p className='cardNumber'>
                 {(!!brand && isKnownPaymentBrand(brand)) && <img
@@ -248,13 +273,15 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
                 </div>
             </div>}
             
-            <EditButton title='Edit' className='edit' onClick={handleEdit}>
-                Edit
-            </EditButton>
-            <Grip className='grip' />
-            <Basic className='priority' size='sm' theme={(priority === 0) ? 'success' : 'secondary'}>
-                {(priority === 0) ? 'Primary' : `Priority ${priority + 1}`}
-            </Basic>
+            <div className='actions'>
+                <EditButton title='Edit' className='edit' onClick={handleEdit}>
+                    Edit
+                </EditButton>
+                <Grip className='grip' />
+                <Basic className='priority' size='sm' theme={(priority === 0) ? 'success' : 'secondary'}>
+                    {(priority === 0) ? 'Primary' : `Priority ${priority + 1}`}
+                </Basic>
+            </div>
         </OrderableListItem>
     );
 };
