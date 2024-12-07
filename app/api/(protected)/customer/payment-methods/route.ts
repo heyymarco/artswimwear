@@ -50,6 +50,12 @@ import {
     paypalListPaymentMethods,
     paypalDeletePaymentMethod,
 }                           from '@/libs/payments/processors/paypal'
+import {
+    // utilities:
+    stripeCapturePaymentMethod,
+    stripeListPaymentMethods,
+    stripeDeletePaymentMethod,
+}                           from '@/libs/payments/processors/stripe'
 
 // configs:
 import {
@@ -177,13 +183,14 @@ router
         //#region find existing providerCustomerId
         const {
             paypalCustomerId,
-            // stripeCustomerId,
+            stripeCustomerId,
             // midtransCustomerId,
         } = customerIds;
         //#endregion find existing providerCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
             ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
+            ...((stripeCustomerId && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
         ]);
         //#endregion query api
         
@@ -281,6 +288,7 @@ router
         const paymentMethodCapture = await (async (): Promise<PaymentMethodCaptureDetail|null> => {
             switch (provider) {
                 case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken) : null;
+                case 'STRIPE': return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCapturePaymentMethod(providerVaultToken) : null;
                 default      : return null;
             } // switch
         })();
@@ -407,6 +415,7 @@ router
         for (let attempts = 10; attempts > 0; attempts--) {
             const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
                 ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
+                ...(((provider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
             ]);
             const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
             if (paymentMethod) {
@@ -588,7 +597,30 @@ const deleteNonRelatedAccounts = async (customerId: string): Promise<void> => {
                     ),
                 ]);
             })(),
-            // TODO: api for stripe
+            
+            checkoutConfigServer.payment.processors.stripe.enabled && stripeCustomerId && (async (): Promise<void> => {
+                const allInternalPaymentMethods       = providerCustomerIds.paymentMethods.filter(({provider}) => (provider === 'STRIPE')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
+                const allExternalPaymentMethods       = Array.from((await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
+                const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
+                const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
+                
+                await Promise.allSettled([
+                    excessInternalPaymentMethodIds.length && prisma.paymentMethod.deleteMany({
+                        where  : {
+                            parentId : customerId, // important: the signedIn customerId
+                            provider : 'STRIPE',
+                            id       : { in: excessInternalPaymentMethodIds },
+                        },
+                    }),
+                    
+                    ...
+                    excessExternalPaymentMethodsIds
+                    .map((excessExternalPaymentMethodsId) =>
+                        stripeDeletePaymentMethod(excessExternalPaymentMethodsId)
+                    ),
+                ]);
+            })(),
+            
             // TODO: api for midtrans
         ]);
     }

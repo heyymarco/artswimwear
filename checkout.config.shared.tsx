@@ -64,7 +64,7 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
                 ],
             },
             stripe                  : {
-                enabled             : false,
+                enabled             : true,
                 supportedCurrencies : [
                     'USD',
                 ],
@@ -78,8 +78,8 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
         },
         preferredProcessors         : [
             'midtrans',
-            'paypal',
-            // 'stripe',
+            'stripe',
+            // 'paypal',
             'bank',
         ],
     },

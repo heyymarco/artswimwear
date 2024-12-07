@@ -34,6 +34,10 @@ import {
     // utilities:
     paypalCreatePaymentMethodSetup,
 }                           from '@/libs/payments/processors/paypal'
+import {
+    // utilities:
+    stripeCreatePaymentMethodSetup,
+}                           from '@/libs/payments/processors/stripe'
 
 // configs:
 import {
@@ -98,6 +102,7 @@ router
     const {
         arg: {
             provider,
+            cardToken,
             billingAddress,
         },
     } = requestData;
@@ -140,6 +145,7 @@ router
     const paymentMethodSetup = await (async (): Promise<PaymentMethodSetupDetail|null> => {
         switch (provider) {
             case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.paypalCustomerId ?? undefined, billingAddress }) : null;
+            case 'STRIPE' : return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.stripeCustomerId ?? undefined, billingAddress, cardToken }) : null;
             default       : return null;
         } // switch
     })();
@@ -181,5 +187,5 @@ router
     
     
     
-    return new Response(setupToken); // handled with success
+    return new Response(`#${provider}_${setupToken}`); // handled with success
 });

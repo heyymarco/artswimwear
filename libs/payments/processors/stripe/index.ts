@@ -5,6 +5,12 @@ import {
     type AuthorizedFundData,
     type PaymentDetail,
     
+    type PaymentMethodDetail,
+    
+    type PaymentMethodSetupOptions,
+    type PaymentMethodSetupDetail,
+    type PaymentMethodCaptureDetail,
+    
     
     
     // utilities:
@@ -1068,6 +1074,73 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
             return result;
     } // switch
 }
+export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetupDetail> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    
+    const {
+        providerCustomerId: existingProviderCustomerId,
+        cardToken,
+        billingAddress,
+    } = options;
+    
+    
+    
+    const customer = (
+        existingProviderCustomerId
+        ? await stripe.customers.retrieve(existingProviderCustomerId)
+        : await stripe.customers.create()
+    );
+    const setupIntent = await stripe.setupIntents.create({
+        customer                  : customer.id,
+        
+        automatic_payment_methods : {
+            enabled         : true,
+            allow_redirects : 'never',
+        },
+        
+        // payment_method_types      : ['card', 'card_present'],
+        usage                     : 'off_session',
+        payment_method            : cardToken,
+    });
+    /*
+        {
+            id: "seti_1QTIdGD6SqU8owGYcS6VHsV3",
+            object: "setup_intent",
+            application: null,
+            automatic_payment_methods: null,
+            cancellation_reason: null,
+            client_secret: "seti_1QTIdGD6SqU8owGYcS6VHsV3_secret_RM0elVLPw8GQb8jtQZn5Rv6Q6NBf7Xd",
+            created: 1733557254,
+            customer: "cus_RM0eWmwlxkogKO",
+            description: null,
+            flow_directions: null,
+            last_setup_error: null,
+            latest_attempt: null,
+            livemode: false,
+            mandate: null,
+            metadata: {
+            },
+            next_action: null,
+            on_behalf_of: null,
+            payment_method: null,
+            payment_method_configuration_details: null,
+            payment_method_options: {
+            },
+            payment_method_types: [
+                "card_present",
+            ],
+            single_use_mandate: null,
+            status: "requires_payment_method",
+            usage: "off_session",
+        }
+    */
+    return {
+        setupToken         : setupIntent.client_secret ?? '',
+        providerCustomerId : customer.id,
+    } satisfies PaymentMethodSetupDetail;
+}
 
 
 
@@ -1117,6 +1190,283 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
             return result;
     } // switch
 }
+export const stripeCapturePaymentMethod = async (vaultToken: string): Promise<PaymentMethodCaptureDetail> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    
+    const setupIntentId = ((): string => { // seti_1QTJW7D6SqU8owGYw23SAqkX
+        var secretIndex = vaultToken.indexOf('_secret_');
+        if (secretIndex < 0) return vaultToken;
+        return vaultToken.slice(0, secretIndex);
+    })();
+    const setupIntent = await stripe.setupIntents.confirm(setupIntentId);
+    /*
+        {
+            id: "seti_1QTR9DD6SqU8owGYqa15rcX0",
+            object: "setup_intent",
+            application: null,
+            automatic_payment_methods: {
+                allow_redirects: "never",
+                enabled: true,
+            },
+            cancellation_reason: null,
+            client_secret: "seti_1QTR9DD6SqU8owGYqa15rcX0_secret_RM9SjA8bnXe8S6DF4DEFtI6tKArjCk9",
+            created: 1733589987,
+            customer: "cus_RM0eWmwlxkogKO",
+            description: null,
+            flow_directions: null,
+            last_setup_error: null,
+            latest_attempt: "setatt_1QTR9HD6SqU8owGYY8uEGosa",
+            livemode: false,
+            mandate: null,
+            metadata: {
+            },
+            next_action: null,
+            on_behalf_of: null,
+            payment_method: {
+                id: "pm_1QTR99D6SqU8owGYaNZzXvFG",
+                object: "payment_method",
+                allow_redisplay: "unspecified",
+                billing_details: {
+                    address: {
+                        city: null,
+                        country: null,
+                        line1: null,
+                        line2: null,
+                        postal_code: null,
+                        state: null,
+                    },
+                    email: null,
+                    name: null,
+                    phone: null,
+                },
+                card: {
+                    brand: "visa",
+                    checks: {
+                        address_line1_check: null,
+                        address_postal_code_check: null,
+                        cvc_check: "pass",
+                    },
+                    country: "US",
+                    display_brand: "visa",
+                    exp_month: 3,
+                    exp_year: 2029,
+                    fingerprint: "ER4JXzEkwjffY8fr",
+                    funding: "credit",
+                    generated_from: null,
+                    last4: "4242",
+                    networks: {
+                        available: [
+                            "visa",
+                        ],
+                        preferred: null,
+                    },
+                    three_d_secure_usage: {
+                        supported: true,
+                    },
+                    wallet: null,
+                },
+                created: 1733589983,
+                customer: "cus_RM0eWmwlxkogKO",
+                livemode: false,
+                metadata: {
+                },
+                radar_options: {
+                },
+                type: "card",
+            },
+            payment_method_configuration_details: {
+                id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
+                parent: null,
+            },
+            payment_method_options: {
+                card: {
+                    mandate_options: null,
+                    network: null,
+                    request_three_d_secure: "automatic",
+                },
+            },
+            payment_method_types: [
+                "card",
+                "link",
+                "amazon_pay",
+            ],
+            single_use_mandate: null,
+            status: "succeeded",
+            usage: "off_session",
+        }
+    */
+    if (setupIntent.status !== 'succeeded') throw Error('unexpected API response');
+    if (!setupIntent.payment_method) throw Error('unexpected API response');
+    if (!setupIntent.customer) throw Error('unexpected API response');
+    const providerPaymentMethodId = (
+        (typeof(setupIntent.payment_method) === 'string')
+        ? setupIntent.payment_method
+        : setupIntent.payment_method.id
+    );
+    const providerCustomerId = (
+        (typeof(setupIntent.customer) === 'string')
+        ? setupIntent.customer
+        : setupIntent.customer.id
+    );
+    // const paymentMethodList = await stripe.customers.listPaymentMethods(providerCustomerId, { type: 'card' });
+    /*
+        {
+            object: "list",
+            data: [
+                {
+                    id: "pm_1QTQGhD6SqU8owGYVEvYWJLb",
+                    object: "payment_method",
+                    allow_redisplay: "unspecified",
+                    billing_details: {
+                        address: {
+                            city: null,
+                            country: null,
+                            line1: null,
+                            line2: null,
+                            postal_code: null,
+                            state: null,
+                        },
+                        email: null,
+                        name: null,
+                        phone: null,
+                    },
+                    card: {
+                        brand: "visa",
+                        checks: {
+                            address_line1_check: null,
+                            address_postal_code_check: null,
+                            cvc_check: "pass",
+                        },
+                        country: "US",
+                        display_brand: "visa",
+                        exp_month: 1,
+                        exp_year: 2025,
+                        fingerprint: "ER4JXzEkwjffY8fr",
+                        funding: "credit",
+                        generated_from: null,
+                        last4: "4242",
+                        networks: {
+                            available: [
+                                "visa",
+                            ],
+                            preferred: null,
+                        },
+                        three_d_secure_usage: {
+                            supported: true,
+                        },
+                        wallet: null,
+                    },
+                    created: 1733586607,
+                    customer: "cus_RM0eWmwlxkogKO",
+                    livemode: false,
+                    metadata: {
+                    },
+                    radar_options: {
+                    },
+                    type: "card",
+                },
+            ],
+            has_more: false,
+            url: "/v1/customers/cus_RM0eWmwlxkogKO/payment_methods",
+        }
+    */
+    // throw Error('unexpected API response');
+    return {
+        providerPaymentMethodId,
+        providerCustomerId,
+    } satisfies PaymentMethodCaptureDetail;
+}
+
+
+export const stripeListPaymentMethods = async (stripeCustomerId: string, limitMax: number): Promise<Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    
+    const paymentMethodList = await stripe.customers.listPaymentMethods(stripeCustomerId, { type: 'card', limit: limitMax });
+    return new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>(
+        paymentMethodList.data
+        .map((paymentMethod): [string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>]|null => {
+            const {
+                id,
+                billing_details : {
+                    address : billingAddress,
+                    name    : billingName,
+                    phone   : billingPhone,
+                },
+            } = paymentMethod;
+            const identifier = `STRIPE/${id}`;
+            
+            
+            
+            const card = paymentMethod.card;
+            if (card) {
+                const {
+                    brand,
+                    last4,
+                    exp_month,
+                    exp_year,
+                } = card;
+                
+                
+                
+                return [
+                    identifier,
+                    {
+                        type           : 'CARD',
+                        
+                        brand          : brand,
+                        identifier     : last4,
+                        expiresAt      : new Date(exp_year, exp_month - 1),
+                        
+                        billingAddress : (!billingAddress || !billingAddress.country || !billingAddress.state || !billingAddress.city || !billingAddress.line1) ? null : (() => {
+                            const {
+                                country,
+                                state,
+                                city,
+                                postal_code,
+                                line1,
+                                line2,
+                            } = billingAddress;
+                            return {
+                                country   : `${country}`.toUpperCase(),
+                                state     : state ?? '',
+                                city      : city  ?? '',
+                                zip       : postal_code ?? '',
+                                address   : (line1 ?? '') + (line2 ? ` ${line2}` : ''),
+                                
+                                firstName : !billingName ? '' : billingName.split(/\s+/)?.[0] ?? '',
+                                lastName  : !billingName ? '' : billingName.split(/\s+/).slice(1).join(' '),
+                                phone     : billingPhone ?? '',
+                            };
+                        })(),
+                    },
+                ];
+            } // if
+            
+            
+            
+            return null;
+        })
+        .filter((item): item is Exclude<typeof item, null> => (item !== null))
+    );
+}
+export const stripeDeletePaymentMethod = async (stripePaymentMethodId: string): Promise<void> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    try {
+        await stripe.paymentMethods.detach(stripePaymentMethodId);
+    }
+    catch {
+        // ignore any error
+    } // try
+}
+
+
+
 export const stripeCancelOrder = async (paymentId: string): Promise<boolean> => {
     if (!stripe) throw Error('stripe is not loaded');
     

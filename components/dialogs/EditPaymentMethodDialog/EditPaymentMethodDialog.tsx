@@ -63,6 +63,9 @@ import {
 
 // payment components:
 import {
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
+import {
     ConditionalPaymentScriptProvider,
 }                           from '@/components/payments/ConditionalPaymentScriptProvider'
 import {
@@ -123,6 +126,7 @@ import {
     type PlaceOrderDetail,
     
     type PaymentMethodDetail,
+    type PaymentMethodProvider,
 }                           from '@/models'
 
 // states:
@@ -222,8 +226,9 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // refs:
-    const firstEditorRef     = useRef<HTMLInputElement|null>(null);
-    const imperativeClickRef = useRef<ImperativeClick>(null);
+    const firstEditorRef             = useRef<HTMLInputElement|null>(null);
+    const imperativeClickRef         = useRef<ImperativeClick>(null);
+    const paymentPriorityProviderRef = useRef<PaymentMethodProvider|null>(null);
     
     
     
@@ -326,10 +331,13 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         } // try
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+        const paymentPriorityProvider = paymentPriorityProviderRef.current;
+        if (!paymentPriorityProvider) throw undefined;
         return {
             orderId : await createPaymentMethodSetup({
-                provider: 'PAYPAL',
+                provider: paymentPriorityProvider,
                 billingAddress,
+                cardToken : options?.cardToken,
             }).unwrap(),
         } satisfies PlaceOrderDetail;
     });
@@ -357,28 +365,37 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     // jsx:
     const mainTabContent = (
         <ConditionalPaymentScriptProvider
-        // required for purchasing:
-        totalShippingCost={null} // not_physical_product
-    >
-        <ConditionalPaypalCardComposerProvider saveCardMode={true}>
-            <ValidationProvider
-                // validations:
-                enableValidation={enableValidation}
-                inheritValidation={false}
+            // behaviors:
+            saveCardMode={true}
+            
+            
+            
+            // required for purchasing:
+            totalShippingCost={null} // not_physical_product
+        >
+            <ConditionalPaypalCardComposerProvider
+                // behaviors:
+                saveCardMode={true}
             >
-                <CreditCardLayout
-                    // data:
-                    editorAddress={editorAddress}
-                    onEditorAddressChange={handleEditorAddressChange}
-                    
-                    
-                    
-                    // refs:
-                    imperativeClickRef={imperativeClickRef}
-                />
-            </ValidationProvider>
-        </ConditionalPaypalCardComposerProvider>
-    </ConditionalPaymentScriptProvider>
+                <ValidationProvider
+                    // validations:
+                    enableValidation={enableValidation}
+                    inheritValidation={false}
+                >
+                    <CreditCardLayout
+                        // data:
+                        editorAddress={editorAddress}
+                        onEditorAddressChange={handleEditorAddressChange}
+                        
+                        
+                        
+                        // refs:
+                        imperativeClickRef={imperativeClickRef}
+                        paymentPriorityProviderRef={paymentPriorityProviderRef}
+                    />
+                </ValidationProvider>
+            </ConditionalPaypalCardComposerProvider>
+        </ConditionalPaymentScriptProvider>
     );
     const mainTab = (
         !model
@@ -482,13 +499,14 @@ export {
 
 interface CreditCardLayoutProps {
     // data:
-    editorAddress         : EditorAddress|null
-    onEditorAddressChange : EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>
+    editorAddress              : EditorAddress|null
+    onEditorAddressChange      : EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>
     
     
     
     // refs:
-    imperativeClickRef    : React.RefObject<ImperativeClick> // getter ref
+    imperativeClickRef         : React.RefObject<ImperativeClick> // getter ref
+    paymentPriorityProviderRef : React.MutableRefObject<PaymentMethodProvider|null> // setter ref
 }
 const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
     // props:
@@ -501,6 +519,7 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
         
         // refs:
         imperativeClickRef,
+        paymentPriorityProviderRef,
     } = props;
     
     
@@ -511,6 +530,11 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
     
     
     // states:
+    const {
+        paymentPriorityProvider,
+    } = usePaymentProcessorPriority();
+    paymentPriorityProviderRef.current = paymentPriorityProvider;
+    
     const {
         // sections:
         paymentCardSectionRef,

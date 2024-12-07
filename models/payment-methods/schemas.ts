@@ -70,6 +70,7 @@ export const PaymentMethodProviderSchema = z.enum([
 
 export const PaymentMethodSetupRequestSchema = z.object({
     provider       : PaymentMethodProviderSchema,
+    cardToken      : z.string().optional(),
     billingAddress : BillingAddressDetailSchema.nullable(),
 }) satisfies z.Schema<PaymentMethodSetupRequest>;
 

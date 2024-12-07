@@ -32,6 +32,11 @@ export interface ConditionalPaymentScriptProviderProps
 }
 const ConditionalPaymentScriptProvider = (props: React.PropsWithChildren<ConditionalPaymentScriptProviderProps>) => {
     const {
+        // behaviors:
+        saveCardMode = false,
+        
+        
+        
         // required for purchasing:
         totalShippingCost,
         
@@ -52,6 +57,11 @@ const ConditionalPaymentScriptProvider = (props: React.PropsWithChildren<Conditi
     */
     return (
         <ConditionalStripeScriptProvider
+            // behaviors:
+            saveCardMode={saveCardMode}
+            
+            
+            
             // required for purchasing:
             totalShippingCost={totalShippingCost}
         >

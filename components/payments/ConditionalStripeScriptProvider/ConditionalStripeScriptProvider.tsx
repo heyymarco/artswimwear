@@ -66,12 +66,22 @@ import {
 
 
 export interface ConditionalStripeScriptProviderProps {
+    // behaviors:
+    saveCardMode ?: boolean
+    
+    
+    
     // required for purchasing:
     totalShippingCost ?: number|null
 }
 const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<ConditionalStripeScriptProviderProps>) => {
     // props:
     const {
+        // behaviors:
+        saveCardMode = false,
+        
+        
+        
         // required for purchasing:
         totalShippingCost, // undefined: not selected yet; null: no shipping required (non physical product)
         
@@ -127,7 +137,7 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
     
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if ((productPriceParts === undefined) || (totalShippingCost === undefined)) {
+        if (saveCardMode || (productPriceParts === undefined) || (totalShippingCost === undefined)) {
             setConvertedAmount(undefined);
             return;
         } // if
@@ -149,6 +159,8 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
             setConvertedAmount(summedAmount);
         })();
     }, [
+        saveCardMode,
+        
         productPriceParts,
         totalShippingCost,
         
@@ -163,11 +175,17 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
         ||
         !checkoutConfigClient.payment.processors.stripe.supportedCurrencies.includes(currency) // the selected currency is not supported
         ||
-        (convertedAmount === undefined) // the conversion is not yet ready
-        ||
-        (convertedAmount === null)      // the totalOrder cost is null (free) => nothing to pay
-        ||
-        (convertedAmount === 0)         // the totalOrder cost is 0    (free) => nothing to pay
+        (
+            !saveCardMode
+            &&
+            (
+                (convertedAmount === undefined) // the conversion is not yet ready
+                ||
+                (convertedAmount === null)      // the totalOrder cost is null (free) => nothing to pay
+                ||
+                (convertedAmount === 0)         // the totalOrder cost is 0    (free) => nothing to pay
+            )
+        )
     ) {
         // jsx:
         return (
@@ -187,15 +205,27 @@ const ConditionalStripeScriptProvider = (props: React.PropsWithChildren<Conditio
             
             
             
+            // behaviors:
+            saveCardMode={saveCardMode}
+            
+            
+            
             // options:
             currency={currency}
-            totalAmount={convertedAmount}
+            totalAmount={saveCardMode ? 0 : (convertedAmount as number)}
         >
             {children}
         </ImplementedStripeScriptProvider>
     );
 }
-interface ImplementedStripeScriptProviderProps {
+interface ImplementedStripeScriptProviderProps
+    extends
+        // bases
+        Pick<ConditionalStripeScriptProviderProps,
+            // behaviors:
+            |'saveCardMode'
+        >
+{
     // stripe:
     stripe      : Stripe
     
@@ -213,6 +243,11 @@ interface ImplementedStripeScriptProviderProps {
 const ImplementedStripeScriptProvider = (props: ImplementedStripeScriptProviderProps) => {
     // props:
     const {
+        // behaviors:
+        saveCardMode = false,
+        
+        
+        
         // stripe:
         stripe,
         
@@ -233,10 +268,10 @@ const ImplementedStripeScriptProvider = (props: ImplementedStripeScriptProviderP
     // options:
     const stripeOptions = useMemo<StripeElementsOptions>(() => ({
         currency : currency.toLowerCase(),
-        amount   : convertCurrencyToStripeNominal(totalAmount, currency),
-        mode     : 'payment',
+        amount   : saveCardMode ? undefined : convertCurrencyToStripeNominal(totalAmount, currency),
+        mode     : saveCardMode ? 'setup'   : 'payment',
         locale   : checkoutConfigClient.intl.locale as StripeElementLocale,
-    }), [currency, totalAmount]);
+    }), [saveCardMode, currency, totalAmount]);
     
     
     

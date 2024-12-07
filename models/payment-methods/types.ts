@@ -57,14 +57,19 @@ export interface PaymentMethodUpdateRequest
 
 export interface PaymentMethodSetupRequest {
     provider                 : PaymentMethodProvider
+    cardToken               ?: string
     billingAddress          ?: BillingAddressDetail|null
 }
 
 
 
-export interface PaymentMethodSetupOptions {
+export interface PaymentMethodSetupOptions
+    extends
+        Omit<PaymentMethodSetupRequest,
+            |'provider' // replace provider with providerCustomerId on backend
+        >
+{
     providerCustomerId      ?: string
-    billingAddress          ?: BillingAddressDetail|null
 }
 export interface PaymentMethodSetupDetail {
     providerCustomerId       : string
