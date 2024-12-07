@@ -61,6 +61,7 @@ const usesBaseCardFieldWrapperLayout = () => {
 const usesHiddenLayout = () => {
     return style({
         // positions:
+        position   : 'absolute', // do not take up a space
         zIndex     : -99,
         
         
