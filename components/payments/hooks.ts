@@ -22,6 +22,12 @@ import {
     useCartState,
 }                           from '@/components/Cart/states/cartState'
 
+// models:
+import {
+    // types:
+    type PaymentMethodProvider
+}                           from '@/models'
+
 // configs:
 import {
     checkoutConfigClient,
@@ -59,10 +65,11 @@ export const useAppropriatePaymentProcessors = (): (typeof checkoutConfigClient.
 
 
 export interface PaymentProcessorPriority {
-    paymentPriorityProcessor  : string|null
-    isPaymentPriorityPaypal   : boolean
-    isPaymentPriorityStripe   : boolean
-    isPaymentPriorityMidtrans : boolean
+    paymentPriorityProviderName : string|null
+    paymentPriorityProvider     : PaymentMethodProvider|null
+    isPaymentPriorityPaypal     : boolean
+    isPaymentPriorityStripe     : boolean
+    isPaymentPriorityMidtrans   : boolean
 }
 export const usePaymentProcessorPriority = (): PaymentProcessorPriority => {
     const appropriatePaymentProcessors = useAppropriatePaymentProcessors();
@@ -77,15 +84,16 @@ export const usePaymentProcessorPriority = (): PaymentProcessorPriority => {
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
     );
-    const paymentPriorityProcessor     = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)) ?? null; // find the highest priority payment processor that supports card payment
-    const isPaymentPriorityPaypal      = (paymentPriorityProcessor === 'paypal');
-    const isPaymentPriorityStripe      = (paymentPriorityProcessor === 'stripe');
-    const isPaymentPriorityMidtrans    = (paymentPriorityProcessor === 'midtrans');
+    const paymentPriorityProviderName  = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)) ?? null; // find the highest priority payment processor that supports card payment
+    const isPaymentPriorityPaypal      = (paymentPriorityProviderName === 'paypal');
+    const isPaymentPriorityStripe      = (paymentPriorityProviderName === 'stripe');
+    const isPaymentPriorityMidtrans    = (paymentPriorityProviderName === 'midtrans');
     
     
     
     return {
-        paymentPriorityProcessor,
+        paymentPriorityProviderName,
+        paymentPriorityProvider : (paymentPriorityProviderName === null) ? null : (paymentPriorityProviderName.toUpperCase() as PaymentMethodProvider),
         isPaymentPriorityPaypal,
         isPaymentPriorityStripe,
         isPaymentPriorityMidtrans,
