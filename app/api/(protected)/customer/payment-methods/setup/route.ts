@@ -15,7 +15,7 @@ import {
 
 // models:
 import {
-    SetupPaymentRequestSchema,
+    PaymentMethodSetupRequestSchema,
     type PaymentMethodSetupDetail,
 }                           from '@/models'
 
@@ -32,7 +32,7 @@ import {
 // internals:
 import {
     // utilities:
-    paypalCreateSetupPayment,
+    paypalCreatePaymentMethodSetup,
 }                           from '@/libs/payments/processors/paypal'
 
 // configs:
@@ -83,7 +83,7 @@ router
         try {
             const data = await req.json();
             return {
-                arg : SetupPaymentRequestSchema.parse(data),
+                arg : PaymentMethodSetupRequestSchema.parse(data),
             };
         }
         catch {
@@ -139,7 +139,7 @@ router
     
     const paymentMethodSetup = await (async (): Promise<PaymentMethodSetupDetail|null> => {
         switch (provider) {
-            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreateSetupPayment({ providerCustomerId: providerCustomerIds?.paypalCustomerId ?? undefined, billingAddress }) : null;
+            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.paypalCustomerId ?? undefined, billingAddress }) : null;
             default       : return null;
         } // switch
     })();

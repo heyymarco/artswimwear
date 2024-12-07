@@ -82,7 +82,7 @@ import {
     
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
-    type SetupPaymentRequest,
+    type PaymentMethodSetupRequest,
     type PaymentMethodSortRequest,
     type PaymentMethodSortDetail,
 }                           from '@/models'
@@ -715,7 +715,7 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'PaymentMethod', id: arg.page }],
         }),
-        createSetupPayment          : builder.query<string, SetupPaymentRequest>({
+        createPaymentMethodSetup    : builder.query<string, PaymentMethodSetupRequest>({
             query : (arg) => ({
                 url    : 'customer/payment-methods/setup',
                 method : 'POST',
@@ -926,7 +926,7 @@ export const {
     
     
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
-    useLazyCreateSetupPaymentQuery         : useCreateSetupPayment,
+    useLazyCreatePaymentMethodSetupQuery   : useCreatePaymentMethodSetup,
     useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
     useDeletePaymentMethodMutation         : useDeletePaymentMethod,
     useSortPaymentMethodMutation           : useSortPaymentMethod,

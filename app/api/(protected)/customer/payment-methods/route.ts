@@ -24,9 +24,6 @@ import {
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
-    PaymentMethodProviderSchema,
-    SetupPaymentRequestSchema,
-    type PaymentMethodSetupDetail,
     type PaymentMethodCaptureDetail,
     paymentMethodLimitMax,
     
@@ -49,7 +46,6 @@ import {
 // internals:
 import {
     // utilities:
-    paypalCreateSetupPayment,
     paypalCapturePaymentMethod,
     paypalListPaymentMethods,
     paypalDeletePaymentMethod,

@@ -55,7 +55,7 @@ export interface PaymentMethodUpdateRequest
 
 
 
-export interface SetupPaymentRequest {
+export interface PaymentMethodSetupRequest {
     provider                 : PaymentMethodProvider
     billingAddress          ?: BillingAddressDetail|null
 }

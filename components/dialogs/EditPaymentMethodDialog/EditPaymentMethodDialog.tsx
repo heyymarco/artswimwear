@@ -135,7 +135,7 @@ import {
     // hooks:
     useUpdatePaymentMethod,
     useDeletePaymentMethod,
-    useCreateSetupPayment,
+    useCreatePaymentMethodSetup,
 }                           from '@/store/features/api/apiSlice'
 
 // configs:
@@ -217,7 +217,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     // stores:
     const [updatePaymentMethod, {isLoading : isLoadingUpdate}] = useUpdatePaymentMethod();
     const [deletePaymentMethod, {isLoading : isLoadingDelete}] = useDeletePaymentMethod();
-    const [createSetupPayment] = useCreateSetupPayment();
+    const [createPaymentMethodSetup] = useCreatePaymentMethodSetup();
     
     
     
@@ -327,7 +327,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     });
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         return {
-            orderId : await createSetupPayment({
+            orderId : await createPaymentMethodSetup({
                 provider: 'PAYPAL',
                 billingAddress,
             }).unwrap(),
