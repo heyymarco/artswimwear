@@ -1419,7 +1419,7 @@ export const stripeListPaymentMethods = async (stripeCustomerId: string, limitMa
                         
                         brand          : brand,
                         identifier     : last4,
-                        expiresAt      : new Date(exp_year, exp_month - 1),
+                        expiresAt      : new Date(Date.UTC(exp_year, exp_month - 1)),
                         
                         billingAddress : (!billingAddress || !billingAddress.country || !billingAddress.state || !billingAddress.city || !billingAddress.line1) ? null : (() => {
                             const {
