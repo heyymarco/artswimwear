@@ -179,9 +179,7 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
             // children:
             ...children('.data', {
                 // layouts:
-                display: 'grid',
-                gridAutoFlow: 'row',
-                gap: spacers.sm,
+                display: 'block',
                 
                 
                 

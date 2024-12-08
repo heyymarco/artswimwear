@@ -415,7 +415,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             
             // billing data:
             billingValidation={enableValidation}
-            billingAddress={null}
+            billingAddress={billingAddress}
             
             
             
