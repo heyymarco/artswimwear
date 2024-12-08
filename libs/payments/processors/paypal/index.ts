@@ -7,8 +7,8 @@ import {
     type PaymentMethodDetail,
     
     type PaymentMethodSetupOptions,
-    type PaymentMethodSetupDetail,
-    type PaymentMethodCaptureDetail,
+    type PaymentMethodSetup,
+    type PaymentMethodCapture,
 }                           from '@/models'
 
 // configs:
@@ -437,7 +437,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
     } satisfies AuthorizedFundData;
 }
-export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetupDetail> => {
+export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetup> => {
     const {
         providerCustomerId: existingProviderCustomerId,
         billingAddress,
@@ -587,7 +587,7 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     return {
         setupToken,
         providerCustomerId,
-    } satisfies PaymentMethodSetupDetail;
+    } satisfies PaymentMethodSetup;
 }
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
@@ -905,7 +905,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
         }
     } // switch
 }
-export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<PaymentMethodCaptureDetail> => {
+export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<PaymentMethodCapture> => {
     const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens`, {
         method  : 'POST',
         headers : {
@@ -968,7 +968,7 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
     return {
         providerPaymentMethodId,
         providerCustomerId,
-    } satisfies PaymentMethodCaptureDetail;
+    } satisfies PaymentMethodCapture;
 }
 
 

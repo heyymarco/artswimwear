@@ -125,6 +125,7 @@ import {
     type PlaceOrderRequestOptions,
     type PlaceOrderDetail,
     
+    type PaymentMethodSetupDetail,
     type PaymentMethodDetail,
     type PaymentMethodProvider,
 }                           from '@/models'
@@ -333,13 +334,36 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         const paymentPriorityProvider = paymentPriorityProviderRef.current;
         if (!paymentPriorityProvider) throw undefined;
-        return {
-            orderId : await createPaymentMethodSetup({
-                provider: paymentPriorityProvider,
-                billingAddress,
-                cardToken : options?.cardToken,
-            }).unwrap(),
-        } satisfies PlaceOrderDetail;
+        const paymentMethodSetupOrNewPaymentMethod = await createPaymentMethodSetup({
+            provider: paymentPriorityProvider,
+            billingAddress,
+            cardToken : options?.cardToken,
+            
+            // data for immediately updated without returning setup token:
+            id : model?.id ?? '',
+            currency,
+        }).unwrap();
+        
+        
+        
+        if ('setupToken' in paymentMethodSetupOrNewPaymentMethod) {
+            const {
+                setupToken,
+                redirectData,
+            } = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodSetupDetail;
+            return {
+                orderId      : setupToken,
+                redirectData : redirectData,
+            } satisfies PlaceOrderDetail;
+        }
+        else {
+            const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
+            return {
+                ...newPaymentMethod,
+                amount     : 0,
+                fee        : 0,
+            } satisfies PaymentDetail;
+        } // if
     });
     const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
         console.log('error: ', orderId);

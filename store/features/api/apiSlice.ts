@@ -80,6 +80,7 @@ import {
     type CreateOrUpdateWishRequest,
     type DeleteWishParam,
     
+    type PaymentMethodSetupDetail,
     type PaymentMethodDetail,
     type PaymentMethodUpdateRequest,
     type PaymentMethodSetupRequest,
@@ -715,12 +716,21 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'PaymentMethod', id: arg.page }],
         }),
-        createPaymentMethodSetup    : builder.query<string, PaymentMethodSetupRequest>({
+        createPaymentMethodSetup    : builder.mutation<PaymentMethodSetupDetail|PaymentMethodDetail, PaymentMethodSetupRequest>({
             query : (arg) => ({
                 url    : 'customer/payment-methods/setup',
                 method : 'POST',
                 body   : arg
             }),
+            onQueryStarted: async (arg, api) => {
+                const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled;
+                if (!('setupToken' in paymentMethodSetupOrNewPaymentMethod)) {
+                    const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
+                    await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
+                        providedMutatedModel : newPaymentMethod,
+                    });
+                } // if
+            },
         }),
         updatePaymentMethod         : builder.mutation<PaymentMethodDetail, PaymentMethodUpdateRequest>({
             query: (arg) => ({
@@ -926,7 +936,7 @@ export const {
     
     
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
-    useLazyCreatePaymentMethodSetupQuery   : useCreatePaymentMethodSetup,
+    useCreatePaymentMethodSetupMutation    : useCreatePaymentMethodSetup,
     useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
     useDeletePaymentMethodMutation         : useDeletePaymentMethod,
     useSortPaymentMethodMutation           : useSortPaymentMethod,

@@ -15,8 +15,10 @@ import {
 
 // models:
 import {
-    PaymentMethodSetupRequestSchema,
     type PaymentMethodSetupDetail,
+    PaymentMethodSetupRequestSchema,
+    type PaymentMethodSetup,
+    type PaymentMethodCapture,
 }                           from '@/models'
 
 // ORMs:
@@ -38,6 +40,10 @@ import {
     // utilities:
     stripeCreatePaymentMethodSetup,
 }                           from '@/libs/payments/processors/stripe'
+import {
+    createOrUpdatePaymentMethod,
+    deletePaymentMethodAccount,
+}                           from '../utilities'
 
 // configs:
 import {
@@ -104,6 +110,9 @@ router
             provider,
             cardToken,
             billingAddress,
+            
+            // data for immediately updated without returning setup token:
+            ...createOrUpdatedata
         },
     } = requestData;
     //#endregion parsing and validating request
@@ -142,22 +151,21 @@ router
     
     
     
-    const paymentMethodSetup = await (async (): Promise<PaymentMethodSetupDetail|null> => {
+    const paymentMethodSetupOrCapture = await (async (): Promise<PaymentMethodSetup|PaymentMethodCapture|null> => {
         switch (provider) {
             case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.paypalCustomerId ?? undefined, billingAddress }) : null;
             case 'STRIPE' : return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.stripeCustomerId ?? undefined, billingAddress, cardToken }) : null;
             default       : return null;
         } // switch
     })();
-    if (!paymentMethodSetup) {
+    if (!paymentMethodSetupOrCapture) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     const {
-        setupToken,
         providerCustomerId,
-    } = paymentMethodSetup;
+    } = paymentMethodSetupOrCapture;
     
     
     
@@ -187,5 +195,36 @@ router
     
     
     
-    return new Response(`#${provider}_${setupToken}`); // handled with success
+    if ('setupToken' in paymentMethodSetupOrCapture) {
+        const {
+            setupToken,
+            redirectData,
+        } = paymentMethodSetupOrCapture satisfies PaymentMethodSetup;
+        
+        
+        
+        const paymentMethodSetup = {
+            setupToken : `#${provider}_${setupToken}`,
+            redirectData,
+        } satisfies PaymentMethodSetupDetail;
+        return Response.json(paymentMethodSetup); // handled with success
+    }
+    else {
+        const response = await createOrUpdatePaymentMethod(createOrUpdatedata, customerId, provider, paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
+        
+        
+        
+        //#region revert the account if creation is failed
+        if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
+            const {
+                providerPaymentMethodId,
+            } = paymentMethodSetupOrCapture satisfies PaymentMethodCapture;
+            await deletePaymentMethodAccount(provider, providerPaymentMethodId);
+        } // if
+        //#endregion revert the account if creation is failed
+        
+        
+        
+        return response;
+    } // if
 });

@@ -13,6 +13,15 @@ import {
 
 
 
+export interface PaymentMethodSetupDetail
+    extends
+        Pick<PaymentMethodSetup,
+            |'setupToken'
+            |'redirectData'
+        >
+{
+}
+
 export interface PaymentMethodDetail
     extends
         Pick<PaymentMethod,
@@ -55,7 +64,13 @@ export interface PaymentMethodUpdateRequest
 
 
 
-export interface PaymentMethodSetupRequest {
+export interface PaymentMethodSetupRequest
+    extends
+        Omit<PaymentMethodUpdateRequest,
+            // data:
+            |'vaultToken'
+        >
+{
     provider                 : PaymentMethodProvider
     cardToken               ?: string
     billingAddress          ?: BillingAddressDetail|null
@@ -65,17 +80,19 @@ export interface PaymentMethodSetupRequest {
 
 export interface PaymentMethodSetupOptions
     extends
-        Omit<PaymentMethodSetupRequest,
-            |'provider' // replace provider with providerCustomerId on backend
+        Pick<PaymentMethodSetupRequest,
+            |'cardToken'
+            |'billingAddress'
         >
 {
     providerCustomerId      ?: string
 }
-export interface PaymentMethodSetupDetail {
+export interface PaymentMethodSetup {
     providerCustomerId       : string
     setupToken               : string
+    redirectData            ?: string
 }
-export interface PaymentMethodCaptureDetail {
+export interface PaymentMethodCapture {
     providerCustomerId       : string
     providerPaymentMethodId  : string
 }

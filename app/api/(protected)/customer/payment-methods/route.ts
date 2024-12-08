@@ -24,8 +24,7 @@ import {
     type PaymentMethodDetail,
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
-    type PaymentMethodCaptureDetail,
-    paymentMethodLimitMax,
+    type PaymentMethodCapture,
     
     
     
@@ -48,14 +47,18 @@ import {
     // utilities:
     paypalCapturePaymentMethod,
     paypalListPaymentMethods,
-    paypalDeletePaymentMethod,
 }                           from '@/libs/payments/processors/paypal'
 import {
     // utilities:
     stripeCapturePaymentMethod,
     stripeListPaymentMethods,
-    stripeDeletePaymentMethod,
 }                           from '@/libs/payments/processors/stripe'
+import {
+    limitMaxPaymentMethodList,
+    createOrUpdatePaymentMethod,
+    deletePaymentMethodAccount,
+    deleteNonRelatedAccounts,
+}                           from './utilities'
 
 // configs:
 import {
@@ -67,8 +70,6 @@ import {
 // configs:
 export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
-
-const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
 
 
 
@@ -233,9 +234,8 @@ router
     const {
         arg: {
             // records:
-            id,
             vaultToken,
-            currency,
+            ...createOrUpdatedata
         },
     } = requestData;
     const paymentData = ((): [PaymentMethodProvider, string]|null => {
@@ -285,7 +285,7 @@ router
     //#region save changes
     try {
         //#region process the vault token
-        const paymentMethodCapture = await (async (): Promise<PaymentMethodCaptureDetail|null> => {
+        const paymentMethodCapture = await (async (): Promise<PaymentMethodCapture|null> => {
             switch (provider) {
                 case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken) : null;
                 case 'STRIPE': return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCapturePaymentMethod(providerVaultToken) : null;
@@ -297,148 +297,26 @@ router
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
-        const {
-            providerPaymentMethodId,
-            providerCustomerId,
-        } = paymentMethodCapture;
         //#endregion process the vault token
         
         
         
-        if (id) { // updating only
-            //#region delete prev payment token
-            const existingPaymentMethod = await prisma.paymentMethod.findUnique({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    id       : id,
-                },
-                select : {
-                    provider                : true,
-                    providerPaymentMethodId : true,
-                },
-            });
-            if (existingPaymentMethod) {
-                const {
-                    provider                : existingProvider,
-                    providerPaymentMethodId : existingProviderPaymentMethodId,
-                } = existingPaymentMethod;
-                
-                
-                
-                if ((existingProvider !== provider) || (existingProviderPaymentMethodId !== providerPaymentMethodId)) {
-                    //#region process the vault token
-                    switch (existingProvider) {
-                        case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && await paypalDeletePaymentMethod(existingProviderPaymentMethodId);
-                    } // switch
-                    //#endregion process the vault token
-                } // if
-            } // if
-            //#endregion delete prev payment token
+        const response = await createOrUpdatePaymentMethod(createOrUpdatedata, customerId, provider, paymentMethodCapture);
+        
+        
+        
+        //#region revert the account if creation is failed
+        if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
+            const {
+                providerPaymentMethodId,
+            } = paymentMethodCapture;
+            await deletePaymentMethodAccount(provider, providerPaymentMethodId);
         } // if
+        //#endregion revert the account if creation is failed
         
         
         
-        const [paymentMethodData, paymentMethodCount] = await prisma.$transaction(async (prismaTransaction): Promise<[Parameters<typeof convertPaymentMethodDetailDataToPaymentMethodDetail>[0] | false, number]> => {
-            const [maxSort, paymentMethodCount] = await Promise.all([
-                prismaTransaction.paymentMethod.findFirst({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                    },
-                    select  : {
-                        sort : true,
-                    },
-                    orderBy : {
-                        sort: 'desc',
-                    },
-                }),
-                
-                prismaTransaction.paymentMethod.count({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                    },
-                }),
-            ]);
-            if (!id) { // creating only
-                //#region limits max payment method count
-                if (paymentMethodCount >= paymentMethodLimitMax) {
-                    return [false, paymentMethodCount];
-                } // if
-                //#endregion limits max payment method count
-            } // if
-            
-            
-            
-            //#region update the db
-            const paymentMethodData = (
-                !id
-                ? await prismaTransaction.paymentMethod.create({
-                    data   : {
-                        parentId                : customerId, // important: the signedIn customerId
-                        
-                        sort                    : (maxSort?.sort ?? -1) + 1,
-                        
-                        provider                : provider,
-                        providerPaymentMethodId : providerPaymentMethodId,
-                        
-                        currency                : currency,
-                    },
-                    select : paymentMethodDetailSelect,
-                })
-                : await prismaTransaction.paymentMethod.update({
-                    where  : {
-                        id                      : id,
-                        parentId                : customerId, // important: the signedIn customerId
-                    },
-                    data   : {
-                        provider                : provider,
-                        providerPaymentMethodId : providerPaymentMethodId,
-                        
-                        currency                : currency,
-                    },
-                    select : paymentMethodDetailSelect,
-                })
-            );
-            //#endregion update the db
-            
-            
-            
-            return [paymentMethodData, paymentMethodCount + (!id ? 1 /* creating */ : 0 /* updating */)];
-        });
-        if (!paymentMethodData) {
-            return Response.json({
-                error: 'Max payment method count has been reached.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        
-        
-        for (let attempts = 10; attempts > 0; attempts--) {
-            const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-                ...(((provider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
-                ...(((provider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(providerCustomerId, limitMaxPaymentMethodList) : []),
-            ]);
-            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
-            if (paymentMethod) {
-                await deleteNonRelatedAccounts(customerId);
-                return Response.json(paymentMethod); // handled with success
-            } // if
-            
-            
-            
-            if (attempts > 0) {
-                // wait for 1 sec before running the next attempts:
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 1000);
-                });
-            } // if
-        } // for
-        
-        
-        
-        await deleteNonRelatedAccounts(customerId);
-        return Response.json({ error: 'Unexpected error' }, { status: 500 }); // handled with error: unauthorized
+        return response;
     }
     catch (error: any) {
         console.log('ERROR: ', error);
@@ -507,16 +385,8 @@ router
         
         
         
-        //#region process the vault token
-        switch (provider) {
-            case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && await paypalDeletePaymentMethod(providerPaymentMethodId);
-        } // switch
-        //#endregion process the vault token
-        
-        
-        
-        const deletedPaymentMethod : Pick<PaymentMethodDetail, 'id'> = (
-            await prisma.paymentMethod.delete({
+        const [deletedPaymentMethod] = await Promise.all([
+            prisma.paymentMethod.delete({
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
                     id       : id,
@@ -524,8 +394,10 @@ router
                 select : {
                     id       : true,
                 },
-            })
-        );
+            }) satisfies Promise<Pick<PaymentMethodDetail, 'id'>>,
+            
+            deletePaymentMethodAccount(provider, providerPaymentMethodId),
+        ]);
         
         
         
@@ -539,93 +411,3 @@ router
     } // try
     //#endregion save changes
 });
-
-
-
-const deleteNonRelatedAccounts = async (customerId: string): Promise<void> => {
-    try {
-        //#region find existing providerCustomerId
-        const providerCustomerIds = await prisma.customer.findUnique({
-            where  : {
-                id : customerId, // important: the signedIn customerId
-            },
-            select : {
-                paypalCustomerId   : true,
-                stripeCustomerId   : true,
-                midtransCustomerId : true,
-                
-                // relations:
-                paymentMethods : {
-                    select : {
-                        id                      : true,
-                        provider                : true,
-                        providerPaymentMethodId : true,
-                    },
-                },
-            },
-        });
-        if (!providerCustomerIds) return;
-        const {
-            paypalCustomerId,
-            stripeCustomerId,
-            midtransCustomerId,
-        } = providerCustomerIds;
-        //#endregion find existing providerCustomerId
-        
-        
-        
-        await Promise.allSettled([
-            checkoutConfigServer.payment.processors.paypal.enabled && paypalCustomerId && (async (): Promise<void> => {
-                const allInternalPaymentMethods       = providerCustomerIds.paymentMethods.filter(({provider}) => (provider === 'PAYPAL')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
-                const allExternalPaymentMethods       = Array.from((await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
-                const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
-                const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
-                
-                await Promise.allSettled([
-                    excessInternalPaymentMethodIds.length && prisma.paymentMethod.deleteMany({
-                        where  : {
-                            parentId : customerId, // important: the signedIn customerId
-                            provider : 'PAYPAL',
-                            id       : { in: excessInternalPaymentMethodIds },
-                        },
-                    }),
-                    
-                    ...
-                    excessExternalPaymentMethodsIds
-                    .map((excessExternalPaymentMethodsId) =>
-                        paypalDeletePaymentMethod(excessExternalPaymentMethodsId)
-                    ),
-                ]);
-            })(),
-            
-            checkoutConfigServer.payment.processors.stripe.enabled && stripeCustomerId && (async (): Promise<void> => {
-                const allInternalPaymentMethods       = providerCustomerIds.paymentMethods.filter(({provider}) => (provider === 'STRIPE')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
-                const allExternalPaymentMethods       = Array.from((await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
-                const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
-                const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
-                
-                await Promise.allSettled([
-                    excessInternalPaymentMethodIds.length && prisma.paymentMethod.deleteMany({
-                        where  : {
-                            parentId : customerId, // important: the signedIn customerId
-                            provider : 'STRIPE',
-                            id       : { in: excessInternalPaymentMethodIds },
-                        },
-                    }),
-                    
-                    ...
-                    excessExternalPaymentMethodsIds
-                    .map((excessExternalPaymentMethodsId) =>
-                        stripeDeletePaymentMethod(excessExternalPaymentMethodsId)
-                    ),
-                ]);
-            })(),
-            
-            // TODO: api for midtrans
-        ]);
-    }
-    catch (error: any) {
-        console.log(error);
-        // ignore any error
-    } // try
-};

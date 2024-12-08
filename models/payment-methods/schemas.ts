@@ -15,6 +15,7 @@ import {
 }                           from './types'
 import {
     CurrencySchema,
+    EmptyStringSchema,
     ModelIdSchema,
     PublicIdSchema,
     ModelNameSchema,
@@ -72,6 +73,12 @@ export const PaymentMethodSetupRequestSchema = z.object({
     provider       : PaymentMethodProviderSchema,
     cardToken      : z.string().optional(),
     billingAddress : BillingAddressDetailSchema.nullable(),
+    
+    id             : z.union([
+        ModelIdSchema,
+        EmptyStringSchema,
+    ]),
+    currency       : CurrencySchema,
 }) satisfies z.Schema<PaymentMethodSetupRequest>;
 
 
