@@ -104,7 +104,6 @@ function PaymentMethodPageContentInternal(): JSX.Element|null {
         sortPaymentMethod({
             ids : orderedIds,
         });
-        console.log('moved: ', orderedIds);
     });
     
     
