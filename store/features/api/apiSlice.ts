@@ -692,11 +692,20 @@ export const apiSlice = createApi({
                 body   : arg
             }),
             onQueryStarted: async (arg, api) => {
-                const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled;
-                if (!('setupToken' in paymentMethodSetupOrNewPaymentMethod)) {
+                const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled; // wait until setup|creating has been completed
+                if (!('setupToken' in paymentMethodSetupOrNewPaymentMethod)) { // when CREATED a new_paymentMethod
                     const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
                     await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
                         providedMutatedModel : newPaymentMethod,
+                    });
+                    
+                    
+                    
+                    // find related TModel data(s):
+                    // increase the sibling's priority because the new_paymentMethod becomes the first_priority (priority: 0):
+                    await updatePaymentMethodPriorities(api, {
+                        predicate : ({id}) => (id !== newPaymentMethod.id), // do not mutate the new_paymentMethod
+                        delta     : 1, // increase by 1
                     });
                 } // if
             },
@@ -709,9 +718,21 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod');
+                
+                
+                
+                const { data: newOrUpdatedPaymentMethod } = await api.queryFulfilled; // wait until creating|updating has been completed
+                if (!arg.id) { // when CREATED a new_paymentMethod
+                    // find related TModel data(s):
+                    // increase the sibling's priority because the new_paymentMethod becomes the first_priority (priority: 0):
+                    await updatePaymentMethodPriorities(api, {
+                        predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id), // do not mutate the new_paymentMethod
+                        delta     : 1, // increase by 1
+                    });
+                } // if
             },
         }),
-        deletePaymentMethod         : builder.mutation<Pick<PaymentMethodDetail, 'id'>, MutationArgs<Pick<PaymentMethodDetail, 'id'>>>({
+        deletePaymentMethod         : builder.mutation<Pick<PaymentMethodDetail, 'id'|'priority'>, MutationArgs<Pick<PaymentMethodDetail, 'id'>>>({
             query: (arg) => ({
                 url    : `customer/payment-methods?id=${encodeURIComponent(arg.id)}`,
                 method : 'DELETE',
@@ -727,25 +748,11 @@ export const apiSlice = createApi({
                 
                 
                 // find related TModel data(s):
-                //#region decrease the sibling's priority that are greater than deleted_paymentMethod's priority
-                const endpointName                 = 'getPaymentMethodPage';
-                const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
-                    predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
-                        data.entities.some(({priority}) => (priority > deletedPaymentMethodPriority))
+                // decrease the sibling's priority that are greater than deleted_paymentMethod's priority:
+                await updatePaymentMethodPriorities(api, {
+                    predicate : ({priority}) => (priority > deletedPaymentMethodPriority),
+                    delta     : -1, // decrease by 1
                 });
-                
-                
-                
-                // reconstructuring the mutated model, so the invalidatesTag can be avoided:
-                for (const { originalArgs } of updatedCollectionQueryCaches) {
-                    api.dispatch(
-                        apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
-                            for (const entity of currentQueryCacheData.entities) {
-                                if (entity.priority > deletedPaymentMethodPriority) entity.priority--;
-                            } // for
-                        })
-                    );
-                } // for
                 //#endregion decrease the sibling's priority that are greater than deleted_paymentMethod's priority
             },
         }),
@@ -838,6 +845,38 @@ export const apiSlice = createApi({
         }),
     }),
 });
+
+
+
+// utilities:
+const updatePaymentMethodPriorities = async (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, delta: number }): Promise<void> => {
+    // options:
+    const {
+        predicate,
+        delta,
+    } = options;
+    
+    
+    
+    const endpointName                 = 'getPaymentMethodPage';
+    const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
+        predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
+            data.entities.some((paymentMethodDetail) => predicate(paymentMethodDetail))
+    });
+    
+    
+    
+    // reconstructuring the mutated model, so the invalidatesTag can be avoided:
+    for (const { originalArgs } of updatedCollectionQueryCaches) {
+        api.dispatch(
+            apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                for (const entity of currentQueryCacheData.entities) {
+                    if (predicate(entity)) entity.priority += delta;
+                } // for
+            })
+        );
+    } // for
+}
 
 
 

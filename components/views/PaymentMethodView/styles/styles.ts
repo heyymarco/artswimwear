@@ -212,14 +212,22 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
             
             // children:
             ...children('.edit', {
+                // positions:
                 gridArea: 'edit',
                 alignSelf: 'start',
             }),
             ...children('.grip', {
+                // positions:
                 gridArea: 'grip',
             }),
             ...children('.priority', {
+                // positions:
                 gridArea: 'priority',
+                
+                
+                
+                // typos:
+                textAlign: 'center',
             }),
         }),
         ...descendants('[role="dialog"]', {
