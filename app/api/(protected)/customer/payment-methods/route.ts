@@ -360,20 +360,28 @@ router
     
     //#region save changes
     try {
-        const deletedPaymentMethod = await prisma.$transaction(async (prismaTransaction): Promise<Pick<PaymentMethodDetail, 'id'>> => {
-            const deletedPaymentMethod = await prismaTransaction.paymentMethod.delete({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    id       : id,
-                },
-                select : {
-                    id                      : true,
-                    sort                    : true,
-                    
-                    provider                : true,
-                    providerPaymentMethodId : true,
-                },
-            });
+        const deletedPaymentMethod = await prisma.$transaction(async (prismaTransaction): Promise<Pick<PaymentMethodDetail, 'id'|'priority'>> => {
+            const [total, deletedPaymentMethod] = await Promise.all([
+                prisma.paymentMethod.count({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                    },
+                }),
+                
+                prismaTransaction.paymentMethod.delete({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                        id       : id,
+                    },
+                    select : {
+                        id                      : true,
+                        sort                    : true,
+                        
+                        provider                : true,
+                        providerPaymentMethodId : true,
+                    },
+                }),
+            ]);
             const {
                 id                      : deletedPaymentMethodId,
                 sort                    : deletedSort,
@@ -383,7 +391,7 @@ router
             
             
             
-            // reduce the siblings that the sort is greater than deletedSort:
+            // decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
             await prismaTransaction.paymentMethod.updateMany({
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
@@ -402,7 +410,8 @@ router
             
             
             return {
-                id : deletedPaymentMethodId,
+                id       : deletedPaymentMethodId,
+                priority : total - deletedSort - 1,
             };
         }, { timeout: 15000 }); // give a longer timeout for deleting_db and `deletePaymentMethodAccount` // may up to 15 secs
         

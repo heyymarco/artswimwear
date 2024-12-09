@@ -719,6 +719,35 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
+                
+                
+                
+                const { data: { priority: deletedPaymentMethodPriority } } = await api.queryFulfilled; // wait until deleting has been completed
+                
+                
+                
+                // find related TModel data(s):
+                //#region decrease the sibling's priority that are greater than deleted_paymentMethod's priority
+                const endpointName                 = 'getPaymentMethodPage';
+                const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
+                    predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
+                        data.entities.some(({priority}) => (priority > deletedPaymentMethodPriority))
+                });
+                
+                
+                
+                // reconstructuring the mutated model, so the invalidatesTag can be avoided:
+                for (const { originalArgs } of updatedCollectionQueryCaches) {
+                    api.dispatch(
+                        apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                            for (const entity of currentQueryCacheData.entities) {
+                                if (entity.priority > deletedPaymentMethodPriority) console.log('fixed priority: ', (entity.priority + 1));
+                                if (entity.priority > deletedPaymentMethodPriority) entity.priority--;
+                            } // for
+                        })
+                    );
+                } // for
+                //#endregion decrease the sibling's priority that are greater than deleted_paymentMethod's priority
             },
         }),
         sortPaymentMethod           : builder.mutation<PaymentMethodSortDetail, PaymentMethodSortRequest>({
