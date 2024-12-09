@@ -741,7 +741,6 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
                             for (const entity of currentQueryCacheData.entities) {
-                                if (entity.priority > deletedPaymentMethodPriority) console.log('fixed priority: ', (entity.priority + 1));
                                 if (entity.priority > deletedPaymentMethodPriority) entity.priority--;
                             } // for
                         })
