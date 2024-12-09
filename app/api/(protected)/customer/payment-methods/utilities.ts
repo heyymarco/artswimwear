@@ -155,7 +155,7 @@ export const createOrUpdatePaymentMethod = async (createOrUpdatedata: Omit<Payme
             ]);
             const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
             if (paymentMethod) {
-                await deleteNonRelatedAccounts(customerId);
+                await deleteNonRelatedAccounts(customerId); // never thrown
                 return Response.json(paymentMethod); // handled with success
             } // if
             
@@ -173,7 +173,7 @@ export const createOrUpdatePaymentMethod = async (createOrUpdatedata: Omit<Payme
         
         
         
-        await deleteNonRelatedAccounts(customerId);
+        await deleteNonRelatedAccounts(customerId); // never thrown
         return Response.json({ error: 'Unexpected error' }, { status: 500 }); // handled with error: unauthorized
     }
     catch (error: any) {
