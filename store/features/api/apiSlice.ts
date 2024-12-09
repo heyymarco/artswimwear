@@ -276,25 +276,9 @@ export const apiSlice = createApi({
                 
                 
                 // find related TModel data(s):
-                const state          = api.getState();
-                const allQueryCaches = state.api.queries;
-                const endpointName   = 'getMatchingShippingList';
-                const queryCaches    = (
-                    Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
-                        (allQueryCache !== undefined)
-                        &&
-                        (allQueryCache.endpointName === endpointName)
-                        &&
-                        (allQueryCache.data !== undefined)
-                    )
-                );
-                
-                
-                
-                const updatedCollectionQueryCaches = (
-                    queryCaches
-                    .filter(({originalArgs}) =>
+                const endpointName                 = 'getMatchingShippingList';
+                const updatedCollectionQueryCaches = getQueryCaches<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>(api, endpointName, {
+                    predicate : (originalArgs: unknown): boolean =>
                         (originalArgs !== undefined)
                         &&
                         ((originalArgs as ShippingAddressDetail).country   === arg.country)
@@ -316,8 +300,9 @@ export const apiSlice = createApi({
                         // ((originalArgs as ShippingAddressDetail).lastName  === arg.lastName)
                         // &&
                         // ((originalArgs as ShippingAddressDetail).phone     === arg.phone)
-                    )
-                );
+                });
+                
+                
                 
                 // reconstructuring the mutated model, so the invalidatesTag can be avoided:
                 for (const { originalArgs } of updatedCollectionQueryCaches) {
@@ -359,26 +344,10 @@ export const apiSlice = createApi({
             
             onQueryStarted: async (arg, api) => {
                 // find related TModel data(s):
-                const state          = api.getState();
-                const allQueryCaches = state.api.queries;
-                const endpointName   = 'restoreCart';
-                const queryCaches    = (
-                    Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
-                        (allQueryCache !== undefined)
-                        &&
-                        (allQueryCache.endpointName === endpointName)
-                        &&
-                        (allQueryCache.data !== undefined)
-                    )
-                );
+                const endpointName                 = 'restoreCart';
+                const updatedCollectionQueryCaches = getQueryCaches<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null, void>(api, endpointName);
                 
                 
-                
-                const updatedCollectionQueryCaches = (
-                    queryCaches
-                    // assumes there's only ONE kind call of `restoreCart(no_arg)`, so we not need to `filter()`
-                );
                 
                 // reconstructuring the mutated model, so the invalidatesTag can be avoided:
                 for (const { originalArgs } of updatedCollectionQueryCaches) {
@@ -773,30 +742,13 @@ export const apiSlice = createApi({
                 
                 
                 // find related TModel data(s):
-                const state          = api.getState();
-                const allQueryCaches = state.api.queries;
-                const endpointName   = 'getPaymentMethodPage';
-                const queryCaches    = (
-                    Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
-                        (allQueryCache !== undefined)
-                        &&
-                        (allQueryCache.endpointName === endpointName)
-                        &&
-                        (allQueryCache.data !== undefined)
-                    )
-                );
-                
-                
-                
-                const updatedCollectionQueryCaches = (
-                    queryCaches
-                    .filter(({originalArgs, data}) =>
-                        (data !== undefined)
-                        &&
+                const endpointName                 = 'getPaymentMethodPage';
+                const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
+                    predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
                         (data as Pagination<PaymentMethodDetail>).entities.some(({id}) => sortedIds.includes(id))
-                    )
-                );
+                });
+                
+                
                 
                 // reconstructuring the mutated model, so the invalidatesTag can be avoided:
                 for (const { originalArgs } of updatedCollectionQueryCaches) {
@@ -1032,10 +984,10 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
 
 
 
-interface GetQueryCachesOptions {
-    predicate ?: (originalArgs: unknown) => boolean
+interface GetQueryCachesOptions<TModel> {
+    predicate ?: (originalArgs: unknown, data: TModel) => boolean
 }
-const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = BaseQueryFn>(api: MutationLifecycleApi<unknown, TBaseQuery, unknown, 'api'>, endpointName: keyof (typeof apiSlice)['endpoints'], options?: GetQueryCachesOptions) => {
+const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = BaseQueryFn>(api: MutationLifecycleApi<unknown, TBaseQuery, unknown, 'api'>, endpointName: keyof (typeof apiSlice)['endpoints'], options?: GetQueryCachesOptions<TModel>) => {
     // options
     const {
         predicate,
@@ -1057,7 +1009,7 @@ const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = Base
             &&
             (allQueryCache.data !== undefined)
             &&
-            ((predicate === undefined) || predicate(allQueryCache.originalArgs))
+            ((predicate === undefined) || predicate(allQueryCache.originalArgs, allQueryCache.data as TModel))
         )
     );
     return collectionQueryCaches as QuerySubState<BaseEndpointDefinition<TQueryArg, TBaseQuery, TModel>>[];
@@ -1071,7 +1023,7 @@ type PaginationUpdateType =
     |'DELETE'
 interface PaginationUpdateOptions<TModel extends Model|string>
     extends
-        GetQueryCachesOptions
+        GetQueryCachesOptions<Pagination<TModel>>
 {
     providedMutatedModel ?: TModel
     invalidatePageTag    ?: (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => string|number
