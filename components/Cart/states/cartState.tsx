@@ -494,15 +494,21 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // processing:
         Promise.all(
             productPreviewPromises
-            .map((productPreviewPromise) =>
-                productPreviewPromise.unwrap()
-            )
+            .map(async (productPreviewPromise) => {
+                try {
+                    return productPreviewPromise.unwrap();
+                }
+                catch {
+                    return false; // failed => maybe the product is no longer available
+                } // try
+            })
         )
         
         // ready:
-        .then((productPreviews) => {
+        .then((productPreviewsOrFails) => {
             productPreviewMapRef.current = /* = ready */ new Map<string, ProductPreview>(
-                productPreviews
+                productPreviewsOrFails
+                .filter((productPreviewOrFail): productPreviewOrFail is Exclude<typeof productPreviewOrFail, false> => !productPreviewOrFail)
                 .map((productPreview): [string, ProductPreview] => [
                     productPreview.id,
                     productPreview
