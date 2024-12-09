@@ -305,14 +305,13 @@ router
         
         
         
-        //#region revert the account if creation is failed
+        // undo `providerCapturePaymentMethod()` if `createOrUpdatePaymentMethod()` failed:
         if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
             const {
                 providerPaymentMethodId,
             } = paymentMethodCapture;
             await deletePaymentMethodAccount(provider, providerPaymentMethodId);
         } // if
-        //#endregion revert the account if creation is failed
         
         
         
@@ -362,7 +361,7 @@ router
     //#region save changes
     try {
         //#region find existing paymentMethod
-        const existingPaymentMethod = await prisma.paymentMethod.findUnique({
+        const prevPaymentMethod = await prisma.paymentMethod.findUnique({
             where  : {
                 parentId : customerId, // important: the signedIn customerId
                 id       : id,
@@ -372,7 +371,7 @@ router
                 providerPaymentMethodId : true,
             },
         });
-        if (!existingPaymentMethod) {
+        if (!prevPaymentMethod) {
             return Response.json({
                 id : id,
             } satisfies Pick<PaymentMethodDetail, 'id'>); // handled with success
@@ -380,7 +379,7 @@ router
         const {
             provider,
             providerPaymentMethodId,
-        } = existingPaymentMethod;
+        } = prevPaymentMethod;
         //#endregion find existing paymentMethod
         
         

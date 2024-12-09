@@ -59,54 +59,24 @@ export const createOrUpdatePaymentMethod = async (createOrUpdatedata: Omit<Payme
     
     //#region save changes
     try {
-        if (id) { // updating only
-            //#region delete prev payment token
-            const existingPaymentMethod = await prisma.paymentMethod.findUnique({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    id       : id,
-                },
-                select : {
-                    provider                : true,
-                    providerPaymentMethodId : true,
-                },
-            });
-            if (existingPaymentMethod) {
-                const {
-                    provider                : existingProvider,
-                    providerPaymentMethodId : existingProviderPaymentMethodId,
-                } = existingPaymentMethod;
-                
-                
-                
-                if ((existingProvider !== provider) || (existingProviderPaymentMethodId !== providerPaymentMethodId)) {
-                    deletePaymentMethodAccount(existingProvider, existingProviderPaymentMethodId);
-                } // if
-            } // if
-            //#endregion delete prev payment token
-        } // if
-        
-        
-        
         const [paymentMethodData, paymentMethodCount] = await prisma.$transaction(async (prismaTransaction): Promise<[Parameters<typeof convertPaymentMethodDetailDataToPaymentMethodDetail>[0] | false, number]> => {
-            const [maxSort, paymentMethodCount] = await Promise.all([
-                prismaTransaction.paymentMethod.findFirst({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                    },
-                    select  : {
-                        sort : true,
-                    },
-                    orderBy : {
-                        sort: 'desc',
-                    },
-                }),
-                
+            const [paymentMethodCount, prevPaymentMethod] = await Promise.all([
                 prismaTransaction.paymentMethod.count({
                     where  : {
                         parentId : customerId, // important: the signedIn customerId
                     },
                 }),
+                
+                id /* updating only */ ? prisma.paymentMethod.findUnique({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                        id       : id,
+                    },
+                    select : {
+                        provider                : true,
+                        providerPaymentMethodId : true,
+                    },
+                }) : undefined
             ]);
             if (!id) { // creating only
                 //#region limits max payment method count
@@ -125,7 +95,7 @@ export const createOrUpdatePaymentMethod = async (createOrUpdatedata: Omit<Payme
                     data   : {
                         parentId                : customerId, // important: the signedIn customerId
                         
-                        sort                    : (maxSort?.sort ?? -1) + 1,
+                        sort                    : paymentMethodCount,
                         
                         provider                : provider,
                         providerPaymentMethodId : providerPaymentMethodId,
@@ -152,8 +122,24 @@ export const createOrUpdatePaymentMethod = async (createOrUpdatedata: Omit<Payme
             
             
             
+            // after successfully updated => delete prev payment token account (if any):
+            if (prevPaymentMethod) {
+                const {
+                    provider                : existingProvider,
+                    providerPaymentMethodId : existingProviderPaymentMethodId,
+                } = prevPaymentMethod;
+                
+                
+                
+                if ((existingProvider !== provider) || (existingProviderPaymentMethodId !== providerPaymentMethodId)) {
+                    await deletePaymentMethodAccount(existingProvider, existingProviderPaymentMethodId);
+                } // if
+            } // if
+            
+            
+            
             return [paymentMethodData, paymentMethodCount + (!id ? 1 /* creating */ : 0 /* updating */)];
-        });
+        }, { timeout: 15000 }); // give a longer timeout for creating_db|updating_db and `deletePaymentMethodAccount` // may up to 15 secs
         if (!paymentMethodData) {
             return Response.json({
                 error: 'Max payment method count has been reached.',

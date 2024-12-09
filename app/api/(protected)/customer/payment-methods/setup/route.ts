@@ -214,14 +214,13 @@ router
         
         
         
-        //#region revert the account if creation is failed
+        // undo `providerCreatePaymentMethodSetup()` if `createOrUpdatePaymentMethod()` failed:
         if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
             const {
                 providerPaymentMethodId,
             } = paymentMethodSetupOrCapture satisfies PaymentMethodCapture;
             await deletePaymentMethodAccount(provider, providerPaymentMethodId);
         } // if
-        //#endregion revert the account if creation is failed
         
         
         
