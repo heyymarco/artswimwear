@@ -874,8 +874,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // clean up invalid productId(s):
         const invalidProducts = items.filter(({productId, variantIds}) => {
-            const validProductIds = Array.from(productPreviews.keys());
-            if (!validProductIds.includes(productId)) return true; // invalid
+            if (!productPreviews.has(productId)) return true; // invalid
             
             const validVariantGroups = productPreviews.get(productId)?.variantGroups ?? [];
             const validVariantIds    = validVariantGroups.flat().map(({id}) => id)   ?? [];
