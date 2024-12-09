@@ -745,7 +745,7 @@ export const apiSlice = createApi({
                 const endpointName                 = 'getPaymentMethodPage';
                 const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
                     predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
-                        (data as Pagination<PaymentMethodDetail>).entities.some(({id}) => sortedIds.includes(id))
+                        data.entities.some(({id}) => sortedIds.includes(id))
                 });
                 
                 
