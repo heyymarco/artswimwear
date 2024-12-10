@@ -410,7 +410,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const [productPreviewMap       , setProductPreviewMap       ] = useState<Map<string, ProductPreview|ProductWatchdogFail>>(() => new Map<string, ProductPreview|ProductWatchdogFail>());
     const [realProductPreviews     , setRealProductPreviews     ] = useState<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
     useIsomorphicLayoutEffect(() => {
-        setRealProductPreviews(undefined); /* = loading|uninitialized */
+        setRealProductPreviews(
+            items.length
+            ? undefined                         /* = loading|uninitialized */
+            : new Map<string, ProductPreview>() /* ready with empty productList */
+        );
         setProductPreviewMap(new Map<string, ProductPreview|ProductWatchdogFail>(
             items
             .map(({productId}) => [productId, ProductWatchdogFail.Loading])
