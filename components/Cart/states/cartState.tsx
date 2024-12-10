@@ -421,10 +421,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         ));
     }, [items]);
     const handleProductWatchdogUpdate = useEvent<EventHandler<ProductWatchdogEvent>>(({productId, data}) => {
-        productPreviewMap.set(productId, data);
+        if (productPreviewMap.has(productId)) productPreviewMap.set(productId, data);
         
         
         
+        // update realProductPreviews:
         const productPreviewArr    = Array.from(productPreviewMap.entries());
         const validProductPreviews = new Map<string, ProductPreview>();
         for (const [productId, data] of productPreviewArr) {
@@ -436,6 +437,30 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             } // switch
         } // for
         setRealProductPreviews(validProductPreviews);
+        
+        
+        
+        // remove invalid products from cart:
+        const invalidProducts = items.filter(({productId, variantIds}) => {
+            if (!validProductPreviews.has(productId)) return true; // invalid
+            
+            const validVariantGroups = validProductPreviews.get(productId)?.variantGroups ?? [];
+            const validVariantIds    = validVariantGroups.flat().map(({id}) => id)   ?? [];
+            if (variantIds.length !== validVariantGroups.length) return true; // invalid
+            if (!variantIds.every((variantId) => validVariantIds.includes(variantId))) return true; // invalid
+            
+            return false; // valid
+        });
+        if (invalidProducts.length) {
+            trimProductsFromCart(
+                invalidProducts
+                .map(({productId, variantIds}) => ({
+                    productId  : productId,
+                    variantIds : variantIds,
+                    stock      : 0,
+                }))
+            );
+        } // if
     });
     const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
     const realIsProductError         = (realProductPreviews === /* = error */ null);
@@ -757,38 +782,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             backupCartPromise = null; // mark as aborted
         };
     }, [globalCartSession]);
-    
-    // auto trim product quantities if less than the stocks:
-    useIsomorphicLayoutEffect(() => {
-        // conditions:
-        if (!isCartReady)     return; // do not clean up when the related data is still loading
-        if (!items.length)    return; // no item(s) in the cart => nothing to clean up
-        if (!productPreviews) return; // the productPreviews is not yet loaded => do not clean up now
-        
-        
-        
-        // clean up invalid productId(s):
-        const invalidProducts = items.filter(({productId, variantIds}) => {
-            if (!productPreviews.has(productId)) return true; // invalid
-            
-            const validVariantGroups = productPreviews.get(productId)?.variantGroups ?? [];
-            const validVariantIds    = validVariantGroups.flat().map(({id}) => id)   ?? [];
-            if (variantIds.length !== validVariantGroups.length) return true; // invalid
-            if (!variantIds.every((variantId) => validVariantIds.includes(variantId))) return true; // invalid
-            
-            return false; // valid
-        });
-        if (invalidProducts.length) {
-            trimProductsFromCart(
-                invalidProducts
-                .map(({productId, variantIds}) => ({
-                    productId  : productId,
-                    variantIds : variantIds,
-                    stock      : 0,
-                }))
-            );
-        } // if
-    }, [isCartReady, items, productPreviews]);
     
     
     
