@@ -962,10 +962,6 @@ export const {
 } = apiSlice;
 
 export const {
-    getProductPreview : { initiate : getProductPreview },
-    
-    
-    
     getCountryList    : { initiate : getCountryList    },
     getStateList      : { initiate : getStateList      },
     getCityList       : { initiate : getCityList       },

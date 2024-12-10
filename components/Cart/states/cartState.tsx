@@ -17,14 +17,9 @@ import {
     useMemo,
     useRef,
     useState,
-    useSyncExternalStore,
-    useCallback,
 }                           from 'react'
 
 // redux:
-import {
-    type EntityState
-}                           from '@reduxjs/toolkit'
 import {
     type QueryDefinition,
     type MutationDefinition,
@@ -124,7 +119,7 @@ import {
 }                           from '@/store/features/cart/cartSlice'
 import {
     // apis:
-    getProductPreview,
+    useGetProductPreview,
     
     restoreCart,
     backupCart,
@@ -410,144 +405,34 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     
-    // apis:
-    const [productPreviewGeneration, setProductPreviewGeneration] = useState<{}>({});
-    const productPreviewMapRef       = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
-    /*
-        Error:
-        Warning: Cannot update a component (`CheckoutStateProvider`) while rendering a different component (`CartStateProvider`). To locate the bad setState() call inside `CartStateProvider`
-    */
-    // const productPreviewPromises     = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
-    //     // reset:
-    //     productPreviewMapRef.current = /* = loading|uninitialized */ undefined;
-    //     
-    //     
-    //     
-    //     // computes:
-    //     return (
-    //         items
-    //         .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
-    //             dispatch(getProductPreview(productId, {
-    //                 forceRefetch           : false,              // take from cache (if available)
-    //                 subscribe              : true,               // must be true in order to get the response result
-    //                 subscriptionOptions    : {
-    //                     pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
-    //                     refetchOnFocus     : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after the application window regains focus.
-    //                     refetchOnReconnect : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after regaining a network connection.
-    //                 },
-    //             }))
-    //         )
-    //     );
-    // }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
-    // useIsomorphicLayoutEffect(() => {
-    //     // cleanups:
-    //     return () => {
-    //         for (const productPreviewPromise of productPreviewPromises) {
-    //             productPreviewPromise.unsubscribe();
-    //         } // for
-    //     };
-    // }, [productPreviewPromises]); // unsubscribes the `productPreviewPromises` when the cartState unmounted
-    /*
-        No error: using useState + useIsomorphicLayoutEffect pair instead of useMemo:
-    */
-    const [productPreviewPromises, setProductPreviewPromises] = useState<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>([]);
+    // states:
+    const [productPreviewGeneration, setProductPreviewGeneration] = useState<number>(0);
+    const [productPreviewMap       , setProductPreviewMap       ] = useState<Map<string, ProductPreview|ProductWatchdogFail>>(() => new Map<string, ProductPreview|ProductWatchdogFail>());
+    const [realProductPreviews     , setRealProductPreviews     ] = useState<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
     useIsomorphicLayoutEffect(() => {
-        // reset:
-        productPreviewMapRef.current = /* = loading|uninitialized */ undefined;
-        
-        
-        
-        // computes:
-        const newProductPreviewPromises = (
+        setRealProductPreviews(undefined); /* = loading|uninitialized */
+        setProductPreviewMap(new Map<string, ProductPreview|ProductWatchdogFail>(
             items
-            .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
-                dispatch(getProductPreview(productId, {
-                    forceRefetch           : false,              // take from cache (if available)
-                    subscribe              : true,               // must be true in order to get the response result
-                    subscriptionOptions    : {
-                        pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
-                        refetchOnFocus     : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after the application window regains focus.
-                        refetchOnReconnect : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after regaining a network connection.
-                    },
-                }))
-            )
-        );
-        setProductPreviewPromises(newProductPreviewPromises);
+            .map(({productId}) => [productId, ProductWatchdogFail.Loading])
+        ));
+    }, [items]);
+    const handleProductWatchdogUpdate = useEvent<EventHandler<ProductWatchdogEvent>>(({productId, data}) => {
+        productPreviewMap.set(productId, data);
         
         
         
-        // cleanups:
-        return () => {
-            for (const productPreviewPromise of newProductPreviewPromises) {
-                productPreviewPromise.unsubscribe();
-            } // for
-        };
-    }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
-    
-    const productPreviewWatchdog     = useCallback((onChange: () => void): (() => void) => {
-        // reset:
-        if (productPreviewMapRef.current !== undefined) {
-            productPreviewMapRef.current = /* = loading|uninitialized */ undefined;
-            onChange();
-        } // if
-        
-        // processing:
-        Promise.all(
-            productPreviewPromises
-            .map(async (productPreviewPromise) => {
-                try {
-                    return productPreviewPromise.unwrap();
-                }
-                catch {
-                    return false; // failed => maybe the product is no longer available
-                } // try
-            })
-        )
-        
-        // ready:
-        .then((productPreviewsOrFails) => {
-            productPreviewMapRef.current = /* = ready */ new Map<string, ProductPreview>(
-                productPreviewsOrFails
-                .filter((productPreviewOrFail): productPreviewOrFail is Exclude<typeof productPreviewOrFail, false> => !productPreviewOrFail)
-                .map((productPreview): [string, ProductPreview] => [
-                    productPreview.id,
-                    productPreview
-                ])
-            );
-            onChange();
-        })
-        
-        // error:
-        .catch(() => {
-            productPreviewMapRef.current = /* = error */ null;
-            onChange();
-        });
-        
-        
-        
-        // unsubscribe:
-        return () => {
-            // no cleanup needed
-        };
-    }, [productPreviewPromises]); // change the function REFERENCE when the productPreviewPromises is changed, so React will REEVALUATE the external store
-    
-    const productPreviewSelect       = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
-        return productPreviewMapRef.current;
+        const productPreviewArr    = Array.from(productPreviewMap.entries());
+        const validProductPreviews = new Map<string, ProductPreview>();
+        for (const [productId, data] of productPreviewArr) {
+            switch (data) {
+                case ProductWatchdogFail.Error       : setRealProductPreviews(null)      ; return; /* = error */
+                case ProductWatchdogFail.Loading     : setRealProductPreviews(undefined) ; return; /* = loading|uninitialized */
+                case ProductWatchdogFail.Unavailable : continue;
+                default                              : validProductPreviews.set(productId, data);
+            } // switch
+        } // for
+        setRealProductPreviews(validProductPreviews);
     });
-    const realProductPreviewsDelayed = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
-        productPreviewWatchdog,
-        productPreviewSelect,
-        productPreviewSelect,
-    );
-    const realProductPreviews        = useMemo<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(() => {
-        // use LIVE data when error|loading|uninitialized:
-        if (!productPreviewMapRef.current) return productPreviewMapRef.current;
-        
-        
-        
-        // use DELAYED data when ready:
-        return realProductPreviewsDelayed;
-    }, [items, productPreviewGeneration, realProductPreviewsDelayed]);// re-create the `realProductPreviews` when the items|productPreviewGeneration|realProductPreviewsDelayed are changed
     const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
     const realIsProductError         = (realProductPreviews === /* = error */ null);
     const productPreviews            = mockProductPreviews        ??        realProductPreviews;
@@ -1027,7 +912,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     
     const refetchCart           = useEvent((): void => {
-        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewGeneration({}); // force to re-create the `productPreviewPromises`
+        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewGeneration((current) => (current + 1)); // force to re-create the `productPreviewPromises`
     });
     const resetCart             = useEvent((): void => {
         lastRestoredCartDetailRef.current = undefined;
@@ -1147,6 +1032,22 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // jsx:
     return (
         <CartStateContext.Provider value={cartState}>
+            {Array.from(productPreviewMap.keys()).map((productId) =>
+                <ProductWatchdog
+                    // identifiers:
+                    key={`${productId}:${productPreviewGeneration}`}
+                    
+                    
+                    
+                    // data:
+                    productId={productId}
+                    
+                    
+                    
+                    // handlers:
+                    onUpdate={handleProductWatchdogUpdate}
+                />
+            )}
             {children}
         </CartStateContext.Provider>
     );
@@ -1155,4 +1056,71 @@ export {
     CartStateProvider,
     CartStateProvider as default,
 }
+
+
+
+const enum ProductWatchdogFail {
+    Loading     = 0,
+    Error       = 1,
+    Unavailable = 2,
+}
+interface ProductWatchdogEvent {
+    // data:
+    productId : string
+    data      : ProductPreview|ProductWatchdogFail
+}
+interface ProductWatchdogProps {
+    // data:
+    productId : string
+    
+    
+    
+    // handlers:
+    onUpdate  : EventHandler<ProductWatchdogEvent>
+}
+const ProductWatchdog = (props: ProductWatchdogProps): null => {
+    // props:
+    const {
+        // data:
+        productId,
+        
+        
+        
+        // handlers:
+        onUpdate,
+    } = props;
+    
+    
+    
+    // apis:
+    const { data: product, error } = useGetProductPreview(productId, {
+        // forceRefetch           : false,              // take from cache (if available)
+        // subscribe              : true,               // must be true in order to get the response result
+        // subscriptionOptions    : {
+        // },
+        pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
+        refetchOnFocus     : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after the application window regains focus.
+        refetchOnReconnect : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after regaining a network connection.
+    });
+    
+    
+    
+    // effects:
+    useIsomorphicLayoutEffect(() => {
+        if (product) {
+            onUpdate({ productId, data: product });
+        }
+        else if (error) {
+            onUpdate({ productId, data: ProductWatchdogFail.Error });
+        }
+        else {
+            onUpdate({ productId, data: ProductWatchdogFail.Loading });
+        } // if
+    }, [product, error]);
+    
+    
+    
+    // jsx:
+    return null;
+};
 //#endregion checkoutState
