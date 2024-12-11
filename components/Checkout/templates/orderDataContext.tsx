@@ -15,8 +15,7 @@ import type {
     
     CountryPreview,
     
-    CustomerOrGuestDetail,
-    CustomerOrGuestPreferenceDetail,
+    CustomerOrGuestMinimumData,
     
     ShipmentPreview,
 }                           from '@/models'
@@ -57,17 +56,7 @@ export type ProductData = Pick<Product, 'name'> & {
 export type OrderItemsAndData = Pick<OrderItem, 'price'|'quantity'|'variantIds'> & {
     product : ProductData|null
 }
-export type CustomerOrGuestData = Omit<CustomerOrGuestDetail,
-    // records:
-    |'id'
-    |'createdAt'
-    |'updatedAt'
-    
-    // data:
-    |'username'
-> & {
-    preference : CustomerOrGuestPreferenceDetail|null
-}
+
 export interface OrderAndData
     extends
         Omit<OrderDetail,
@@ -84,7 +73,7 @@ export interface OrderAndData
 {
     items                : OrderItemsAndData[]
     shippingProvider     : MatchingShipping|null
-    customerOrGuest      : CustomerOrGuestData|null
+    customerOrGuest      : CustomerOrGuestMinimumData|null
 }
 export interface OrderDataApi
     extends
@@ -117,7 +106,7 @@ export const useOrderDataContext = () => {
 export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
-    customerOrGuest      : CustomerOrGuestData|null
+    customerOrGuest      : CustomerOrGuestMinimumData|null
     paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'parentId'>|null
     isPaid               : boolean
     shipment             : (ShipmentPreview & Pick<Shipment, 'token'>)|null
