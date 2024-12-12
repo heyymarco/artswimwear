@@ -43,7 +43,7 @@ import {
 import {
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
-}                           from '../utilities'
+}                           from '@/libs/payment-method-utilities'
 
 // configs:
 import {
@@ -107,7 +107,7 @@ router
     } // if
     const {
         arg: {
-            provider,
+            paymentMethodProvider,
             cardToken,
             billingAddress,
             
@@ -127,8 +127,8 @@ router
     
     
     
-    //#region find existing providerCustomerId
-    const providerCustomerIds = await prisma.customer.findUnique({
+    //#region find existing paymentMethodProviderCustomerId
+    const paymentMethodProviderCustomerIds = await prisma.customer.findUniqueOrThrow({
         where  : {
             id : customerId, // important: the signedIn customerId
         },
@@ -147,14 +147,14 @@ router
     //     }, { status: 400 }); // handled with error
     // } // if
     // //#endregion limits max payment method count
-    //#endregion find existing providerCustomerId
+    //#endregion find existing paymentMethodProviderCustomerId
     
     
     
     const paymentMethodSetupOrCapture = await (async (): Promise<PaymentMethodSetup|PaymentMethodCapture|null> => {
-        switch (provider) {
-            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.paypalCustomerId ?? undefined, billingAddress }) : null;
-            case 'STRIPE' : return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCreatePaymentMethodSetup({ providerCustomerId: providerCustomerIds?.stripeCustomerId ?? undefined, billingAddress, cardToken }) : null;
+        switch (paymentMethodProvider) {
+            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.paypalCustomerId, billingAddress }) : null;
+            case 'STRIPE' : return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.stripeCustomerId, billingAddress, cardToken }) : null;
             default       : return null;
         } // switch
     })();
@@ -164,62 +164,61 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        providerCustomerId,
+        paymentMethodProviderCustomerId,
     } = paymentMethodSetupOrCapture;
     
     
     
-    //#region save the new generated providerCustomerId
+    //#region save the new generated paymentMethodProviderCustomerId
     if (
-        ((provider ===   'PAYPAL') && !providerCustomerIds?.paypalCustomerId)
+        ((paymentMethodProvider ===   'PAYPAL') && !paymentMethodProviderCustomerIds.paypalCustomerId)
         ||
-        ((provider ===   'STRIPE') && !providerCustomerIds?.stripeCustomerId)
+        ((paymentMethodProvider ===   'STRIPE') && !paymentMethodProviderCustomerIds.stripeCustomerId)
         ||
-        ((provider === 'MIDTRANS') && !providerCustomerIds?.midtransCustomerId)
+        ((paymentMethodProvider === 'MIDTRANS') && !paymentMethodProviderCustomerIds.midtransCustomerId)
     ) {
         await prisma.customer.update({
             where  : {
                 id : customerId, // important: the signedIn customerId
             },
             data   : {
-                paypalCustomerId   : (provider ===   'PAYPAL') ? providerCustomerId : undefined,
-                stripeCustomerId   : (provider ===   'STRIPE') ? providerCustomerId : undefined,
-                midtransCustomerId : (provider === 'MIDTRANS') ? providerCustomerId : undefined,
+                paypalCustomerId   : (paymentMethodProvider ===   'PAYPAL') ? paymentMethodProviderCustomerId : undefined,
+                stripeCustomerId   : (paymentMethodProvider ===   'STRIPE') ? paymentMethodProviderCustomerId : undefined,
+                midtransCustomerId : (paymentMethodProvider === 'MIDTRANS') ? paymentMethodProviderCustomerId : undefined,
             },
             select : {
                 id : true,
             },
         });
     } // if
-    //#endregion save the new generated providerCustomerId
+    //#endregion save the new generated paymentMethodProviderCustomerId
     
     
     
-    if ('setupToken' in paymentMethodSetupOrCapture) {
+    if ('paymentMethodSetupToken' in paymentMethodSetupOrCapture) {
         const {
-            setupToken,
+            paymentMethodSetupToken,
             redirectData,
         } = paymentMethodSetupOrCapture satisfies PaymentMethodSetup;
         
         
         
         const paymentMethodSetup = {
-            setupToken : `#${provider}_${setupToken}`,
+            paymentMethodSetupToken : `#${paymentMethodProvider}_${paymentMethodSetupToken}`,
             redirectData,
         } satisfies PaymentMethodSetupDetail;
         return Response.json(paymentMethodSetup); // handled with success
     }
     else {
-        const response = await createOrUpdatePaymentMethod(createOrUpdatedata, customerId, provider, paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
+        const response = await prisma.$transaction(async (prismaTransaction) => {
+            return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
+        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
         
         // undo `providerCreatePaymentMethodSetup()` if `createOrUpdatePaymentMethod()` failed:
         if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
-            const {
-                providerPaymentMethodId,
-            } = paymentMethodSetupOrCapture satisfies PaymentMethodCapture;
-            await deletePaymentMethodAccount(provider, providerPaymentMethodId);
+            await deletePaymentMethodAccount(paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
         } // if
         
         

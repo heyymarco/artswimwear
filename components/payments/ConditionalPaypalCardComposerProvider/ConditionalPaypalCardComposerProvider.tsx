@@ -85,6 +85,11 @@ const ImplementedPaypalCardComposerProvider = (props: React.PropsWithChildren<Co
     
     // states:
     const {
+        // sections:
+        paymentCardSectionRef,
+        
+        
+        
         // actions:
         placeOrder,
     } = useTransactionState();
@@ -108,7 +113,15 @@ const ImplementedPaypalCardComposerProvider = (props: React.PropsWithChildren<Co
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
         try {
-            const orderBookedOrPaid = await placeOrder();
+            const paymentCardSectionElm = paymentCardSectionRef?.current;
+            if (!paymentCardSectionElm) throw Error('Oops, an error occured!'); // payment aborted due to unexpected error
+            
+            
+            
+            const orderBookedOrPaid = await placeOrder({
+                paymentSource : 'paypalCard',
+                saveCard      : !!(paymentCardSectionElm.querySelector('input[name="cardSave"]') as HTMLInputElement|null)?.checked,
+            });
             if (!('orderId' in orderBookedOrPaid)) throw Error('Oops, an error occured!'); // immediately paid => unexpected response (that should NOT be happened) => abort            
             
             

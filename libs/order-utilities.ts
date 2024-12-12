@@ -15,6 +15,7 @@ import {
     
     orderAndDataSelect,
     convertOrderDataToOrderAndData,
+    isCustomerConnectData,
 }                           from '@/models'
 import {
     Prisma,
@@ -31,10 +32,20 @@ import type {
     OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
+// internals:
+import {
+    createOrUpdatePaymentMethod,
+}                           from '@/libs/payment-method-utilities'
+
 // others:
 import {
     customAlphabet,
 }                           from 'nanoid/async'
+
+// configs:
+import {
+    checkoutConfigServer,
+}                           from '@/checkout.config.server'
 
 
 
@@ -97,17 +108,17 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             
             //#region customer|guest data from orders route
             // connect to EXISTING customer:
-            customer         : !('email' in customerOrGuestData) ? {
-                connect      : {
-                    id : customerOrGuestData.id,
+            customer            : isCustomerConnectData(customerOrGuestData) ? {
+                connect         : {
+                    id          : customerOrGuestData.id,
                 },
             } : undefined,
             
             // create a NEW guest and create nested guestPreference:
-            guest               : ('email' in customerOrGuestData) ? {
+            guest               : !isCustomerConnectData(customerOrGuestData) ? {
                 create          : {
                     ...customerOrGuestData,
-                    preference : !preferenceData ? undefined : {
+                    preference  : !preferenceData ? undefined : {
                         create  : preferenceData,
                     },
                 },
@@ -120,7 +131,7 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
     });
     
     // create|update nested customerPreference:
-    if (!('email' in customerOrGuestData) && !!preferenceData) {
+    if (isCustomerConnectData(customerOrGuestData) && !!preferenceData) {
         await prismaTransaction.customer.update({
             where  : {
                 id : customerOrGuestData.id,
@@ -183,8 +194,13 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         
         // extended data:
         payment : {
-            paymentId : _paymentId, // remove
-            billingAddress : billingAddressData,
+            billingAddress                  : billingAddressData,              // take
+            paymentId                       : _paymentId,                      // remove (already supplied above)
+            
+            paymentMethodProvider           : paymentMethodProvider,           // take
+            paymentMethodProviderId         : paymentMethodProviderId,         // take
+            paymentMethodProviderCustomerId : paymentMethodProviderCustomerId, // take
+            
             ...restPaymentData
         },
         paymentConfirmationToken,
@@ -192,128 +208,171 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     
     
-    const orderData = await prismaTransaction.order.create({
-        data   : {
-            // primary data:
-            
-            orderId             : orderId,
-            paymentId           : paymentId,
-            
-            items               : {
-                create          : items,
-            },
-            
-            currency            : (currency === null) /* do NOT create if null */ ? undefined : { // compound_like relation
-                // one_conditional nested_update if create:
-                create          : currency,
-            },
-            
-            shippingAddress     : (shippingAddress === null) /* do NOT create if null */ ? undefined : { // compound_like relation
-                // one_conditional nested_update if create:
-                create          : shippingAddress,
-            },
-            shippingCost        : shippingCost,
-            shippingProvider    : !shippingProviderId ? undefined : {
-                connect         : {
-                    id          : shippingProviderId,
+    const [orderData] = await Promise.all([
+        // create new order record:
+        prismaTransaction.order.create({
+            data   : {
+                // primary data:
+                
+                orderId             : orderId,
+                paymentId           : paymentId,
+                
+                items               : {
+                    create          : items,
                 },
-            },
-            
-            // extended data:
-            
-            ...(() => {
-                if ('customerOrGuest' in createOrderData) {
-                    //#region customer|guest data from orders route
-                    const {
-                        preference: preferenceData,
-                    ...customerOrGuestData} = createOrderData.customerOrGuest;
-                    
-                    return {
-                        // connect to EXISTING customer:
-                        customer         : !('email' in customerOrGuestData) ? {
-                            connect      : {
-                                id : customerOrGuestData.id,
-                            },
-                        } : undefined,
+                
+                currency            : (currency === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                    // one_conditional nested_update if create:
+                    create          : currency,
+                },
+                
+                shippingAddress     : (shippingAddress === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                    // one_conditional nested_update if create:
+                    create          : shippingAddress,
+                },
+                shippingCost        : shippingCost,
+                shippingProvider    : !shippingProviderId ? undefined : {
+                    connect         : {
+                        id          : shippingProviderId,
+                    },
+                },
+                
+                // extended data:
+                
+                ...(() => {
+                    if ('customerOrGuest' in createOrderData) {
+                        //#region connect to existing_customer -or- create a new guest
+                        const {
+                            preference: preferenceData,
+                        ...customerOrGuestData} = createOrderData.customerOrGuest;
                         
-                        // create a NEW guest and create nested guestPreference:
-                        guest               : ('email' in customerOrGuestData) ? {
-                            create          : {
-                                ...customerOrGuestData,
-                                preference : !preferenceData ? undefined : {
-                                    create  : preferenceData,
-                                },
-                            },
-                        } : undefined,
-                    };
-                    //#endregion customer|guest data from orders route
-                }
-                else {
-                    //#region customer|guest data from DraftOrder
-                    const {
-                        customerId,
-                        guestId,
-                    } = createOrderData;
-                    if (!!customerId) {
                         return {
-                            customer : {
-                                connect : {
-                                    id: customerId,
+                            // connect to EXISTING customer:
+                            customer            : isCustomerConnectData(customerOrGuestData) ? {
+                                connect         : {
+                                    id          : customerOrGuestData.id,
                                 },
-                            },
-                        };
-                    }
-                    else if (!!guestId) {
-                        return {
-                            guest : {
-                                connect : {
-                                    id: guestId,
+                            } : undefined,
+                            
+                            // create a NEW guest and create nested guestPreference:
+                            guest               : !isCustomerConnectData(customerOrGuestData) ? {
+                                create          : {
+                                    ...customerOrGuestData,
+                                    preference  : !preferenceData ? undefined : {
+                                        create  : preferenceData,
+                                    },
                                 },
-                            },
+                            } : undefined,
                         };
+                        //#endregion connect to existing_customer -or- create a new guest
                     }
                     else {
-                        return {};
+                        //#region connect to existing_customer|existing_guest from DraftOrder
+                        const {
+                            customerId,
+                            guestId,
+                        } = createOrderData;
+                        if (!!customerId) {
+                            return {
+                                customer : {
+                                    connect : {
+                                        id: customerId,
+                                    },
+                                },
+                            };
+                        }
+                        else if (!!guestId) {
+                            return {
+                                guest : {
+                                    connect : {
+                                        id: guestId,
+                                    },
+                                },
+                            };
+                        }
+                        else {
+                            return {};
+                        } // if
+                        //#endregion connect to existing_customer|existing_guest from DraftOrder
                     } // if
-                    //#endregion customer|guest data from DraftOrder
-                } // if
-            })(),
-            
-            payment             : { // compound_like relation
-                // one_conditional nested_update if create:
-                create : {
-                    ...restPaymentData,
-                    billingAddress : (billingAddressData === null) /* do NOT create if null */ ? undefined : { // compound_like relation
-                        // one_conditional nested_update if create:
-                        create : billingAddressData,
+                })(),
+                
+                payment             : { // compound_like relation
+                    // one_conditional nested_update if create:
+                    create : {
+                        ...restPaymentData,
+                        billingAddress : (billingAddressData === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                            // one_conditional nested_update if create:
+                            create : billingAddressData,
+                        },
+                    },
+                },
+                paymentConfirmation : !paymentConfirmationToken ? undefined : {
+                    create : {
+                        token: paymentConfirmationToken,
                     },
                 },
             },
-            paymentConfirmation : !paymentConfirmationToken ? undefined : {
-                create : {
-                    token: paymentConfirmationToken,
-                },
-            },
-        },
-        select : orderAndDataSelect,
-    });
-    
-    // create|update nested customerPreference:
-    if (('customerOrGuest' in createOrderData) && !('email' in createOrderData.customerOrGuest) && !!createOrderData.customerOrGuest.preference) {
-        await prismaTransaction.customer.update({
+            select : orderAndDataSelect,
+        }),
+        
+        // create|update nested customerPreference:
+        (
+            // if CustomerConnectData is provided:
+            (('customerOrGuest' in createOrderData) && isCustomerConnectData(createOrderData.customerOrGuest))
+            &&
+            createOrderData.customerOrGuest.preference
+        )
+        &&
+        prismaTransaction.customer.update({
             where  : {
+                // the provided CustomerConnectData:
                 id : createOrderData.customerOrGuest.id,
             },
             data   : {
-                preference : {
+                preference : createOrderData.customerOrGuest.preference ? {
                     upsert : {
                         create : createOrderData.customerOrGuest.preference,
                         update : createOrderData.customerOrGuest.preference,
                     },
-                },
+                } : undefined,
             },
-        });
-    } // if
+        }),
+        
+        // create payment method:
+        (paymentMethodProvider && paymentMethodProviderId && paymentMethodProviderCustomerId)
+        &&
+        (() => {
+            const customerId = (
+                ('customerOrGuest' in createOrderData)
+                ? (
+                    isCustomerConnectData(createOrderData.customerOrGuest)
+                    ? createOrderData.customerOrGuest.id
+                    : null
+                )
+                : createOrderData.customerId
+            );
+            if (!customerId) return false;
+            
+            
+            
+            return createOrUpdatePaymentMethod(
+                prismaTransaction,
+                {
+                    id        : '',
+                    currency  : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
+                },
+                customerId,
+                {
+                    paymentMethodProvider,
+                    paymentMethodProviderId,
+                    paymentMethodProviderCustomerId,
+                },
+            );
+        })(),
+    ]);
+    
+    
     
     return convertOrderDataToOrderAndData(prismaTransaction, orderData);
 }
@@ -349,7 +408,15 @@ export const findPaymentById = async (prismaTransaction: Parameters<Parameters<t
         },
     });
     if (!existingOrder) return null;
-    return existingOrder.payment;
+    const payment = existingOrder.payment;
+    return payment ? {
+        ...payment,
+        
+        // no need to save the paymentMethod:
+        paymentMethodProvider           : undefined,
+        paymentMethodProviderId         : undefined,
+        paymentMethodProviderCustomerId : undefined,
+    } satisfies PaymentDetail : null;
 }
 
 

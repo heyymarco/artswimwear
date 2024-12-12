@@ -482,6 +482,22 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 
                 amount : revertCurrencyFromStripeNominal(amount, currency),
                 fee    : revertCurrencyFromStripeNominal(fee   , currency),
+                
+                ...(
+                    (paymentMethod && paymentMethod.customer)
+                    ? {
+                        // needs to save the paymentMethod:
+                        paymentMethodProvider           : 'STRIPE',
+                        paymentMethodProviderId         : paymentMethod.id,
+                        paymentMethodProviderCustomerId : (typeof(paymentMethod.customer) === 'string') ? paymentMethod.customer : paymentMethod.customer.id,
+                    }
+                    : {
+                        // no need to save the paymentMethod:
+                        paymentMethodProvider           : undefined,
+                        paymentMethodProviderId         : undefined,
+                        paymentMethodProviderCustomerId : undefined,
+                    }
+                ),
             } satisfies PaymentDetail;
         }
         
@@ -534,6 +550,8 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
         
         hasShippingAddress,
         shippingAddress,
+        
+        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
     } = options;
     
     
@@ -542,10 +560,17 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
     const isConfirmationToken  = cardToken.startsWith('ctoken_');
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
+        const customer = (existingPaymentMethodProviderCustomerId !== undefined) ? (
+            existingPaymentMethodProviderCustomerId
+            ? await stripe.customers.retrieve(existingPaymentMethodProviderCustomerId)
+            : await stripe.customers.create()
+        ) : undefined;
         paymentIntent = await stripe.paymentIntents.create({
             metadata                  : {
                 orderId               : orderId,
             },
+            
+            
             
             currency                  : currency.toLowerCase(),
             amount                    : convertCurrencyToStripeNominal(totalCostConverted, currency),
@@ -566,20 +591,28 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
                 }
                 : undefined
             ),
+            
+            
+            
             capture_method            : isPaymentMethodToken ? 'manual' : undefined, // the fund must be captured on server_side
             // confirmation_method       : isConfirmationToken  ? 'manual' : undefined, // the fund must be captured on server_side // DOESN'T WORK
             
-            confirm                   : true,
+            confirm                   : true, // auto confirm because the payment_method is already provided
             payment_method            : isPaymentMethodToken ? cardToken : undefined,
-            confirmation_token        : isConfirmationToken  ? cardToken : undefined,
-            return_url                : isConfirmationToken  ? `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             automatic_payment_methods : {
                 enabled         : true,
                 allow_redirects : 'never',
             },
+            confirmation_token        : isConfirmationToken  ? cardToken : undefined,
+            return_url                : isConfirmationToken  ? `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             
-            // payment_method_types      : ['card_present'],
-            // setup_future_usage        : 'off_session',
+            
+            
+            // save payment method during purchase:
+            customer                  : customer?.id,
+            setup_future_usage        : customer ? 'off_session' : undefined,
+            
+            
             
             expand                    : [
                 'latest_charge.balance_transaction',
@@ -1080,7 +1113,7 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     
     
     const {
-        providerCustomerId: existingProviderCustomerId,
+        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
         cardToken,
         billingAddress,
     } = options;
@@ -1088,22 +1121,23 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     
     
     const customer = (
-        existingProviderCustomerId
-        ? await stripe.customers.retrieve(existingProviderCustomerId)
+        existingPaymentMethodProviderCustomerId
+        ? await stripe.customers.retrieve(existingPaymentMethodProviderCustomerId)
         : await stripe.customers.create()
     );
     const setupIntent = await stripe.setupIntents.create({
-        customer                  : customer.id,
-        
+        confirm                   : true, // auto confirm because the payment_method is already provided
+        payment_method            : cardToken,
         automatic_payment_methods : {
             enabled         : true,
             allow_redirects : 'never',
         },
         
-        // payment_method_types      : ['card', 'card_present'],
+        
+        
+        // save payment method without charging:
+        customer                  : customer.id,
         usage                     : 'off_session',
-        payment_method            : cardToken,
-        confirm                   : true, // auto confirm because the payment_method is already provided
     });
     /*
         // sample without 3DS:
@@ -1219,9 +1253,9 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     */
     switch (setupIntent.status) {
         case 'requires_action': return {
-            setupToken         : '',
-            providerCustomerId : customer.id,
-            redirectData       : setupIntent.client_secret ?? '', // redirectData for 3DS verification (credit_card)
+            paymentMethodProviderCustomerId : customer.id,
+            paymentMethodSetupToken         : '',
+            redirectData                    : setupIntent.client_secret ?? '', // redirectData for 3DS verification (credit_card)
         } satisfies PaymentMethodSetup;
         
         
@@ -1230,19 +1264,10 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
             if (!setupIntent.payment_method) throw Error('unexpected API response');
             if (!setupIntent.customer) throw Error('unexpected API response');
             
-            const providerPaymentMethodId = (
-                (typeof(setupIntent.payment_method) === 'string')
-                ? setupIntent.payment_method
-                : setupIntent.payment_method.id
-            );
-            const providerCustomerId = (
-                (typeof(setupIntent.customer) === 'string')
-                ? setupIntent.customer
-                : setupIntent.customer.id
-            );
             return {
-                providerPaymentMethodId,
-                providerCustomerId,
+                paymentMethodProvider           : 'STRIPE',
+                paymentMethodProviderId         : (typeof(setupIntent.payment_method) === 'string') ? setupIntent.payment_method : setupIntent.payment_method.id,
+                paymentMethodProviderCustomerId : (typeof(setupIntent.customer)       === 'string') ? setupIntent.customer       : setupIntent.customer.id,
             } satisfies PaymentMethodCapture;
         }
         
@@ -1407,19 +1432,20 @@ export const stripeCapturePaymentMethod = async (vaultToken: string): Promise<Pa
     if (!setupIntent.payment_method) throw Error('unexpected API response');
     if (!setupIntent.customer) throw Error('unexpected API response');
     
-    const providerPaymentMethodId = (
+    const paymentMethodProviderId = (
         (typeof(setupIntent.payment_method) === 'string')
         ? setupIntent.payment_method
         : setupIntent.payment_method.id
     );
-    const providerCustomerId = (
+    const paymentMethodProviderCustomerId = (
         (typeof(setupIntent.customer) === 'string')
         ? setupIntent.customer
         : setupIntent.customer.id
     );
     return {
-        providerPaymentMethodId,
-        providerCustomerId,
+        paymentMethodProvider : 'STRIPE',
+        paymentMethodProviderId,
+        paymentMethodProviderCustomerId,
     } satisfies PaymentMethodCapture;
 }
 

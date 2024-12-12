@@ -1,10 +1,12 @@
 // models:
 import {
-    type CustomerPreferenceDetail,
-}                           from './types'
-import {
     type Prisma,
 }                           from '@prisma/client'
+import {
+    type CustomerConnectData,
+    type GuestCreateData,
+    type CustomerPreferenceDetail,
+}                           from './types'
 
 // configs:
 import {
@@ -44,3 +46,11 @@ export const customerPreferenceDetailSelect = {
     marketingOpt : true,
     timezone     : true,
 } satisfies Prisma.CustomerPreferenceSelect;
+
+
+
+export const isCustomerConnectData = (customerOrGuest  : Omit<CustomerConnectData, 'preference'>|Omit<GuestCreateData, 'preference'>): customerOrGuest is Omit<CustomerConnectData, 'preference'> => {
+    // CustomerConnectData // 'id'              |'preference'
+    // GuestCreateData     //     'name'|'email'|'preference'
+    return !('email' in customerOrGuest);
+};

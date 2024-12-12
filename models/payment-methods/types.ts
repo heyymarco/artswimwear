@@ -16,7 +16,7 @@ import {
 export interface PaymentMethodSetupDetail
     extends
         Pick<PaymentMethodSetup,
-            |'setupToken'
+            |'paymentMethodSetupToken'
             |'redirectData'
         >
 {
@@ -69,9 +69,11 @@ export interface PaymentMethodSetupRequest
         Omit<PaymentMethodUpdateRequest,
             // data:
             |'vaultToken'
+        >,
+        Pick<PaymentMethodCapture,
+            |'paymentMethodProvider'
         >
 {
-    provider                 : PaymentMethodProvider
     cardToken               ?: string
     billingAddress          ?: BillingAddressDetail|null
 }
@@ -85,23 +87,28 @@ export interface PaymentMethodSetupOptions
             |'billingAddress'
         >
 {
-    providerCustomerId      ?: string
+    /**
+     * If provided => save the customer's card to database.  
+     * If null => create a new customer and then save the customer's card to database.  
+     */
+    paymentMethodProviderCustomerId  : string|null
 }
 export interface PaymentMethodSetup {
-    providerCustomerId       : string
-    setupToken               : string
-    redirectData            ?: string
+    paymentMethodProviderCustomerId  : string
+    paymentMethodSetupToken          : string
+    redirectData                    ?: string
 }
 export interface PaymentMethodCapture {
-    providerCustomerId       : string
-    providerPaymentMethodId  : string
+    paymentMethodProvider            : PaymentMethodProvider
+    paymentMethodProviderId          : string
+    paymentMethodProviderCustomerId  : string
 }
 
 
 
 export interface PaymentMethodSortRequest {
-    ids                      : string[]
+    ids                              : string[]
 }
 export interface PaymentMethodSortDetail {
-    ids                      : string[]
+    ids                              : string[]
 }

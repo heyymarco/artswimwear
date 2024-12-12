@@ -693,7 +693,7 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled; // wait until setup|creating has been completed
-                if (!('setupToken' in paymentMethodSetupOrNewPaymentMethod)) { // when CREATED a new_paymentMethod
+                if (!('paymentMethodSetupToken' in paymentMethodSetupOrNewPaymentMethod)) { // when CREATED a new_paymentMethod
                     const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
                     await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
                         providedMutatedModel : newPaymentMethod,

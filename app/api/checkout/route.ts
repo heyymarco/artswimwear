@@ -47,10 +47,10 @@ import {
     type AuthorizedFundData,
     type PaymentDetail,
     
-    type CustomerData,
-    
     type FinishedOrderState,
     
+    type CustomerConnectData,
+    type GuestCreateData,
     type CustomerOrGuestPreferenceDetail,
     type GuestDetail,
     
@@ -85,7 +85,6 @@ import {
 // templates:
 import {
     // types:
-    type CustomerOrGuestData,
     type OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
@@ -240,16 +239,16 @@ router
     
     
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'stripeCard', 'stripeExpress', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
-    const useStripeGateway   = !simulateOrder &&  ['stripeCard', 'stripeExpress'].includes(paymentSource);
-    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
+    const usePaypalGateway   = !simulateOrder && (['paypalCard'].includes(paymentSource) || !['manual', 'stripeCard', 'stripeExpress', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource)); // if undefined || not 'manual' => use paypal gateway
+    const useStripeGateway   = !simulateOrder && ['stripeCard', 'stripeExpress'].includes(paymentSource);
+    const useMidtransGateway = !simulateOrder && ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
-    if (usePaypalGateway && (!checkoutConfigServer.payment.processors.paypal.enabled || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
+    if (usePaypalGateway   && (!checkoutConfigServer.payment.processors.paypal.enabled   || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    if (useStripeGateway && (!checkoutConfigServer.payment.processors.stripe.enabled || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
+    if (useStripeGateway   && (!checkoutConfigServer.payment.processors.stripe.enabled   || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -290,6 +289,21 @@ router
             } // if
             cardToken = cardTokenRaw;
         } // if
+    } // if
+    
+    
+    
+    let saveCard : boolean = false;
+    if (['card', 'paypalCard', 'stripeCard', 'midtransCard'].includes(paymentSource)) {
+        const {
+            saveCard: saveCardRaw = false,
+        } = placeOrderData;
+        if (typeof(saveCardRaw) !== 'boolean') {
+            return Response.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        saveCard = saveCardRaw;
     } // if
     //#endregion validate options
     
@@ -340,6 +354,21 @@ router
         } // if
     } // if
     //#endregion authenticating
+    
+    
+    
+    //#region find existing paymentMethodProviderCustomerId
+    const paymentMethodProviderCustomerIds = (saveCard && customerId) ? await prisma.customer.findUnique({
+        where  : {
+            id : customerId, // important: the signedIn customerId
+        },
+        select : {
+            paypalCustomerId   : true,
+            stripeCustomerId   : true,
+            midtransCustomerId : true,
+        },
+    }) : undefined;
+    //#endregion find existing paymentMethodProviderCustomerId
     
     
     
@@ -1004,6 +1033,8 @@ router
                     billingAddress,
                     
                     detailedItems,
+                    
+                    paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.paypalCustomerId, // save payment method during purchase (if opted)
                 });
             }
             else if (cardToken) {
@@ -1022,6 +1053,8 @@ router
                         billingAddress,
                         
                         detailedItems,
+                        
+                        paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.stripeCustomerId, // save payment method during purchase (if opted)
                     });
                 }
                 else if (useMidtransGateway) {
@@ -1038,6 +1071,8 @@ router
                         billingAddress,
                         
                         detailedItems,
+                        
+                        paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.midtransCustomerId, // save payment method during purchase (if opted)
                     });
                 }
                 else {
@@ -1181,7 +1216,7 @@ router
                         paymentId,
                         paymentCode, // for Indomaret payment code
                         expires,     // for Indomaret payment code expiry_date
-                    } = authorizedOrPaymentDetailOrDeclined;
+                    } = authorizedOrPaymentDetailOrDeclined satisfies AuthorizedFundData;
                     
                     authorizedOrPaymentDetail = {
                         type       : 'MANUAL',
@@ -1192,6 +1227,11 @@ router
                         
                         amount     : 0,
                         fee        : 0,
+                        
+                        // no need to save the paymentMethod:
+                        paymentMethodProvider           : undefined,
+                        paymentMethodProviderId         : undefined,
+                        paymentMethodProviderCustomerId : undefined,
                     } satisfies PaymentDetail;
                 }
                 else {
@@ -1230,7 +1270,7 @@ router
                         paymentId,
                         paymentCode, // for Alfamart payment code
                         expires,     // for Alfamart payment code expiry_date
-                    } = authorizedOrPaymentDetailOrDeclined;
+                    } = authorizedOrPaymentDetailOrDeclined satisfies AuthorizedFundData;
                     
                     authorizedOrPaymentDetail = {
                         type       : 'MANUAL',
@@ -1241,6 +1281,11 @@ router
                         
                         amount     : 0,
                         fee        : 0,
+                        
+                        // no need to save the paymentMethod:
+                        paymentMethodProvider           : undefined,
+                        paymentMethodProviderId         : undefined,
+                        paymentMethodProviderCustomerId : undefined,
                     } satisfies PaymentDetail;
                 }
                 else {
@@ -1257,6 +1302,11 @@ router
                     
                     amount     : 0,
                     fee        : 0,
+                    
+                    // no need to save the paymentMethod:
+                    paymentMethodProvider           : undefined,
+                    paymentMethodProviderId         : undefined,
+                    paymentMethodProviderCustomerId : undefined,
                 } satisfies PaymentDetail;
             }
             else {
@@ -1301,16 +1351,16 @@ router
                 marketingOpt     : marketingOpt,
                 timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
             };
-            const customerOrGuest : CustomerData|CustomerOrGuestData = (
+            const customerOrGuest : CustomerConnectData|GuestCreateData = (
                 customerId
                 ? ({
                     id : customerId,
                     preference,
-                } satisfies CustomerData)
+                } satisfies CustomerConnectData)
                 : ({
                     ...(guest as unknown as GuestDetail),
                     preference,
-                } satisfies CustomerOrGuestData)
+                } satisfies GuestCreateData)
             );
             const billingAddressData : BillingAddressDetail|null = (
                 !hasBillingAddress
@@ -1387,7 +1437,7 @@ router
             return {
                 orderId,
                 authorizedOrPaymentDetail : authorizedOrPaymentDetail,
-                paymentDetail             : isPaymentDetail(authorizedOrPaymentDetail) ? authorizedOrPaymentDetail : undefined,
+                paymentDetail             : isPaymentDetail(authorizedOrPaymentDetail) ? (authorizedOrPaymentDetail satisfies PaymentDetail) : undefined,
                 newOrder                  : (await createNewOrderPromise) ?? undefined,
             };
         }, { timeout: 50000 })); // give a longer timeout for `paymentProcessorCreateOrder` // may up to 40 secs => rounded up to 50 secs
@@ -1973,7 +2023,7 @@ router
             
             customer : {
                 select : {
-                    // for CustomerData:
+                    // for CustomerMinimumData:
                     name  : true,
                     email : true,
                     
@@ -1989,7 +2039,7 @@ router
             },
             guest    : {
                 select : {
-                    // for CustomerData:
+                    // for GuestMinimumData:
                     name  : true,
                     email : true,
                     
@@ -2079,7 +2129,14 @@ router
         //     ...paymentDetail
         // },
     } = order;
-    const paymentDetail  : PaymentDetail|null = payment;
+    const paymentDetail  : PaymentDetail|null = payment ? {
+        ...payment,
+        
+        // no need to save the paymentMethod:
+        paymentMethodProvider           : undefined,
+        paymentMethodProviderId         : undefined,
+        paymentMethodProviderCustomerId : undefined,
+    } satisfies PaymentDetail : null;
     const billingAddress = paymentDetail?.billingAddress ?? null;
     
     const isPaid       = (!!paymentDetail && (paymentDetail.type !== 'MANUAL'));

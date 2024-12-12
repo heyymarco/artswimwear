@@ -6,11 +6,22 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // reusable-ui core:
 import {
     // a validation management system:
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // simple-components:
+    Check,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // payment components:
 import {
@@ -57,6 +68,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     );
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {
+    // sessions:
+    const { data: session } = useSession();
+    
+    
+    
     // states:
     const {
         // payment data:
@@ -86,6 +102,10 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             <ConditionalCreditCardNameEditor />
             <ConditionalCreditCardExpiryEditor />
             <ConditionalCreditCardCvvEditor />
+            
+            {!!session && <Check className='save' name='cardSave' value={1} defaultChecked={true}>
+                Save my credit card information for future use.
+            </Check>}
             
             <hr className='horz1' />
             

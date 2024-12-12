@@ -82,6 +82,8 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         
         hasBillingAddress,
         billingAddress,
+        
+        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
     } = options;
     
     
@@ -342,13 +344,25 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                         
                         
                         
-                        // TODO: save payment method during purchase:
-                        // customer : isExistingCustomer ? {
-                        //     id : 'Paypal-generated customer id',
-                        // } : undefined,
-                        // vault : {
-                        //     store_in_vault : 'ON_SUCCESS',
-                        // },
+                        // save payment method during purchase:
+                        customer : (
+                            existingPaymentMethodProviderCustomerId
+                            ? {
+                                id : existingPaymentMethodProviderCustomerId, // pass the existing paypal's customerId to prevent paypal from auto_creating a new customerId
+                            }
+                            : undefined
+                        ),
+                        vault : (
+                            (existingPaymentMethodProviderCustomerId !== undefined)
+                            
+                            /* save the customer's card to database */
+                            ? {
+                                store_in_vault : 'ON_SUCCESS',
+                            }
+                            
+                            /* do not save the customer's card */
+                            : undefined
+                        ),
                     },
                 },
                 
@@ -439,7 +453,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
 }
 export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetup> => {
     const {
-        providerCustomerId: existingProviderCustomerId,
+        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
         billingAddress,
     } = options;
     
@@ -454,12 +468,6 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
             'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
         },
         body    : JSON.stringify({
-            customer : (existingProviderCustomerId === undefined) ? undefined : { // create a new customer -or- pass the existing customer
-                id : existingProviderCustomerId,
-            },
-            
-            
-            
             payment_source: {
                 card : {
                     billing_address : (
@@ -543,6 +551,17 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
                 // shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
                 shipping_preference : 'NO_SHIPPING', // if has shipping adress => the shipping address is editable in app only
             },
+            
+            
+            
+            // save payment method without charging:
+            customer : (
+                existingPaymentMethodProviderCustomerId
+                ? {
+                    id : existingPaymentMethodProviderCustomerId, // pass the existing paypal's customerId to prevent paypal from auto_creating a new customerId
+                }
+                : undefined
+            ),
         }),
     });
     const paypalOrderData = await paypalHandleResponse(paypalResponse);
@@ -574,19 +593,19 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
         throw Error('unexpected API response');
     } // if
     const {
-        id : setupToken,
+        id : paymentMethodSetupToken,
         customer : {
-            id : providerCustomerId,
+            id : paymentMethodProviderCustomerId,
         },
     } = paypalOrderData;
-    if ((typeof(setupToken) !== 'string') || (typeof(providerCustomerId) !== 'string')) {
+    if ((typeof(paymentMethodSetupToken) !== 'string') || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
     return {
-        setupToken,
-        providerCustomerId,
+        paymentMethodProviderCustomerId,
+        paymentMethodSetupToken,
     } satisfies PaymentMethodSetup;
 }
 
@@ -611,35 +630,35 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
                     "last_digits": "8431",
                     "brand": "AMEX",
                     "type": "CREDIT"
-                },
-                
-                // TODO: if exists and `payment_source.card.attributes.vault.status === 'VAULTED'`, store `payment_source.card.attributes.vault.id` and `payment_source.card.attributes.vault.customer.id` to the database
-                // OTHERWISE, when `payment_source.card.attributes.vault.status === 'APPROVED'`, neither the `payment_source.card.attributes.vault.id` nor `payment_source.card.attributes.vault.customer.id` is not received immediately
-                // The `VAULT.PAYMENT-TOKEN.CREATED` will be sent to webhook
-                attributes : {
-                    vault : {
-                        id : 'nkq2y9g',
-                        customer : {
-                            id: '695922590',
+                    
+                    // TODO: if exists and `payment_source.card.attributes.vault.status === 'VAULTED'`, store `payment_source.card.attributes.vault.id` and `payment_source.card.attributes.vault.customer.id` to the database
+                    // OTHERWISE, when `payment_source.card.attributes.vault.status === 'APPROVED'`, neither the `payment_source.card.attributes.vault.id` nor `payment_source.card.attributes.vault.customer.id` is not received immediately
+                    // The `VAULT.PAYMENT-TOKEN.CREATED` will be sent to webhook
+                    attributes : {
+                        vault : {
+                            id : 'nkq2y9g',
+                            customer : {
+                                id: '695922590',
+                            },
+                            status : 'VAULTED',
+                            links : [
+                                {
+                                    "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
+                                    "rel": "self",
+                                    "method": "GET"
+                                },
+                                {
+                                    "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
+                                    "rel": "delete",
+                                    "method": "DELETE"
+                                },
+                                {
+                                    "href": "https://api-m.sandbox.paypal.com/v2/checkout/orders/5O190127TN364715T",
+                                    "rel": "up",
+                                    "method": "GET"
+                                },
+                            ],
                         },
-                        status : 'VAULTED',
-                        links : [
-                            {
-                                "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
-                                "rel": "self",
-                                "method": "GET"
-                            },
-                            {
-                                "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
-                                "rel": "delete",
-                                "method": "DELETE"
-                            },
-                            {
-                                "href": "https://api-m.sandbox.paypal.com/v2/checkout/orders/5O190127TN364715T",
-                                "rel": "up",
-                                "method": "GET"
-                            },
-                        ],
                     },
                 },
             },
@@ -832,10 +851,8 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
             ]
         }
     */
-    console.log('capture: paypalPaymentData: ', paypalPaymentData);
-    const captureData = paypalPaymentData.purchase_units?.[0]?.payments?.captures?.[0];
-    console.log('captureData : ', captureData);
-    console.log('captureData.status : ', captureData?.status);
+    const captureData       = paypalPaymentData.purchase_units?.[0]?.payments?.captures?.[0];
+    const paymentMethodData = paypalPaymentData?.payment_source?.card?.attributes?.vault;
     
     
     
@@ -891,6 +908,22 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
                 
                 amount,
                 fee,
+                
+                ...(
+                    (paymentMethodData?.id && paymentMethodData?.customer?.id)
+                    ? {
+                        // needs to save the paymentMethod:
+                        paymentMethodProvider           : 'PAYPAL',
+                        paymentMethodProviderId         : paymentMethodData?.id           as string,
+                        paymentMethodProviderCustomerId : paymentMethodData?.customer?.id as string,
+                    }
+                    : {
+                        // no need to save the paymentMethod:
+                        paymentMethodProvider           : undefined,
+                        paymentMethodProviderId         : undefined,
+                        paymentMethodProviderCustomerId : undefined,
+                    }
+                ),
             } satisfies PaymentDetail;
         }
         
@@ -955,19 +988,20 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         }
     */
     const {
-        id : providerPaymentMethodId,
+        id : paymentMethodProviderId,
         customer : {
-            id : providerCustomerId,
+            id : paymentMethodProviderCustomerId,
         },
     } = paypalPaymentData;
-    if ((typeof(providerPaymentMethodId) !== 'string') || (typeof(providerCustomerId) !== 'string')) {
+    if ((typeof(paymentMethodProviderId) !== 'string') || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalPaymentData);
         throw Error('unexpected API response');
     } // if
     return {
-        providerPaymentMethodId,
-        providerCustomerId,
+        paymentMethodProvider : 'PAYPAL',
+        paymentMethodProviderId,
+        paymentMethodProviderCustomerId,
     } satisfies PaymentMethodCapture;
 }
 

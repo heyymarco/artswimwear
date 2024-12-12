@@ -191,6 +191,11 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         
         
         
+        // sections:
+        paymentCardSectionRef,
+        
+        
+        
         // actions:
         placeOrder,
     } = useTransactionState();
@@ -202,10 +207,12 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
     
     // handlers:
     const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
-        if (!stripe)            return false; // payment aborted due to unexpected error
-        if (!elements)          return false; // payment aborted due to unexpected error
-        const cardNumberElement = elements.getElement('cardNumber');
-        if (!cardNumberElement) return false; // payment aborted due to unexpected error
+        if (!stripe)                return false; // payment aborted due to unexpected error
+        if (!elements)              return false; // payment aborted due to unexpected error
+        const cardNumberElement     = elements.getElement('cardNumber');
+        if (!cardNumberElement)     return false; // payment aborted due to unexpected error
+        const paymentCardSectionElm = paymentCardSectionRef?.current;
+        if (!paymentCardSectionElm) return false; // payment aborted due to unexpected error
         
         
         
@@ -246,6 +253,7 @@ const CreditCardButtonStripe   = (props: ImplementedButtonPaymentGeneralProps): 
         return await placeOrder({
             paymentSource  : 'stripeCard',
             cardToken      : cardToken,
+            saveCard       : !!(paymentCardSectionElm.querySelector('input[name="cardSave"]') as HTMLInputElement|null)?.checked,
         });
     });
     const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
@@ -347,12 +355,11 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
             
             
             try {
-                const formData       = new FormData(paymentCardSectionElm);
                 const cardData       = {
-                    card_number         : formData.get('cardNumber')?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
-                    card_exp_month      : formData.get('cardExpiry')?.toString()?.trim()?.split('/')?.[0] || undefined,
-                    card_exp_year       : formData.get('cardExpiry')?.toString()?.trim()?.split('/')?.[1] || undefined,
-                    card_cvv            : formData.get('cardCvv'   )?.toString()?.trim(),
+                    card_number         : (paymentCardSectionElm.querySelector('input[name="cardNumber"]') as HTMLInputElement|null)?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                    card_exp_month      : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.toString()?.trim()?.split('/')?.[0] || undefined,
+                    card_exp_year       : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.toString()?.trim()?.split('/')?.[1] || undefined,
+                    card_cvv            : (paymentCardSectionElm.querySelector('input[name="cardCvv"]'   ) as HTMLInputElement|null)?.toString()?.trim(),
                     // bank_one_time_token : "12345678"
                 };
                 MidtransNew3ds.getCardToken(cardData, {
@@ -377,6 +384,7 @@ const CreditCardButtonMidtrans = (props: ImplementedButtonPaymentGeneralProps): 
         return await placeOrder({
             paymentSource  : 'midtransCard',
             cardToken      : cardToken,
+            saveCard       : !!(paymentCardSectionElm.querySelector('input[name="cardSave"]') as HTMLInputElement|null)?.checked,
         });
     });
     const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {

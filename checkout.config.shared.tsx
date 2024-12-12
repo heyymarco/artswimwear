@@ -78,8 +78,8 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
         },
         preferredProcessors         : [
             'midtrans',
-            'stripe',
-            // 'paypal',
+            // 'stripe',
+            'paypal',
             'bank',
         ],
     },

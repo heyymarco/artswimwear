@@ -22,14 +22,12 @@ import {
     type BillingAddressDetail,
 }                           from '../shippings'
 import {
-    type CustomerDetail,
+    type CustomerConnectData,
+    type GuestCreateData,
 }                           from '../customers'
-
-// templates:
 import {
-    // types:
-    type CustomerOrGuestData,
-}                           from '@/components/Checkout/templates/orderDataContext'
+    type PaymentMethodCapture,
+}                           from '../payment-methods'
 
 
 
@@ -69,7 +67,12 @@ export interface OrderDetail
     // data:
     currency        : OrderCurrencyDetail|null
     shippingAddress : ShippingAddressDetail|null
-    payment         : PaymentDetail|null
+    payment         : Omit<PaymentDetail,
+        // no need to save the paymentMethod:
+        |'paymentMethodProvider'
+        |'paymentMethodProviderId'
+        |'paymentMethodProviderCustomerId'
+    >|null
 }
 
 export interface OrderDetailWithOptions
@@ -160,7 +163,7 @@ export interface OrderCurrencyDetail
 
 
 
-export interface PaymentDetail
+export interface PaymentDetailBasic
     extends
         Omit<Payment,
             // records:
@@ -179,20 +182,19 @@ export interface PaymentDetail
     
     paymentId      ?: string // an optional token for make manual_payment
 }
-
-
-
-export interface CustomerData
-    extends
-        Pick<CustomerDetail,
-            // records:
-            |'id'
-        >,
-        Pick<CustomerOrGuestData,
-            |'preference'
-        >
-{
-}
+export type PaymentDetail =
+    &PaymentDetailBasic
+    
+    // optionally having PaymentMethodCapture:
+    &(
+        // not having PaymentMethodCapture:
+        |{ [key in keyof PaymentMethodCapture]: undefined }
+        
+        // -or- // discriminative union
+        
+        // having PaymentMethodCapture:
+        |PaymentMethodCapture
+    )
 
 
 
@@ -210,7 +212,7 @@ export interface CreateDraftOrderData
     paymentId       : string // redefined paymentId as non_undefined
     
     // extended data:
-    customerOrGuest : CustomerData|CustomerOrGuestData // customer|guest data from orders route
+    customerOrGuest : CustomerConnectData|GuestCreateData // customer|guest data from orders route
 }
 
 
@@ -249,7 +251,7 @@ export type CreateOrderData =
     &(
         |{
             // extended data:
-            customerOrGuest  : CustomerData|CustomerOrGuestData // customer|guest data from orders route
+            customerOrGuest  : CustomerConnectData|GuestCreateData // customer|guest data from orders route
         }
         |{
             // extended data:

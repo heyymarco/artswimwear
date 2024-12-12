@@ -346,6 +346,11 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             const totalFeeStepped = fractions * fractionUnit;
                             return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
                         })(),
+                        
+                        // no need to save the paymentMethod:
+                        paymentMethodProvider           : undefined,
+                        paymentMethodProviderId         : undefined,
+                        paymentMethodProviderCustomerId : undefined,
                     } satisfies PaymentDetail;
                 }
                 
@@ -416,6 +421,8 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
         
         hasBillingAddress,
         billingAddress,
+        
+        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
     } = options;
     
     

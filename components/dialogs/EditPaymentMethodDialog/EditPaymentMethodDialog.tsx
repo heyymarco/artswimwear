@@ -335,7 +335,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         const paymentPriorityProvider = paymentPriorityProviderRef.current;
         if (!paymentPriorityProvider) throw undefined;
         const paymentMethodSetupOrNewPaymentMethod = await createPaymentMethodSetup({
-            provider: paymentPriorityProvider,
+            paymentMethodProvider : paymentPriorityProvider,
             billingAddress,
             cardToken : options?.cardToken,
             
@@ -346,13 +346,13 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         
         
         
-        if ('setupToken' in paymentMethodSetupOrNewPaymentMethod) {
+        if ('paymentMethodSetupToken' in paymentMethodSetupOrNewPaymentMethod) {
             const {
-                setupToken,
+                paymentMethodSetupToken,
                 redirectData,
             } = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodSetupDetail;
             return {
-                orderId      : setupToken,
+                orderId      : paymentMethodSetupToken,
                 redirectData : redirectData,
             } satisfies PlaceOrderDetail;
         }
@@ -362,6 +362,11 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 ...newPaymentMethod,
                 amount     : 0,
                 fee        : 0,
+                
+                // no need to save the paymentMethod:
+                paymentMethodProvider           : undefined,
+                paymentMethodProviderId         : undefined,
+                paymentMethodProviderCustomerId : undefined,
             } satisfies PaymentDetail;
         } // if
     });
@@ -381,6 +386,11 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             ...newPaymentMethod,
             amount     : 0,
             fee        : 0,
+            
+            // no need to save the paymentMethod:
+            paymentMethodProvider           : undefined,
+            paymentMethodProviderId         : undefined,
+            paymentMethodProviderCustomerId : undefined,
         } satisfies PaymentDetail;
     });
     

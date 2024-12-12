@@ -70,15 +70,15 @@ export const PaymentMethodProviderSchema = z.enum([
 ]) satisfies z.Schema<PaymentMethodProvider>;
 
 export const PaymentMethodSetupRequestSchema = z.object({
-    provider       : PaymentMethodProviderSchema,
-    cardToken      : z.string().optional(),
-    billingAddress : BillingAddressDetailSchema.nullable(),
+    paymentMethodProvider : PaymentMethodProviderSchema,
+    cardToken             : z.string().optional(),
+    billingAddress        : BillingAddressDetailSchema.nullable(),
     
-    id             : z.union([
+    id                    : z.union([
         ModelIdSchema,
         EmptyStringSchema,
     ]),
-    currency       : CurrencySchema,
+    currency              : CurrencySchema,
 }) satisfies z.Schema<PaymentMethodSetupRequest>;
 
 

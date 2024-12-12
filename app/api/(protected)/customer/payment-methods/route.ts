@@ -58,7 +58,7 @@ import {
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
     deleteNonRelatedAccounts,
-}                           from './utilities'
+}                           from '@/libs/payment-method-utilities'
 
 // configs:
 import {
@@ -143,7 +143,7 @@ router
     //#region query result
     try {
         const [customerIds, total, paged] = await prisma.$transaction([
-            //#region find existing providerCustomerId
+            //#region find existing paymentMethodProviderCustomerId
             prisma.customer.findUnique({
                 where  : {
                     id : customerId, // important: the signedIn customerId
@@ -154,7 +154,7 @@ router
                     midtransCustomerId : true,
                 },
             }),
-            //#endregion find existing providerCustomerId
+            //#endregion find existing paymentMethodProviderCustomerId
             
             prisma.paymentMethod.count({
                 where  : {
@@ -181,13 +181,13 @@ router
         
         
         //#region query api
-        //#region find existing providerCustomerId
+        //#region find existing paymentMethodProviderCustomerId
         const {
             paypalCustomerId,
             stripeCustomerId,
             // midtransCustomerId,
         } = customerIds;
-        //#endregion find existing providerCustomerId
+        //#endregion find existing paymentMethodProviderCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
             ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
@@ -267,7 +267,7 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const [
-        provider,
+        paymentMethodProvider,
         providerVaultToken,
     ] = paymentData;
     //#endregion parsing and validating request
@@ -286,7 +286,7 @@ router
     try {
         //#region process the vault token
         const paymentMethodCapture = await (async (): Promise<PaymentMethodCapture|null> => {
-            switch (provider) {
+            switch (paymentMethodProvider) {
                 case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken) : null;
                 case 'STRIPE': return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCapturePaymentMethod(providerVaultToken) : null;
                 default      : return null;
@@ -301,16 +301,15 @@ router
         
         
         
-        const response = await createOrUpdatePaymentMethod(createOrUpdatedata, customerId, provider, paymentMethodCapture);
+        const response = await prisma.$transaction(async (prismaTransaction) => {
+            return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodCapture);
+        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
         
         // undo `providerCapturePaymentMethod()` if `createOrUpdatePaymentMethod()` failed:
         if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
-            const {
-                providerPaymentMethodId,
-            } = paymentMethodCapture;
-            await deletePaymentMethodAccount(provider, providerPaymentMethodId);
+            await deletePaymentMethodAccount(paymentMethodCapture);
         } // if
         
         
@@ -362,7 +361,7 @@ router
     try {
         const deletedPaymentMethod = await prisma.$transaction(async (prismaTransaction): Promise<Pick<PaymentMethodDetail, 'id'|'priority'>> => {
             const [total, deletedPaymentMethod] = await Promise.all([
-                prisma.paymentMethod.count({
+                prismaTransaction.paymentMethod.count({
                     where  : {
                         parentId : customerId, // important: the signedIn customerId
                     },
@@ -385,8 +384,8 @@ router
             const {
                 id                      : deletedPaymentMethodId,
                 sort                    : deletedSort,
-                provider                : existingProvider,
-                providerPaymentMethodId : existingProviderPaymentMethodId,
+                provider                : existingPaymentMethodProvider,
+                providerPaymentMethodId : existingPaymentMethodProviderId,
             } = deletedPaymentMethod;
             
             
@@ -405,7 +404,10 @@ router
             
             
             // after successfully deleted => delete payment token account:
-            await deletePaymentMethodAccount(existingProvider, existingProviderPaymentMethodId);
+            await deletePaymentMethodAccount({
+                paymentMethodProvider   : existingPaymentMethodProvider,
+                paymentMethodProviderId : existingPaymentMethodProviderId,
+            });
             
             
             
@@ -413,11 +415,13 @@ router
                 id       : deletedPaymentMethodId,
                 priority : total - deletedSort - 1,
             };
-        }, { timeout: 15000 }); // give a longer timeout for deleting_db and `deletePaymentMethodAccount` // may up to 15 secs
+        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
         
-        await deleteNonRelatedAccounts(customerId); // never thrown
+        await prisma.$transaction(async (prismaTransaction) => {
+            await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
+        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         return Response.json(deletedPaymentMethod); // handled with success
     }
     catch (error: any) {

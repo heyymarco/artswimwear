@@ -26,6 +26,9 @@ import {
 import {
     type CartDetail,
 }                           from '../carts'
+import {
+    type PaymentMethodSetupOptions,
+}                           from '../payment-methods'
 
 // paypal:
 import {
@@ -147,19 +150,31 @@ export interface DetailedItem
     priceConverted : DraftOrderItem['price'] // renamed to priceConverted
 }
 
-export interface CreateOrderOptions {
-    currency                    : string
-    totalCostConverted          : number
-    totalProductPriceConverted  : number
-    totalShippingCostConverted  : number|null
+export interface CreateOrderOptions
+    extends
+        Partial<Pick<PaymentMethodSetupOptions,
+            |'paymentMethodProviderCustomerId'
+        >>
+{
+    currency                         : string
+    totalCostConverted               : number
+    totalProductPriceConverted       : number
+    totalShippingCostConverted       : number|null
     
-    detailedItems               : DetailedItem[]
+    detailedItems                    : DetailedItem[]
     
-    hasShippingAddress          : boolean
-    shippingAddress             : ShippingAddressDetail|null
+    hasShippingAddress               : boolean
+    shippingAddress                  : ShippingAddressDetail|null
     
-    hasBillingAddress          ?: boolean
-    billingAddress             ?: BillingAddressDetail|null
+    hasBillingAddress               ?: boolean
+    billingAddress                  ?: BillingAddressDetail|null
+    
+    /**
+     * If provided => save the customer's card to database.  
+     * If null => create a new customer and then save the customer's card to database.  
+     * If undefined => do not save the customer's card.
+     */
+    paymentMethodProviderCustomerId ?: string|null
 }
 export interface AuthorizedFundData {
     paymentId     : string
@@ -191,6 +206,7 @@ export interface PlaceOrderRequestOptions
         |'manual'
         
         // paypal:
+        |'paypalCard'
         |PaypalCreateOrderData['paymentSource']
         
         // stripe:
@@ -202,6 +218,7 @@ export interface PlaceOrderRequestOptions
     
     cardToken     ?: string
     captcha       ?: string
+    saveCard      ?: boolean
 }
 export interface PlaceOrderRequestBasic
     extends
