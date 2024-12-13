@@ -180,7 +180,7 @@ export interface PaymentDetailBasic
     expiresAt      ?: Payment['expiresAt'] // converted to optional
     billingAddress ?: BillingAddressDetail|null
     
-    paymentId      ?: string // an optional token for make manual_payment
+    paymentId      ?: string // an optional secondary id related to paymentProcessor's orderId|paymentIntentId|transactionId
 }
 export type PaymentDetail =
     &PaymentDetailBasic

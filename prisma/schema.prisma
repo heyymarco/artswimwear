@@ -452,7 +452,7 @@ model Order {
     
     // data:
     orderId                         String                          @unique // a secondary id for public identifier
-    paymentId                       String?                         @unique // a secondary id for public identifier
+    paymentId                       String?                         @unique // an optional secondary id related to paymentProcessor's orderId|paymentIntentId|transactionId
     
     currency                        OrderCurrency?
     
