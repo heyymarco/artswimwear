@@ -1445,7 +1445,7 @@ router
         
         
         // send email confirmation:
-        if (paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
+        if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
             await Promise.all([
                 // notify for waiting for payment (manual_payment):
                 // -or-
@@ -1862,7 +1862,7 @@ router
         
         
         // send email confirmation:
-        if (newOrder) {
+        if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && newOrder) {
             await Promise.all([
                 // notify that the payment has been received:
                 sendConfirmationEmail({
