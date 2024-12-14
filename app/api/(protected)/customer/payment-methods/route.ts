@@ -58,6 +58,7 @@ import {
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
     deleteNonRelatedAccounts,
+    deletePaymentMethod,
 }                           from '@/libs/payment-method-utilities'
 
 // configs:
@@ -360,14 +361,14 @@ router
     //#region save changes
     try {
         const deletedPaymentMethod = await prisma.$transaction(async (prismaTransaction): Promise<Pick<PaymentMethodDetail, 'id'|'priority'>> => {
-            const [total, deletedPaymentMethod] = await Promise.all([
+            const [total, deletingPaymentMethod] = await Promise.all([
                 prismaTransaction.paymentMethod.count({
                     where  : {
                         parentId : customerId, // important: the signedIn customerId
                     },
                 }),
                 
-                prismaTransaction.paymentMethod.delete({
+                prismaTransaction.paymentMethod.findFirstOrThrow({
                     where  : {
                         parentId : customerId, // important: the signedIn customerId
                         id       : id,
@@ -382,28 +383,20 @@ router
                 }),
             ]);
             const {
-                id                      : deletedPaymentMethodId,
-                sort                    : deletedSort,
+                id                      : deletingPaymentMethodId,
+                sort                    : deletingSort,
                 provider                : existingPaymentMethodProvider,
                 providerPaymentMethodId : existingPaymentMethodProviderId,
-            } = deletedPaymentMethod;
+            } = deletingPaymentMethod;
             
             
             
             // decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
-            await prismaTransaction.paymentMethod.updateMany({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    sort     : { gt: deletedSort },
-                },
-                data   : {
-                    sort     : { decrement: 1 },
-                },
-            });
+            await deletePaymentMethod(prismaTransaction, customerId, [deletingPaymentMethodId]);
             
             
             
-            // after successfully deleted => delete payment token account:
+            // after successfully deleted of the api above => delete payment token account:
             await deletePaymentMethodAccount({
                 paymentMethodProvider   : existingPaymentMethodProvider,
                 paymentMethodProviderId : existingPaymentMethodProviderId,
@@ -412,8 +405,8 @@ router
             
             
             return {
-                id       : deletedPaymentMethodId,
-                priority : total - deletedSort - 1,
+                id       : deletingPaymentMethodId,
+                priority : total - deletingSort - 1,
             };
         }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         

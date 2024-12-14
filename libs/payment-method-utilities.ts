@@ -238,58 +238,148 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
         
         
         
+        const mergedExcessInternalPaymentMethodIds : string[] = [];
+        const mergedExcessExternalPaymentMethodsIdsDeletedPromises : Promise<void>[] = [];
         await Promise.allSettled([
+            // delete api for paypal:
             checkoutConfigServer.payment.processors.paypal.enabled && paypalCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'PAYPAL')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
                 const allExternalPaymentMethods       = Array.from((await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
                 const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
                 
-                await Promise.allSettled([
-                    excessInternalPaymentMethodIds.length && prismaTransaction.paymentMethod.deleteMany({
-                        where  : {
-                            parentId : customerId, // important: the signedIn customerId
-                            provider : 'PAYPAL',
-                            id       : { in: excessInternalPaymentMethodIds },
-                        },
-                    }),
-                    
+                mergedExcessInternalPaymentMethodIds.push(
+                    ...excessInternalPaymentMethodIds
+                );
+                mergedExcessExternalPaymentMethodsIdsDeletedPromises.push(
                     ...
                     excessExternalPaymentMethodsIds
                     .map((excessExternalPaymentMethodsId) =>
                         paypalDeletePaymentMethod(excessExternalPaymentMethodsId)
                     ),
-                ]);
+                );
             })(),
             
+            
+            
+            // delete api for stripe:
             checkoutConfigServer.payment.processors.stripe.enabled && stripeCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'STRIPE')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
                 const allExternalPaymentMethods       = Array.from((await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
                 const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
                 
-                await Promise.allSettled([
-                    excessInternalPaymentMethodIds.length && prismaTransaction.paymentMethod.deleteMany({
-                        where  : {
-                            parentId : customerId, // important: the signedIn customerId
-                            provider : 'STRIPE',
-                            id       : { in: excessInternalPaymentMethodIds },
-                        },
-                    }),
-                    
+                mergedExcessInternalPaymentMethodIds.push(
+                    ...excessInternalPaymentMethodIds
+                );
+                mergedExcessExternalPaymentMethodsIdsDeletedPromises.push(
                     ...
                     excessExternalPaymentMethodsIds
                     .map((excessExternalPaymentMethodsId) =>
                         stripeDeletePaymentMethod(excessExternalPaymentMethodsId)
                     ),
-                ]);
+                );
             })(),
             
-            // TODO: api for midtrans
+            
+            
+            // TODO: delete api for midtrans
+        ]);
+        
+        
+        
+        // after successfully deleted of the api above => decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
+        await Promise.all([
+            // decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
+            deletePaymentMethod(prismaTransaction, customerId, mergedExcessInternalPaymentMethodIds),
+            
+            
+            
+            // also wait for all api delete done:
+            Promise.allSettled(mergedExcessExternalPaymentMethodsIdsDeletedPromises),
         ]);
     }
     catch (error: any) {
         console.log(error);
         // ignore any error
     } // try
+};
+
+
+
+export const deletePaymentMethod         = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string, paymentMethodIdsToDelete: string[]): Promise<void> => {
+    // conditions:
+    paymentMethodIdsToDelete = Array.from(new Set<string>(paymentMethodIdsToDelete)); // ensure each id is unique
+    if (!paymentMethodIdsToDelete.length) return;
+    
+    
+    
+    const deletedSortsDesc = (await prismaTransaction.paymentMethod.findMany({
+        where  : {
+            parentId : customerId, // important: the signedIn customerId
+            id       : { in: paymentMethodIdsToDelete },
+        },
+        select : {
+            sort     : true,
+        },
+        orderBy : {
+            sort: 'desc',
+        },
+    })).map(({sort}) => sort);
+    const deletedPaymentMethodPromise = prismaTransaction.paymentMethod.deleteMany({
+        where  : {
+            parentId : customerId, // important: the signedIn customerId
+            id       : { in: paymentMethodIdsToDelete },
+        },
+    });
+    if (!deletedSortsDesc.length) return;
+    const minDeletedSort = deletedSortsDesc[deletedSortsDesc.length - 1];
+    
+    
+    
+    const siblingSortsAsc = await prismaTransaction.paymentMethod.findMany({
+        where  : {
+            parentId : customerId, // important: the signedIn customerId
+            id       : { notIn: paymentMethodIdsToDelete },
+            sort     : { gt: minDeletedSort },
+        },
+        select : {
+            id       : true,
+            sort     : true,
+        },
+        orderBy : {
+            sort: 'asc',
+        },
+    });
+    for (const deletedSort of deletedSortsDesc) {
+        const startIndex = siblingSortsAsc.findIndex(({sort}) => (sort > deletedSort));
+        if (startIndex < 0) continue; // not found => skip to next
+        
+        
+        
+        for (let index = startIndex; index < siblingSortsAsc.length; index++) {
+            siblingSortsAsc[index].sort--; // decrement by 1
+        } // for
+    } // for
+    
+    
+    
+    await Promise.all([
+        deletedPaymentMethodPromise,
+        
+        
+        
+        ...
+        siblingSortsAsc
+        .map(({id, sort}) =>
+            prismaTransaction.paymentMethod.update({
+                where  : {
+                    id : id,
+                },
+                data   : {
+                    sort: sort,
+                },
+            })
+        )
+    ]);
 };
