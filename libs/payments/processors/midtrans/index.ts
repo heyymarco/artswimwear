@@ -10,6 +10,8 @@ import {
     type AuthorizedFundData,
     type PaymentDetail,
     
+    type PaymentMethodCapture,
+    
     
     
     // utilities:
@@ -38,14 +40,14 @@ const midtransUrl = midtransBaseUrl.development; // TODO: auto switch developmen
 
 
 /**
- * undefined          : Transaction not found.  
- * null               : Transaction creation was denied.  
- * AuthorizedFundData : Authorized for payment.  
- * PaymentDetail      : Paid.  
- * false              : Transaction was deleted due to canceled.  
- * empty_string       : Transaction was deleted due to expired.  
+ * undefined                                  : Transaction not found.  
+ * null                                       : Transaction creation was denied.  
+ * AuthorizedFundData                         : Authorized for payment.  
+ * [PaymentDetail, PaymentMethodCapture|null] : Paid.  
+ * false                                      : Transaction was deleted due to canceled.  
+ * empty_string                               : Transaction was deleted due to expired.  
  */
-export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|PaymentDetail|false|'' => {
+export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|false|'' => {
     switch (`${midtransPaymentData.status_code}` /* stringify */) {
         case '404' : {
             // Transaction not found
@@ -281,77 +283,79 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             };
                         } // switch
                     })();
-                    return {
-                        ...paymentDetailPartial,
+                    return [
+                        {
+                            ...paymentDetailPartial,
+                            
+                            amount : amount,
+                            fee    : ((): number => {
+                                let mdrFee = 0;
+                                switch (paymentDetailPartial.type) {
+                                    case 'CARD':
+                                        mdrFee = (amount * (2.9 / 100)) + 2000; // 2.9% + Rp2000
+                                        break;
+                                    
+                                    case 'EWALLET':
+                                        switch (paymentDetailPartial.brand?.toLowerCase()) {
+                                            case 'gopay':
+                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                                break;
+                                            
+                                            case 'shopeepay':
+                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                                break;
+                                            
+                                            case 'qris':
+                                                mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
+                                                break;
+                                            
+                                            default:
+                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                                break;
+                                        } // switch
+                                        break;
+                                    
+                                    case 'MANUAL_PAID':
+                                        switch (paymentDetailPartial.brand?.toLowerCase()) {
+                                            case 'indomaret':
+                                                mdrFee = 5000; // Rp5000
+                                                break;
+                                            
+                                            case 'alfamart':
+                                                mdrFee = 5000; // Rp5000
+                                                break;
+                                            
+                                            default:
+                                                mdrFee = 5000; // Rp5000
+                                                break;
+                                        } // switch
+                                        break;
+                                } // switch
+                                
+                                
+                                
+                                const vat = (mdrFee * (11 / 100)); // VAT is 11%
+                                
+                                
+                                
+                                const totalFeeRaw  = (mdrFee + vat);
+                                const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
+                                const rounding     = {
+                                    ROUND : Math.round,
+                                    CEIL  : Math.ceil,
+                                    FLOOR : Math.floor,
+                                }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
+                                const fractions       = rounding(totalFeeRaw / fractionUnit);
+                                const totalFeeStepped = fractions * fractionUnit;
+                                return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
+                            })(),
+                        } satisfies PaymentDetail,
                         
-                        amount : amount,
-                        fee    : ((): number => {
-                            let mdrFee = 0;
-                            switch (paymentDetailPartial.type) {
-                                case 'CARD':
-                                    mdrFee = (amount * (2.9 / 100)) + 2000; // 2.9% + Rp2000
-                                    break;
-                                
-                                case 'EWALLET':
-                                    switch (paymentDetailPartial.brand?.toLowerCase()) {
-                                        case 'gopay':
-                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                            break;
-                                        
-                                        case 'shopeepay':
-                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                            break;
-                                        
-                                        case 'qris':
-                                            mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
-                                            break;
-                                        
-                                        default:
-                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                            break;
-                                    } // switch
-                                    break;
-                                
-                                case 'MANUAL_PAID':
-                                    switch (paymentDetailPartial.brand?.toLowerCase()) {
-                                        case 'indomaret':
-                                            mdrFee = 5000; // Rp5000
-                                            break;
-                                        
-                                        case 'alfamart':
-                                            mdrFee = 5000; // Rp5000
-                                            break;
-                                        
-                                        default:
-                                            mdrFee = 5000; // Rp5000
-                                            break;
-                                    } // switch
-                                    break;
-                            } // switch
-                            
-                            
-                            
-                            const vat = (mdrFee * (11 / 100)); // VAT is 11%
-                            
-                            
-                            
-                            const totalFeeRaw  = (mdrFee + vat);
-                            const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
-                            const rounding     = {
-                                ROUND : Math.round,
-                                CEIL  : Math.ceil,
-                                FLOOR : Math.floor,
-                            }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
-                            const fractions       = rounding(totalFeeRaw / fractionUnit);
-                            const totalFeeStepped = fractions * fractionUnit;
-                            return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                        })(),
+                        
                         
                         // no need to save the paymentMethod:
-                        paymentMethodProvider           : undefined,
-                        paymentMethodProviderId         : undefined,
-                        paymentMethodProviderCustomerId : undefined,
-                    } satisfies PaymentDetail;
+                        null,
+                    ];
                 }
                 
                 
@@ -407,7 +411,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         [payment in TPayment] : object;
     }
-export const midtransCreateOrderGeneric       = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderGeneric       = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     const {
         currency,
         totalCostConverted,
@@ -506,14 +510,14 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
         default:
             /*
                 expected result:
-                * null               : Transaction creation was denied.
-                * AuthorizedFundData : Authorized for payment.
-                * PaymentDetail      : Paid.
+                * null                                       : Transaction creation was denied.
+                * AuthorizedFundData                         : Authorized for payment.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
             */
             return result;
     } // switch
 }
-export const midtransCreateOrderWithCard      = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithCard      = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
@@ -526,7 +530,7 @@ export const midtransCreateOrderWithCard      = async (cardToken: string, orderI
         },
     }, orderId, options);
 }
-export const midtransCreateOrderWithQris      = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithQris      = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'qris'>({
         payment_type         : 'qris',
         qris                 : {
@@ -557,7 +561,7 @@ export const midtransCreateOrderWithQris      = async (orderId: string, options:
     }
     */
 }
-export const midtransCreateOrderWithGopay     = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithGopay     = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'gopay'>({
         payment_type         : 'gopay',
         gopay                : {
@@ -604,7 +608,7 @@ export const midtransCreateOrderWithGopay     = async (orderId: string, options:
     }
     */
 }
-export const midtransCreateOrderWithShopeepay = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithShopeepay = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'shopeepay'>({
         payment_type         : 'shopeepay',
         shopeepay            : {
@@ -636,7 +640,7 @@ export const midtransCreateOrderWithShopeepay = async (orderId: string, options:
     }
     */
 }
-export const midtransCreateOrderWithIndomaret = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithIndomaret = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'cstore'>({
         payment_type         : 'cstore',
         cstore               : {
@@ -663,7 +667,7 @@ export const midtransCreateOrderWithIndomaret = async (orderId: string, options:
     }
     */
 }
-export const midtransCreateOrderWithAlfamart  = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithAlfamart  = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     return midtransCreateOrderGeneric<'cstore'>({
         payment_type         : 'cstore',
         cstore               : {
@@ -694,7 +698,7 @@ export const midtransCreateOrderWithAlfamart  = async (orderId: string, options:
 
 
 
-export const midtransCaptureFund          = async (paymentId: string): Promise<PaymentDetail|undefined> => {
+export const midtransCaptureFund          = async (paymentId: string): Promise<[PaymentDetail, PaymentMethodCapture|null]|null> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
     //     method  : 'GET',
     //     headers : {
@@ -721,7 +725,6 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
     switch (result) {
         // unexpected results:
         case undefined :   // Transaction not found.
-        case null      :   // Transaction creation was denied.
         case false     :   // Transaction was deleted due to canceled.
         case ''        : { // Transaction was deleted due to expired.
             console.log('unexpected response: ', midtransPaymentData);
@@ -742,7 +745,8 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
             
             /*
                 expected result:
-                * PaymentDetail : Paid.
+                * null                                       : Transaction creation was denied.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
             */
             return result;
     } // switch

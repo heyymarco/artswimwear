@@ -6,7 +6,6 @@ import {
     type PaymentDetail,
     
     type PaymentMethodDetail,
-    
     type PaymentMethodSetupOptions,
     type PaymentMethodSetup,
     type PaymentMethodCapture,
@@ -39,15 +38,15 @@ export interface StripeTranslateDataOptions {
     resolveMissingPaymentMethod ?: boolean
 }
 /**
- * undefined          : (never happened) Transaction not found.  
- * null               : Transaction creation was denied (for example due to a decline).  
- * 0                  : Transaction is being processed (may be processed on customer_side or stripe_side).  
- * AuthorizedFundData : Authorized for payment.  
- * PaymentDetail      : Paid.  
- * false              : Transaction was deleted due to canceled.  
- * empty_string       : (never happened) Transaction was deleted due to expired.  
+ * undefined                                  : (never happened) Transaction not found.  
+ * null                                       : Transaction creation was denied (for example due to a decline).  
+ * 0                                          : Transaction is being processed (may be processed on customer_side or stripe_side).  
+ * AuthorizedFundData                         : Authorized for payment.  
+ * [PaymentDetail, PaymentMethodCapture|null] : Paid.  
+ * false                                      : Transaction was deleted due to canceled.  
+ * empty_string                               : (never happened) Transaction was deleted due to expired.  
  */
-export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
+export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|false> => {
     // options:
     const {
         resolveMissingFee           = false, // false by default because the operation may take quite long time
@@ -477,28 +476,26 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                     identifier : null,
                 };
             })();
-            return {
-                ...paymentDetailPartial,
+            return [
+                {
+                    ...paymentDetailPartial,
+                    
+                    amount : revertCurrencyFromStripeNominal(amount, currency),
+                    fee    : revertCurrencyFromStripeNominal(fee   , currency),
+                } satisfies PaymentDetail,
                 
-                amount : revertCurrencyFromStripeNominal(amount, currency),
-                fee    : revertCurrencyFromStripeNominal(fee   , currency),
                 
-                ...(
-                    (paymentMethod && paymentMethod.customer)
-                    ? {
-                        // needs to save the paymentMethod:
-                        paymentMethodProvider           : 'STRIPE',
-                        paymentMethodProviderId         : paymentMethod.id,
-                        paymentMethodProviderCustomerId : (typeof(paymentMethod.customer) === 'string') ? paymentMethod.customer : paymentMethod.customer.id,
-                    }
-                    : {
-                        // no need to save the paymentMethod:
-                        paymentMethodProvider           : undefined,
-                        paymentMethodProviderId         : undefined,
-                        paymentMethodProviderCustomerId : undefined,
-                    }
-                ),
-            } satisfies PaymentDetail;
+                
+                (paymentMethod && paymentMethod.customer)
+                // needs to save the paymentMethod:
+                ? {
+                    paymentMethodProvider           : 'STRIPE',
+                    paymentMethodProviderId         : paymentMethod.id,
+                    paymentMethodProviderCustomerId : (typeof(paymentMethod.customer) === 'string') ? paymentMethod.customer : paymentMethod.customer.id,
+                }
+                // no need to save the paymentMethod:
+                : null,
+            ] as const;
         }
         
         
@@ -535,7 +532,7 @@ export const stripeGetPaymentFee = async (charge: Stripe.Charge): Promise<number
 
 
 
-export const stripeCreateOrder = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const stripeCreateOrder = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     if (!stripe) throw Error('stripe is not loaded');
     
     
@@ -1100,9 +1097,9 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
         default:
             /*
                 expected result:
-                * null               : Transaction creation was denied.
-                * AuthorizedFundData : Authorized for payment.
-                * PaymentDetail      : Paid.
+                * null                                       : Transaction creation was denied.
+                * AuthorizedFundData                         : Authorized for payment.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
             */
             return result;
     } // switch
@@ -1280,7 +1277,7 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
 
 
 
-export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetail|undefined> => {
+export const stripeCaptureFund = async (paymentId: string): Promise<[PaymentDetail, PaymentMethodCapture|null]|null> => {
     if (!stripe) throw Error('stripe is not loaded');
     
     
@@ -1300,7 +1297,6 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
     switch (result) {
         // unexpected results:
         case undefined :   // (never happened) Transaction not found.
-        case null      :   // Transaction creation was denied.
         case 0         :   // Transaction is being processed (may be processed on customer_side or stripe_side).
         case false     : { // Transaction was deleted due to canceled.
             console.log('unexpected response: ', paymentIntent);
@@ -1321,7 +1317,8 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
             
             /*
                 expected result:
-                * PaymentDetail : Paid.
+                * null                                       : Transaction creation was denied.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
             */
             return result;
     } // switch

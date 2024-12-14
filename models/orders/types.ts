@@ -67,12 +67,7 @@ export interface OrderDetail
     // data:
     currency        : OrderCurrencyDetail|null
     shippingAddress : ShippingAddressDetail|null
-    payment         : Omit<PaymentDetail,
-        // no need to save the paymentMethod:
-        |'paymentMethodProvider'
-        |'paymentMethodProviderId'
-        |'paymentMethodProviderCustomerId'
-    >|null
+    payment         : PaymentDetail|null
 }
 
 export interface OrderDetailWithOptions
@@ -163,7 +158,7 @@ export interface OrderCurrencyDetail
 
 
 
-export interface PaymentDetailBasic
+export interface PaymentDetail
     extends
         Omit<Payment,
             // records:
@@ -182,19 +177,6 @@ export interface PaymentDetailBasic
     
     paymentId      ?: string // an optional secondary id related to paymentProcessor's orderId|paymentIntentId|transactionId
 }
-export type PaymentDetail =
-    &PaymentDetailBasic
-    
-    // optionally having PaymentMethodCapture:
-    &(
-        // not having PaymentMethodCapture:
-        |{ [key in keyof PaymentMethodCapture]: undefined }
-        
-        // -or- // discriminative union
-        
-        // having PaymentMethodCapture:
-        |PaymentMethodCapture
-    )
 
 
 
@@ -204,6 +186,7 @@ export interface CreateDraftOrderData
         Omit<CreateOrderDataBasic,
             // extended data:
             |'payment'
+            |'paymentMethodCapture'
             |'paymentConfirmationToken'
         >
 {
@@ -244,6 +227,7 @@ export interface CreateOrderDataBasic {
     
     // extended data:
     payment                  : PaymentDetail
+    paymentMethodCapture     : PaymentMethodCapture|null
     paymentConfirmationToken : string|null
 }
 export type CreateOrderData =
@@ -281,8 +265,9 @@ export type CommitDraftOrder = Omit<DraftOrderDetail,
     >[]
 }
 export interface CommitDraftOrderData {
-    draftOrder : CommitDraftOrder
-    payment    : PaymentDetail
+    draftOrder           : CommitDraftOrder
+    payment              : PaymentDetail
+    paymentMethodCapture : PaymentMethodCapture|null
 }
 
 

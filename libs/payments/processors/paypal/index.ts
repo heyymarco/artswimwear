@@ -5,7 +5,6 @@ import {
     type PaymentDetail,
     
     type PaymentMethodDetail,
-    
     type PaymentMethodSetupOptions,
     type PaymentMethodSetup,
     type PaymentMethodCapture,
@@ -609,7 +608,7 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     } satisfies PaymentMethodSetup;
 }
 
-export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
+export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDetail, PaymentMethodCapture|null]|null> => {
     const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
         method  : 'POST',
         headers : {
@@ -868,63 +867,64 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
             // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
             const fee       = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
             
-            return {
-                ...((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                    const paymentSource = paypalPaymentData.payment_source;
-                    
-                    
-                    
-                    /* PAY WITH CARD */
-                    const card = paymentSource?.card;
-                    if (card) {
-                        return {
-                            type       : 'CARD',
-                            brand      : card.brand?.toLowerCase() ?? null,
-                            identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
-                        };
-                    } // if
-                    
-                    
-                    
-                    /* PAY WITH PAYPAL */
-                    const paypal = paymentSource?.paypal;
-                    if (paypal) {
-                        return {
-                            type       : 'PAYPAL',
-                            brand      : 'paypal',
-                            identifier : paypal.email_address || null,
-                        };
-                    } // if
-                    
-                    
-                    
-                    /* PAY WITH OTHER */
+            
+            
+            const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+                const paymentSource = paypalPaymentData.payment_source;
+                
+                
+                
+                /* PAY WITH CARD */
+                const card = paymentSource?.card;
+                if (card) {
                     return {
-                        type       : 'CUSTOM',
-                        brand      : null,
-                        identifier : null,
+                        type       : 'CARD',
+                        brand      : card.brand?.toLowerCase() ?? null,
+                        identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                     };
-                })(),
+                } // if
                 
-                amount,
-                fee,
                 
-                ...(
-                    (paymentMethodData?.id && paymentMethodData?.customer?.id)
-                    ? {
-                        // needs to save the paymentMethod:
-                        paymentMethodProvider           : 'PAYPAL',
-                        paymentMethodProviderId         : paymentMethodData?.id           as string,
-                        paymentMethodProviderCustomerId : paymentMethodData?.customer?.id as string,
-                    }
-                    : {
-                        // no need to save the paymentMethod:
-                        paymentMethodProvider           : undefined,
-                        paymentMethodProviderId         : undefined,
-                        paymentMethodProviderCustomerId : undefined,
-                    }
-                ),
-            } satisfies PaymentDetail;
+                
+                /* PAY WITH PAYPAL */
+                const paypal = paymentSource?.paypal;
+                if (paypal) {
+                    return {
+                        type       : 'PAYPAL',
+                        brand      : 'paypal',
+                        identifier : paypal.email_address || null,
+                    };
+                } // if
+                
+                
+                
+                /* PAY WITH OTHER */
+                return {
+                    type       : 'CUSTOM',
+                    brand      : null,
+                    identifier : null,
+                };
+            })();
+            return [
+                {
+                    ...paymentDetailPartial,
+                    
+                    amount,
+                    fee,
+                } satisfies PaymentDetail,
+                
+                
+                
+                (paymentMethodData?.id && paymentMethodData?.customer?.id)
+                // needs to save the paymentMethod:
+                ? {
+                    paymentMethodProvider           : 'PAYPAL',
+                    paymentMethodProviderId         : paymentMethodData?.id           as string,
+                    paymentMethodProviderCustomerId : paymentMethodData?.customer?.id as string,
+                }
+                // no need to save the paymentMethod:
+                : null,
+            ] as const;
         }
         
         case 'DECLINED'  : {

@@ -362,11 +362,6 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 ...newPaymentMethod,
                 amount     : 0,
                 fee        : 0,
-                
-                // no need to save the paymentMethod:
-                paymentMethodProvider           : undefined,
-                paymentMethodProviderId         : undefined,
-                paymentMethodProviderCustomerId : undefined,
             } satisfies PaymentDetail;
         } // if
     });
@@ -386,11 +381,6 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             ...newPaymentMethod,
             amount     : 0,
             fee        : 0,
-            
-            // no need to save the paymentMethod:
-            paymentMethodProvider           : undefined,
-            paymentMethodProviderId         : undefined,
-            paymentMethodProviderCustomerId : undefined,
         } satisfies PaymentDetail;
     });
     

@@ -158,21 +158,23 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
         
         
         
-        return getMatchingShippings(shippingProviders, {
-            originAddress   : shippingOrigin,
-            shippingAddress : {
-                country,
-                state,
-                city,
-                zip,
-                address,
-                
-                firstName,
-                lastName,
-                phone,
-            },
-            totalProductWeight,
-            prisma,
+        return prisma.$transaction(async (prismaTransaction) => {
+            return await getMatchingShippings(shippingProviders, {
+                originAddress   : shippingOrigin,
+                shippingAddress : {
+                    country,
+                    state,
+                    city,
+                    zip,
+                    address,
+                    
+                    firstName,
+                    lastName,
+                    phone,
+                },
+                totalProductWeight,
+                prismaTransaction,
+            });
         });
     })();
     

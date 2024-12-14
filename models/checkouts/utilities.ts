@@ -2,6 +2,7 @@
 import {
     type CheckoutStep,
     type PaymentDetail,
+    type PaymentMethodCapture,
 }                           from '@/models'
 import {
     type AuthorizedFundData,
@@ -10,22 +11,24 @@ import {
 
 
 
-export const isAuthorizedFundData = (data: AuthorizedFundData|PaymentDetail|boolean|null|undefined): data is AuthorizedFundData => {
+export const isAuthorizedFundData       = (data: AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|PaymentDetail|boolean|null|undefined): data is AuthorizedFundData => {
     return (
         !!data
         &&
         (typeof(data) === 'object')
+        &&
+        !Array.isArray(data)
         &&
         !('amount' in data)
     );
 }
-export const isPaymentDetail      = (data: AuthorizedFundData|PaymentDetail|boolean|null|undefined): data is PaymentDetail => {
+export const isPaymentDetailWithCapture = (data: AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|boolean|null|undefined): data is [PaymentDetail, PaymentMethodCapture|null] => {
     return (
         !!data
         &&
-        (typeof(data) === 'object')
-        &&
-        ('amount' in data)
+        Array.isArray(data)
+        // &&
+        // ('amount' in data?.[0])
     );
 }
 export const calculateCheckoutProgress = (checkoutStep: CheckoutStep): number => {

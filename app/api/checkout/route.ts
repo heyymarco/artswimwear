@@ -58,6 +58,8 @@ import {
     type PaymentDeclined,
     type LimitedStockItem,
     
+    type PaymentMethodCapture,
+    
     
     
     // schemas:
@@ -70,7 +72,7 @@ import {
     revertDraftOrderSelect,
     
     isAuthorizedFundData,
-    isPaymentDetail,
+    isPaymentDetailWithCapture,
     
     defaultShippingOriginSelect,
     
@@ -528,1012 +530,967 @@ router
     
     
     
-    let orderId                   : string|undefined;
-    let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined;
-    let paymentDetail             : PaymentDetail|undefined;
-    let newOrder                  : OrderAndData|undefined = undefined;
-    try {
-        const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentSource);
-        const paymentConfirmationToken = (
-            isPaid
-            ? null // no need for `paymentConfirmation`, because the order is paid_immediately
-            : await (async (): Promise<string> => {
-                const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
-                let tempToken = await nanoid();
-                
-                for (let attempts = 10; attempts > 0; attempts--) {
-                    const foundDuplicate = await prisma.paymentConfirmation.count({
-                        where : {
-                            token : tempToken,
-                        },
-                        take : 1,
-                    });
-                    if (!foundDuplicate) return tempToken;
-                } // for
-                console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
-                throw 'INTERNAL_ERROR';
-            })()
-        );
-        
-        
-        
-        ({orderId, authorizedOrPaymentDetail, paymentDetail, newOrder} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaymentDetail: AuthorizedFundData|PaymentDetail|undefined, paymentDetail: PaymentDetail|undefined, newOrder : OrderAndData|undefined }> => {
-            //#region batch queries
-            const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
-                (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
-                    where  : {
-                        id         : shippingProviderId,
-                        visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                    },
-                    select : {
-                        // records:
-                        id         : true, // required for identifier
-                        
-                        
-                        
-                        // data:
-                        name       : true, // required for identifier
-                        
-                        weightStep : true, // required for calculate_shipping_cost algorithm
-                        rates      : {     // required for calculate_shipping_cost algorithm
-                            select : {
-                                // data:
-                                start : true,
-                                rate  : true,
-                            },
-                        },
-                        
-                        useZones   : true, // required for matching_shipping algorithm
-                    },
-                }) : null,
-                prismaTransaction.product.findMany({
-                    where  : {
-                        id         : { in : validFormattedItems.map((item) => item.productId) },
-                        
-                        visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-                    },
-                    select : {
-                        id             : true,
-                        
-                        name           : true,
-                        
-                        price          : true,
-                        shippingWeight : true,
-                        
-                        variantGroups : {
-                            select : {
-                                hasDedicatedStocks : true,
-                                variants           : {
-                                    where    : {
-                                        visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                    },
-                                    select : {
-                                        id             : true,
-                                        
-                                        name           : true,
-                                        
-                                        price          : true,
-                                        shippingWeight : true,
-                                    },
-                                    orderBy : {
-                                        sort : 'asc',
-                                    },
-                                },
-                            },
-                            orderBy : {
-                                sort : 'asc',
-                            },
-                        },
-                        
-                        stocks : {
-                            select : {
-                                id         : true,
-                                
-                                variantIds : true,
-                                value      : true,
-                            },
-                        },
-                    },
-                }),
-                !simulateOrder ? prismaTransaction.draftOrder.count({
-                    where : {
-                        orderId : tempOrderId,
-                    },
-                    take  : 1,
-                }) : null,
-                !simulateOrder ? prismaTransaction.order.count({
-                    where : {
-                        orderId : tempOrderId,
-                    },
-                    take  : 1,
-                }) : null,
-            ]);
-            //#endregion batch queries
-            
-            
-            
-            //#region re-generate a unique orderId
-            const orderId = !simulateOrder ? await (async (): Promise<string> => {
-                if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) {
-                    return tempOrderId;
-                }
-                else {
+    // performing complex transactions:
+    const authorizedOrPaidOrDeclinedOrSimulatedOrError = await (async (): Promise<AuthorizedFundData|PaymentDetail|null|0|Response> => {
+        try {
+            const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentSource);
+            const paymentConfirmationToken = (
+                isPaid
+                ? null // no need for `paymentConfirmation`, because the order is paid_immediately
+                : await (async (): Promise<string> => {
+                    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+                    let tempToken = await nanoid();
+                    
                     for (let attempts = 10; attempts > 0; attempts--) {
-                        const tempOrderId = await nanoid?.() ?? '';
-                        const [foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
-                            prismaTransaction.draftOrder.count({
-                                where : {
-                                    orderId : tempOrderId,
-                                },
-                                take  : 1,
-                            }),
-                            prismaTransaction.order.count({
-                                where : {
-                                    orderId : tempOrderId,
-                                },
-                                take  : 1,
-                            }),
-                        ]);
-                        if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) return tempOrderId;
+                        const foundDuplicate = await prisma.paymentConfirmation.count({
+                            where : {
+                                token : tempToken,
+                            },
+                            take : 1,
+                        });
+                        if (!foundDuplicate) return tempToken;
                     } // for
-                    console.log('INTERNAL ERROR AT GENERATE UNIQUE ID');
+                    console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
                     throw 'INTERNAL_ERROR';
-                } // if
-            })() : '';
-            //#endregion re-generate a unique orderId
+                })()
+            );
             
             
             
-            //#region validate cart items: check existing products => check product quantities => create detailed items
-            const detailedItems    : DetailedItem[] = [];
-            /**
-             * Contains non_nullable product stocks to be reduced from current stock
-             */
-            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrderItem, 'productId'>> & { stockId: string, quantity: number })[] = [];
-            let totalProductPriceConverted = 0, totalProductWeight : number|null = null;
-            {
-                const productListAdapter = createEntityAdapter<
-                    & Pick<Product,
-                        |'id'
-                        |'name'
-                        |'price'
-                        |'shippingWeight'
-                    >
-                    & {
-                        variantGroups : (
-                            & Pick<VariantGroup, 'hasDedicatedStocks'>
-                            & {
-                                variants : Pick<Variant, 'id'|'name'|'price'|'shippingWeight'>[]
-                            }
-                        )[],
-                        
-                        stocks : Pick<Stock, 'id'|'variantIds'|'value'>[],
+            const transactionResult = await prisma.$transaction(async (prismaTransaction): Promise<AuthorizedFundData|[PaymentDetail, OrderAndData]|null|0> => {
+                //#region batch queries
+                const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
+                    (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
+                        where  : {
+                            id         : shippingProviderId,
+                            visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                        },
+                        select : {
+                            // records:
+                            id         : true, // required for identifier
+                            
+                            
+                            
+                            // data:
+                            name       : true, // required for identifier
+                            
+                            weightStep : true, // required for calculate_shipping_cost algorithm
+                            rates      : {     // required for calculate_shipping_cost algorithm
+                                select : {
+                                    // data:
+                                    start : true,
+                                    rate  : true,
+                                },
+                            },
+                            
+                            useZones   : true, // required for matching_shipping algorithm
+                        },
+                    }) : null,
+                    prismaTransaction.product.findMany({
+                        where  : {
+                            id         : { in : validFormattedItems.map((item) => item.productId) },
+                            
+                            visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+                        },
+                        select : {
+                            id             : true,
+                            
+                            name           : true,
+                            
+                            price          : true,
+                            shippingWeight : true,
+                            
+                            variantGroups : {
+                                select : {
+                                    hasDedicatedStocks : true,
+                                    variants           : {
+                                        where    : {
+                                            visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                        },
+                                        select : {
+                                            id             : true,
+                                            
+                                            name           : true,
+                                            
+                                            price          : true,
+                                            shippingWeight : true,
+                                        },
+                                        orderBy : {
+                                            sort : 'asc',
+                                        },
+                                    },
+                                },
+                                orderBy : {
+                                    sort : 'asc',
+                                },
+                            },
+                            
+                            stocks : {
+                                select : {
+                                    id         : true,
+                                    
+                                    variantIds : true,
+                                    value      : true,
+                                },
+                            },
+                        },
+                    }),
+                    !simulateOrder ? prismaTransaction.draftOrder.count({
+                        where : {
+                            orderId : tempOrderId,
+                        },
+                        take  : 1,
+                    }) : null,
+                    !simulateOrder ? prismaTransaction.order.count({
+                        where : {
+                            orderId : tempOrderId,
+                        },
+                        take  : 1,
+                    }) : null,
+                ]);
+                //#endregion batch queries
+                
+                
+                
+                //#region re-generate a unique orderId
+                const orderId = !simulateOrder ? await (async (): Promise<string> => {
+                    if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) {
+                        return tempOrderId;
                     }
-                >({
-                    selectId : (productData) => productData.id,
-                });
-                const productList = productListAdapter.addMany(
-                    productListAdapter.getInitialState(),
-                    validExistingProducts
-                ).entities;
+                    else {
+                        for (let attempts = 10; attempts > 0; attempts--) {
+                            const tempOrderId = await nanoid?.() ?? '';
+                            const [foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
+                                prismaTransaction.draftOrder.count({
+                                    where : {
+                                        orderId : tempOrderId,
+                                    },
+                                    take  : 1,
+                                }),
+                                prismaTransaction.order.count({
+                                    where : {
+                                        orderId : tempOrderId,
+                                    },
+                                    take  : 1,
+                                }),
+                            ]);
+                            if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) return tempOrderId;
+                        } // for
+                        console.log('INTERNAL ERROR AT GENERATE UNIQUE ID');
+                        throw 'INTERNAL_ERROR';
+                    } // if
+                })() : '';
+                //#endregion re-generate a unique orderId
                 
                 
                 
-                const limitedStockItems : LimitedStockItem[] = [];
-                for (const { productId, variantIds, quantity } of validFormattedItems) {
-                    const product = productList[productId];
-                    // unknown productId => invalid product:
-                    if (!product) {
-                        limitedStockItems.push({
-                            productId,
-                            variantIds,
-                            stock: 0,
-                        });
-                        continue;
-                    } // if
+                //#region validate cart items: check existing products => check product quantities => create detailed items
+                const detailedItems    : DetailedItem[] = [];
+                /**
+                 * Contains non_nullable product stocks to be reduced from current stock
+                 */
+                const reduceStockItems : (RequiredNonNullable<Pick<DraftOrderItem, 'productId'>> & { stockId: string, quantity: number })[] = [];
+                let totalProductPriceConverted = 0, totalProductWeight : number|null = null;
+                {
+                    const productListAdapter = createEntityAdapter<
+                        & Pick<Product,
+                            |'id'
+                            |'name'
+                            |'price'
+                            |'shippingWeight'
+                        >
+                        & {
+                            variantGroups : (
+                                & Pick<VariantGroup, 'hasDedicatedStocks'>
+                                & {
+                                    variants : Pick<Variant, 'id'|'name'|'price'|'shippingWeight'>[]
+                                }
+                            )[],
+                            
+                            stocks : Pick<Stock, 'id'|'variantIds'|'value'>[],
+                        }
+                    >({
+                        selectId : (productData) => productData.id,
+                    });
+                    const productList = productListAdapter.addMany(
+                        productListAdapter.getInitialState(),
+                        validExistingProducts
+                    ).entities;
                     
                     
                     
-                    const validExistingVariantGroups = product.variantGroups;
-                    if (variantIds.length !== validExistingVariantGroups.length) {
-                        // invalid required variantIds => invalid product:
-                        limitedStockItems.push({
-                            productId,
-                            variantIds,
-                            stock: 0,
-                        });
-                        continue;
-                    } // if
-                    
-                    
-                    
-                    // get selected variant by variantGroup:
-                    const selectedVariants = (
-                        validExistingVariantGroups
-                        .map(({hasDedicatedStocks, variants: validVariants}) => {
-                            const validVariant = validVariants.find(({id: validVariantId}) =>
-                                variantIds.includes(validVariantId)
-                            );
-                            if (validVariant === undefined) return undefined;
-                            return {
-                                ...validVariant,
-                                hasDedicatedStocks,
-                            };
-                        })
-                    );
-                    if (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined))) {
-                        // one/some required variants are not selected => invalid product:
-                        limitedStockItems.push({
-                            productId,
-                            variantIds,
-                            stock: 0,
-                        });
-                        continue;
-                    } // if
-                    const selectedVariantIds          = selectedVariants.map(({id}) => id);
-                    const selectedVariantWithStockIds = selectedVariants.filter(({hasDedicatedStocks}) => hasDedicatedStocks).map(({id}) => id);
-                    
-                    
-                    
-                    const currentStock = (
-                        product.stocks
-                        .find(({variantIds}) =>
-                            (variantIds.length === selectedVariantWithStockIds.length)
-                            &&
-                            (variantIds.every((variantId) => selectedVariantWithStockIds.includes(variantId)))
-                        )
-                    );
-                    if (currentStock === undefined) {
-                        // if happened (which it shouldn't), we've a invalid database => invalid product:
-                        limitedStockItems.push({
-                            productId,
-                            variantIds,
-                            stock: 0,
-                        });
-                        continue;
-                    } // if
-                    
-                    
-                    
-                    const stock = currentStock.value;
-                    if (typeof(stock) === 'number') {
-                        // insufficient requested product stock => invalid product stock:
-                        if (quantity > stock) {
+                    const limitedStockItems : LimitedStockItem[] = [];
+                    for (const { productId, variantIds, quantity } of validFormattedItems) {
+                        const product = productList[productId];
+                        // unknown productId => invalid product:
+                        if (!product) {
                             limitedStockItems.push({
                                 productId,
                                 variantIds,
-                                stock,
+                                stock: 0,
+                            });
+                            continue;
+                        } // if
+                        
+                        
+                        
+                        const validExistingVariantGroups = product.variantGroups;
+                        if (variantIds.length !== validExistingVariantGroups.length) {
+                            // invalid required variantIds => invalid product:
+                            limitedStockItems.push({
+                                productId,
+                                variantIds,
+                                stock: 0,
+                            });
+                            continue;
+                        } // if
+                        
+                        
+                        
+                        // get selected variant by variantGroup:
+                        const selectedVariants = (
+                            validExistingVariantGroups
+                            .map(({hasDedicatedStocks, variants: validVariants}) => {
+                                const validVariant = validVariants.find(({id: validVariantId}) =>
+                                    variantIds.includes(validVariantId)
+                                );
+                                if (validVariant === undefined) return undefined;
+                                return {
+                                    ...validVariant,
+                                    hasDedicatedStocks,
+                                };
+                            })
+                        );
+                        if (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined))) {
+                            // one/some required variants are not selected => invalid product:
+                            limitedStockItems.push({
+                                productId,
+                                variantIds,
+                                stock: 0,
+                            });
+                            continue;
+                        } // if
+                        const selectedVariantIds          = selectedVariants.map(({id}) => id);
+                        const selectedVariantWithStockIds = selectedVariants.filter(({hasDedicatedStocks}) => hasDedicatedStocks).map(({id}) => id);
+                        
+                        
+                        
+                        const currentStock = (
+                            product.stocks
+                            .find(({variantIds}) =>
+                                (variantIds.length === selectedVariantWithStockIds.length)
+                                &&
+                                (variantIds.every((variantId) => selectedVariantWithStockIds.includes(variantId)))
+                            )
+                        );
+                        if (currentStock === undefined) {
+                            // if happened (which it shouldn't), we've a invalid database => invalid product:
+                            limitedStockItems.push({
+                                productId,
+                                variantIds,
+                                stock: 0,
+                            });
+                            continue;
+                        } // if
+                        
+                        
+                        
+                        const stock = currentStock.value;
+                        if (typeof(stock) === 'number') {
+                            // insufficient requested product stock => invalid product stock:
+                            if (quantity > stock) {
+                                limitedStockItems.push({
+                                    productId,
+                                    variantIds,
+                                    stock,
+                                });
+                            } // if
+                            
+                            
+                            
+                            // product validation passed => will be used to reduce current product stock:
+                            reduceStockItems.push({
+                                productId,
+                                stockId : currentStock.id,
+                                quantity,
                             });
                         } // if
                         
                         
                         
-                        // product validation passed => will be used to reduce current product stock:
-                        reduceStockItems.push({
-                            productId,
-                            stockId : currentStock.id,
-                            quantity,
-                        });
-                    } // if
-                    
-                    
-                    
-                    const unitPriceParts          = (
-                        [
-                            // base price:
-                            product.price,
-                            
-                            // additional prices, based on selected variants:
-                            ...selectedVariants.map(({price}) => price),
-                        ]
-                        .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
-                    );
-                    const unitPricePartsConverted = await Promise.all(
-                        unitPriceParts
-                        .map(async (unitPricePart): Promise<number> =>
-                            convertCustomerCurrencyIfRequired(unitPricePart, currency)
-                        )
-                    );
-                    const unitPriceConverted      = (
-                        unitPricePartsConverted
-                        .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
-                    );
-                    const unitWeight              = (
-                        [
-                            // base shippingWeight:
-                            product.shippingWeight,
-                            
-                            // additional shippingWeight, based on selected variants:
-                            ...selectedVariants.map(({shippingWeight}) => shippingWeight),
-                        ]
-                        .reduce<number|null>((accum, value): number|null => {
-                            if (value === null) return accum;
-                            if (accum === null) return value;
-                            return (accum + value);
-                        }, null)
-                    );
-                    
-                    
-                    
-                    detailedItems.push({
-                        // relations:
-                        productId      : productId,
-                        variantIds     : selectedVariantIds,
-                        
-                        // readable:
-                        productName    : product.name,
-                        variantNames   : selectedVariants.map(({name}) => name),
-                        
-                        // data:
-                        priceConverted : unitPriceConverted,
-                        shippingWeight : unitWeight,
-                        quantity       : quantity,
-                    });
-                    
-                    
-                    
-                    totalProductPriceConverted  += unitPriceConverted * quantity;          // may produces ugly_fractional_decimal
-                    totalProductPriceConverted   = trimNumber(totalProductPriceConverted); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
-                    
-                    
-                    
-                    if (unitWeight !== null) {
-                        if (totalProductWeight === null) totalProductWeight = 0;           // has a/some physical products => reset the counter from zero if null
-                        
-                        totalProductWeight      += unitWeight         * quantity;          // may produces ugly_fractional_decimal
-                        totalProductWeight       = trimNumber(totalProductWeight);         // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
-                    } // if
-                } // for
-                
-                
-                
-                if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
-                if (simulateOrder) return {
-                    orderId                   : '', // empty string => simulateOrder
-                    authorizedOrPaymentDetail : undefined,
-                    paymentDetail             : undefined,
-                    newOrder                  : undefined,
-                };
-            }
-            if (!hasShippingAddress) {
-                if (totalProductWeight !== null) throw 'BAD_SHIPPING'; // if NO  shippingAddress => should have NO PHYSICAL_GOODS
-            }
-            else {
-                if (totalProductWeight === null) throw 'BAD_SHIPPING'; // if HAS shippingAddress => should HAVE PHYSICAL_GOODS
-            } // if
-            //#endregion validate cart items: check existing products => check product quantities => create detailed items
-            
-            
-            
-            //#region validate shipping
-            if (!simulateOrder && hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
-            
-            const matchingShipping = (
-                (!simulateOrder && hasShippingAddress && !!selectedShipping)
-                ? (
-                    await testMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
-                    ??
-                    await (async (): Promise<MatchingShipping|null> => {
-                        const [shippingOrigin, shippingProviders] = await prisma.$transaction([
-                            prisma.defaultShippingOrigin.findFirst({
-                                select : defaultShippingOriginSelect,
-                            }),
-                            
-                            prisma.shippingProvider.findMany({
-                                where  : {
-                                    visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                },
-                                select : {
-                                    // records:
-                                    id         : true, // required for identifier
-                                    
-                                    
-                                    
-                                    // data:
-                                    name       : true, // required for identifier
-                                    
-                                    weightStep : true, // required for calculate_shipping_cost algorithm
-                                    eta        : {     // optional for matching_shipping algorithm
-                                        select : {
-                                            // data:
-                                            min : true,
-                                            max : true,
-                                        },
-                                    },
-                                    rates      : {     // required for calculate_shipping_cost algorithm
-                                        select : {
-                                            // data:
-                                            start : true,
-                                            rate  : true,
-                                        },
-                                    },
-                                    
-                                    useZones   : true, // required for matching_shipping algorithm
-                                },
-                            }),
-                        ]);
-                        if (!shippingOrigin) return null;
-                        if (!shippingProviders.length) return null;
-                        
-                        
-                        
-                        const externalShippingRates = await getMatchingShippings(shippingProviders, {
-                            originAddress      : shippingOrigin,
-                            shippingAddress    : {
-                                country   : shippingAddress.country,
-                                state     : shippingAddress.state,
-                                city      : shippingAddress.city,
-                                zip       : shippingAddress.zip,
-                                address   : shippingAddress.address,
+                        const unitPriceParts          = (
+                            [
+                                // base price:
+                                product.price,
                                 
-                                firstName : shippingAddress.firstName,
-                                lastName  : shippingAddress.lastName,
-                                phone     : shippingAddress.phone,
-                            },
-                            totalProductWeight : totalProductWeight ?? 0,
-                            prisma,
-                        });
-                        return (
-                            externalShippingRates
-                            .find(({id}) => (id === selectedShipping.id))
-                            ??
-                            null
+                                // additional prices, based on selected variants:
+                                ...selectedVariants.map(({price}) => price),
+                            ]
+                            .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
                         );
-                    })()
-                )
-                : null
-            );
-            if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
-            
-            
-            
-            const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
-            const totalShippingCostConverted = await convertCustomerCurrencyIfRequired(totalShippingCost, currency);
-            const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
-            );
-            //#endregion validate shipping
-            
-            
-            
-            //#region decrease product stock
-            const decreaseStocksPromise = Promise.all(
-                reduceStockItems
-                .map(({stockId, quantity}) =>
-                    prismaTransaction.stock.update({
-                        where  : {
-                            id : stockId,
-                        },
-                        data   : {
-                            value : { decrement : quantity },
-                        },
-                        select : {
-                            id : true,
-                        },
-                    })
-                )
-            );
-            //#endregion decrease product stock
-            
-            
-            
-            //#region fetch payment gateway API
-            let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined = undefined;
-            if (usePaypalGateway) {
-                authorizedOrPaymentDetail = await paypalCreateOrder({
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                    
-                    paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.paypalCustomerId, // save payment method during purchase (if opted)
-                });
-            }
-            else if (cardToken) {
-                let authorizedOrPaymentDetailOrDeclined : AuthorizedFundData|PaymentDetail|null;
-                if (useStripeGateway) {
-                    authorizedOrPaymentDetailOrDeclined = await stripeCreateOrder(cardToken, orderId, {
-                        currency,
-                        totalCostConverted,
-                        totalProductPriceConverted,
-                        totalShippingCostConverted,
+                        const unitPricePartsConverted = await Promise.all(
+                            unitPriceParts
+                            .map(async (unitPricePart): Promise<number> =>
+                                convertCustomerCurrencyIfRequired(unitPricePart, currency)
+                            )
+                        );
+                        const unitPriceConverted      = (
+                            unitPricePartsConverted
+                            .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+                        );
+                        const unitWeight              = (
+                            [
+                                // base shippingWeight:
+                                product.shippingWeight,
+                                
+                                // additional shippingWeight, based on selected variants:
+                                ...selectedVariants.map(({shippingWeight}) => shippingWeight),
+                            ]
+                            .reduce<number|null>((accum, value): number|null => {
+                                if (value === null) return accum;
+                                if (accum === null) return value;
+                                return (accum + value);
+                            }, null)
+                        );
                         
-                        hasShippingAddress,
-                        shippingAddress,
                         
-                        hasBillingAddress,
-                        billingAddress,
                         
-                        detailedItems,
+                        detailedItems.push({
+                            // relations:
+                            productId      : productId,
+                            variantIds     : selectedVariantIds,
+                            
+                            // readable:
+                            productName    : product.name,
+                            variantNames   : selectedVariants.map(({name}) => name),
+                            
+                            // data:
+                            priceConverted : unitPriceConverted,
+                            shippingWeight : unitWeight,
+                            quantity       : quantity,
+                        });
                         
-                        paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.stripeCustomerId, // save payment method during purchase (if opted)
-                    });
+                        
+                        
+                        totalProductPriceConverted  += unitPriceConverted * quantity;          // may produces ugly_fractional_decimal
+                        totalProductPriceConverted   = trimNumber(totalProductPriceConverted); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
+                        
+                        
+                        
+                        if (unitWeight !== null) {
+                            if (totalProductWeight === null) totalProductWeight = 0;           // has a/some physical products => reset the counter from zero if null
+                            
+                            totalProductWeight      += unitWeight         * quantity;          // may produces ugly_fractional_decimal
+                            totalProductWeight       = trimNumber(totalProductWeight);         // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
+                        } // if
+                    } // for
+                    
+                    
+                    
+                    if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
+                    if (simulateOrder) return 0; // result of `0` => simulateOrder
                 }
-                else if (useMidtransGateway) {
-                    authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
-                        currency,
-                        totalCostConverted,
-                        totalProductPriceConverted,
-                        totalShippingCostConverted,
-                        
-                        hasShippingAddress,
-                        shippingAddress,
-                        
-                        hasBillingAddress,
-                        billingAddress,
-                        
-                        detailedItems,
-                        
-                        paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.midtransCustomerId, // save payment method during purchase (if opted)
-                    });
+                if (!hasShippingAddress) {
+                    if (totalProductWeight !== null) throw 'BAD_SHIPPING'; // if NO  shippingAddress => should have NO PHYSICAL_GOODS
                 }
                 else {
-                    throw Error('unexpected condition');
+                    if (totalProductWeight === null) throw 'BAD_SHIPPING'; // if HAS shippingAddress => should HAVE PHYSICAL_GOODS
                 } // if
+                //#endregion validate cart items: check existing products => check product quantities => create detailed items
                 
                 
                 
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else {
-                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
-                } // if
-            }
-            else if (paymentSource === 'midtransQris') {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithQris(orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
+                //#region validate shipping
+                if (!simulateOrder && hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
                 
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else {
-                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
-                } // if
-            }
-            else if (paymentSource === 'gopay') {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithGopay(orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
+                const matchingShipping = (
+                    (!simulateOrder && hasShippingAddress && !!selectedShipping)
+                    ? (
+                        await testMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
+                        ??
+                        await (async (): Promise<MatchingShipping|null> => {
+                            const [shippingOrigin, shippingProviders] = await Promise.all([
+                                prismaTransaction.defaultShippingOrigin.findFirst({
+                                    select : defaultShippingOriginSelect,
+                                }),
+                                
+                                prismaTransaction.shippingProvider.findMany({
+                                    where  : {
+                                        visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                    },
+                                    select : {
+                                        // records:
+                                        id         : true, // required for identifier
+                                        
+                                        
+                                        
+                                        // data:
+                                        name       : true, // required for identifier
+                                        
+                                        weightStep : true, // required for calculate_shipping_cost algorithm
+                                        eta        : {     // optional for matching_shipping algorithm
+                                            select : {
+                                                // data:
+                                                min : true,
+                                                max : true,
+                                            },
+                                        },
+                                        rates      : {     // required for calculate_shipping_cost algorithm
+                                            select : {
+                                                // data:
+                                                start : true,
+                                                rate  : true,
+                                            },
+                                        },
+                                        
+                                        useZones   : true, // required for matching_shipping algorithm
+                                    },
+                                }),
+                            ]);
+                            if (!shippingOrigin) return null;
+                            if (!shippingProviders.length) return null;
+                            
+                            
+                            
+                            const externalShippingRates = await getMatchingShippings(shippingProviders, {
+                                originAddress      : shippingOrigin,
+                                shippingAddress    : {
+                                    country   : shippingAddress.country,
+                                    state     : shippingAddress.state,
+                                    city      : shippingAddress.city,
+                                    zip       : shippingAddress.zip,
+                                    address   : shippingAddress.address,
+                                    
+                                    firstName : shippingAddress.firstName,
+                                    lastName  : shippingAddress.lastName,
+                                    phone     : shippingAddress.phone,
+                                },
+                                totalProductWeight : totalProductWeight ?? 0,
+                                prismaTransaction,
+                            });
+                            return (
+                                externalShippingRates
+                                .find(({id}) => (id === selectedShipping.id))
+                                ??
+                                null
+                            );
+                        })()
+                    )
+                    : null
+                );
+                if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
                 
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else {
-                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
-                } // if
-            }
-            else if (paymentSource === 'shopeepay') {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithShopeepay(orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
                 
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else {
-                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
-                } // if
-            }
-            else if (paymentSource === 'indomaret') {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithIndomaret(orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
                 
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
-                    const {
-                        paymentId,
-                        paymentCode, // for Indomaret payment code
-                        expires,     // for Indomaret payment code expiry_date
-                    } = authorizedOrPaymentDetailOrDeclined satisfies AuthorizedFundData;
-                    
-                    authorizedOrPaymentDetail = {
-                        type       : 'MANUAL',
-                        brand      : 'indomaret',
-                        identifier : paymentCode ?? '', // for Indomaret payment code
-                        paymentId  : paymentId,
-                        expiresAt  : expires,           // for Indomaret payment code expiry_date
+                const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
+                const totalShippingCostConverted = await convertCustomerCurrencyIfRequired(totalShippingCost, currency);
+                const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
+                    totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
+                );
+                //#endregion validate shipping
+                
+                
+                
+                //#region fetch payment gateway API
+                const gatewayResult = await(async (): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
+                    if (usePaypalGateway) {
+                        return paypalCreateOrder({
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                            
+                            paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.paypalCustomerId, // save payment method during purchase (if opted)
+                        });
+                    }
+                    else if (cardToken) {
+                        if (useStripeGateway) {
+                            return stripeCreateOrder(cardToken, orderId, {
+                                currency,
+                                totalCostConverted,
+                                totalProductPriceConverted,
+                                totalShippingCostConverted,
+                                
+                                hasShippingAddress,
+                                shippingAddress,
+                                
+                                hasBillingAddress,
+                                billingAddress,
+                                
+                                detailedItems,
+                                
+                                paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.stripeCustomerId, // save payment method during purchase (if opted)
+                            });
+                        }
+                        else if (useMidtransGateway) {
+                            return midtransCreateOrderWithCard(cardToken, orderId, {
+                                currency,
+                                totalCostConverted,
+                                totalProductPriceConverted,
+                                totalShippingCostConverted,
+                                
+                                hasShippingAddress,
+                                shippingAddress,
+                                
+                                hasBillingAddress,
+                                billingAddress,
+                                
+                                detailedItems,
+                                
+                                paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.midtransCustomerId, // save payment method during purchase (if opted)
+                            });
+                        }
+                        else {
+                            throw Error('unexpected condition');
+                        } // if
+                    }
+                    else if (paymentSource === 'midtransQris') {
+                        return midtransCreateOrderWithQris(orderId, {
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                        });
+                    }
+                    else if (paymentSource === 'gopay') {
+                        return midtransCreateOrderWithGopay(orderId, {
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                        });
+                    }
+                    else if (paymentSource === 'shopeepay') {
+                        return midtransCreateOrderWithShopeepay(orderId, {
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                        });
+                    }
+                    else if (paymentSource === 'indomaret') {
+                        const authorizedOrPaidWithCaptureOrDeclined = await midtransCreateOrderWithIndomaret(orderId, {
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                        });
                         
-                        amount     : 0,
-                        fee        : 0,
-                        
-                        // no need to save the paymentMethod:
-                        paymentMethodProvider           : undefined,
-                        paymentMethodProviderId         : undefined,
-                        paymentMethodProviderCustomerId : undefined,
-                    } satisfies PaymentDetail;
-                }
-                else {
-                    console.log('unexpected response: ', authorizedOrPaymentDetail);
-                    throw Error('unexpected API response');
-                } // if
-            }
-            else if (paymentSource === 'alfamart') {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithAlfamart(orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
-                
-                if (authorizedOrPaymentDetailOrDeclined === null) {
-                    // payment DECLINED:
-                    
-                    return {
-                        orderId                   : undefined, // undefined => declined
-                        authorizedOrPaymentDetail : undefined,
-                        paymentDetail             : undefined,
-                        newOrder                  : undefined,
-                    };
-                }
-                else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
-                    const {
-                        paymentId,
-                        paymentCode, // for Alfamart payment code
-                        expires,     // for Alfamart payment code expiry_date
-                    } = authorizedOrPaymentDetailOrDeclined satisfies AuthorizedFundData;
-                    
-                    authorizedOrPaymentDetail = {
-                        type       : 'MANUAL',
-                        brand      : 'alfamart',
-                        identifier : paymentCode ?? '', // for Alfamart payment code
-                        paymentId  : paymentId,
-                        expiresAt  : expires,           // for Alfamart payment code expiry_date
-                        
-                        amount     : 0,
-                        fee        : 0,
-                        
-                        // no need to save the paymentMethod:
-                        paymentMethodProvider           : undefined,
-                        paymentMethodProviderId         : undefined,
-                        paymentMethodProviderCustomerId : undefined,
-                    } satisfies PaymentDetail;
-                }
-                else {
-                    console.log('unexpected response: ', authorizedOrPaymentDetail);
-                    throw Error('unexpected API response');
-                } // if
-            }
-            else if (paymentSource === 'manual') {
-                authorizedOrPaymentDetail = {
-                    type       : 'MANUAL',
-                    brand      : null,
-                    identifier : null,
-                    expiresAt  : new Date(Date.now() + (checkoutConfigServer.payment.expires.manual * 24 * 60 * 60 * 1000)),
-                    
-                    amount     : 0,
-                    fee        : 0,
-                    
-                    // no need to save the paymentMethod:
-                    paymentMethodProvider           : undefined,
-                    paymentMethodProviderId         : undefined,
-                    paymentMethodProviderCustomerId : undefined,
-                } satisfies PaymentDetail;
-            }
-            else {
-                throw Error('unexpected condition');
-            } // if
-            //#endregion fetch payment gateway API
-            
-            
-            
-            //#region create a new(Draft|Real)Order
-            let savingCurrency   = currency || checkoutConfigServer.intl.defaultCurrency;
-            const orderItemsData : CreateOrderDataBasic['items'] = detailedItems.map((detailedItem) => {
-                return {
-                    productId      : detailedItem.productId,
-                    variantIds     : detailedItem.variantIds,
-                    
-                    price          : detailedItem.priceConverted,
-                    shippingWeight : detailedItem.shippingWeight,
-                    quantity       : detailedItem.quantity,
-                } satisfies CreateOrderDataBasic['items'][number];
-            });
-            const currencyData : OrderCurrencyDetail|null = (
-                (savingCurrency === checkoutConfigServer.intl.defaultCurrency)
-                ? null
-                : {
-                    currency       : savingCurrency,
-                    rate           : await getCurrencyRate(savingCurrency),
-                } satisfies OrderCurrencyDetail
-            );
-            const shippingAddressData : ShippingAddressDetail|null = (
-                !hasShippingAddress
-                ? null
-                : shippingAddress
-            );
-            const shippingCostData : number|null = (
-                !hasShippingAddress
-                ? null
-                : totalShippingCostConverted
-            );
-            
-            const preference : CustomerOrGuestPreferenceDetail = {
-                marketingOpt     : marketingOpt,
-                timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
-            };
-            const customerOrGuest : CustomerConnectData|GuestCreateData = (
-                customerId
-                ? ({
-                    id : customerId,
-                    preference,
-                } satisfies CustomerConnectData)
-                : ({
-                    ...(guest as unknown as GuestDetail),
-                    preference,
-                } satisfies GuestCreateData)
-            );
-            const billingAddressData : BillingAddressDetail|null = (
-                !hasBillingAddress
-                ? null
-                : billingAddress
-            );
-            
-            
-            
-            const createNewDraftOrderPromise = (
-                isAuthorizedFundData(authorizedOrPaymentDetail) // is AuthorizedFundData
-                // pending_paid => create new (draft)Order:
-                ? createDraftOrder(prismaTransaction, {
-                    // temporary data:
-                    expiresAt                : new Date(Date.now() + (15 * 60 * 1000)), // expires in 15 minutes
-                    paymentId                : authorizedOrPaymentDetail.paymentId,
-                    
-                    // primary data:
-                    orderId                  : orderId,
-                    items                    : orderItemsData,
-                    currency                 : currencyData,
-                    shippingAddress          : shippingAddressData,
-                    shippingCost             : shippingCostData,
-                    shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
-                    
-                    // extended data:
-                    customerOrGuest          : customerOrGuest,
-                })
-                : null
-            );
-            const createNewOrderPromise = (
-                isPaymentDetail(authorizedOrPaymentDetail)  // is PaymentDetail
-                // paid_immediately => crate new (real)Order:
-                ? createOrder(prismaTransaction, {
-                    // primary data:
-                    orderId                  : orderId,
-                    paymentId                : authorizedOrPaymentDetail.paymentId ?? undefined, // will be random_auto_generated if null|undefined
-                    items                    : orderItemsData,
-                    currency                 : currencyData,
-                    shippingAddress          : shippingAddressData,
-                    shippingCost             : shippingCostData,
-                    shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
-                    
-                    // extended data:
-                    customerOrGuest          : customerOrGuest,
-                    payment                  : {
-                        ...((): PaymentDetail => {
+                        if (isAuthorizedFundData(authorizedOrPaidWithCaptureOrDeclined)) {
+                            //#region converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
                             const {
-                                paymentId : _paymentId, // remove
-                                ...restAuthorizedOrPaymentDetail
-                            } = authorizedOrPaymentDetail;
-                            return restAuthorizedOrPaymentDetail /* as PaymentDetail */;
-                        })(),
-                        expiresAt            : authorizedOrPaymentDetail.expiresAt ?? null,
-                        billingAddress       : billingAddressData,
-                    } satisfies PaymentDetail,
-                    paymentConfirmationToken : paymentConfirmationToken,
-                })
-                : null
-            );
-            //#endregion create a new(Draft|Real)Order
-            
-            
-            
-            await Promise.all([
-                decreaseStocksPromise,
-                createNewDraftOrderPromise,
-                createNewOrderPromise,
-            ]);
-            
-            
-            
-            // report the createOrder result:
-            return {
-                orderId,
-                authorizedOrPaymentDetail : authorizedOrPaymentDetail,
-                paymentDetail             : isPaymentDetail(authorizedOrPaymentDetail) ? (authorizedOrPaymentDetail satisfies PaymentDetail) : undefined,
-                newOrder                  : (await createNewOrderPromise) ?? undefined,
-            };
-        }, { timeout: 50000 })); // give a longer timeout for `paymentProcessorCreateOrder` // may up to 40 secs => rounded up to 50 secs
-        
-        
-        
-        // send email confirmation:
-        if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
-            await Promise.all([
-                // notify for waiting for payment (manual_payment):
-                // -or-
-                // notify that the payment has been received:
-                sendConfirmationEmail({
-                    order : newOrder,
+                                paymentId,
+                                paymentCode, // for Indomaret payment code
+                                expires,     // for Indomaret payment code expiry_date
+                            } = authorizedOrPaidWithCaptureOrDeclined satisfies AuthorizedFundData;
+                            
+                            return [
+                                {
+                                    type       : 'MANUAL',
+                                    brand      : 'indomaret',
+                                    identifier : paymentCode ?? '', // for Indomaret payment code
+                                    paymentId  : paymentId,
+                                    expiresAt  : expires,           // for Indomaret payment code expiry_date
+                                    
+                                    amount     : 0,
+                                    fee        : 0,
+                                } satisfies PaymentDetail,
+                                
+                                
+                                
+                                // no need to save the paymentMethod:
+                                null,
+                            ];
+                            //#endregion converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
+                        }
+                        else if (isPaymentDetailWithCapture(authorizedOrPaidWithCaptureOrDeclined)) {
+                            // should never happended:
+                            console.log('unexpected response: ', authorizedOrPaidWithCaptureOrDeclined);
+                            throw Error('unexpected API response');
+                        }
+                        else {
+                            return authorizedOrPaidWithCaptureOrDeclined;
+                        } // if
+                    }
+                    else if (paymentSource === 'alfamart') {
+                        const authorizedOrPaidWithCaptureOrDeclined = await midtransCreateOrderWithAlfamart(orderId, {
+                            currency,
+                            totalCostConverted,
+                            totalProductPriceConverted,
+                            totalShippingCostConverted,
+                            
+                            hasShippingAddress,
+                            shippingAddress,
+                            
+                            hasBillingAddress,
+                            billingAddress,
+                            
+                            detailedItems,
+                        });
+                        
+                        if (isAuthorizedFundData(authorizedOrPaidWithCaptureOrDeclined)) {
+                            //#region converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
+                            const {
+                                paymentId,
+                                paymentCode, // for Alfamart payment code
+                                expires,     // for Alfamart payment code expiry_date
+                            } = authorizedOrPaidWithCaptureOrDeclined satisfies AuthorizedFundData;
+                            
+                            return [
+                                {
+                                    type       : 'MANUAL',
+                                    brand      : 'alfamart',
+                                    identifier : paymentCode ?? '', // for Alfamart payment code
+                                    paymentId  : paymentId,
+                                    expiresAt  : expires,           // for Alfamart payment code expiry_date
+                                    
+                                    amount     : 0,
+                                    fee        : 0,
+                                } satisfies PaymentDetail,
+                                
+                                
+                                
+                                // no need to save the paymentMethod:
+                                null,
+                            ];
+                            //#endregion converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
+                        }
+                        else if (isPaymentDetailWithCapture(authorizedOrPaidWithCaptureOrDeclined)) {
+                            // should never happended:
+                            console.log('unexpected response: ', authorizedOrPaidWithCaptureOrDeclined);
+                            throw Error('unexpected API response');
+                        }
+                        else {
+                            return authorizedOrPaidWithCaptureOrDeclined;
+                        } // if
+                    }
+                    else if (paymentSource === 'manual') {
+                        return [
+                            {
+                                type       : 'MANUAL',
+                                brand      : null,
+                                identifier : null,
+                                expiresAt  : new Date(Date.now() + (checkoutConfigServer.payment.expires.manual * 24 * 60 * 60 * 1000)),
+                                
+                                amount     : 0,
+                                fee        : 0,
+                            } satisfies PaymentDetail,
+                            
+                            
+                            
+                            // no need to save the paymentMethod:
+                            null,
+                        ];
+                    }
+                    else {
+                        throw Error('unexpected condition');
+                    } // if
+                })();
+                if (!gatewayResult) return null;
+                //#endregion fetch payment gateway API
+                
+                
+                
+                //#region save the database
+                let savingCurrency   = currency || checkoutConfigServer.intl.defaultCurrency;
+                const orderItemsData : CreateOrderDataBasic['items'] = detailedItems.map((detailedItem) => {
+                    return {
+                        productId      : detailedItem.productId,
+                        variantIds     : detailedItem.variantIds,
+                        
+                        price          : detailedItem.priceConverted,
+                        shippingWeight : detailedItem.shippingWeight,
+                        quantity       : detailedItem.quantity,
+                    } satisfies CreateOrderDataBasic['items'][number];
+                });
+                const currencyData : OrderCurrencyDetail|null = (
+                    (savingCurrency === checkoutConfigServer.intl.defaultCurrency)
+                    ? null
+                    : {
+                        currency       : savingCurrency,
+                        rate           : await getCurrencyRate(savingCurrency),
+                    } satisfies OrderCurrencyDetail
+                );
+                const shippingAddressData : ShippingAddressDetail|null = (
+                    !hasShippingAddress
+                    ? null
+                    : shippingAddress
+                );
+                const shippingCostData : number|null = (
+                    !hasShippingAddress
+                    ? null
+                    : totalShippingCostConverted
+                );
+                
+                const preference : CustomerOrGuestPreferenceDetail = {
+                    marketingOpt     : marketingOpt,
+                    timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
+                };
+                const customerOrGuest : CustomerConnectData|GuestCreateData = (
+                    customerId
+                    ? ({
+                        id : customerId,
+                        preference,
+                    } satisfies CustomerConnectData)
+                    : ({
+                        ...(guest as unknown as GuestDetail),
+                        preference,
+                    } satisfies GuestCreateData)
+                );
+                const billingAddressData : BillingAddressDetail|null = (
+                    !hasBillingAddress
+                    ? null
+                    : billingAddress
+                );
+                
+                
+                
+                //#region decrease product stock
+                const decreaseStocksPromise = Promise.all(
+                    reduceStockItems
+                    .map(({stockId, quantity}) =>
+                        prismaTransaction.stock.update({
+                            where  : {
+                                id : stockId,
+                            },
+                            data   : {
+                                value : { decrement : quantity },
+                            },
+                            select : {
+                                id : true,
+                            },
+                        })
+                    )
+                );
+                //#endregion decrease product stock
+                
+                
+                
+                if (isAuthorizedFundData(gatewayResult)) {
+                    await Promise.all([
+                        decreaseStocksPromise,
+                        
+                        
+                        
+                        // pending_paid => create new (draft)Order:
+                        createDraftOrder(prismaTransaction, {
+                            // temporary data:
+                            expiresAt                : new Date(Date.now() + (15 * 60 * 1000)), // expires in 15 minutes
+                            paymentId                : gatewayResult.paymentId,
+                            
+                            // primary data:
+                            orderId                  : orderId,
+                            items                    : orderItemsData,
+                            currency                 : currencyData,
+                            shippingAddress          : shippingAddressData,
+                            shippingCost             : shippingCostData,
+                            shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
+                            
+                            // extended data:
+                            customerOrGuest          : customerOrGuest,
+                        }),
+                    ]);
                     
-                    isPaid, // waiting for manual_payment -or- paid
-                    paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
-                }),
+                    
+                    
+                    return gatewayResult;
+                } // if
                 
                 
                 
-                // notify for waiting for payment (manual_payment) to adminApp via webhook:
-                // -or-
-                // notify that the payment has been received to adminApp via webhook:
-                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
-                    method  : 'POST',
-                    headers : {
-                        'X-Secret' : process.env.APP_SECRET ?? '',
-                    },
-                    body    : JSON.stringify({
-                        orderId : newOrder.orderId,
+                const [
+                    paymentDetail,
+                    paymentMethodCapture,
+                ] = gatewayResult satisfies [PaymentDetail, PaymentMethodCapture|null];
+                const [, orderAndData] = await Promise.all([
+                    decreaseStocksPromise,
+                    
+                    
+                    
+                    // paid_immediately => crate new (real)Order:
+                    createOrder(prismaTransaction, {
+                        // primary data:
+                        orderId                  : orderId,
+                        paymentId                : paymentDetail.paymentId ?? undefined, // will be random_auto_generated if null|undefined
+                        items                    : orderItemsData,
+                        currency                 : currencyData,
+                        shippingAddress          : shippingAddressData,
+                        shippingCost             : shippingCostData,
+                        shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
+                        
+                        // extended data:
+                        customerOrGuest          : customerOrGuest,
+                        payment                  : {
+                            ...((): PaymentDetail => {
+                                const {
+                                    paymentId : _paymentId, // remove
+                                    ...restPaid
+                                } = paymentDetail;
+                                return restPaid satisfies PaymentDetail;
+                            })(),
+                            expiresAt            : paymentDetail.expiresAt ?? null,
+                            billingAddress       : billingAddressData,
+                        } satisfies PaymentDetail,
+                        paymentMethodCapture     : paymentMethodCapture,
+                        paymentConfirmationToken : paymentConfirmationToken,
                     }),
-                }),
-            ]);
-        } // if
-    }
-    catch (error: any) {
-        /*
-            Possible client errors:
-            * bad shipping
-            * bad request JSON
-            * invalid product id
-            * insufficient product stock
-        */
-        /*
-            Possible server errors:
-            * Network error.
-            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
-            * Configured currency is not supported by Paypal.
-            * Invalid API_request body JSON (programming bug).
-            * unexpected API response (programming bug).
-        */
-        
-        if (error instanceof OutOfStockError) {
-            return Response.json({
-                error             : 'OUT_OF_STOCK',
-                limitedStockItems : error.limitedStockItems,
-            }, { status: 409 }); // handled with error conflict
-        } // if
-        
-        switch (error) {
-            case 'BAD_SHIPPING'               :
-            case 'INVALID_JSON'               :
-            // case 'INVALID_PRODUCT_ID'         :
-            // case 'INSUFFICIENT_PRODUCT_STOCK' :
-            {
-                console.log('ERROR: ', error);
-                return Response.json({
-                    error: error,
-                }, { status: 400 }); // handled with error
-            } break;
+                ]);
+                
+                
+                
+                return [
+                    paymentDetail,
+                    orderAndData,
+                ] satisfies [PaymentDetail, OrderAndData];
+                //#endregion save the database
+            }, { timeout: 50000 }); // give a longer timeout for `paymentProcessorCreateOrder` // may up to 40 secs => rounded up to 50 secs
             
-            default                           : {
-                console.log('ERROR: ', error);
+            
+            
+            // send email confirmation:
+            if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && Array.isArray(transactionResult) /* the transaction is finished (not a pending (redirect) payment) AND a RealOrder is created */) {
+                const [, newOrder] = transactionResult satisfies [PaymentDetail, OrderAndData];
+                await Promise.all([
+                    // notify for waiting for payment (manual_payment):
+                    // -or-
+                    // notify that the payment has been received:
+                    sendConfirmationEmail({
+                        order : newOrder,
+                        
+                        isPaid, // waiting for manual_payment -or- paid
+                        paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
+                    }),
+                    
+                    
+                    
+                    // notify for waiting for payment (manual_payment) to adminApp via webhook:
+                    // -or-
+                    // notify that the payment has been received to adminApp via webhook:
+                    fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                        method  : 'POST',
+                        headers : {
+                            'X-Secret' : process.env.APP_SECRET ?? '',
+                        },
+                        body    : JSON.stringify({
+                            orderId : newOrder.orderId,
+                        }),
+                    }),
+                ]);
+            } // if
+            
+            
+            
+            if (Array.isArray(transactionResult)) {
+                const [paymentDetail] = transactionResult satisfies [PaymentDetail, OrderAndData];
+                return paymentDetail;
+            } // if
+            return transactionResult;
+        }
+        catch (error: any) {
+            /*
+                Possible client errors:
+                * bad shipping
+                * bad request JSON
+                * invalid product id
+                * insufficient product stock
+            */
+            /*
+                Possible server errors:
+                * Network error.
+                * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
+                * Configured currency is not supported by Paypal.
+                * Invalid API_request body JSON (programming bug).
+                * unexpected API response (programming bug).
+            */
+            
+            if (error instanceof OutOfStockError) {
                 return Response.json({
-                    error: 'internal server error',
-                }, { status: 500 }); // handled with error
-            } break;
-        } // switch
-    } // try
+                    error             : 'OUT_OF_STOCK',
+                    limitedStockItems : error.limitedStockItems,
+                }, { status: 409 }); // handled with error conflict
+            } // if
+            
+            switch (error) {
+                case 'BAD_SHIPPING'               :
+                case 'INVALID_JSON'               :
+                // case 'INVALID_PRODUCT_ID'         :
+                // case 'INSUFFICIENT_PRODUCT_STOCK' :
+                {
+                    console.log('ERROR: ', error);
+                    return Response.json({
+                        error: error,
+                    }, { status: 400 }); // handled with error
+                } break;
+                
+                default                           : {
+                    console.log('ERROR: ', error);
+                    return Response.json({
+                        error: 'internal server error',
+                    }, { status: 500 }); // handled with error
+                } break;
+            } // switch
+        } // try
+    })();
     
     
     
-    // draftOrder created:
-    if (orderId === '') { // empty string => simulateOrder
+    // error response:
+    if (authorizedOrPaidOrDeclinedOrSimulatedOrError instanceof Response) {
+        return authorizedOrPaidOrDeclinedOrSimulatedOrError;
+    } // if
+    
+    // simulated response:
+    if (authorizedOrPaidOrDeclinedOrSimulatedOrError === 0) { // result of `0` => simulateOrder
         // simulateOrder:
         const placeOrderDetail : PlaceOrderDetail = {
             orderId      : '',
             redirectData : undefined,
         };
-        return Response.json(placeOrderDetail, {
-            status : 200, // handled with success
-        });
+        return Response.json(placeOrderDetail); // handled with success
     } // if
     
-    if (orderId === undefined) { // undefined => declined
+    // declined response:
+    if (authorizedOrPaidOrDeclinedOrSimulatedOrError === null) { // result of `null` => declined
         // payment rejected:
         const paymentDeclined : PaymentDeclined = {
             error  : (
@@ -1542,50 +1499,37 @@ router
                 : 'The payment was declined.'
             ),
         };
-        return Response.json(paymentDeclined, {
-            status : 402 // payment DECLINED
-        });
+        return Response.json(paymentDeclined, { status : 402 }); // payment DECLINED
     } // if
     
-    if (paymentDetail) {  // is PaymentDetail
-        // payment approved:
-        return Response.json(paymentDetail, {
-            status : 200 // payment APPROVED
-        });
-    } // if
-    
-    const placeOrderDetail : PlaceOrderDetail = {
-        orderId      : (
-            !isAuthorizedFundData(authorizedOrPaymentDetail)
-            ? orderId
-            : (() => {
+    // authorized response:
+    if (isAuthorizedFundData(authorizedOrPaidOrDeclinedOrSimulatedOrError)) {
+        const {
+            paymentId,
+            // paymentCode,
+            redirectData,
+            expires,
+        } = authorizedOrPaidOrDeclinedOrSimulatedOrError satisfies AuthorizedFundData;
+        
+        const placeOrderDetail : PlaceOrderDetail = {
+            orderId      : (() => {
                 let prefix = '';
                 
                 if      (usePaypalGateway  ) prefix = '#PAYPAL_';
                 else if (useStripeGateway  ) prefix = '#STRIPE_'
                 else if (useMidtransGateway) prefix = '#MIDTRANS_';
                 
-                return `${prefix}${authorizedOrPaymentDetail.paymentId}`;
-            })()
-        ),
-        ...((): Pick<PlaceOrderDetail, 'redirectData'|'expires'>|undefined => {
-            if (!isAuthorizedFundData(authorizedOrPaymentDetail)) return undefined;
-            
-            
-            
-            const {
-                redirectData,
-                expires,
-            } = authorizedOrPaymentDetail;
-            return {
-                redirectData,
-                expires,
-            };
-        })(),
-    };
-    return Response.json(placeOrderDetail, {
-        status : 200, // handled with success
-    });
+                return `${prefix}${paymentId}`;
+            })(),
+            redirectData,
+            expires,
+        };
+        return Response.json(placeOrderDetail); // handled with success
+    } // if
+    
+    // paid response:
+    const paymentDetail = authorizedOrPaidOrDeclinedOrSimulatedOrError satisfies PaymentDetail;
+    return Response.json(paymentDetail); // handled with success
 })
 
 /**
@@ -1746,194 +1690,185 @@ router
     
     
     
-    let paymentResponse : PaymentDetail|PaymentDeclined;
-    let newOrder        : OrderAndData|undefined = undefined;
-    try {
-        ([paymentResponse, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined]> => {
-            //#region verify draftOrder_id
-            const draftOrder = await findDraftOrderById(prismaTransaction, {
-                orderId     : orderId,
-                paymentId   : paymentId,
-                
-                orderSelect : commitDraftOrderSelect,
-            });
-            if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
-            if (draftOrder.expiresAt <= new Date()) {
-                // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
-                await revertDraftOrder(prismaTransaction, {
-                    draftOrder : draftOrder,
+    // performing complex transactions:
+    const paidOrDeclinedOrError = await (async (): Promise<PaymentDetail|null|Response> => {
+        try {
+            const transactionResult = await prisma.$transaction(async (prismaTransaction): Promise<[PaymentDetail, OrderAndData]|null> => {
+                //#region verify draftOrder_id
+                const draftOrder = await findDraftOrderById(prismaTransaction, {
+                    orderId     : orderId,
+                    paymentId   : paymentId,
+                    
+                    orderSelect : commitDraftOrderSelect,
                 });
+                if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
+                if (draftOrder.expiresAt <= new Date()) {
+                    // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
+                    await revertDraftOrder(prismaTransaction, {
+                        draftOrder : draftOrder,
+                    });
+                    
+                    
+                    
+                    throw 'DRAFT_ORDER_EXPIRED';
+                } // if
+                //#endregion verify draftOrder_id
                 
                 
                 
-                throw 'DRAFT_ORDER_EXPIRED';
-            } // if
-            //#endregion verify draftOrder_id
-            
-            
-            
-            //#region process the payment
-            let paymentResponse : PaymentDetail|PaymentDeclined;
-            if (paypalPaymentId) {
-                const paymentDetail = await paypalCaptureFund(paypalPaymentId);
-                if (paymentDetail === null) {
-                    // payment DECLINED:
+                //#region fetch payment gateway API
+                const gatewayResult = await(async (): Promise<[PaymentDetail, PaymentMethodCapture|null]|null> => {
+                    if (paypalPaymentId) {
+                        return paypalCaptureFund(paypalPaymentId);
+                    }
+                    else if (stripePaymentId) {
+                        return stripeCaptureFund(stripePaymentId);
+                    }
+                    else if (midtransPaymentId) {
+                        return midtransCaptureFund(midtransPaymentId);
+                    }
+                    else {
+                        console.log('unimplemented payment gateway');
+                        throw Error('unimplemented payment gateway');
+                    } // if
+                })();
+                if (!gatewayResult) {
+                    // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
+                    await revertDraftOrder(prismaTransaction, {
+                        draftOrder : draftOrder,
+                    });
                     
-                    paymentResponse = {
-                        error     : 'payment declined',
-                    };
-                }
-                else {
-                    // payment APPROVED:
                     
-                    paymentResponse = paymentDetail;
+                    
+                    return null;
                 } // if
-            }
-            else if (stripePaymentId) {
-                const paymentDetail = await stripeCaptureFund(stripePaymentId);
-                if (!paymentDetail) {
-                    // payment DECLINED:
-                    
-                    paymentResponse = {
-                        error     : 'payment declined',
-                    };
-                }
-                else {
-                    // payment APPROVED:
-                    
-                    paymentResponse = paymentDetail;
-                } // if
-            }
-            else if (midtransPaymentId) {
-                const paymentDetail = await midtransCaptureFund(midtransPaymentId);
-                if (!paymentDetail) {
-                    // payment DECLINED:
-                    
-                    paymentResponse = {
-                        error     : 'payment declined',
-                    };
-                }
-                else {
-                    // payment APPROVED:
-                    
-                    paymentResponse = paymentDetail;
-                } // if
-            }
-            else {
-                console.log('unimplemented payment gateway');
-                throw Error('unimplemented payment gateway');
-            } // if
-            //#endregion process the payment
-            
-            
-            
-            //#region save the database
-            let newOrder : OrderAndData|undefined = undefined;
-            const paymentDetail = !('error' in paymentResponse) ? paymentResponse : undefined;
-            if (paymentDetail) {
+                //#endregion fetch payment gateway API
+                
+                
+                
+                //#region save the database
                 // payment APPROVED => move the `draftOrder` to `order`:
-                newOrder = await commitDraftOrder(prismaTransaction, {
-                    draftOrder         : draftOrder,
-                    payment            : {
+                const [
+                    paymentDetail,
+                    paymentMethodCapture,
+                ] = gatewayResult satisfies [PaymentDetail, PaymentMethodCapture|null];
+                const orderAndData = await commitDraftOrder(prismaTransaction, {
+                    draftOrder           : draftOrder,
+                    payment              : {
                         ...paymentDetail,
-                        expiresAt      : null, // paid, no more payment expiry date
-                        billingAddress : (
+                        expiresAt        : null, // paid, no more payment expiry date
+                        billingAddress   : (
                             !hasBillingAddress
                             ? null
                             : billingAddress
                         ),
                     },
+                    paymentMethodCapture : paymentMethodCapture,
                 });
-            }
-            else {
-                // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-                await revertDraftOrder(prismaTransaction, {
-                    draftOrder : draftOrder,
-                });
-            } // if
-            //#endregion save the database
-            
-            
-            
-            // report the payment result:
-            return [paymentResponse, newOrder];
-        }, { timeout: 50000 })); // give a longer timeout for `revertDraftOrder` and `stripeCaptureFund` // may up to 40 secs => rounded up to 50 secs
-        
-        
-        
-        // send email confirmation:
-        if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && newOrder) {
-            await Promise.all([
-                // notify that the payment has been received:
-                sendConfirmationEmail({
-                    order                    : newOrder,
-                    
-                    isPaid                   : true,
-                    paymentConfirmationToken : null,
-                }),
+                //#endregion save the database
                 
                 
                 
-                // notify that the payment has been received to adminApp via webhook:
-                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
-                    method  : 'POST',
-                    headers : {
-                        'X-Secret' : process.env.APP_SECRET ?? '',
-                    },
-                    body    : JSON.stringify({
-                        orderId : newOrder.orderId,
+                // report the payment result:
+                return [
+                    paymentDetail,
+                    orderAndData,
+                ] satisfies [PaymentDetail, OrderAndData];
+            }, { timeout: 50000 }); // give a longer timeout for `revertDraftOrder` and `stripeCaptureFund` // may up to 40 secs => rounded up to 50 secs
+            
+            
+            
+            // send email confirmation:
+            if ((process.env.DEV_DISABLE_SEND_EMAIL !== 'true') && Array.isArray(transactionResult) /* the transaction is finished AND a RealOrder is created */) {
+                const [, newOrder] = transactionResult satisfies [PaymentDetail, OrderAndData];
+                await Promise.all([
+                    // notify that the payment has been received:
+                    sendConfirmationEmail({
+                        order                    : newOrder,
+                        
+                        isPaid                   : true,
+                        paymentConfirmationToken : null,
                     }),
-                }),
-            ]);
-        } // if
-    }
-    catch (error: any) {
-        // await session.abortTransaction(); // already implicitly aborted
-        
-        
-        
-        /*
-            Possible client errors:
-            * draftOrder_id is not found
-            * draftOrder    is expired
-        */
-        /*
-            Possible server errors:
-            * Network error.
-            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
-            * Invalid API_request headers (programming bug).
-            * unexpected API response (programming bug).
-            * unimplemented payment gateway.
-        */
-        switch (error) {
-            case 'DRAFT_ORDER_NOT_FOUND' :
-            case 'DRAFT_ORDER_EXPIRED'   : {
-                return Response.json({
-                    error: error,
-                }, { status: 400 }); // handled with error
-            } break;
+                    
+                    
+                    
+                    // notify that the payment has been received to adminApp via webhook:
+                    fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                        method  : 'POST',
+                        headers : {
+                            'X-Secret' : process.env.APP_SECRET ?? '',
+                        },
+                        body    : JSON.stringify({
+                            orderId : newOrder.orderId,
+                        }),
+                    }),
+                ]);
+            } // if
             
-            default                      : {
-                console.log('UNKNOWN ERROR: ',  error)
-                return Response.json({
-                    error: 'internal server error',
-                }, { status: 500 }); // handled with error
-            } break;
-        } // switch
-    } // try
+            
+            
+            if (Array.isArray(transactionResult)) {
+                const [paymentDetail] = transactionResult satisfies [PaymentDetail, OrderAndData];
+                return paymentDetail;
+            } // if
+            return transactionResult;
+        }
+        catch (error: any) {
+            // await session.abortTransaction(); // already implicitly aborted
+            
+            
+            
+            /*
+                Possible client errors:
+                * draftOrder_id is not found
+                * draftOrder    is expired
+            */
+            /*
+                Possible server errors:
+                * Network error.
+                * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
+                * Invalid API_request headers (programming bug).
+                * unexpected API response (programming bug).
+                * unimplemented payment gateway.
+            */
+            switch (error) {
+                case 'DRAFT_ORDER_NOT_FOUND' :
+                case 'DRAFT_ORDER_EXPIRED'   : {
+                    return Response.json({
+                        error: error,
+                    }, { status: 400 }); // handled with error
+                } break;
+                
+                default                      : {
+                    console.log('UNKNOWN ERROR: ',  error)
+                    return Response.json({
+                        error: 'internal server error',
+                    }, { status: 500 }); // handled with error
+                } break;
+            } // switch
+        } // try
+    })();
     
     
     
-    // payment approved -or- rejected:
-    return Response.json(paymentResponse, {
-        status : (
-            ('error' in paymentResponse)
-            ? 402 // payment DECLINED
-            : 200 // payment APPROVED
-        ),
-    });
+    // error response:
+    if (paidOrDeclinedOrError instanceof Response) {
+        return paidOrDeclinedOrError;
+    } // if
+    
+    // declined response:
+    if (paidOrDeclinedOrError === null) { // result of `null` => declined
+        // payment rejected:
+        const paymentDeclined : PaymentDeclined = {
+            error  : 'The payment was declined.',
+        };
+        return Response.json(paymentDeclined, { status : 402 }); // payment DECLINED
+    } // if
+    
+    // paid response:
+    const paymentDetail = paidOrDeclinedOrError satisfies PaymentDetail;
+    return Response.json(paymentDetail); // handled with success
 })
-
 
 /**
  * display the previously purchased order
@@ -2129,14 +2064,7 @@ router
         //     ...paymentDetail
         // },
     } = order;
-    const paymentDetail  : PaymentDetail|null = payment ? {
-        ...payment,
-        
-        // no need to save the paymentMethod:
-        paymentMethodProvider           : undefined,
-        paymentMethodProviderId         : undefined,
-        paymentMethodProviderCustomerId : undefined,
-    } satisfies PaymentDetail : null;
+    const paymentDetail  : PaymentDetail|null = payment;
     const billingAddress = paymentDetail?.billingAddress ?? null;
     
     const isPaid       = (!!paymentDetail && (paymentDetail.type !== 'MANUAL'));

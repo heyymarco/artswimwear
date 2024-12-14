@@ -197,12 +197,9 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             billingAddress                  : billingAddressData,              // take
             paymentId                       : _paymentId,                      // remove (already supplied above)
             
-            paymentMethodProvider           : paymentMethodProvider,           // take
-            paymentMethodProviderId         : paymentMethodProviderId,         // take
-            paymentMethodProviderCustomerId : paymentMethodProviderCustomerId, // take
-            
             ...restPaymentData
         },
+        paymentMethodCapture,
         paymentConfirmationToken,
     } = createOrderData;
     
@@ -340,7 +337,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         }),
         
         // create payment method:
-        (paymentMethodProvider && paymentMethodProviderId && paymentMethodProviderCustomerId)
+        paymentMethodCapture
         &&
         (() => {
             const customerId = (
@@ -363,11 +360,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                     currency  : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
                 },
                 customerId,
-                {
-                    paymentMethodProvider,
-                    paymentMethodProviderId,
-                    paymentMethodProviderCustomerId,
-                },
+                paymentMethodCapture,
             );
         })(),
     ]);
@@ -408,15 +401,8 @@ export const findPaymentById = async (prismaTransaction: Parameters<Parameters<t
         },
     });
     if (!existingOrder) return null;
-    const payment = existingOrder.payment;
-    return payment ? {
-        ...payment,
-        
-        // no need to save the paymentMethod:
-        paymentMethodProvider           : undefined,
-        paymentMethodProviderId         : undefined,
-        paymentMethodProviderCustomerId : undefined,
-    } satisfies PaymentDetail : null;
+    const payment = existingOrder.payment satisfies PaymentDetail|null;
+    return payment;
 }
 
 
@@ -426,6 +412,7 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
     const {
         draftOrder,
         payment,
+        paymentMethodCapture,
     } = commitOrderData;
     
     
@@ -443,6 +430,7 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
             shippingCost             : draftOrder.shippingCost,
             shippingProviderId       : draftOrder.shippingProviderId,
             payment                  : payment,
+            paymentMethodCapture     : paymentMethodCapture,
             paymentConfirmationToken : null,
         }),
         

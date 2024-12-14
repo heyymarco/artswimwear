@@ -129,7 +129,7 @@ export async function POST(req: Request): Promise<Response> {
                     
                     
                     //#region save the database
-                    const paymentDetail = result;
+                    const [paymentDetail, paymentMethodCapture] = result;
                     
                     
                     
@@ -148,12 +148,13 @@ export async function POST(req: Request): Promise<Response> {
                                 
                                 // payment APPROVED => move the `draftOrder` to `order`:
                                 return await commitDraftOrder(prismaTransaction, {
-                                    draftOrder         : draftOrder,
-                                    payment            : {
+                                    draftOrder           : draftOrder,
+                                    payment              : {
                                         ...paymentDetail,
-                                        expiresAt      : null, // paid, no more payment expiry date
-                                        billingAddress : null,
+                                        expiresAt        : null, // paid, no more payment expiry date
+                                        billingAddress   : null,
                                     },
+                                    paymentMethodCapture : paymentMethodCapture,
                                 });
                             })()
                             

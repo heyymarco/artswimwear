@@ -9,7 +9,7 @@ import {
 
 // ORMs:
 import {
-    prisma,
+    type prisma,
 }                           from '@/libs/prisma.server'
 
 // internals:
@@ -43,7 +43,7 @@ export interface GetMatchingShippingsOptions {
     shippingAddress     : ShippingAddressDetail
     totalProductWeight  : number
     
-    prisma             ?: typeof prisma
+    prismaTransaction  ?: Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 }
 export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvider, 'id'|'name'>[], options: GetMatchingShippingsOptions): Promise<MatchingShipping[]> => {
     // options:
@@ -52,7 +52,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
         shippingAddress,
         totalProductWeight: totalProductWeightInKg,
         
-        prisma,
+        prismaTransaction,
     } = options;
     const totalProductWeightInKgStepped = (
         Math.round(totalProductWeightInKg / 0.25)
@@ -157,15 +157,15 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
     
     
     
-    if (prisma) {
+    if (prismaTransaction) {
         try {
-            const [, cached] = await prisma.$transaction([
-                prisma.easypostRateCache.deleteMany({
+            const [, cached] = await Promise.all([
+                prismaTransaction.easypostRateCache.deleteMany({
                     where  : {
                         updatedAt : { lt: new Date(Date.now() - (3 * 30 * 24 * 60 * 60 * 1000)) } // delete caches older than 3 months ago
                     },
                 }),
-                prisma.easypostRateCache.findUnique({
+                prismaTransaction.easypostRateCache.findUnique({
                     where  : {
                         key : cacheKey,
                     },
@@ -319,7 +319,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
     
     
     
-    if (prisma) {
+    if (prismaTransaction) {
         try {
             const items = (
                 matchingShippingWithExtras
@@ -339,7 +339,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
                 }))
             ) satisfies Prisma.EasypostRateCacheItemUpdateInput[];
             
-            await prisma.easypostRateCache.upsert({
+            await prismaTransaction.easypostRateCache.upsert({
                 where  : {
                     key : cacheKey,
                 },
