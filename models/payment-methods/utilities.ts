@@ -46,7 +46,7 @@ export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMetho
             identifier     : '',
             expiresAt      : null,
             billingAddress : null,
-            priority       : totalRecords - sort - 1,
+            priority       : totalRecords - sort - 1, // zero_based priority
         } satisfies PaymentMethodDetail;
     } // if
     
@@ -71,6 +71,6 @@ export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMetho
         identifier,
         expiresAt,
         billingAddress,
-        priority : totalRecords - sort - 1,
+        priority : totalRecords - sort - 1, // zero_based priority
     } satisfies PaymentMethodDetail;
 };

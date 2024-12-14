@@ -806,7 +806,7 @@ export const apiSlice = createApi({
                                 .sort(({sort: sortA}, {sort: sortB}) => (sortB - sortA)) // sort descending
                                 .map(({sort, ...restPaymentMethodDetail}) => ({
                                     ...restPaymentMethodDetail,
-                                    priority : totalRecords - sort - 1,
+                                    priority : totalRecords - sort - 1, // zero_based priority
                                 }))
                             );
                         })

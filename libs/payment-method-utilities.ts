@@ -159,7 +159,12 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
                 ]);
                 const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
                 if (paymentMethod) {
-                    await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
+                    const {
+                        shifted : shiftedPaymentMethods,
+                    } = await deleteNonRelatedAccounts(prismaTransaction, customerId);
+                    const repriorityPaymentMethods = new Map<string, number>(shiftedPaymentMethods); // never thrown
+                    const modifiedPriority = repriorityPaymentMethods.get(paymentMethod.id);
+                    if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
                     return Response.json(paymentMethod); // handled with success
                 } // if
                 
@@ -178,8 +183,15 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         
         
-        if (detailedPaymentMethodCapture) await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
         const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
+        
+        const {
+            shifted : shiftedPaymentMethods,
+        } = await deleteNonRelatedAccounts(prismaTransaction, customerId);
+        const repriorityPaymentMethods = detailedPaymentMethodCapture ? new Map<string, number>(shiftedPaymentMethods) : null; // never thrown
+        const modifiedPriority = repriorityPaymentMethods?.get(paymentMethod.id);
+        if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
+        
         return Response.json(paymentMethod); // handled with success
     }
     catch (error: any) {
@@ -209,7 +221,7 @@ export const deletePaymentMethodAccount  = async (paymentMethodCapture: Pick<Pay
     //#region process the vault token
     //#endregion process the vault token
 };
-export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string): Promise<void> => {
+export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string): Promise<AffectedPaymentMethods> => {
     try {
         //#region find existing paymentMethodProviderCustomerId
         const paymentMethodProviderCustomerIds = await prismaTransaction.customer.findUnique({
@@ -231,7 +243,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
                 },
             },
         });
-        if (!paymentMethodProviderCustomerIds) return;
+        if (!paymentMethodProviderCustomerIds) return { deleted: [], shifted: [] } satisfies AffectedPaymentMethods;
         const {
             paypalCustomerId,
             stripeCustomerId,
@@ -292,7 +304,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
         
         
         // after successfully deleted of the api above => decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
-        await Promise.all([
+        const [affectedPaymentMethods] = await Promise.all([
             // decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
             deletePaymentMethod(prismaTransaction, customerId, mergedExcessInternalPaymentMethodIds),
             
@@ -301,41 +313,57 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
             // also wait for all api delete done:
             Promise.allSettled(mergedExcessExternalPaymentMethodsIdsDeletedPromises),
         ]);
+        
+        
+        
+        // report the re-sorted PaymentMethods:
+        return affectedPaymentMethods;
     }
     catch (error: any) {
         console.log(error);
         // ignore any error
+        
+        
+        
+        // assumes nothing was modified (sql transaction should be failed):
+        return { deleted: [], shifted: [] } satisfies AffectedPaymentMethods;
     } // try
 };
 
 
 
-export const deletePaymentMethod         = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string, paymentMethodIdsToDelete: string[]): Promise<void> => {
+export interface AffectedPaymentMethods {
+    deleted : string[]
+    shifted : [string, number][]
+}
+export const deletePaymentMethod         = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string, paymentMethodIdsToDelete: string[]): Promise<AffectedPaymentMethods> => {
     // conditions:
     paymentMethodIdsToDelete = Array.from(new Set<string>(paymentMethodIdsToDelete)); // ensure each id is unique
-    if (!paymentMethodIdsToDelete.length) return;
+    if (!paymentMethodIdsToDelete.length) return { deleted: [], shifted: [] } satisfies AffectedPaymentMethods;
     
     
     
-    const deletedSortsDesc = (await prismaTransaction.paymentMethod.findMany({
+    const deletedDesc = await prismaTransaction.paymentMethod.findMany({
         where  : {
             parentId : customerId, // important: the signedIn customerId
             id       : { in: paymentMethodIdsToDelete },
         },
         select : {
+            id       : true,
             sort     : true,
         },
         orderBy : {
             sort: 'desc',
         },
-    })).map(({sort}) => sort);
+    });
+    const deletedSortsDesc = deletedDesc.map(({sort}) => sort);
     const deletedPaymentMethodPromise = prismaTransaction.paymentMethod.deleteMany({
         where  : {
             parentId : customerId, // important: the signedIn customerId
             id       : { in: paymentMethodIdsToDelete },
         },
     });
-    if (!deletedSortsDesc.length) return;
+    if (!deletedSortsDesc.length) return { deleted: [], shifted: [] } satisfies AffectedPaymentMethods;
     const minDeletedSort = deletedSortsDesc[deletedSortsDesc.length - 1];
     
     
@@ -385,4 +413,18 @@ export const deletePaymentMethod         = async (prismaTransaction: Parameters<
             })
         )
     ]);
+    
+    
+    
+    // report the re-sorted PaymentMethods:
+    return {
+        deleted : deletedDesc.toReversed().map(({id}) => id),
+        shifted : (
+            siblingSortsAsc
+            .map(({id}, index, array) => [
+                id,
+                array.length - index - 1, // zero_based priority
+            ])
+        ),
+    } satisfies AffectedPaymentMethods;
 };
