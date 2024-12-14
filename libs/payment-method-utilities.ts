@@ -178,7 +178,7 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         
         
-        await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
+        if (detailedPaymentMethodCapture) await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
         const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
         return Response.json(paymentMethod); // handled with success
     }
