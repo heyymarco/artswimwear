@@ -27,12 +27,28 @@ export const paymentMethodDetailSelect = {
     
     sort                    : true,
 } satisfies Prisma.PaymentMethodSelect;
-export const convertPaymentMethodDetailDataToPaymentMethodDetail = (paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, totalRecords: number, resolver: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>): PaymentMethodDetail|null => {
+export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, totalRecords: number, resolver: null): PaymentMethodDetail;
+export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, totalRecords: number, resolver: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>): PaymentMethodDetail|null
+export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodDetailData: Awaited<ReturnType<typeof prisma.paymentMethod.findFirstOrThrow<{ select: typeof paymentMethodDetailSelect }>>>, totalRecords: number, resolver: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>|null): PaymentMethodDetail|null {
     const {
         provider,                // take
         providerPaymentMethodId, // take
         sort,                    // take
     ...restPaymentMethodDetail} = paymentMethodDetailData;
+    
+    
+    
+    if (!resolver) {
+        return {
+            ...restPaymentMethodDetail,
+            type           : 'CARD',
+            brand          : '',
+            identifier     : '',
+            expiresAt      : null,
+            billingAddress : null,
+            priority       : totalRecords - sort - 1,
+        } satisfies PaymentMethodDetail;
+    } // if
     
     
     
@@ -56,5 +72,5 @@ export const convertPaymentMethodDetailDataToPaymentMethodDetail = (paymentMetho
         expiresAt,
         billingAddress,
         priority : totalRecords - sort - 1,
-    };
+    } satisfies PaymentMethodDetail;
 };

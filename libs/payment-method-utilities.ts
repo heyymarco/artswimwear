@@ -42,7 +42,7 @@ export const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
 
 
 // utilities:
-export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrUpdatedata: Omit<PaymentMethodUpdateRequest, 'vaultToken'>, customerId: string, paymentMethodCapture: PaymentMethodCapture): Promise<Response> => {
+export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrUpdatedata: Omit<PaymentMethodUpdateRequest, 'vaultToken'>, customerId: string, paymentMethodCapture: PaymentMethodCapture, detailedPaymentMethodCapture = true): Promise<Response> => {
     const {
         // records:
         id,
@@ -151,33 +151,36 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         
         
-        for (let attempts = 10; attempts > 0; attempts--) {
-            const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-                ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
-                ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
-            ]);
-            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
-            if (paymentMethod) {
-                await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
-                return Response.json(paymentMethod); // handled with success
-            } // if
-            
-            
-            
-            if (attempts > 0) {
-                // wait for 1 sec before running the next attempts:
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 1000);
-                });
-            } // if
-        } // for
+        if (detailedPaymentMethodCapture) {
+            for (let attempts = 15; attempts > 0; attempts--) {
+                const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+                    ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+                    ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+                ]);
+                const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
+                if (paymentMethod) {
+                    await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
+                    return Response.json(paymentMethod); // handled with success
+                } // if
+                
+                
+                
+                if (attempts > 0) {
+                    // wait for 1 sec before running the next attempts:
+                    await new Promise<void>((resolve) => {
+                        setTimeout(() => {
+                            resolve();
+                        }, 1000);
+                    });
+                } // if
+            } // for
+        } // if
         
         
         
         await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
-        return Response.json({ error: 'Unexpected error' }, { status: 500 }); // handled with error: unauthorized
+        const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
+        return Response.json(paymentMethod); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);

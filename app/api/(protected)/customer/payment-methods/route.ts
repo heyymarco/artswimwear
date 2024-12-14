@@ -71,6 +71,7 @@ import {
 // configs:
 export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
+export const maxDuration = 20; // this function can run for a maximum of 20 seconds for many & complex transactions
 
 
 
@@ -202,8 +203,7 @@ router
             total    : total,
             entities : (
                 paged
-                .map((item) => convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, resolver))
-                .filter((item): item is Exclude<typeof item, null> => (item !== null))
+                .map((item) => convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, resolver) ?? convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, null))
             ) satisfies PaymentMethodDetail[],
         };
         return Response.json(paginationPaymentMethodDetail); // handled with success

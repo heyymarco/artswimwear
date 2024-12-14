@@ -313,6 +313,8 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             select : orderAndDataSelect,
         }),
         
+        
+        
         // create|update nested customerPreference:
         (
             // if CustomerConnectData is provided:
@@ -336,10 +338,12 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             },
         }),
         
+        
+        
         // create payment method:
         paymentMethodCapture
         &&
-        (() => {
+        (async (): Promise<void> => {
             const customerId = (
                 ('customerOrGuest' in createOrderData)
                 ? (
@@ -349,11 +353,11 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 )
                 : createOrderData.customerId
             );
-            if (!customerId) return false;
+            if (!customerId) return;
             
             
             
-            return createOrUpdatePaymentMethod(
+            await createOrUpdatePaymentMethod(
                 prismaTransaction,
                 {
                     id        : '',
@@ -361,6 +365,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 },
                 customerId,
                 paymentMethodCapture,
+                /* detailedPaymentMethodCapture: */false,
             );
         })(),
     ]);
