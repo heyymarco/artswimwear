@@ -128,6 +128,7 @@ import {
     type PaymentMethodSetupDetail,
     type PaymentMethodDetail,
     type PaymentMethodProvider,
+    type AffectedPaymentMethods,
 }                           from '@/models'
 
 // states:
@@ -346,7 +347,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         
         
         
-        if ('paymentMethodSetupToken' in paymentMethodSetupOrNewPaymentMethod) {
+        if (!Array.isArray(paymentMethodSetupOrNewPaymentMethod)) {
             const {
                 paymentMethodSetupToken,
                 redirectData,
@@ -357,7 +358,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             } satisfies PlaceOrderDetail;
         }
         else {
-            const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
+            const [newPaymentMethod] = paymentMethodSetupOrNewPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
             return {
                 ...newPaymentMethod,
                 amount     : 0,
@@ -370,7 +371,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     });
     const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
         const vaultToken = orderId;
-        const newPaymentMethod = await updatePaymentMethod({
+        const [newPaymentMethod] = await updatePaymentMethod({
             id : model?.id ?? '',
             
             vaultToken,

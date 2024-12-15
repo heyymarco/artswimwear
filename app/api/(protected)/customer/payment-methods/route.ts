@@ -25,6 +25,7 @@ import {
     paymentMethodDetailSelect,
     PaymentMethodUpdateRequestSchema,
     type PaymentMethodCapture,
+    type AffectedPaymentMethods,
     
     
     
@@ -302,20 +303,21 @@ router
         
         
         
-        const response = await prisma.$transaction(async (prismaTransaction) => {
+        const result = await prisma.$transaction(async (prismaTransaction) => {
             return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodCapture);
         }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
         
         // undo `providerCapturePaymentMethod()` if `createOrUpdatePaymentMethod()` failed:
-        if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
+        if (!(result instanceof Response/*Error*/) && !createOrUpdatedata.id /* do not revert for updating */) {
             await deletePaymentMethodAccount(paymentMethodCapture);
         } // if
         
         
         
-        return response;
+        if (result instanceof Response/*Error*/) return result satisfies Response/*Error*/;
+        return Response.json(result);
     }
     catch (error: any) {
         console.log('ERROR: ', error);
@@ -360,31 +362,21 @@ router
     
     //#region save changes
     try {
-        const deletedPaymentMethod = await prisma.$transaction(async (prismaTransaction): Promise<Pick<PaymentMethodDetail, 'id'|'priority'>> => {
-            const [total, deletingPaymentMethod] = await Promise.all([
-                prismaTransaction.paymentMethod.count({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                    },
-                }),
-                
-                prismaTransaction.paymentMethod.findFirstOrThrow({
-                    where  : {
-                        parentId : customerId, // important: the signedIn customerId
-                        id       : id,
-                    },
-                    select : {
-                        id                      : true,
-                        sort                    : true,
-                        
-                        provider                : true,
-                        providerPaymentMethodId : true,
-                    },
-                }),
-            ]);
+        const affectedPaymentMethods = await prisma.$transaction(async (prismaTransaction): Promise<AffectedPaymentMethods> => {
+            const deletingPaymentMethod = await prismaTransaction.paymentMethod.findUniqueOrThrow({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                    id       : id,
+                },
+                select : {
+                    id                      : true,
+                    
+                    provider                : true,
+                    providerPaymentMethodId : true,
+                },
+            });
             const {
                 id                      : deletingPaymentMethodId,
-                sort                    : deletingSort,
                 provider                : existingPaymentMethodProvider,
                 providerPaymentMethodId : existingPaymentMethodProviderId,
             } = deletingPaymentMethod;
@@ -392,7 +384,7 @@ router
             
             
             // decrease the sibling's sort that are greater than deleted_paymentMethod's sort:
-            await deletePaymentMethod(prismaTransaction, customerId, [deletingPaymentMethodId]);
+            const affectedPaymentMethods : AffectedPaymentMethods = await deletePaymentMethod(prismaTransaction, customerId, [deletingPaymentMethodId]);
             
             
             
@@ -404,10 +396,7 @@ router
             
             
             
-            return {
-                id       : deletingPaymentMethodId,
-                priority : total - deletingSort - 1,
-            };
+            return affectedPaymentMethods;
         }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
@@ -415,7 +404,7 @@ router
         await prisma.$transaction(async (prismaTransaction) => {
             await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
         }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
-        return Response.json(deletedPaymentMethod); // handled with success
+        return Response.json(affectedPaymentMethods); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);

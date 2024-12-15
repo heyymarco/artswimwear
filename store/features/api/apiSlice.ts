@@ -51,6 +51,7 @@ import {
     
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
+    type AffectedPaymentMethods,
     
     type ShipmentRequest,
     type ShipmentDetail,
@@ -685,7 +686,7 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'PaymentMethod', id: arg.page }],
         }),
-        createPaymentMethodSetup    : builder.mutation<PaymentMethodSetupDetail|PaymentMethodDetail, PaymentMethodSetupRequest>({
+        createPaymentMethodSetup    : builder.mutation<PaymentMethodSetupDetail|[PaymentMethodDetail, AffectedPaymentMethods], PaymentMethodSetupRequest>({
             query : (arg) => ({
                 url    : 'customer/payment-methods/setup',
                 method : 'POST',
@@ -693,67 +694,84 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled; // wait until setup|creating has been completed
-                if (!('paymentMethodSetupToken' in paymentMethodSetupOrNewPaymentMethod)) { // when CREATED a new_paymentMethod
-                    const newPaymentMethod = paymentMethodSetupOrNewPaymentMethod satisfies PaymentMethodDetail;
-                    await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
-                        providedMutatedModel : newPaymentMethod,
-                    });
-                    
-                    
-                    
-                    // find related TModel data(s):
-                    // increase the sibling's priority because the new_paymentMethod becomes the first_priority (priority: 0):
-                    await updatePaymentMethodPriorities(api, {
-                        predicate : ({id}) => (id !== newPaymentMethod.id), // do not mutate the new_paymentMethod
-                        delta     : 1, // increase by 1
-                    });
-                } // if
+                if (!Array.isArray(paymentMethodSetupOrNewPaymentMethod)) return; // ignore for setup_paymentMethod (only interested of CREATED a new_paymentMethod)
+                const [newPaymentMethod, affectedPaymentMethods] = paymentMethodSetupOrNewPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
+                await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', 'CREATE', 'PaymentMethod', {
+                    providedMutatedModel : newPaymentMethod,
+                });
+                
+                
+                
+                // find related TModel data(s):
+                // because the paymentMethod_count is INCREASED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
+                await shiftPaymentMethodPriorities(api, {
+                    predicate : ({id}) => (id !== newPaymentMethod.id), // the UNAFFECTED paymentMethods (ALL paymentMethods EXCEPTS new_paymentMethod)
+                    delta     : 1, // increase by 1
+                });
+                
+                
+                
+                // delete & shift the affected neighboring paymentMethods:
+                updateAffectedPaymentMethods(api, affectedPaymentMethods);
             },
         }),
-        updatePaymentMethod         : builder.mutation<PaymentMethodDetail, PaymentMethodUpdateRequest>({
+        updatePaymentMethod         : builder.mutation<[PaymentMethodDetail, AffectedPaymentMethods], PaymentMethodUpdateRequest>({
             query: (arg) => ({
                 url    : 'customer/payment-methods',
                 method : 'PATCH',
                 body   : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod');
+                const { data: [newOrUpdatedPaymentMethod, affectedPaymentMethods] } = await api.queryFulfilled; // wait until creating|updating has been completed
+                await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
+                    providedMutatedModel : newOrUpdatedPaymentMethod,
+                });
                 
                 
                 
-                const { data: newOrUpdatedPaymentMethod } = await api.queryFulfilled; // wait until creating|updating has been completed
                 if (!arg.id) { // when CREATED a new_paymentMethod
                     // find related TModel data(s):
-                    // increase the sibling's priority because the new_paymentMethod becomes the first_priority (priority: 0):
-                    await updatePaymentMethodPriorities(api, {
-                        predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id), // do not mutate the new_paymentMethod
+                    // because the paymentMethod_count is INCREASED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
+                    await shiftPaymentMethodPriorities(api, {
+                        predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id), // the UNAFFECTED paymentMethods (ALL paymentMethods EXCEPTS new_paymentMethod)
                         delta     : 1, // increase by 1
                     });
                 } // if
+                
+                
+                
+                // delete & shift the affected neighboring paymentMethods:
+                updateAffectedPaymentMethods(api, affectedPaymentMethods);
             },
         }),
-        deletePaymentMethod         : builder.mutation<Pick<PaymentMethodDetail, 'id'|'priority'>, MutationArgs<Pick<PaymentMethodDetail, 'id'>>>({
+        deletePaymentMethod         : builder.mutation<AffectedPaymentMethods, MutationArgs<Pick<PaymentMethodDetail, 'id'>>>({
             query: (arg) => ({
                 url    : `customer/payment-methods?id=${encodeURIComponent(arg.id)}`,
                 method : 'DELETE',
                 body   : arg
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod');
-                
-                
-                
-                const { data: { priority: deletedPaymentMethodPriority } } = await api.queryFulfilled; // wait until deleting has been completed
+                const { data: affectedPaymentMethods } = await api.queryFulfilled; // wait until deleting has been completed
                 
                 
                 
                 // find related TModel data(s):
-                // decrease the sibling's priority that are greater than deleted_paymentMethod's priority:
-                await updatePaymentMethodPriorities(api, {
-                    predicate : ({priority}) => (priority > deletedPaymentMethodPriority),
-                    delta     : -1, // decrease by 1
-                });
-                //#endregion decrease the sibling's priority that are greater than deleted_paymentMethod's priority
+                // because the paymentMethod_count is REDUCED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
+                const {
+                    deleted : deletedPaymentMethods,
+                } = affectedPaymentMethods;
+                const deletedCount = deletedPaymentMethods.length;
+                if (deletedCount) {
+                    await shiftPaymentMethodPriorities(api, {
+                        predicate : ({id}) => !deletedPaymentMethods.includes(id), // the UNAFFECTED paymentMethods
+                        delta     : -deletedCount, // decrease by deletedCount
+                    });
+                } // if
+                
+                
+                
+                // delete & shift the affected neighboring paymentMethods:
+                updateAffectedPaymentMethods(api, affectedPaymentMethods);
             },
         }),
         sortPaymentMethod           : builder.mutation<PaymentMethodSortDetail, PaymentMethodSortRequest>({
@@ -849,7 +867,7 @@ export const apiSlice = createApi({
 
 
 // utilities:
-const updatePaymentMethodPriorities = async (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, delta: number }): Promise<void> => {
+const shiftPaymentMethodPriorities = async (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, delta: number }): Promise<void> => {
     // options:
     const {
         predicate,
@@ -876,6 +894,59 @@ const updatePaymentMethodPriorities = async (api: MutationLifecycleApi<unknown, 
             })
         );
     } // for
+}
+const setPaymentMethodPriorities   = async (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, set: number }): Promise<void> => {
+    // options:
+    const {
+        predicate,
+        set,
+    } = options;
+    
+    
+    
+    const endpointName                 = 'getPaymentMethodPage';
+    const updatedCollectionQueryCaches = getQueryCaches<Pagination<PaymentMethodDetail>, PaginationArgs>(api, endpointName, {
+        predicate : (originalArgs: unknown, data: Pagination<PaymentMethodDetail>): boolean =>
+            data.entities.some((paymentMethodDetail) => predicate(paymentMethodDetail))
+    });
+    
+    
+    
+    // reconstructuring the mutated model, so the invalidatesTag can be avoided:
+    for (const { originalArgs } of updatedCollectionQueryCaches) {
+        api.dispatch(
+            apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                for (const entity of currentQueryCacheData.entities) {
+                    if (predicate(entity)) entity.priority = set;
+                } // for
+            })
+        );
+    } // for
+}
+const updateAffectedPaymentMethods = async (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, affectedPaymentMethods: AffectedPaymentMethods): Promise<void> => {
+    const {
+        deleted : deletedPaymentMethods,
+        shifted : shiftedPaymentMethods
+    } = affectedPaymentMethods;
+    
+    await Promise.all([
+        ...
+        deletedPaymentMethods
+        .map((deletedPaymentMethod) =>
+            cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod', {
+                providedMutatedModel : { id: deletedPaymentMethod } satisfies Pick<PaymentMethodDetail, 'id'>,
+            })
+        ),
+        
+        ...
+        shiftedPaymentMethods
+        .map(([shiftedId, priority]) =>
+            setPaymentMethodPriorities(api, {
+                predicate : ({id}) => (id === shiftedId),
+                set       : priority,
+            })
+        ),
+    ]);
 }
 
 

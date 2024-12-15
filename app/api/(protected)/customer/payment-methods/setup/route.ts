@@ -211,19 +211,20 @@ router
         return Response.json(paymentMethodSetup); // handled with success
     }
     else {
-        const response = await prisma.$transaction(async (prismaTransaction) => {
+        const result = await prisma.$transaction(async (prismaTransaction) => {
             return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
         }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
         
         
         
         // undo `providerCreatePaymentMethodSetup()` if `createOrUpdatePaymentMethod()` failed:
-        if (!response.ok && !createOrUpdatedata.id /* do not revert for updating */) {
+        if (!(result instanceof Response/*Error*/) && !createOrUpdatedata.id /* do not revert for updating */) {
             await deletePaymentMethodAccount(paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
         } // if
         
         
         
-        return response;
+        if (result instanceof Response/*Error*/) return result satisfies Response/*Error*/;
+        return Response.json(result);
     } // if
 });

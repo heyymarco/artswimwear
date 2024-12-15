@@ -5,6 +5,7 @@ import {
     paymentMethodDetailSelect,
     type PaymentMethodCapture,
     paymentMethodLimitMax,
+    type AffectedPaymentMethods,
     
     
     
@@ -42,7 +43,7 @@ export const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
 
 
 // utilities:
-export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrUpdatedata: Omit<PaymentMethodUpdateRequest, 'vaultToken'>, customerId: string, paymentMethodCapture: PaymentMethodCapture, detailedPaymentMethodCapture = true): Promise<Response> => {
+export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrUpdatedata: Omit<PaymentMethodUpdateRequest, 'vaultToken'>, customerId: string, paymentMethodCapture: PaymentMethodCapture, detailedPaymentMethodCapture = true): Promise<[PaymentMethodDetail, AffectedPaymentMethods]|Response> => {
     const {
         // records:
         id,
@@ -159,13 +160,14 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
                 ]);
                 const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
                 if (paymentMethod) {
+                    const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId);
                     const {
                         shifted : shiftedPaymentMethods,
-                    } = await deleteNonRelatedAccounts(prismaTransaction, customerId);
+                    } = affectedPaymentMethods;
                     const repriorityPaymentMethods = new Map<string, number>(shiftedPaymentMethods); // never thrown
                     const modifiedPriority = repriorityPaymentMethods.get(paymentMethod.id);
                     if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
-                    return Response.json(paymentMethod); // handled with success
+                    return [paymentMethod, affectedPaymentMethods]; // handled with success
                 } // if
                 
                 
@@ -185,14 +187,15 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
         
+        const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId)
         const {
             shifted : shiftedPaymentMethods,
-        } = await deleteNonRelatedAccounts(prismaTransaction, customerId);
+        } = affectedPaymentMethods;
         const repriorityPaymentMethods = detailedPaymentMethodCapture ? new Map<string, number>(shiftedPaymentMethods) : null; // never thrown
         const modifiedPriority = repriorityPaymentMethods?.get(paymentMethod.id);
         if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
         
-        return Response.json(paymentMethod); // handled with success
+        return [paymentMethod, affectedPaymentMethods]; // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);
@@ -332,10 +335,6 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
 
 
 
-export interface AffectedPaymentMethods {
-    deleted : string[]
-    shifted : [string, number][]
-}
 export const deletePaymentMethod         = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string, paymentMethodIdsToDelete: string[]): Promise<AffectedPaymentMethods> => {
     // conditions:
     paymentMethodIdsToDelete = Array.from(new Set<string>(paymentMethodIdsToDelete)); // ensure each id is unique

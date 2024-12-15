@@ -112,3 +112,10 @@ export interface PaymentMethodSortRequest {
 export interface PaymentMethodSortDetail {
     ids                              : string[]
 }
+
+
+
+export interface AffectedPaymentMethods {
+    deleted : string[]
+    shifted : [string, number][]
+}
