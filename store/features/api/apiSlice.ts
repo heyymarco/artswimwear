@@ -272,7 +272,15 @@ export const apiSlice = createApi({
             
             onQueryStarted: async (arg, api) => {
                 // updated TModel data:
-                const { data: mutatedEntities } = await api.queryFulfilled;
+                const newMatchingShippingList = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // refresh failed
+                    } // try
+                })();
+                if (!newMatchingShippingList) return;
                 
                 
                 
@@ -318,7 +326,7 @@ export const apiSlice = createApi({
                             );
                             const combinedRates = [
                                 ...currentDynamicRates,
-                                ...(Object.values(mutatedEntities.entities) as MatchingShipping[])
+                                ...(Object.values(newMatchingShippingList.entities) as MatchingShipping[])
                             ];
                             const newData = matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), combinedRates);
                             return newData;
@@ -693,7 +701,15 @@ export const apiSlice = createApi({
                 body   : arg
             }),
             onQueryStarted: async (arg, api) => {
-                const { data: paymentMethodSetupOrNewPaymentMethod } = await api.queryFulfilled; // wait until setup|creating has been completed
+                const paymentMethodSetupOrNewPaymentMethod = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // create failed
+                    } // try
+                })();
+                if (!paymentMethodSetupOrNewPaymentMethod) return;
                 if (!Array.isArray(paymentMethodSetupOrNewPaymentMethod)) return; // ignore for setup_paymentMethod (only interested of CREATED a new_paymentMethod)
                 const [newPaymentMethod, affectedPaymentMethods] = paymentMethodSetupOrNewPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
                 await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', 'CREATE', 'PaymentMethod', {
@@ -723,7 +739,16 @@ export const apiSlice = createApi({
                 body   : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                const { data: [newOrUpdatedPaymentMethod, affectedPaymentMethods] } = await api.queryFulfilled; // wait until creating|updating has been completed
+                const mutatedModel = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // update failed
+                    } // try
+                })();
+                if (!mutatedModel) return;
+                const [newOrUpdatedPaymentMethod, affectedPaymentMethods] = mutatedModel;
                 await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
                     providedMutatedModel : newOrUpdatedPaymentMethod,
                 });
@@ -752,7 +777,15 @@ export const apiSlice = createApi({
                 body   : arg
             }),
             onQueryStarted: async (arg, api) => {
-                const { data: affectedPaymentMethods } = await api.queryFulfilled; // wait until deleting has been completed
+                const affectedPaymentMethods = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // delete failed
+                    } // try
+                })();
+                if (!affectedPaymentMethods) return;
                 
                 
                 
@@ -838,7 +871,7 @@ export const apiSlice = createApi({
                 // verify optimistic vs real data from the server:
                 let isUpdateSucceeded = true;
                 try {
-                    const { data: { ids: serverSortIndices } } = await api.queryFulfilled;
+                    const { ids: serverSortIndices } = (await api.queryFulfilled).data;
                     isUpdateSucceeded = (
                         (optimisticSortIndices.size === serverSortIndices.length)
                         &&
@@ -846,7 +879,7 @@ export const apiSlice = createApi({
                     )
                 }
                 catch {
-                    isUpdateSucceeded = false;
+                    isUpdateSucceeded = false; // sort failed
                 } // try
                 
                 if (!isUpdateSucceeded) {
