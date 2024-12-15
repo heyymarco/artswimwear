@@ -213,7 +213,7 @@ router
     else {
         const result = await prisma.$transaction(async (prismaTransaction) => {
             return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
-        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
+        }, { timeout: 20000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 20 secs
         
         
         

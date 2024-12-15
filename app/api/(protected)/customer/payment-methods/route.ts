@@ -305,7 +305,7 @@ router
         
         const result = await prisma.$transaction(async (prismaTransaction) => {
             return await createOrUpdatePaymentMethod(prismaTransaction, createOrUpdatedata, customerId, paymentMethodCapture);
-        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
+        }, { timeout: 20000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 20 secs
         
         
         
@@ -397,13 +397,13 @@ router
             
             
             return affectedPaymentMethods;
-        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
+        }, { timeout: 20000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 20 secs
         
         
         
         await prisma.$transaction(async (prismaTransaction) => {
             await deleteNonRelatedAccounts(prismaTransaction, customerId); // never thrown
-        }, { timeout: 15000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 15 secs
+        }, { timeout: 20000 }); // give a longer timeout for complex db_transactions and api_fetches // may up to 20 secs
         return Response.json(affectedPaymentMethods); // handled with success
     }
     catch (error: any) {
