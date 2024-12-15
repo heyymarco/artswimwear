@@ -759,11 +759,12 @@ export const apiSlice = createApi({
                 // because the paymentMethod_count is REDUCED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
                 const {
                     deleted : deletedPaymentMethods,
+                    shifted : shiftedPaymentMethods,
                 } = affectedPaymentMethods;
                 const deletedCount = deletedPaymentMethods.length;
                 if (deletedCount) {
                     await shiftPaymentMethodPriorities(api, {
-                        predicate : ({id}) => !deletedPaymentMethods.includes(id), // the UNAFFECTED paymentMethods
+                        predicate : ({id}) => !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id)), // the UNAFFECTED paymentMethods
                         delta     : -deletedCount, // decrease by deletedCount
                     });
                 } // if
