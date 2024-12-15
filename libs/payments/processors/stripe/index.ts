@@ -1464,7 +1464,7 @@ export const stripeListPaymentMethods = async (stripeCustomerId: string, limitMa
                     phone   : billingPhone,
                 },
             } = paymentMethod;
-            const identifier = `STRIPE/${id}`;
+            const key = `STRIPE/${id}`;
             
             
             
@@ -1480,7 +1480,7 @@ export const stripeListPaymentMethods = async (stripeCustomerId: string, limitMa
                 
                 
                 return [
-                    identifier,
+                    key,
                     {
                         type           : 'CARD',
                         

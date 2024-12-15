@@ -152,15 +152,16 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         
         
+        let resolver : Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>|undefined = undefined;
         if (detailedPaymentMethodCapture) {
             for (let attempts = 15; attempts > 0; attempts--) {
-                const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+                resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
                     ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
                     ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
                 ]);
                 const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
                 if (paymentMethod) {
-                    const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId);
+                    const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver);
                     const {
                         shifted : shiftedPaymentMethods,
                     } = affectedPaymentMethods;
@@ -187,7 +188,7 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
         
-        const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId)
+        const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver);
         const {
             shifted : shiftedPaymentMethods,
         } = affectedPaymentMethods;
@@ -224,7 +225,7 @@ export const deletePaymentMethodAccount  = async (paymentMethodCapture: Pick<Pay
     //#region process the vault token
     //#endregion process the vault token
 };
-export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string): Promise<AffectedPaymentMethods> => {
+export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], customerId: string, resolver?: Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>): Promise<AffectedPaymentMethods> => {
     try {
         //#region find existing paymentMethodProviderCustomerId
         const paymentMethodProviderCustomerIds = await prismaTransaction.customer.findUnique({
@@ -262,7 +263,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
             // delete api for paypal:
             checkoutConfigServer.payment.processors.paypal.enabled && paypalCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'PAYPAL')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
-                const allExternalPaymentMethods       = Array.from((await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
+                const allExternalPaymentMethods       = Array.from((resolver ?? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
                 const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
                 
@@ -283,7 +284,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
             // delete api for stripe:
             checkoutConfigServer.payment.processors.stripe.enabled && stripeCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'STRIPE')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
-                const allExternalPaymentMethods       = Array.from((await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
+                const allExternalPaymentMethods       = Array.from((resolver ?? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
                 const excessExternalPaymentMethodsIds = allExternalPaymentMethods.filter((item) => !allInternalPaymentMethods.map(({providerPaymentMethodId}) => providerPaymentMethodId).includes(item));
                 

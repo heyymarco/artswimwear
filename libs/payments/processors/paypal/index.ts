@@ -1240,7 +1240,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMa
                 id,
                 payment_source,
             } = paymentToken;
-            const identifier = `PAYPAL/${id}`;
+            const key = `PAYPAL/${id}`;
             
             
             
@@ -1257,7 +1257,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMa
                 
                 
                 return [
-                    identifier,
+                    key,
                     {
                         type           : 'CARD',
                         
@@ -1301,7 +1301,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMa
                 
                 
                 return [
-                    identifier,
+                    key,
                     {
                         type           : 'PAYPAL',
                         

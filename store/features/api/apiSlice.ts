@@ -725,9 +725,11 @@ export const apiSlice = createApi({
                     deleted : deletedPaymentMethods,
                     shifted : shiftedPaymentMethods,
                 } = affectedPaymentMethods;
+                const addedCount   = 1; // the record added by 1 after CREATED a new_paymentMethod
+                const deletedCount = deletedPaymentMethods.length;
                 await shiftPaymentMethodPriorities(api, {
                     predicate : ({id}) => (id !== newPaymentMethod.id && !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id))), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod) and (neither deleted nor shifted)
-                    delta     : 1, // increase by 1
+                    delta     : (addedCount - deletedCount),
                 });
                 
                 
@@ -766,9 +768,11 @@ export const apiSlice = createApi({
                         deleted : deletedPaymentMethods,
                         shifted : shiftedPaymentMethods,
                     } = affectedPaymentMethods;
+                    const addedCount   = 1; // the record added by 1 after CREATED a new_paymentMethod
+                    const deletedCount = deletedPaymentMethods.length;
                     await shiftPaymentMethodPriorities(api, {
                         predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id && !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id))), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod) and (neither deleted nor shifted)
-                        delta     : 1, // increase by 1
+                        delta     : (addedCount - deletedCount),
                     });
                 } // if
                 
@@ -803,11 +807,12 @@ export const apiSlice = createApi({
                     deleted : deletedPaymentMethods,
                     shifted : shiftedPaymentMethods,
                 } = affectedPaymentMethods;
+                const addedCount   = 0; // nothing to add
                 const deletedCount = deletedPaymentMethods.length;
                 if (deletedCount) { // has deleted_paymentMethod
                     await shiftPaymentMethodPriorities(api, {
                         predicate : ({id}) => !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id)), // the UNAFFECTED paymentMethods (neither deleted nor shifted)
-                        delta     : -deletedCount, // decrease by deletedCount
+                        delta     : (addedCount - deletedCount),
                     });
                 } // if
                 

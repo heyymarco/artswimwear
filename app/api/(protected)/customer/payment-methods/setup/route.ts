@@ -218,7 +218,7 @@ router
         
         
         // undo `providerCreatePaymentMethodSetup()` if `createOrUpdatePaymentMethod()` failed:
-        if (!(result instanceof Response/*Error*/) && !createOrUpdatedata.id /* do not revert for updating */) {
+        if ((result instanceof Response/*Error*/) && !createOrUpdatedata.id /* do not revert for updating */) {
             await deletePaymentMethodAccount(paymentMethodSetupOrCapture satisfies PaymentMethodCapture);
         } // if
         
