@@ -721,8 +721,12 @@ export const apiSlice = createApi({
                 // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED
                 // find related TModel data(s):
                 // because the paymentMethod_count is INCREASED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
+                const {
+                    deleted : deletedPaymentMethods,
+                    shifted : shiftedPaymentMethods,
+                } = affectedPaymentMethods;
                 await shiftPaymentMethodPriorities(api, {
-                    predicate : ({id}) => (id !== newPaymentMethod.id), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod)
+                    predicate : ({id}) => (id !== newPaymentMethod.id && !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id))), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod) and (neither deleted nor shifted)
                     delta     : 1, // increase by 1
                 });
                 
@@ -758,8 +762,12 @@ export const apiSlice = createApi({
                 if (!arg.id) { // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED, otherwise still UNCHANGED
                     // find related TModel data(s):
                     // because the paymentMethod_count is INCREASED, so the UNAFFECTED paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
+                    const {
+                        deleted : deletedPaymentMethods,
+                        shifted : shiftedPaymentMethods,
+                    } = affectedPaymentMethods;
                     await shiftPaymentMethodPriorities(api, {
-                        predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod)
+                        predicate : ({id}) => (id !== newOrUpdatedPaymentMethod.id && !deletedPaymentMethods.includes(id) && !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id))), // the UNAFFECTED paymentMethods (all_paymentMethods EXCEPTS new_paymentMethod) and (neither deleted nor shifted)
                         delta     : 1, // increase by 1
                     });
                 } // if
