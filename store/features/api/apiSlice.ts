@@ -710,7 +710,7 @@ export const apiSlice = createApi({
                     } // try
                 })();
                 if (!paymentMethodSetupOrAddedOrUpdatedPaymentMethod) return;
-                if (!Array.isArray(paymentMethodSetupOrAddedOrUpdatedPaymentMethod)) return; // ignore for setup_paymentMethod (only interested of CREATED|UPDATED a new_paymentMethod)
+                if (!Array.isArray(paymentMethodSetupOrAddedOrUpdatedPaymentMethod)) return; // ignore for setup_paymentMethod (only interested of CREATED|UPDATED paymentMethod)
                 const [addedOrUpdatedPaymentMethod, affectedPaymentMethods] = paymentMethodSetupOrAddedOrUpdatedPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
                 await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
                     providedMutatedModel : addedOrUpdatedPaymentMethod,
@@ -930,19 +930,19 @@ const shiftPaymentMethodPriorities = (api: MutationLifecycleApi<unknown, BaseQue
 const updateAffectedPaymentMethods = (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, addedPaymentMethodId: string|null, affectedPaymentMethods: AffectedPaymentMethods): void => {
     const {
         deleted : deletedPaymentMethods,
-        shifted : shiftedPaymentMethods
+        shifted : shiftedPaymentMethods,
     } = affectedPaymentMethods;
     
     
     
-    // noop new_paymentMethod:
+    // noop added_paymentMethod:
     // the data is still fresh, nothing to update
     
     
     
     // remove deleted_paymentMethods:
     for (const deletedPaymentMethod of deletedPaymentMethods) {
-        cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod', {
+        /* no need to await because `providedMutatedModel` is provided */ cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', 'DELETE', 'PaymentMethod', {
             providedMutatedModel : { id: deletedPaymentMethod } satisfies Pick<PaymentMethodDetail, 'id'>,
         });
     } // for
@@ -962,10 +962,6 @@ const updateAffectedPaymentMethods = (api: MutationLifecycleApi<unknown, BaseQue
     // update rest_paymentMethods:
     // because the paymentMethod_count may DECREASED|INCREASED, so the rest_paymentMethods are indirectly AFFECTED by `priority = paymentMethod_count - sort`:
     ((): void => {
-        const {
-            deleted : deletedPaymentMethods,
-            shifted : shiftedPaymentMethods,
-        } = affectedPaymentMethods;
         const addedCount   = (addedPaymentMethodId !== null) ? 1 : 0;
         const deletedCount = deletedPaymentMethods.length;
         const deltaCount   = addedCount - deletedCount;
@@ -975,11 +971,11 @@ const updateAffectedPaymentMethods = (api: MutationLifecycleApi<unknown, BaseQue
         
         shiftPaymentMethodPriorities(api, {
             predicate : ({id}) => (
-                ((addedPaymentMethodId !== null) && (id !== addedPaymentMethodId)) // not new_paymentMethod
+                ((addedPaymentMethodId === null) || (id !== addedPaymentMethodId)) // not added_paymentMethod
                 &&
                 !deletedPaymentMethods.includes(id)                                // not deleted_paymentMethods
                 &&
-                !shiftedPaymentMethods.some(([shiftedId]) => (shiftedId === id))   // not shifted_paymentMethods
+                !shiftedPaymentMethods.some(([shiftedId]) => (id === shiftedId))   // not shifted_paymentMethods
             ),
             delta     : deltaCount,
         });
