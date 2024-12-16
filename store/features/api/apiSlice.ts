@@ -390,6 +390,28 @@ export const apiSlice = createApi({
                 method : 'POST',
                 body   : orderData,
             }),
+            onQueryStarted: async (arg, api) => {
+                const orderBookedOrPaid = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // place_order|payment failed
+                    } // try
+                })();
+                if (!orderBookedOrPaid) return;
+                if ('orderId' in orderBookedOrPaid) return; // not yet paid => ignore
+                const paid = orderBookedOrPaid satisfies PaymentDetail;
+                
+                
+                
+                // a new PaymentMethod may have been added during checkout => clear the PaymentMethod cache:
+                api.dispatch(
+                    apiSlice.util.invalidateTags([
+                        'PaymentMethod',
+                    ])
+                );
+            },
         }),
         makePayment                 : builder.mutation<PaymentDetail, MakePaymentRequest>({
             query : (paymentData) => ({
@@ -397,6 +419,26 @@ export const apiSlice = createApi({
                 method : 'PATCH',
                 body   : paymentData,
             }),
+            onQueryStarted: async (arg, api) => {
+                const paid = await (async () => {
+                    try {
+                        return (await api.queryFulfilled).data;
+                    }
+                    catch {
+                        return undefined; // payment failed
+                    } // try
+                })();
+                if (!paid) return;
+                
+                
+                
+                // a new PaymentMethod may have been added during checkout => clear the PaymentMethod cache:
+                api.dispatch(
+                    apiSlice.util.invalidateTags([
+                        'PaymentMethod',
+                    ])
+                );
+            },
         }),
         showPrevOrder               : builder.mutation<FinishedOrderState, ShowOrderRequest>({
             query : ({orderId}) => ({

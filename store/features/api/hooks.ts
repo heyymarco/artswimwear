@@ -42,6 +42,11 @@ export const useSignedInCacheRefresh = () => {
         
         
         // actions:
-        dispatch(apiSlice.util.invalidateTags(['Wishable'])); // invalidate all caches containing Wishable tag
+        dispatch(
+            apiSlice.util.invalidateTags([
+                'Wishable',      // invalidate all caches containing Wishable tag
+                'PaymentMethod', // invalidate all caches containing PaymentMethod tag
+            ])
+        );
     }, [isSignedIn]);
 };
