@@ -711,16 +711,16 @@ export const apiSlice = createApi({
                 })();
                 if (!paymentMethodSetupOrNewPaymentMethod) return;
                 if (!Array.isArray(paymentMethodSetupOrNewPaymentMethod)) return; // ignore for setup_paymentMethod (only interested of CREATED|UPDATED a new_paymentMethod)
-                const [newOrUpdatedPaymentMethod, affectedPaymentMethods] = paymentMethodSetupOrNewPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
+                const [addedOrUpdatedPaymentMethod, affectedPaymentMethods] = paymentMethodSetupOrNewPaymentMethod satisfies [PaymentMethodDetail, AffectedPaymentMethods];
                 await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
-                    providedMutatedModel : newOrUpdatedPaymentMethod,
+                    providedMutatedModel : addedOrUpdatedPaymentMethod,
                 });
                 
                 
                 
                 // find related TModel data(s):
                 // update neighboring paymentMethods:
-                const addedPaymentMethodId = !arg.id ? newOrUpdatedPaymentMethod.id : null; // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED, otherwise keeps UNCHANGED
+                const addedPaymentMethodId = !arg.id ? addedOrUpdatedPaymentMethod.id : null; // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED, otherwise keeps UNCHANGED
                 updateAffectedPaymentMethods(api, addedPaymentMethodId, affectedPaymentMethods);
             },
         }),
@@ -740,16 +740,16 @@ export const apiSlice = createApi({
                     } // try
                 })();
                 if (!mutatedModel) return;
-                const [newOrUpdatedPaymentMethod, affectedPaymentMethods] = mutatedModel;
+                const [addedOrUpdatedPaymentMethod, affectedPaymentMethods] = mutatedModel;
                 await cumulativeUpdatePaginationCache(api as any, 'getPaymentMethodPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'PaymentMethod', {
-                    providedMutatedModel : newOrUpdatedPaymentMethod,
+                    providedMutatedModel : addedOrUpdatedPaymentMethod,
                 });
                 
                 
                 
                 // find related TModel data(s):
                 // update neighboring paymentMethods:
-                const addedPaymentMethodId = !arg.id ? newOrUpdatedPaymentMethod.id : null; // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED, otherwise keeps UNCHANGED
+                const addedPaymentMethodId = !arg.id ? addedOrUpdatedPaymentMethod.id : null; // when CREATED a new_paymentMethod => the paymentMethod_count is INCREASED, otherwise keeps UNCHANGED
                 updateAffectedPaymentMethods(api, addedPaymentMethodId, affectedPaymentMethods);
             },
         }),
