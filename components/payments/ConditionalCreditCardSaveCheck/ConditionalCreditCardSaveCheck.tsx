@@ -55,8 +55,8 @@ const ImplementedConditionalCreditCardSaveCheck = (props: ConditionalCreditCardS
     const {
         data    : paymentMethodPagination,
     } = useGetPaymentMethodPage({
-        page    : 1,
-        perPage : paymentMethodLimitMax,
+        page    : 0, // show the first page (zero_based index)
+        perPage : paymentMethodLimitMax, // show all items at one page
     });
     const isMaxLimitReached = ((paymentMethodPagination?.total ?? 0) >= paymentMethodLimitMax);
     

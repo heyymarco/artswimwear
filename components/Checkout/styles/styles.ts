@@ -604,32 +604,38 @@ export default () => {
                     // layout:
                     display: 'grid',
                     gridTemplate: [[
-                        '"instruct " auto',
-                        '"number   " auto',
-                        '"name     " auto',
-                        '"expiry   " auto',
-                        '"csc      " auto',
-                        '"save     " auto',
-                        '"horz1    " auto',
-                        '"billing  " auto',
-                        '"horz2    " auto',
-                        '"verify   " auto',
-                        '"payButton" auto',
+                        '"instruct1  " auto',
+                        '"savedButton" auto',
+                        '"horz1      " auto',
+                        '"instruct2  " auto',
+                        '"number     " auto',
+                        '"name       " auto',
+                        '"expiry     " auto',
+                        '"csc        " auto',
+                        '"save       " auto',
+                        '"horz2      " auto',
+                        '"billing    " auto',
+                        '"horz3      " auto',
+                        '"verify     " auto',
+                        '"payButton  " auto',
                         '/',
                         '1fr'
                     ]],
                     ...ifScreenWidthAtLeast('md', {
                         gridTemplate: [[
-                            '"instruct   instruct" auto',
-                            '"number       number" auto',
-                            '"name           name" auto',
-                            '"expiry          csc" auto',
-                            '"save           save" auto',
-                            '"horz1         horz1" auto',
-                            '"billing     billing" auto',
-                            '"horz2         horz2" auto',
-                            '"verify       verify" auto',
-                            '"payButton payButton" auto',
+                            '"instruct1     instruct1" auto',
+                            '"savedButton savedButton" auto',
+                            '"horz1             horz1" auto',
+                            '"instruct2     instruct2" auto',
+                            '"number           number" auto',
+                            '"name               name" auto',
+                            '"expiry              csc" auto',
+                            '"save               save" auto',
+                            '"horz2             horz2" auto',
+                            '"billing         billing" auto',
+                            '"horz3             horz3" auto',
+                            '"verify           verify" auto',
+                            '"payButton     payButton" auto',
                             '/',
                             '1fr 1fr'
                         ]],
@@ -647,8 +653,17 @@ export default () => {
                         // spacings:
                         marginBlockEnd : spacers.md,
                     }),
-                    ...children('.instruct', {
-                        gridArea: 'instruct',
+                    ...children('.instruct1', {
+                        gridArea: 'instruct1',
+                    }),
+                    ...children('.savedButton', {
+                        gridArea: 'savedButton',
+                    }),
+                    ...children('.horz1', {
+                        gridArea: 'horz1',
+                    }),
+                    ...children('.instruct2', {
+                        gridArea: 'instruct2',
                     }),
                     ...children('.number', {
                         gridArea: 'number',
@@ -665,15 +680,15 @@ export default () => {
                     ...children('.save', {
                         gridArea: 'save',
                     }),
-                    ...children('.horz1', {
-                        gridArea: 'horz1',
+                    ...children('.horz2', {
+                        gridArea: 'horz2',
                         marginBlock: 0,
                     }),
                     ...children('.billing', {
                         gridArea: 'billing',
                     }),
-                    ...children('.horz2', {
-                        gridArea: 'horz2',
+                    ...children('.horz3', {
+                        gridArea: 'horz3',
                         marginBlock: 0,
                     }),
                     ...children('.verify', {

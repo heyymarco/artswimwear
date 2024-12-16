@@ -1,0 +1,125 @@
+'use client'
+
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
+// reusable-ui components:
+import {
+    // simple-components:
+    Button,
+    
+    
+    
+    // layout-components:
+    ListItem,
+    
+    
+    
+    // menu-components:
+    DropdownListButton,
+    
+    
+    
+    // composite-components:
+    type GroupProps,
+    Group,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// models:
+import {
+    type PaymentMethodDetail,
+    paymentMethodLimitMax,
+}                           from '@/models'
+
+// stores:
+import {
+    // hooks:
+    useGetPaymentMethodPage,
+}                           from '@/store/features/api/apiSlice'
+
+
+
+// react components:
+export interface ConditionalCreditCardSavedButtonProps
+    extends
+        Omit<GroupProps,
+            // children:
+            |'children'
+        >
+{
+}
+const ConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps): JSX.Element|null => {
+    // sessions:
+    const { data: session } = useSession();
+    
+    
+    
+    // jsx:
+    if (!session) return null;
+    return (
+        <LoggedInConditionalCreditCardSavedButton {...props} />
+    );
+};
+const LoggedInConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps): JSX.Element|null => {
+    // states:
+    const {
+        data    : paymentMethodPagination,
+    } = useGetPaymentMethodPage({
+        page    : 0, // show the first page (zero_based index)
+        perPage : paymentMethodLimitMax, // show all items at one page
+    });
+    const paymentMethods = paymentMethodPagination?.entities;
+    
+    
+    
+    // jsx:
+    if (!paymentMethods?.length) return null;
+    return (
+        <ImplementedConditionalCreditCardSavedButton {...props} paymentMethods={paymentMethods} />
+    );
+};
+const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps & { paymentMethods: PaymentMethodDetail[] }): JSX.Element|null => {
+    // default props:
+    const {
+        // data:
+        paymentMethods,
+        
+        
+        
+        // other props:
+        ...restGroupProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <Group
+            // other props:
+            {...restGroupProps}
+        >
+            <Button className='fluid'>
+                Pay with Test
+            </Button>
+            <DropdownListButton theme='primary' floatingPlacement='bottom-end' className='solid'>
+                {paymentMethods.map(({identifier}, index) =>
+                    <ListItem key={index}>
+                        {identifier}
+                    </ListItem>
+                )}
+            </DropdownListButton>
+        </Group>
+    );
+};
+export {
+    ConditionalCreditCardSavedButton,
+    ConditionalCreditCardSavedButton as default,
+};

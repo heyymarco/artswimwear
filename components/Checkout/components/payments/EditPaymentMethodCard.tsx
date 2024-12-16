@@ -12,6 +12,11 @@ import {
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// heymarco components:
+import {
+    AlternateSeparator,
+}                           from '@heymarco/alternate-separator'
+
 // payment components:
 import {
     ConditionalPaypalCardComposerProvider,
@@ -34,6 +39,12 @@ import {
 import {
     ConditionalCreditCardButton,
 }                           from '@/components/payments/ConditionalCreditCardButton'
+import {
+    ConditionalCreditCardSavedSection,
+}                           from '@/components/payments/ConditionalCreditCardSavedSection'
+import {
+    ConditionalCreditCardSavedButton,
+}                           from '@/components/payments/ConditionalCreditCardSavedButton'
 
 // internal components:
 import {
@@ -79,7 +90,17 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             // validations:
             enableValidation={paymentValidation}
         >
-            <div className='instruct'>
+            <ConditionalCreditCardSavedSection>
+                <p className='instruct1'>
+                    Pay with my saved card:
+                </p>
+                
+                <ConditionalCreditCardSavedButton className='savedButton' />
+                
+                <AlternateSeparator className='horz1' />
+            </ConditionalCreditCardSavedSection>
+            
+            <div className='instruct2'>
                 <p>
                     Fill in your <strong>credit card information</strong> below, enter <strong>billing address</strong>, and then click the <strong>Pay Now</strong> button:
                 </p>
@@ -92,7 +113,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <ConditionalCreditCardSaveCheck />
             
-            <hr className='horz1' />
+            <hr className='horz2' />
             
             <section
                 // refs:
@@ -109,7 +130,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 <EditBillingAddress />
             </section>
             
-            <hr className='horz2' />
+            <hr className='horz3' />
             
             <div className='verify'>
                 <p>
