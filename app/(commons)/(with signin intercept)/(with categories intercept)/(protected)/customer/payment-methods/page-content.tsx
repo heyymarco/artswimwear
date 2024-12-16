@@ -83,13 +83,13 @@ export function PaymentMethodPageContent(): JSX.Element|null {
 function PaymentMethodPageContentInternal(): JSX.Element|null {
     // stores:
     const {
-        data,
-        isLoading: isLoadingAndNoData,
+        data      : paymentMethodPagination,
+        isLoading : isLoadingAndNoData,
         isError,
         refetch,
     } = usePaginationState<PaymentMethodDetail>();
-    const isErrorAndNoData = isError && !data;
-    const isMaxLimitReached = ((data?.total ?? 0) >= paymentMethodLimitMax);
+    const isErrorAndNoData = isError && !paymentMethodPagination;
+    const isMaxLimitReached = ((paymentMethodPagination?.total ?? 0) >= paymentMethodLimitMax);
     
     
     

@@ -357,6 +357,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             
             
             
+            // may error if max payment method count has been reached:
             await createOrUpdatePaymentMethod(
                 prismaTransaction,
                 {
@@ -365,7 +366,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 },
                 customerId,
                 paymentMethodCapture,
-                /* detailedPaymentMethodCapture: */false,
+                /* detailedPaymentMethodCapture: */false, // no need returning a well_formed PaymentMethodDetail
             );
         })(),
     ]);

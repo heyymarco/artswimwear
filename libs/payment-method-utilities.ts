@@ -152,48 +152,57 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         
         
         
-        let resolver : Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>|undefined = undefined;
-        if (detailedPaymentMethodCapture) {
-            for (let attempts = 15; attempts > 0; attempts--) {
-                resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-                    ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
-                    ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
-                ]);
-                const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
-                if (paymentMethod) {
-                    const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver);
-                    const {
-                        shifted : shiftedPaymentMethods,
-                    } = affectedPaymentMethods;
-                    const repriorityPaymentMethods = new Map<string, number>(shiftedPaymentMethods); // never thrown
-                    const modifiedPriority = repriorityPaymentMethods.get(paymentMethod.id);
-                    if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
-                    return [paymentMethod, affectedPaymentMethods]; // handled with success
-                } // if
-                
-                
-                
-                if (attempts > 0) {
-                    // wait for 1 sec before running the next attempts:
-                    await new Promise<void>((resolve) => {
-                        setTimeout(() => {
-                            resolve();
-                        }, 1000);
-                    });
-                } // if
-            } // for
+        if (!detailedPaymentMethodCapture) { // if no need returning a well_formed PaymentMethodDetail => returns mocked PaymentMethodDetail:
+            const mockPaymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
+            const mockAffectedPaymentMethods : AffectedPaymentMethods = {
+                deleted : [],
+                shifted : [],
+            };
+            return [mockPaymentMethod, mockAffectedPaymentMethods]; // handled with success
         } // if
+        
+        
+        
+        let resolver : Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>|undefined = undefined;
+        for (let attempts = 15; attempts > 0; attempts--) {
+            resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+                ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+                ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+            ]);
+            const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
+            if (paymentMethod) {
+                const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver); // never thrown
+                const {
+                    shifted : shiftedPaymentMethods,
+                } = affectedPaymentMethods;
+                const repriorityPaymentMethods = new Map<string, number>(shiftedPaymentMethods);
+                const modifiedPriority = repriorityPaymentMethods.get(paymentMethod.id);
+                if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
+                return [paymentMethod, affectedPaymentMethods]; // handled with success
+            } // if
+            
+            
+            
+            if (attempts > 0) {
+                // wait for 1 sec before running the next attempts:
+                await new Promise<void>((resolve) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000);
+                });
+            } // if
+        } // for
         
         
         
         const paymentMethod : PaymentMethodDetail = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, null);
         
-        const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver);
+        const affectedPaymentMethods = await deleteNonRelatedAccounts(prismaTransaction, customerId, resolver); // never thrown
         const {
             shifted : shiftedPaymentMethods,
         } = affectedPaymentMethods;
-        const repriorityPaymentMethods = detailedPaymentMethodCapture ? new Map<string, number>(shiftedPaymentMethods) : null; // never thrown
-        const modifiedPriority = repriorityPaymentMethods?.get(paymentMethod.id);
+        const repriorityPaymentMethods = new Map<string, number>(shiftedPaymentMethods);
+        const modifiedPriority = repriorityPaymentMethods.get(paymentMethod.id);
         if (modifiedPriority !== undefined) paymentMethod.priority = modifiedPriority;
         
         return [paymentMethod, affectedPaymentMethods]; // handled with success
