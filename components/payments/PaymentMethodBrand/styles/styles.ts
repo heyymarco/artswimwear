@@ -5,6 +5,7 @@ import {
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
+// reusable-ui core:
 import {
     // a typography management system:
     typos,
@@ -68,7 +69,7 @@ const usesPaymentMethodBrandLogoLayout = () => {
 const usesPaymentMethodBrandNameLayout = () => {
     return style({
         // typos:
-        fontWeight : typos.fontWeightSemibold,
+        fontWeight   : typos.fontWeightSemibold,
     });
 };
 
