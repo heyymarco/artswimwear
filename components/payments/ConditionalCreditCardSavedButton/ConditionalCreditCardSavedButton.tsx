@@ -38,10 +38,10 @@ import {
     Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
+// payment components:
 import {
     PayWithSavedCardButton,
-}                           from './PayWithSavedCardButton'
+}                           from '@/components/payments/PayWithSavedCardButton'
 
 // models:
 import {
