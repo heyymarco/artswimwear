@@ -39,6 +39,11 @@ const usesPaymentMethodBrandLayout = () => {
             boxSizing  : 'content-box',
             inlineSize : 'fit-content',
             blockSize  : '1lh',
+            
+            
+            
+            // scrolls:
+            overflow   : 'hidden', // clip the brand image at the rounded corners
         }),
     });
 };
