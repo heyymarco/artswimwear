@@ -98,6 +98,7 @@ const ImplementedPaymentMethodBrand = <TElement extends Element = HTMLElement>(p
     
     
     // jsx:
+    if (!brand) return null;
     return (
         <Basic<TElement>
             // other props:
