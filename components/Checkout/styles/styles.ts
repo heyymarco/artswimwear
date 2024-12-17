@@ -9,11 +9,6 @@ import {
     
     
     
-    // strongly typed of css variables:
-    switchOf,
-    
-    
-    
     // reads/writes css variables configuration:
     usesCssProps,
 }                           from '@cssfn/core'                  // writes css in javascript
@@ -22,12 +17,6 @@ import {
 import {
     // configs:
     secondaries,
-    
-    
-    
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
     
     
     
@@ -45,11 +34,6 @@ import {
     
     // a typography management system:
     typos,
-    
-    
-    
-    // border (stroke) stuff of UI:
-    usesBorder,
     
     
     
@@ -74,11 +58,10 @@ export default () => {
     // dependencies:
     
     // features:
-    const {borderVars    } = usesBorder();
-    const {paddingVars   } = usesPadding();
+    const {paddingVars  } = usesPadding();
     
     // capabilities:
-    const {groupableVars } = usesGroupable();
+    const {groupableVars} = usesGroupable();
     
     
     
@@ -280,28 +263,6 @@ export default () => {
             
             
             // children:
-            ...children('.paymentProvider', {
-                // sizes:
-                width           : 'auto',
-                height          : '26px',
-                
-                
-                
-                // backgrounds:
-                backgroundColor : 'white',
-                
-                
-                
-                // borders:
-                border          : borderVars.border,
-                borderWidth     : borders.defaultWidth,
-                borderRadius    : borderRadiuses.sm,
-                
-                
-                
-                // spacings:
-                padding         : spacers.xs,
-            }),
             ...children(['.customerName', '.eta', '.paymentIdentifier'], {
                 // typos:
                 fontSize       : typos.fontSizeSm,

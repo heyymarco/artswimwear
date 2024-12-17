@@ -12,7 +12,6 @@ import {
 import {
     // a border (stroke) management system:
     borders,
-    borderRadiuses,
     
     
     
@@ -31,11 +30,6 @@ import {
     // a typography management system:
     typos,
     horzRules,
-    
-    
-    
-    // border (stroke) stuff of UI:
-    usesBorder,
     
     
     
@@ -461,13 +455,6 @@ const usesDataTableLayout = () => {
     });
 };
 const usesTableDataComposite = () => {
-    // dependencies:
-    
-    // features:
-    const {borderVars} = usesBorder();
-    
-    
-    
     return style({
         // layouts:
         alignItems          : 'center', // center the each item vertically   (desktop mode)
@@ -484,28 +471,6 @@ const usesTableDataComposite = () => {
         
         
         
-        ...children('.paymentProvider', {
-            // sizes:
-            width           : 'auto',
-            height          : '26px',
-            
-            
-            
-            // backgrounds:
-            backgroundColor : 'white',
-            
-            
-            
-            // borders:
-            border          : borderVars.border,
-            borderWidth     : borders.defaultWidth,
-            borderRadius    : borderRadiuses.sm,
-            
-            
-            
-            // spacings:
-            padding         : spacers.xs,
-        }),
         ...children('.paymentIdentifier', {
             // typos:
             fontSize       : typos.fontSizeSm,

@@ -12,12 +12,6 @@ import {
     
     
     
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
@@ -28,18 +22,8 @@ import {
     
     
     
-    // border (stroke) stuff of UI:
-    usesBorder,
-    
-    
-    
     // padding (inner spacing) stuff of UI:
     usesPadding,
-    
-    
-    
-    // groups a list of UIs into a single UI:
-    usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
@@ -49,7 +33,6 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
     // dependencies:
     
     // features:
-    const {borderVars } = usesBorder();
     const {paddingVars} = usesPadding();
     
     
@@ -112,17 +95,6 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
         }),
         ...children('.cardNumber', {
             // children:
-            ...children('.cardBrand', {
-                // backgrounds:
-                backgroundColor : 'white',
-                
-                
-                
-                // borders:
-                border          : borderVars.border,
-                borderWidth     : borders.defaultWidth,
-                borderRadius    : borderRadiuses.sm,
-            }),
             ...children('.data', {
                 // positions:
                 justifySelf: 'stretch',

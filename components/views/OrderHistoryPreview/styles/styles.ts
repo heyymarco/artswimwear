@@ -8,12 +8,6 @@ import {
 }                           from '@cssfn/core'          // writes css in javascript
 
 import {
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
@@ -177,6 +171,7 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                 display        : 'flex',
                 flexWrap       : 'wrap',
                 justifyContent : 'start',
+                alignItems     : 'center',
                 
                 gap : spacers.sm,
                 
@@ -195,28 +190,6 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                         
                         gap : spacers.sm,
                         
-                        ...children('.paymentProvider', {
-                            // sizes:
-                            width           : 'auto',
-                            height          : '16px',
-                            
-                            
-                            
-                            // backgrounds:
-                            backgroundColor : 'white',
-                            
-                            
-                            
-                            // borders:
-                            border          : borderVars.border,
-                            borderWidth     : borders.defaultWidth,
-                            borderRadius    : borderRadiuses.sm,
-                            
-                            
-                            
-                            // spacings:
-                            padding         : spacers.xs,
-                        }),
                         ...children('.paymentIdentifier', {
                             // typos:
                             fontSize       : typos.fontSizeSm,

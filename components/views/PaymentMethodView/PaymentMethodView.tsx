@@ -56,14 +56,13 @@ import {
 import {
     Grip,
 }                           from '@/components/Grip'
+import {
+    PaymentMethodBrand,
+}                           from '@/components/payments/PaymentMethodBrand'
 
 // models:
 import {
     type PaymentMethodDetail,
-    
-    
-    
-    isKnownPaymentBrand,
 }                           from '@/models'
 
 // utilities:
@@ -206,18 +205,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
             onOrderHandshake={handleOrderHandshake}
         >
             <p className='cardNumber'>
-                {(!!brand && isKnownPaymentBrand(brand)) && <img
-                    // appearances:
-                    alt={brand}
-                    src={`/brands/${brand.toLowerCase()}.svg`}
-                    // width={42}
-                    // height={26}
-                    
-                    
-                    
-                    // classes:
-                    className='label cardBrand'
-                />}
+                <PaymentMethodBrand model={model} className='label' />
                 
                 <span className='data'>
                     <span className='cardNumberParts'>

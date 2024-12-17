@@ -91,6 +91,9 @@ import {
     DateTimeDisplay,
 }                           from '@/components/DateTimeDisplay'
 import {
+    PaymentMethodBrand,
+}                           from '@/components/payments/PaymentMethodBrand'
+import {
     ViewCartItem,
 }                           from './ViewCartItem'
 import {
@@ -100,10 +103,6 @@ import {
 // models:
 import {
     type PublicOrderDetail,
-    
-    
-    
-    isKnownPaymentBrand,
 }                           from '@/models'
 
 // stores:
@@ -585,22 +584,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     // components:
                                     tableDataComponent={<Generic className={styleSheet.tableDataComposite} />}
                                 >
-                                    {
-                                        (!!paymentBrand && isKnownPaymentBrand(paymentBrand))
-                                        ? <img
-                                            // appearances:
-                                            alt={paymentBrand}
-                                            src={`/brands/${paymentBrand.toLowerCase()}.svg`}
-                                            // width={42}
-                                            // height={26}
-                                            
-                                            
-                                            
-                                            // classes:
-                                            className='paymentProvider'
-                                        />
-                                        : (paymentBrand || paymentType)
-                                    }
+                                    <PaymentMethodBrand model={payment} />
                                     {!!paymentIdentifier && <span className='paymentIdentifier txt-sec'>
                                         ({paymentIdentifier})
                                     </span>}

@@ -4,11 +4,21 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useMemo,
 }                           from 'react'
+
+// internal components:
+import {
+    PaymentMethodBrand,
+}                           from '@/components/payments/PaymentMethodBrand'
 
 // models:
 import {
-    isKnownPaymentBrand,
+    PaymentDetail,
 }                           from '@/models'
 
 // internals:
@@ -23,32 +33,22 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
-        paymentType,
         paymentBrand,
         paymentIdentifier,
     } = useCheckoutState();
+    const payment = useMemo((): Pick<PaymentDetail, 'brand'>|null => {
+        if (!paymentBrand) return null;
+        return {
+            brand: paymentBrand,
+        } satisfies Pick<PaymentDetail, 'brand'>;
+    }, [paymentBrand]);
     
     
     
     // jsx:
     return (
         <>
-            {
-                (!!paymentBrand && isKnownPaymentBrand(paymentBrand))
-                ? <img
-                    // appearances:
-                    alt={paymentBrand}
-                    src={`/brands/${paymentBrand.toLowerCase()}.svg`}
-                    // width={42}
-                    // height={26}
-                    
-                    
-                    
-                    // classes:
-                    className='paymentProvider'
-                />
-                : (paymentBrand || paymentType)
-            }
+            <PaymentMethodBrand model={payment} />
             
             {!!paymentIdentifier && <span
                 // classes:
