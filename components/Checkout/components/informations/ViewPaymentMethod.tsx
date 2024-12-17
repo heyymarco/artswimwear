@@ -15,6 +15,9 @@ import {
 import {
     PaymentMethodBrand,
 }                           from '@/components/payments/PaymentMethodBrand'
+import {
+    PaymentMethodIdentifier,
+}                           from '@/components/payments/PaymentMethodIdentifier'
 
 // models:
 import {
@@ -33,15 +36,18 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
+        paymentType,
         paymentBrand,
         paymentIdentifier,
     } = useCheckoutState();
-    const payment = useMemo((): Pick<PaymentDetail, 'brand'>|null => {
+    const payment = useMemo((): Pick<PaymentDetail, 'type'|'brand'|'identifier'>|null => {
         if (!paymentBrand) return null;
         return {
-            brand: paymentBrand,
-        } satisfies Pick<PaymentDetail, 'brand'>;
-    }, [paymentBrand]);
+            type       : (paymentType ?? 'CUSTOM') as PaymentDetail['type'],
+            brand      : paymentBrand,
+            identifier : paymentIdentifier ?? '',
+        } satisfies Pick<PaymentDetail, 'type'|'brand'|'identifier'>;
+    }, [paymentType, paymentBrand, paymentIdentifier]);
     
     
     
@@ -49,13 +55,7 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     return (
         <>
             <PaymentMethodBrand model={payment} />
-            
-            {!!paymentIdentifier && <span
-                // classes:
-                className='paymentIdentifier txt-sec'
-            >
-                ({paymentIdentifier})
-            </span>}
+            <PaymentMethodIdentifier model={payment} />
         </>
     );
 };

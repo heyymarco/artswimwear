@@ -468,14 +468,6 @@ const usesTableDataComposite = () => {
         
         // spacings:
         gap                 : spacers.sm,
-        
-        
-        
-        ...children('.paymentIdentifier', {
-            // typos:
-            fontSize       : typos.fontSizeSm,
-            fontWeight     : typos.fontWeightNormal,
-        }),
     });
 };
 const usesPaymentConfirmationAlertLayout = () => {

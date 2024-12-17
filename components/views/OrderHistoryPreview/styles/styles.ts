@@ -189,12 +189,6 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                         alignItems : 'center',
                         
                         gap : spacers.sm,
-                        
-                        ...children('.paymentIdentifier', {
-                            // typos:
-                            fontSize       : typos.fontSizeSm,
-                            fontWeight     : typos.fontWeightNormal,
-                        }),
                     }),
                 }),
             }),

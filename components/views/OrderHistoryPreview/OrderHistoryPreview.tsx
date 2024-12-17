@@ -87,6 +87,9 @@ import {
 import {
     PaymentMethodBrand,
 }                           from '@/components/payments/PaymentMethodBrand'
+import {
+    PaymentMethodIdentifier,
+}                           from '@/components/payments/PaymentMethodIdentifier'
 
 // models:
 import {
@@ -260,10 +263,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                     
                     <span className='paymentMethod'>
                         <PaymentMethodBrand model={payment} />
-                        
-                        {!!payment.identifier && <span className='paymentIdentifier txt-sec'>
-                            ({payment.identifier})
-                        </span>}
+                        <PaymentMethodIdentifier model={payment} />
                     </span>
                 </span>}
             </p>

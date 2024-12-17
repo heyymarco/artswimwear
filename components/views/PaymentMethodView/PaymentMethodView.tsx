@@ -59,6 +59,9 @@ import {
 import {
     PaymentMethodBrand,
 }                           from '@/components/payments/PaymentMethodBrand'
+import {
+    PaymentMethodIdentifier,
+}                           from '@/components/payments/PaymentMethodIdentifier'
 
 // models:
 import {
@@ -206,15 +209,7 @@ const PaymentMethodView = (props: PaymentMethodViewProps): JSX.Element|null => {
         >
             <p className='cardNumber'>
                 <PaymentMethodBrand model={model} className='label' />
-                
-                <span className='data'>
-                    <span className='cardNumberParts'>
-                        <span className='mask'>••••</span>
-                        <span className='mask'>••••</span>
-                        <span className='mask'>••••</span>
-                        <span>{identifier}</span>
-                    </span>
-                </span>
+                <PaymentMethodIdentifier model={model} className='data' />
             </p>
             
             {!!expiresAt && <p className='cardExpiry'>

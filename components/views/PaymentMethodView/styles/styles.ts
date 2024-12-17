@@ -7,11 +7,6 @@ import {
 }                           from '@cssfn/core'          // writes css in javascript
 
 import {
-    // configs:
-    secondaries,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
@@ -105,28 +100,6 @@ const usesPaymentMethodViewLayout = () => { // the <ListItem> of order list
                 display: 'grid',
                 gridAutoFlow: 'column',
                 justifyContent: 'space-between',
-                
-                
-                
-                // children:
-                ...children('.cardNumberParts', {
-                    // layouts:
-                    display: 'grid',
-                    gridAutoFlow: 'column',
-                    gap: spacers.sm,
-                    
-                    
-                    
-                    // typos:
-                    fontSize: typos.fontSizeXl,
-                    
-                    
-                    
-                    // children:
-                    ...children('.mask', {
-                        opacity: secondaries.opacity,
-                    }),
-                }),
             }),
         }),
         ...children('.cardExpiry', {

@@ -94,6 +94,9 @@ import {
     PaymentMethodBrand,
 }                           from '@/components/payments/PaymentMethodBrand'
 import {
+    PaymentMethodIdentifier,
+}                           from '@/components/payments/PaymentMethodIdentifier'
+import {
     ViewCartItem,
 }                           from './ViewCartItem'
 import {
@@ -183,7 +186,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     const {
         type           : paymentType,
         brand          : paymentBrand,
-        identifier     : paymentIdentifier,
         expiresAt      : paymentExpiresAt,
         
         amount         : paymentAmount,
@@ -585,9 +587,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     tableDataComponent={<Generic className={styleSheet.tableDataComposite} />}
                                 >
                                     <PaymentMethodBrand model={payment} />
-                                    {!!paymentIdentifier && <span className='paymentIdentifier txt-sec'>
-                                        ({paymentIdentifier})
-                                    </span>}
+                                    <PaymentMethodIdentifier model={payment} />
                                 </DataTableItem>
                                 <DataTableItem
                                     // accessibilities:

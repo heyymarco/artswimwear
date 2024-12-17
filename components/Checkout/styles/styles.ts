@@ -263,7 +263,7 @@ export default () => {
             
             
             // children:
-            ...children(['.customerName', '.eta', '.paymentIdentifier'], {
+            ...children(['.customerName', '.eta'], {
                 // typos:
                 fontSize       : typos.fontSizeSm,
                 fontWeight     : typos.fontWeightNormal,
