@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useState,
 }                           from 'react'
 
 // next-auth:
@@ -32,6 +37,11 @@ import {
     type GroupProps,
     Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// internal components:
+import {
+    PayWithSavedCardButton,
+}                           from './PayWithSavedCardButton'
 
 // models:
 import {
@@ -83,10 +93,10 @@ const LoggedInConditionalCreditCardSavedButton = (props: ConditionalCreditCardSa
     // jsx:
     if (!paymentMethods?.length) return null;
     return (
-        <ImplementedConditionalCreditCardSavedButton {...props} paymentMethods={paymentMethods} />
+        <ImplementedConditionalCreditCardSavedButton {...props} paymentMethods={paymentMethods as [PaymentMethodDetail, ...PaymentMethodDetail[]]} />
     );
 };
-const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps & { paymentMethods: PaymentMethodDetail[] }): JSX.Element|null => {
+const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps & { paymentMethods: [PaymentMethodDetail, ...PaymentMethodDetail[]] }): JSX.Element|null => {
     // default props:
     const {
         // data:
@@ -100,16 +110,53 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
     
     
     
+    // states:
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodDetail>(() => paymentMethods[0]);
+    
+    
+    
     // jsx:
     return (
         <Group
             // other props:
             {...restGroupProps}
+            
+            
+            
+            // variants:
+            size='lg'
         >
-            <Button className='fluid'>
-                Pay with Test
-            </Button>
-            <DropdownListButton theme='primary' floatingPlacement='bottom-end' className='solid'>
+            <PayWithSavedCardButton
+                // data:
+                model={selectedPaymentMethod}
+                
+                
+                
+                // classes:
+                className='fluid'
+            />
+            <DropdownListButton
+                // variants:
+                size='md'
+                theme='primary'
+                
+                
+                
+                // classes:
+                className='solid'
+                
+                
+                
+                // floatable:
+                floatingPlacement='bottom-end'
+                
+                
+                
+                // children:
+                buttonChildren={<>
+                    Pay with
+                </>}
+            >
                 {paymentMethods.map(({identifier}, index) =>
                     <ListItem key={index}>
                         {identifier}
