@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useState,
+    useEffect,
 }                           from 'react'
 
 // next-auth:
@@ -19,7 +20,7 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
-    Button,
+    Label,
     
     
     
@@ -42,6 +43,9 @@ import {
 import {
     PayWithSavedCardButton,
 }                           from '@/components/payments/PayWithSavedCardButton'
+import {
+    SavedCardCard,
+}                           from '@/components/views/SavedCardCard'
 
 // models:
 import {
@@ -112,6 +116,17 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
     
     // states:
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodDetail>(() => paymentMethods[0]);
+    const selectedPaymentMethodId = selectedPaymentMethod.id;
+    
+    
+    
+    // effects:
+    // resets `selectedPaymentMethod` to primary payment method if the `selectedPaymentMethod` not listed in `paymentMethods`:
+    useEffect(() => {
+        if (!paymentMethods.some(({id}) => (id === selectedPaymentMethodId))) {
+            setSelectedPaymentMethod(paymentMethods[0]);
+        } // if
+    }, [paymentMethods, selectedPaymentMethodId]);
     
     
     
@@ -154,13 +169,29 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
                 
                 // children:
                 buttonChildren={<>
-                    Pay with
+                    Or select
                 </>}
             >
-                {paymentMethods.map(({identifier}, index) =>
-                    <ListItem key={index}>
-                        {identifier}
-                    </ListItem>
+                {paymentMethods.map((modelOption, index) =>
+                    <SavedCardCard
+                        // identifiers:
+                        key={index}
+                        
+                        
+                        
+                        // data:
+                        model={modelOption}
+                        
+                        
+                        
+                        // states:
+                        active={(modelOption.id === selectedPaymentMethodId)}
+                        
+                        
+                        
+                        // handlers:
+                        onClick={() => setSelectedPaymentMethod(modelOption)}
+                    />
                 )}
             </DropdownListButton>
         </Group>
