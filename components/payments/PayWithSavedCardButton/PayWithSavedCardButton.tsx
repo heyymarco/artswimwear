@@ -11,6 +11,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // simple-components:
@@ -19,7 +25,20 @@ import {
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
+// payment components:
+import {
+    AuthenticatedResult,
+    type StartTransactionArg,
+    useTransactionState,
+    useOnFinishOrder,
+}                           from '@/components/payments/states'
+import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/credit-card-error-messages'
 import {
     PaymentMethodBrand,
 }                           from '@/components/payments/PaymentMethodBrand'
@@ -29,6 +48,10 @@ import {
 
 // models:
 import {
+    // types:
+    type PaymentDetail,
+    type PlaceOrderDetail,
+    
     type PaymentMethodDetail,
 }                           from '@/models'
 
@@ -64,6 +87,47 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         // other props:
         ...restPayWithSavedCardButtonProps
     } = props;
+    
+    
+    
+    // states:
+    const {
+        // states:
+        isTransactionReady,
+        
+        
+        
+        // actions:
+        startTransaction,
+    } = useTransactionState();
+    
+    
+    
+    // handlers:
+    const handlePayButtonClick = useEvent(() => {
+        startTransaction({
+            // handlers:
+            onPlaceOrder         : handlePlaceOrder,
+            onAuthenticate       : handleAuthenticate,
+            
+            
+            
+            // messages:
+            messageFailed        : messageFailed,
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined,
+            messageDeclinedRetry : messageDeclinedRetry,
+        });
+    });
+    const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
+        await new Promise<void>((resolved) => setTimeout(resolved, 3000));
+        throw Error('not yet implemented');
+    });
+    const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
+        await new Promise<void>((resolved) => setTimeout(resolved, 3000));
+        throw Error('not yet implemented');
+    });
     
     
     
@@ -118,6 +182,11 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
             
             // classes:
             className={`${styles.main} ${className}`}
+            
+            
+            
+            // handlers:
+            onClick={handlePayButtonClick}
         >
             {children}
         </ButtonIcon>
