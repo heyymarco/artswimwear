@@ -11,15 +11,10 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
 // reusable-ui components:
 import {
     // simple-components:
+    Icon,
     type ButtonIconProps,
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -61,6 +56,11 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         
         
         
+        // appearances:
+        icon = 'shopping_bag',
+        
+        
+        
         // other props:
         ...restPayWithSavedCardButtonProps
     } = props;
@@ -69,11 +69,6 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
     
     // default props:
     const {
-        // appearances:
-        icon      = 'shopping_bag',
-        
-        
-        
         // variants:
         size      = 'lg',
         gradient  = true,
@@ -87,9 +82,16 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         
         // children:
         children  = <>
-            <span>Pay with</span>
-            <PaymentMethodBrand model={model} size='sm' />
-            <PaymentMethodIdentifier model={model} mild={false} />
+            <span className={styles.responsive}>
+                <span className='labelGroup'>
+                    {!!icon && <Icon icon={icon} size='md' />}
+                    <span>Pay with</span>
+                </span>
+                <span className='cardGroup'>
+                    <PaymentMethodBrand      model={model} size='sm' />
+                    <PaymentMethodIdentifier model={model} mild={false} />
+                </span>
+            </span>
         </>,
         
         
@@ -105,11 +107,6 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         <ButtonIcon
             // other props:
             {...restButtonIconProps}
-            
-            
-            
-            // appearances:
-            icon={icon}
             
             
             

@@ -73,8 +73,10 @@ const SavedCardCard = (props: SavedCardCardProps): JSX.Element|null => {
             className={styles.main}
         >
             <RadioDecorator />
-            <PaymentMethodBrand model={model} className='label' />
-            <PaymentMethodIdentifier model={model} className='data' mild={!props.active} />
+            <span className='cardGroup'>
+                <PaymentMethodBrand model={model} className='label' />
+                <PaymentMethodIdentifier model={model} className='data' mild={!props.active} />
+            </span>
         </ListItem>
     );
 };

@@ -1,5 +1,7 @@
 // cssfn:
 import {
+    rule,
+    children,
     style,
     scope,
 }                           from '@cssfn/core'          // writes css in javascript
@@ -15,14 +17,33 @@ import {
 const usesSavedCardCardLayout = () => {
     return style({
         // layouts:
-        display      : 'grid',
-        gridAutoFlow : 'column',
-        alignItems   : 'center',
+        display              : 'grid',
+        gridAutoFlow         : 'column',
+        alignItems           : 'center',
         
         
         
         // spacings:
-        gap          : spacers.md,
+        gap                  : spacers.md,
+        
+        
+        
+        // children:
+        ...children('.cardGroup', {
+            // layouts:
+            display          : 'grid',
+            gridAutoFlow     : 'row',
+            justifyItems     : 'center',
+            alignItems       : 'inherit',
+            ...rule('@media (min-width: 22rem)', {
+                gridAutoFlow : 'column',
+            }),
+            
+            
+            
+            // spacings:
+            gap              : 'inherit',
+        })
     });
 };
 
