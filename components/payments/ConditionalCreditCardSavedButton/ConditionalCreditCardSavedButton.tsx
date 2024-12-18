@@ -19,16 +19,6 @@ import {
 
 // reusable-ui components:
 import {
-    // simple-components:
-    Label,
-    
-    
-    
-    // layout-components:
-    ListItem,
-    
-    
-    
     // menu-components:
     DropdownListButton,
     
@@ -101,7 +91,7 @@ const LoggedInConditionalCreditCardSavedButton = (props: ConditionalCreditCardSa
     );
 };
 const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps & { paymentMethods: [PaymentMethodDetail, ...PaymentMethodDetail[]] }): JSX.Element|null => {
-    // default props:
+    // props:
     const {
         // data:
         paymentMethods,
@@ -109,7 +99,7 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
         
         
         // other props:
-        ...restGroupProps
+        ...restConditionalCreditCardSavedButtonProps
     } = props;
     
     
@@ -130,6 +120,19 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
     
     
     
+    // default props:
+    const {
+        // variants:
+        size = 'lg',
+        
+        
+        
+        // other props:
+        ...restGroupProps
+    } = restConditionalCreditCardSavedButtonProps;
+    
+    
+    
     // jsx:
     return (
         <Group
@@ -139,7 +142,7 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
             
             
             // variants:
-            size='lg'
+            size={size}
         >
             <PayWithSavedCardButton
                 // data:
