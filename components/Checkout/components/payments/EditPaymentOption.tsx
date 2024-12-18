@@ -58,8 +58,8 @@ import {
 }                           from '../payments/ViewPaymentMethodOtc'
 
 // models:
-import type {
-    PaymentMethod,
+import {
+    type PaymentOption,
 }                           from '@/models'
 
 // states:
@@ -79,7 +79,7 @@ import {
 
 
 // react components:
-const EditPaymentMethod = (): JSX.Element|null => {
+const EditPaymentOption = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
@@ -100,11 +100,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
             // required for purchasing:
             totalShippingCost={totalShippingCost}
         >
-            <EditPaymentMethodInternal />
+            <EditPaymentOptionInternal />
         </ConditionalPaymentScriptProvider>
     );
 };
-const EditPaymentMethodInternal = (): JSX.Element|null => {
+const EditPaymentOptionInternal = (): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
@@ -113,8 +113,8 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
-        paymentMethod,
-        setPaymentMethod,
+        paymentOption,
+        setPaymentOption,
     } = useCheckoutState();
     
     const {
@@ -135,27 +135,27 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     
     // payment method options:
-    const paymentMethodList : PaymentMethod[] = Array.from(
+    const paymentOptionList : PaymentOption[] = Array.from(
         new Set([ // remove duplicate(s)
-            ...((isPaymentAvailablePaypal || isPaymentAvailableStripe || isPaymentAvailableMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
-            ...(isPaymentAvailablePaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
-            ...(isPaymentAvailableStripe   ? (['googlePay', 'applePay', 'amazonPay', 'link'] satisfies PaymentMethod[]) : []),
-            ...(isPaymentAvailableMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
-            ...(isPaymentAvailableBank     ? (['manual'] satisfies PaymentMethod[]) : []),
+            ...((isPaymentAvailablePaypal || isPaymentAvailableStripe || isPaymentAvailableMidtrans) ? ['CARD'] satisfies PaymentOption[] : []),
+            ...(isPaymentAvailablePaypal   ? (['PAYPAL'] satisfies PaymentOption[]) : []),
+            ...(isPaymentAvailableStripe   ? (['GOOGLEPAY', 'APPLEPAY', 'AMAZONPAY', 'LINK'] satisfies PaymentOption[]) : []),
+            ...(isPaymentAvailableMidtrans ? (['QRIS', 'GOPAY', 'SHOPEEPAY', 'INDOMARET', 'ALFAMART'] satisfies PaymentOption[]) : []),
+            ...(isPaymentAvailableBank     ? (['MANUAL'] satisfies PaymentOption[]) : []),
         ])
     );
     
     
     
     // handlers:
-    const handlePaymentMethodExpandedChange = useEvent<EventHandler<ExclusiveExpandedChangeEvent>>(({expanded, listIndex}) => {
+    const handlePaymentOptionExpandedChange = useEvent<EventHandler<ExclusiveExpandedChangeEvent>>(({expanded, listIndex}) => {
         // conditions:
         if (!expanded) return;
         
         
         
         // actions:
-        setPaymentMethod(paymentMethodList[listIndex]);
+        setPaymentOption(paymentOptionList[listIndex]);
     });
     
     
@@ -175,13 +175,13 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 
                 // states:
                 expandedListIndex={
-                    Math.max(-1, paymentMethodList.findIndex((option) => (option === paymentMethod)))
+                    Math.max(-1, paymentOptionList.findIndex((option) => (option === paymentOption)))
                 }
                 
                 
                 
                 // handlers:
-                onExpandedChange={handlePaymentMethodExpandedChange}
+                onExpandedChange={handlePaymentOptionExpandedChange}
             >
                 {isPaymentAvailableCreditCard && <AccordionItem
                     // accessibilities:
@@ -274,7 +274,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'googlePay') && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
+                    {(paymentOption === 'GOOGLEPAY') && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -302,7 +302,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'applePay') && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
+                    {(paymentOption === 'APPLEPAY') && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -330,7 +330,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'amazonPay') && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
+                    {(paymentOption === 'AMAZONPAY') && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -358,7 +358,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'link') && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
+                    {(paymentOption === 'LINK') && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableMidtrans   && <AccordionItem
@@ -597,6 +597,6 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     );
 };
 export {
-    EditPaymentMethod,
-    EditPaymentMethod as default,
+    EditPaymentOption,
+    EditPaymentOption as default,
 };

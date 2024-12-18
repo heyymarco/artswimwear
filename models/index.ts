@@ -15,9 +15,6 @@ export      * from './emails'
 export      * from './customers'
 export      * from './carts'
 export      * from './checkouts'
-export {
-    type PaymentMethod,
-}             from './checkouts'
 
 export      * from './wishes'
 

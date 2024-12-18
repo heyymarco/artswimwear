@@ -17,7 +17,7 @@ import {
     
     type CheckoutDetail,
     type CheckoutStep,
-    type PaymentMethod,
+    type PaymentOption,
     type CheckoutSession,
 }                           from '@/models'
 
@@ -25,7 +25,7 @@ import {
 
 const initialState : CheckoutSession = {
     // version control:
-    version            : 4,
+    version            : 5,
     
     
     
@@ -61,7 +61,7 @@ const initialState : CheckoutSession = {
     
     // payment data:
     paymentValidation  : false,
-    paymentMethod      : null,
+    paymentOption      : null,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -69,7 +69,7 @@ export const checkoutSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if (state.version === 4) return state; // valid   => ignore
+            if (state.version === 5) return state; // valid   => ignore
             return initialState;                   // invalid => reset
         },
         
@@ -134,8 +134,8 @@ export const checkoutSlice = createSlice({
         setPaymentValidation  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentValidation = value;
         },
-        setPaymentMethod      : (state, {payload: value}: PayloadAction<PaymentMethod|null>) => {
-            state.paymentMethod = value;
+        setPaymentOption      : (state, {payload: value}: PayloadAction<PaymentOption|null>) => {
+            state.paymentOption = value;
         },
         
         
@@ -153,8 +153,8 @@ export const checkoutSlice = createSlice({
                 shippingProviderId : checkoutDetail.shippingProviderId,
                 billingAsShipping  : checkoutDetail.billingAsShipping,
                 billingAddress     : checkoutDetail.billingAddress,
-                paymentMethod      : checkoutDetail.paymentMethod,
-            };
+                paymentOption      : checkoutDetail.paymentOption,
+            } satisfies CheckoutSession;
         },
     },
 });
@@ -201,7 +201,7 @@ export const {
     
     // payment data:
     setPaymentValidation,
-    setPaymentMethod,
+    setPaymentOption,
     
     
     

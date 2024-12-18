@@ -89,7 +89,7 @@ import {
     
     type CheckoutStep,
     type TotalShippingCostStatus,
-    type PaymentMethod,
+    type PaymentOption,
     type PlaceOrderRequestOptions,
     type PlaceOrderDetail,
     type FinishedOrderState,
@@ -135,7 +135,7 @@ import {
     
     // payment data:
     setPaymentValidation  as reduxSetPaymentValidation,
-    setPaymentMethod      as reduxSetPaymentMethod,
+    setPaymentOption      as reduxSetPaymentOption,
     
     // backups:
     resetCheckout         as reduxResetCheckout,
@@ -267,7 +267,7 @@ export interface CheckoutStateBase
     
     
     // payment data:
-    setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
+    setPaymentOption             : (paymentOption: PaymentOption|null) => void
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined
@@ -408,8 +408,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // payment data:
-    paymentMethod                : null,
-    setPaymentMethod             : noopCallback,
+    paymentOption                : null,
+    setPaymentOption             : noopCallback,
     
     paymentType                  : undefined,
     paymentBrand                 : undefined,
@@ -577,7 +577,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // payment data:
         paymentValidation  : paymentValidationRaw,
         
-        paymentMethod,
+        paymentOption,
     } = localCheckoutSession;
     
     const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
@@ -857,10 +857,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const paymentValidation              = (
         paymentValidationRaw
         &&
-        (paymentMethod === 'card')
+        (paymentOption === 'CARD')
     );
     
-    const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is REQUIRED for 'card'
+    const isBillingAddressRequired       = (paymentOption === 'CARD'); // the billingAddress is REQUIRED for 'CARD'
     const billingAsShipping              = (
         billingAsShippingRaw
         &&
@@ -1037,17 +1037,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             marketingOpt : restoredCartDetail.marketingOpt,
         }));
         
-        // restoring the checkout state causing the `globalCheckoutSession` mutated, we need to re-sync the last checkoutStep|shippingMethod|paymentMethod to avoid __wrong_change_detection__:
+        // restoring the checkout state causing the `globalCheckoutSession` mutated, we need to re-sync the last checkoutStep|shippingMethod|paymentOption to avoid __wrong_change_detection__:
         prevCheckoutStepRef.current       = restoredCheckoutDetail.checkoutStep;       // sync
         prevShippingProviderIdRef.current = restoredCheckoutDetail.shippingProviderId; // sync
-        prevPaymentMethodRef.current      = restoredCheckoutDetail.paymentMethod;      // sync
+        prevPaymentOptionRef.current      = restoredCheckoutDetail.paymentOption;      // sync
     });
     useRestoredCartEvent(handleCartRestored);
     
-    // auto backup the checkout session when the global checkoutStep|shippingMethod|paymentMethod changed:
+    // auto backup the checkout session when the global checkoutStep|shippingMethod|paymentOption changed:
     const prevCheckoutStepRef       = useRef<typeof globalCheckoutSession.checkoutStep>(globalCheckoutSession.checkoutStep);
     const prevShippingProviderIdRef = useRef<typeof globalCheckoutSession.shippingProviderId>(globalCheckoutSession.shippingProviderId);
-    const prevPaymentMethodRef      = useRef<typeof globalCheckoutSession.paymentMethod>(globalCheckoutSession.paymentMethod);
+    const prevPaymentOptionRef      = useRef<typeof globalCheckoutSession.paymentOption>(globalCheckoutSession.paymentOption);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (
@@ -1055,11 +1055,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             &&
             (prevShippingProviderIdRef.current === globalCheckoutSession.shippingProviderId)
             &&
-            (prevPaymentMethodRef.current      === globalCheckoutSession.paymentMethod)
+            (prevPaymentOptionRef.current      === globalCheckoutSession.paymentOption)
         ) return;                                                                     // already the same => ignore
         prevCheckoutStepRef.current       = globalCheckoutSession.checkoutStep;       // sync
         prevShippingProviderIdRef.current = globalCheckoutSession.shippingProviderId; // sync
-        prevPaymentMethodRef.current      = globalCheckoutSession.paymentMethod;      // sync
+        prevPaymentOptionRef.current      = globalCheckoutSession.paymentOption;      // sync
         
         
         
@@ -1086,7 +1086,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     shippingProviderId : globalCheckoutSession.shippingProviderId,
                     billingAsShipping  : globalCheckoutSession.billingAsShipping,
                     billingAddress     : globalCheckoutSession.billingAddress,
-                    paymentMethod      : globalCheckoutSession.paymentMethod,
+                    paymentOption      : globalCheckoutSession.paymentOption,
                 },
                 marketingOpt : marketingOpt,
             } satisfies CartUpdateRequest, {
@@ -1531,11 +1531,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const setShippingProviderId    = useEvent((shippingProviderId: string|null): void => {
         dispatch(reduxSetShippingProviderId(shippingProviderId));
     });
-    const setPaymentMethod         = useEvent((paymentMethod: PaymentMethod|null): void => {
-        dispatch(reduxSetPaymentMethod(paymentMethod));
+    const setPaymentOption         = useEvent((paymentOption: PaymentOption|null): void => {
+        dispatch(reduxSetPaymentOption(paymentOption));
         
         // reset:
-        if (paymentMethod !== 'card') { // 'paypal' button or 'manual' button => reset payment validation (of 'card' fields)
+        if (paymentOption !== 'CARD') { // 'paypal' button or 'manual' button => reset payment validation (of 'CARD' fields)
             dispatch(reduxSetPaymentValidation(false));
         } // if
     });
@@ -1546,7 +1546,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
         // conditions:
         if (checkoutState.isBusy)     return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
-        if (paymentMethod !== 'card') return true; // not a card payment => nothing to prepare => always ready
+        if (paymentOption !== 'CARD') return true; // not a card payment => nothing to prepare => always ready
         
         
         
@@ -1835,8 +1835,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        paymentMethod,
-        setPaymentMethod,             // stable ref
+        paymentOption,
+        setPaymentOption,             // stable ref
         
         paymentType,
         paymentBrand,
@@ -1928,8 +1928,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        paymentMethod,
-        // setPaymentMethod,          // stable ref
+        paymentOption,
+        // setPaymentOption,          // stable ref
         
         paymentType,
         paymentBrand,

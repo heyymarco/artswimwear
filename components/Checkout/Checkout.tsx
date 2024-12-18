@@ -78,8 +78,8 @@ import {
     EditShippingMethod,
 }                           from './components/shippings/EditShippingMethod'
 import {
-    EditPaymentMethod,
-}                           from './components/payments/EditPaymentMethod'
+    EditPaymentOption,
+}                           from './components/payments/EditPaymentOption'
 import {
     ViewOrderFinished,
 }                           from './components/orders/ViewOrderFinished'
@@ -402,7 +402,7 @@ const Checkout = (): JSX.Element|null => {
                     // accessibilities:
                     title='Payment Method'
                 >
-                    <EditPaymentMethod />
+                    <EditPaymentOption />
                 </Section>}
                 
                 {((checkoutStep === 'PENDING') || (checkoutStep === 'PAID')) && <Section

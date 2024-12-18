@@ -45,7 +45,7 @@ export const cartDetailSelect = {
                     phone      : true,
                 },
             },
-            paymentMethod      : true,
+            paymentOption      : true,
         },
     },
 } satisfies Prisma.CartSelect;

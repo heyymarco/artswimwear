@@ -51,27 +51,27 @@ export interface CheckoutDetail
     // data:
     shippingAddress : ShippingAddressDetail|null
     billingAddress  : BillingAddressDetail|null
-    paymentMethod   : PaymentMethod|null
+    paymentOption   : PaymentOption|null
 }
 
 
 
-export type PaymentMethod =
-    |'card'
-    |'paypal'
+export type PaymentOption =
+    | 'CARD'
+    | 'PAYPAL'
     
-    |'googlePay'
-    |'applePay'
-    |'amazonPay'
-    |'link'
+    | 'GOOGLEPAY'
+    | 'APPLEPAY'
+    | 'AMAZONPAY'
+    | 'LINK'
     
-    |'qris'
-    |'gopay'
-    |'shopeepay'
-    |'indomaret'
-    |'alfamart'
+    | 'QRIS'
+    | 'GOPAY'
+    | 'SHOPEEPAY'
+    | 'INDOMARET'
+    | 'ALFAMART'
     
-    |'manual'
+    | 'MANUAL'
 
 
 

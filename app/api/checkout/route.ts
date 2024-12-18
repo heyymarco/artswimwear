@@ -1138,9 +1138,9 @@ router
                                 
                                 
                                 
-                                // no need to save the paymentMethod:
+                                // no need to save the paymentMethodCapture:
                                 null,
-                            ];
+                            ] satisfies [PaymentDetail, PaymentMethodCapture|null];
                             //#endregion converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
                         }
                         else if (isPaymentDetailWithCapture(authorizedOrPaidWithCaptureOrDeclined)) {
@@ -1190,9 +1190,9 @@ router
                                 
                                 
                                 
-                                // no need to save the paymentMethod:
+                                // no need to save the paymentMethodCapture:
                                 null,
-                            ];
+                            ] satisfies [PaymentDetail, PaymentMethodCapture|null];
                             //#endregion converts AuthorizedFundData => [PaymentDetail, PaymentMethodCapture|null]
                         }
                         else if (isPaymentDetailWithCapture(authorizedOrPaidWithCaptureOrDeclined)) {
@@ -1218,9 +1218,9 @@ router
                             
                             
                             
-                            // no need to save the paymentMethod:
+                            // no need to save the paymentMethodCapture:
                             null,
-                        ];
+                        ] satisfies [PaymentDetail, PaymentMethodCapture|null];
                     }
                     else {
                         throw Error('unexpected condition');
@@ -2156,7 +2156,7 @@ router
             
             // payment data:
             paymentValidation  : true,
-            paymentMethod      : null,
+            paymentOption      : null,
         },
         totalShippingCost         : (shippingCost === null) ? null : (shippingCost / (currency?.rate ?? 1)),
         paymentDetail             : paymentDetail,

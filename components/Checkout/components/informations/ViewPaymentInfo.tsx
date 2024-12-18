@@ -31,7 +31,7 @@ import {
 
 // models:
 import {
-    type PaymentMethod,
+    type PaymentOption,
 }                           from '@/models'
 
 // internals:
@@ -71,9 +71,9 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
         
         
         // payment data:
-        paymentMethod,
+        paymentOption,
     } = useCheckoutState();
-    const isPaid = (paymentMethod !== null) && !((['manual', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) as PaymentMethod[]).includes(paymentMethod);
+    const isPaid = (paymentOption !== null) && !((['MANUAL', 'INDOMARET', 'ALFAMART'] satisfies PaymentOption[]) as PaymentOption[]).includes(paymentOption);
     
     
     

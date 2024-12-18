@@ -9,7 +9,7 @@ import {
 }                           from '@prisma/client'
 import {
     type CheckoutDetail,
-    type PaymentMethod,
+    type PaymentOption,
 }                           from './types'
 import {
     ModelIdSchema,
@@ -32,23 +32,23 @@ export const CheckoutStepSchema = z.enum([
 
 
 
-export const PaymentMethodSchema = z.enum([
-    'card',
-    'paypal',
+export const PaymentOptionSchema = z.enum([
+    'CARD',
+    'PAYPAL',
     
-    'googlePay',
-    'applePay',
-    'amazonPay',
-    'link',
+    'GOOGLEPAY',
+    'APPLEPAY',
+    'AMAZONPAY',
+    'LINK',
     
-    'qris',
-    'gopay',
-    'shopeepay',
-    'indomaret',
-    'alfamart',
+    'QRIS',
+    'GOPAY',
+    'SHOPEEPAY',
+    'INDOMARET',
+    'ALFAMART',
     
-    'manual',
-]) satisfies z.Schema<PaymentMethod>;
+    'MANUAL',
+]) satisfies z.Schema<PaymentOption>;
 
 
 
@@ -59,5 +59,5 @@ export const CheckoutDetailSchema = z.object({
     shippingProviderId : ModelIdSchema.nullable(),
     billingAsShipping  : z.boolean(),
     billingAddress     : BillingAddressDetailSchema.nullable(),
-    paymentMethod      : PaymentMethodSchema.nullable(),
+    paymentOption      : PaymentOptionSchema.nullable(),
 }) satisfies z.Schema<CheckoutDetail>;
