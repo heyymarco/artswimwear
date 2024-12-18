@@ -153,7 +153,7 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
                 // classes:
                 className='fluid'
             />
-            <DropdownListButton
+            {(paymentMethods.length > 1) && <DropdownListButton
                 // variants:
                 size='md'
                 theme='primary'
@@ -197,7 +197,7 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
                         onClick={() => setSelectedPaymentMethod(modelOption)}
                     />
                 )}
-            </DropdownListButton>
+            </DropdownListButton>}
         </Group>
     );
 };
