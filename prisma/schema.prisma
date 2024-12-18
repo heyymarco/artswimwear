@@ -840,7 +840,7 @@ model Checkout {
     shippingAddress                 CheckoutShippingAddress?
     billingAsShipping               Boolean                         @default(true)
     billingAddress                  CheckoutBillingAddress?
-    paymentMethod                   String?
+    paymentOption                   String?
     // paymentSession                  CheckoutPaymentSession?
     
     // relations:
