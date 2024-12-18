@@ -59,6 +59,8 @@ export interface ConditionalCreditCardSavedButtonProps
             |'children'
         >
 {
+    // states:
+    isBusy ?: boolean
 }
 const ConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps): JSX.Element|null => {
     // sessions:
@@ -95,6 +97,11 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
     const {
         // data:
         paymentMethods,
+        
+        
+        
+        // states:
+        isBusy = false,
         
         
         
@@ -147,6 +154,11 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
             <PayWithSavedCardButton
                 // data:
                 model={selectedPaymentMethod}
+                
+                
+                
+                // appearances:
+                icon={isBusy ? 'busy' : undefined}
                 
                 
                 
