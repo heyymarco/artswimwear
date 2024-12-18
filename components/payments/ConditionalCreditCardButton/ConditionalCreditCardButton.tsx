@@ -51,6 +51,13 @@ import {
     useOnFinishOrder,
 }                           from '@/components/payments/states'
 import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/credit-card-error-messages'
+import {
     usePaypalCardComposerState,
 }                           from '@/components/payments/ConditionalPaypalCardComposerProvider/states/paypalCardComposerState'
 import {
@@ -680,44 +687,11 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
             
             
             // messages:
-            messageFailed        : <>
-                <p>
-                    The credit card <strong>verification failed</strong>.
-                </p>
-                <p>
-                    Please try using <strong>another card</strong>.
-                </p>
-            </>,
-            messageCanceled      : undefined, // use default canceled message
-            messageExpired       : undefined, // same as `messageCanceled`
-            messageDeclined      : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using this card.
-                </p>
-                {!errorMessage && <p>
-                    Your card was declined.
-                </p>}
-                {!!errorMessage && <p>
-                    {errorMessage}{errorMessage?.endsWith('.') ? '' : '.'}
-                </p>}
-                <p>
-                    Please try using <strong>another card</strong>.
-                </p>
-            </>,
-            messageDeclinedRetry : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using this card.
-                </p>
-                {!errorMessage && <p>
-                    Your card was declined.
-                </p>}
-                {!!errorMessage && <p>
-                    {errorMessage}{errorMessage?.endsWith('.') ? '' : '.'}
-                </p>}
-                <p>
-                    Please <strong>try again</strong> in a few minutes.
-                </p>
-            </>,
+            messageFailed        : messageFailed,
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined,
+            messageDeclinedRetry : messageDeclinedRetry,
         })
         .finally(() => { // cleanups:
             signalFinishOrderRef.current?.(null);     // notify the handleFinishOrder is never called (if never signaled)
