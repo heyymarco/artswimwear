@@ -96,6 +96,8 @@ import {
 
 // transaction components:
 import {
+    type PrepareTransactionArg,
+    type TransactionArg,
     TransactionStateProvider,
 }                           from '@/components/payments/states'
 
@@ -235,7 +237,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // handlers:
-    const handleUpdate         = useEvent<UpdateHandler<PaymentMethodDetail>>(async ({id}) => {
+    const handleUpdate              = useEvent<UpdateHandler<PaymentMethodDetail>>(async ({id}) => {
         const paymentDetail = await imperativeClickRef.current?.click();
         if (!paymentDetail) throw undefined;
         
@@ -268,13 +270,13 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         } satisfies Omit<PaymentMethodDetail, 'priority'>;
     });
     
-    const handleDelete         = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
+    const handleDelete              = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
         await deletePaymentMethod({
             id : id,
         }).unwrap();
     });
     
-    const handleConfirmDelete  = useEvent<ConfirmDeleteHandler<PaymentMethodDetail>>(({model}) => {
+    const handleConfirmDelete       = useEvent<ConfirmDeleteHandler<PaymentMethodDetail>>(({model}) => {
         return {
             title   : <h1>Delete Confirmation</h1>,
             message : <>
@@ -303,7 +305,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         setBillingAddress(address);
     });
     
-    const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
+    const handlePrepareTransaction  = useEvent(async (arg: PrepareTransactionArg): Promise<boolean> => {
         // validate:
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         setEnableValidation(true); // enable paymentForm & billingAddress validation
@@ -314,9 +316,16 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         
         return true; // ready
     });
-    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
+    const handleTransaction         = useEvent(async (arg: TransactionArg): Promise<void> => {
         // conditions:
         if (isLoadingTransaction) return; // prevents for accidentally double transactions
+        
+        
+        
+        // options:
+        const {
+            transaction,
+        } = arg;
         
         
         
@@ -332,7 +341,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             setIsLoadingTransaction(isLoadingTransaction = false); /* instant update without waiting for (slow|delayed) re-render */
         } // try
     });
-    const handlePlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
+    const handlePlaceOrder          = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
         const paymentPriorityProvider = paymentPriorityProviderRef.current;
         if (!paymentPriorityProvider) throw undefined;
         const paymentMethodSetupOrNewPaymentMethod = await createPaymentMethodSetup({
@@ -366,10 +375,10 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             } satisfies PaymentDetail;
         } // if
     });
-    const handleCancelOrder        = useEvent(async (orderId: string): Promise<void> => {
+    const handleCancelOrder         = useEvent(async (orderId: string): Promise<void> => {
         console.log('error: ', orderId);
     });
-    const handleMakePayment        = useEvent(async (orderId: string): Promise<PaymentDetail> => {
+    const handleMakePayment         = useEvent(async (orderId: string): Promise<PaymentDetail> => {
         const vaultToken = orderId;
         const [newPaymentMethod] = await updatePaymentMethod({
             id : model?.id ?? '',

@@ -39,8 +39,10 @@ import {
 
 // models:
 import {
+    // types:
     type PaymentDetail,
-    type PlaceOrderRequestOptions,
+    
+    type PaymentOption,
     type PlaceOrderDetail,
 }                           from '@/models'
 
@@ -49,11 +51,10 @@ import {
 // react components:
 export interface ViewPaymentMethodOtcProps {
     // configs:
-    paymentSource      : Extract<PlaceOrderRequestOptions['paymentSource'],
-        |'manual'
-        |'indomaret'
-        |'alfamart'
-        /* future otc_store goes here */
+    paymentOption      : Extract<PaymentOption,
+        | 'MANUAL'
+        | 'INDOMARET'
+        | 'ALFAMART'
     >
     paymentInstruction : React.ReactNode
     paymentButtonText  : React.ReactNode
@@ -62,7 +63,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     // props:
     const {
         // configs:
-        paymentSource,
+        paymentOption,
         paymentInstruction,
         paymentButtonText,
     } = props;
@@ -93,6 +94,11 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     // handlers:
     const handlePayWithOtc = useEvent(async (): Promise<void> => {
         startTransaction({
+            // options:
+            paymentOption        : paymentOption,
+            
+            
+            
             // handlers:
             onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // conditions:
@@ -105,12 +111,19 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                 
                 // createOrder:
                 return placeOrder({ // will be immediately paid (always returns `PaymentDetail` or throw `ErrorDeclined`) => no need further action
-                    paymentSource : paymentSource,
+                    paymentSource : (() => {
+                        switch (paymentOption) {
+                            case 'MANUAL'    : return 'manual';
+                            case 'INDOMARET' : return 'indomaret';
+                            case 'ALFAMART'  : return 'alfamart';
+                            default          : throw Error('app error');
+                        } // switch
+                    })(),
                     captcha       : captcha,
                 });
             },
             onAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-                // this function should NEVER called because the `placeOrder({paymentSource: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
+                // this function should NEVER called because the `placeOrder({paymentOption: 'manual'|'indomaret|alfamart'})` always returns `PaymentDetail` or throw `ErrorDeclined`
                 return AuthenticatedResult.FAILED;
             },
             

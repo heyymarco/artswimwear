@@ -178,6 +178,8 @@ import {
     CartStateProvider,
 }                           from '@/components/Cart'
 import {
+    type PrepareTransactionArg,
+    type TransactionArg,
     TransactionStateProvider,
 }                           from '@/components/payments/states'
 
@@ -904,7 +906,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             (
                 isShippingAddressRequired     // IGNORE shippingLoading if no shipping required
                 &&
-                (isBusy !== 'checkShipping')  // IGNORE shippingLoading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
+                (isBusy !== 'CHECK_SHIPPING') // IGNORE shippingLoading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
                 &&
                 isShippingLoading
             )
@@ -917,7 +919,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // if (isCheckoutLoading) console.log('LOADING: ', Object.entries({
     //     isCartLoading,
     //     isPrevOrderLoading,
-    //     isShippingLoading : isShippingAddressRequired && isShippingLoading && (isBusy !== 'checkShipping'),
+    //     isShippingLoading : isShippingAddressRequired && isShippingLoading && (isBusy !== 'CHECK_SHIPPING'),
     //     isNeedsRecoverShippingList,
     //     isNeedsResetShippingProvider,
     // }).filter(([, val]) => (val === true)).map(([key]) => key));
@@ -1402,7 +1404,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }
             else { // if contain a/some physical product => requires shipping
                 // check for suitable shippingProvider(s) for given address:
-                setIsBusy('checkShipping');
+                setIsBusy('CHECK_SHIPPING');
                 try {
                     const shippingList = !shippingAddress ? undefined : await getShippingByAddress({
                         ...shippingAddress,
@@ -1543,9 +1545,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxSetBillingAsShipping(billingAsShipping));
     });
     
-    const handlePrepareTransaction = useEvent(async (): Promise<boolean> => {
+    const handlePrepareTransaction = useEvent(async (arg: PrepareTransactionArg): Promise<boolean> => {
+        // options:
+        const {
+            performValidate = true,
+        } = arg;
+        
+        
+        
         // conditions:
         if (checkoutState.isBusy)     return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
+        if (!performValidate)         return true; // opted not performing validation => always ready
         if (paymentOption !== 'CARD') return true; // not a card payment => nothing to prepare => always ready
         
         
@@ -1561,13 +1571,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // ready
     });
-    const handleTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
+    const handleTransaction        = useEvent(async (arg: TransactionArg): Promise<void> => {
         // conditions:
         if (checkoutState.isBusy) return; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
         
         
         
-        setIsBusy('transaction');
+        // options:
+        const {
+            paymentOption,
+            transaction,
+        } = arg;
+        
+        
+        
+        setIsBusy(paymentOption);
         try {
             await transaction();
         }

@@ -58,8 +58,8 @@ export interface CheckoutDetail
 
 export type PaymentOption =
     | 'CARD'
-    | 'PAYPAL'
     
+    | 'PAYPAL'
     | 'GOOGLEPAY'
     | 'APPLEPAY'
     | 'AMAZONPAY'
@@ -71,6 +71,7 @@ export type PaymentOption =
     | 'INDOMARET'
     | 'ALFAMART'
     
+    | 'SAVED_CARD'
     | 'MANUAL'
 
 
@@ -187,9 +188,8 @@ export interface AuthorizedFundData {
 
 export type BusyState =
     | false // idle
-    | 'checkShipping'
-    | 'preparePayment'
-    | 'transaction'
+    | 'CHECK_SHIPPING'
+    | PaymentOption // transaction of PaymentOption
 
 
 

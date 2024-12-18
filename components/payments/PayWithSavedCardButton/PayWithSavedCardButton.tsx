@@ -106,6 +106,12 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
     // handlers:
     const handlePayButtonClick = useEvent(() => {
         startTransaction({
+            // options:
+            paymentOption        : 'SAVED_CARD',
+            performValidate      : false,
+            
+            
+            
             // handlers:
             onPlaceOrder         : handlePlaceOrder,
             onAuthenticate       : handleAuthenticate,

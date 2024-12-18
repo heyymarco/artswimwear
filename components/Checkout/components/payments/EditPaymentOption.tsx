@@ -274,7 +274,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentOption === 'GOOGLEPAY') && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
+                    {(paymentOption === 'GOOGLEPAY') && <ViewExpressCheckout paymentOption='GOOGLEPAY' walletName='Google Pay' websiteName='Google' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -302,7 +302,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentOption === 'APPLEPAY') && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
+                    {(paymentOption === 'APPLEPAY') && <ViewExpressCheckout paymentOption='APPLEPAY' walletName='Apple Pay' websiteName='Apple' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -330,7 +330,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentOption === 'AMAZONPAY') && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
+                    {(paymentOption === 'AMAZONPAY') && <ViewExpressCheckout paymentOption='AMAZONPAY' walletName='Amazon Pay' websiteName='Amazon' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableStripe     && <AccordionItem
@@ -358,7 +358,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentOption === 'LINK') && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
+                    {(paymentOption === 'LINK') && <ViewExpressCheckout paymentOption='LINK' walletName='Link' websiteName='Link' />}
                 </AccordionItem>}
                 
                 {isPaymentAvailableMidtrans   && <AccordionItem
@@ -387,7 +387,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodQris
-                        paymentSource='midtransQris'
+                        paymentOption='QRIS'
                         appName='QRIS'
                         paymentInstruction={<>
                             <p>
@@ -425,7 +425,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodRedirect
-                        paymentSource='gopay'
+                        paymentOption='GOPAY'
                         appName='GoPay App'
                         paymentInstruction={<>
                             <p>
@@ -462,7 +462,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                     }
                 >
                     <ViewPaymentMethodRedirect
-                        paymentSource='shopeepay'
+                        paymentOption='SHOPEEPAY'
                         appName='ShopeePay App'
                         paymentInstruction={<>
                             <p>
@@ -500,7 +500,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         // configs:
-                        paymentSource='indomaret'
+                        paymentOption='INDOMARET'
                         paymentInstruction={<>
                             <p>
                                 Pay at <strong>Indomaret Store</strong>.
@@ -540,7 +540,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         // configs:
-                        paymentSource='alfamart'
+                        paymentOption='ALFAMART'
                         paymentInstruction={<>
                             <p>
                                 Pay at <strong>Alfamart Store</strong>.
@@ -580,7 +580,7 @@ const EditPaymentOptionInternal = (): JSX.Element|null => {
                 >
                     <ViewPaymentMethodOtc
                         // configs:
-                        paymentSource='manual'
+                        paymentOption='MANUAL'
                         paymentInstruction={<>
                             <p>
                                 Pay by <strong>bank transfer</strong>.

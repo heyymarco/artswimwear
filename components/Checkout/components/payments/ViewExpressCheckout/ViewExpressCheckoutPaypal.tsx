@@ -167,6 +167,11 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         };
         
         startTransaction({ // fire and forget
+            // options:
+            paymentOption        : 'PAYPAL',
+            
+            
+            
             // handlers:
             onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 try {
@@ -410,7 +415,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             />
             <ModalCard
                 // states:
-                expanded={isBusy === 'transaction'}
+                expanded={isBusy === 'PAYPAL'}
                 inheritEnabled={false} // prevents from being seen disabled
                 
                 

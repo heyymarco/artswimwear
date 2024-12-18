@@ -58,6 +58,7 @@ import {
     type StripeExpressCheckoutElementReadyEvent,
     type StripeExpressCheckoutElementClickEvent,
     type StripeExpressCheckoutElementConfirmEvent,
+    type ExpressCheckoutPaymentMethodsOption,
 }                           from '@stripe/stripe-js'
 import {
     useStripe,
@@ -77,6 +78,8 @@ import {
 import {
     // types:
     type PaymentDetail,
+    
+    type PaymentOption,
     type PlaceOrderDetail,
 }                           from '@/models'
 
@@ -97,23 +100,23 @@ import {
 
 
 // react components:
-export type ViewExpressCheckoutType =
-    |'googlePay'
-    |'applePay'
-    |'amazonPay'
-    |'paypal'
-    |'link'
 export interface ViewExpressCheckoutProps {
     // options:
-    type        : ViewExpressCheckoutType
-    walletName  : string
-    websiteName : string
+    paymentOption : Extract<PaymentOption,
+        | 'PAYPAL'
+        | 'GOOGLEPAY'
+        | 'APPLEPAY'
+        | 'AMAZONPAY'
+        | 'LINK'
+    >
+    walletName    : string
+    websiteName   : string
 }
 const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null => {
     // props:
     const {
         // options:
-        type,
+        paymentOption,
         walletName,
         websiteName,
     } = props;
@@ -129,28 +132,37 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const options = useMemo<StripeExpressCheckoutElementOptions>(() => ({
         paymentMethods : {
             // reset:
+            paypal    : 'never',
             googlePay : 'never',
             applePay  : 'never',
             amazonPay : 'never',
             link      : 'never',
-            paypal    : 'never',
             demoPay   : 'never',
             aliPay    : 'never',
             
             // set:
-            [type]    : 'auto',
+            [((): keyof ExpressCheckoutPaymentMethodsOption => {
+                switch (paymentOption) {
+                    case 'PAYPAL'    : return 'paypal';
+                    case 'GOOGLEPAY' : return 'googlePay';
+                    case 'APPLEPAY'  : return 'applePay';
+                    case 'AMAZONPAY' : return 'amazonPay';
+                    case 'LINK'      : return 'link';
+                    default          : throw Error('app error');
+                } // switch
+            })()]    : 'auto',
         },
         buttonType : {
+            paypal    : 'pay',
             googlePay : 'pay',
             applePay  : 'plain',
-            paypal    : 'pay',
         },
         layout : {
             maxRows    : 0,
             maxColumns : 1,
             overflow   : 'never',
         },
-    }), [type]);
+    }), [paymentOption]);
     
     
     
@@ -243,6 +255,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         };
         
         startTransaction({ // fire and forget
+            // options:
+            paymentOption        : paymentOption,
+            
+            
+            
             // handlers:
             onPlaceOrder         : async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // collect customer details and display line items:
@@ -610,7 +627,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             />
             <ModalCard
                 // states:
-                expanded={isBusy === 'transaction'}
+                expanded={(typeof(isBusy) === 'string') && ['PAYPAL', 'GOOGLEPAY', 'APPLEPAY', 'AMAZONPAY', 'LINK',].includes(isBusy)}
                 inheritEnabled={false} // prevents from being seen disabled
                 
                 

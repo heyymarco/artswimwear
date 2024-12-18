@@ -680,6 +680,11 @@ const CreditCardButtonGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|
         
         
         startTransaction({
+            // options:
+            paymentOption        : 'CARD',
+            
+            
+            
             // handlers:
             onPlaceOrder         : handlePlaceOrder,
             onAuthenticate       : handleAuthenticate,

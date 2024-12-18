@@ -36,7 +36,10 @@ import {
 
 // models:
 import {
+    // types:
     type PaymentDetail,
+    
+    type PaymentOption,
     type PlaceOrderRequestOptions,
     type PlaceOrderDetail,
 }                           from '@/models'
@@ -59,10 +62,10 @@ import {
 
 // react components:
 export interface ViewPaymentMethodRedirectProps {
-    paymentSource            : Extract<PlaceOrderRequestOptions['paymentSource'],
-        |'gopay'
-        |'shopeepay'
-        |'midtransQris'
+    paymentOption            : Extract<PaymentOption,
+        | 'QRIS'
+        | 'GOPAY'
+        | 'SHOPEEPAY'
     >
     // configs:
     appName                  : string
@@ -79,7 +82,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     // props:
     const {
         // configs:
-        paymentSource,
+        paymentOption,
         appName,
         paymentInstruction,
         paymentButtonText,
@@ -117,11 +120,23 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     // handlers:
     const handlePayWithRedirect  = useEvent(async (): Promise<void> => {
         startTransaction({
+            // options:
+            paymentOption        : paymentOption,
+            
+            
+            
             // handlers:
             onPlaceOrder         : (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
                 // createOrder:
                 return placeOrder({
-                    paymentSource : paymentSource,
+                    paymentSource : (() => {
+                        switch (paymentOption) {
+                            case 'QRIS'      : return 'midtransQris';
+                            case 'GOPAY'     : return 'gopay';
+                            case 'SHOPEEPAY' : return 'shopeepay';
+                            default          : throw Error('app error');
+                        } // switch
+                    })(),
                 });
             },
             onAuthenticate       : async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {

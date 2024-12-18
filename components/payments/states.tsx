@@ -37,6 +37,7 @@ import {
     
     type PaymentDetail,
     
+    type PaymentOption,
     type PlaceOrderRequestOptions,
     type PlaceOrderDetail,
 }                           from '@/models'
@@ -89,6 +90,12 @@ export const enum AuthenticatedResult {
     CAPTURED   = 3,
 }
 export interface StartTransactionArg {
+    // options:
+    paymentOption         : PaymentOption
+    performValidate      ?: boolean
+    
+    
+    
     // handlers:
     onPlaceOrder          : () => Promise<PlaceOrderDetail|PaymentDetail|false>
     onAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult|PaymentDetail>
@@ -101,6 +108,17 @@ export interface StartTransactionArg {
     messageExpired       ?: React.ReactNode
     messageDeclined       : React.ReactNode | ((errorMessage: string) => React.ReactNode)
     messageDeclinedRetry ?: React.ReactNode | ((errorMessage: string) => React.ReactNode)
+}
+export interface PrepareTransactionArg
+    extends
+        Required<Pick<StartTransactionArg, 'performValidate'>>
+{
+}
+export interface TransactionArg
+    extends
+        Required<Pick<StartTransactionArg, 'paymentOption'>>
+{
+    transaction: () => Promise<void>
 }
 
 
@@ -229,8 +247,8 @@ export interface TransactionStateProps
         >
 {
     // actions:
-    onPrepareTransaction ?: () => Promise<boolean>
-    onTransaction         : (transaction: (() => Promise<void>)) => Promise<void>
+    onPrepareTransaction ?: (arg: PrepareTransactionArg) => Promise<boolean>
+    onTransaction         : (arg: TransactionArg) => Promise<void>
     onPlaceOrder          : TransactionState['placeOrder']
     onCancelOrder         : (orderId: string) => Promise<void>
     onMakePayment         : (orderId: string) => Promise<PaymentDetail>
@@ -288,7 +306,14 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
     
     // stable callbacks:
     const startTransaction       = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<void> => {
-        if ((await prepareTransaction?.() === false)) return;
+        // options:
+        const {
+            performValidate = true,
+        } = arg;
+        
+        
+        
+        if ((await prepareTransaction?.({ performValidate }) === false)) return;
         
         
         
@@ -296,8 +321,16 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         return startTransactionPhase2(arg);
     });
     const startTransactionPhase2 = useEvent<TransactionState['startTransaction']>(async (arg: StartTransactionArg): Promise<void> => {
+        // options:
+        const {
+            paymentOption,
+            performValidate = true,
+        } = arg;
+        
+        
+        
         // validations:
-        const fieldErrors = [
+        const fieldErrors = performValidate ? [
             // validate card:
             ...(
                 (
@@ -319,7 +352,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                 ??
                 []
             ),
-        ];
+        ] : [];
         if (fieldErrors.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
             return; // transaction aborted due to validation error
@@ -353,121 +386,124 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
         
         
         // actions:
-        return transaction(async (): Promise<void> => {
-            try {
-                // createOrder:
-                const orderBookedOrPaidOrAbort = await placeOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (orderBookedOrPaidOrAbort === false) return; // aborted (maybe due to validation error) => no need further action
-                
-                
-                
-                if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
-                    finishOrder(orderBookedOrPaidOrAbort satisfies PaymentDetail);
-                    return; // paid
-                } // if
-                
-                
-                
-                let rawOrderId = orderBookedOrPaidOrAbort.orderId;
-                let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
+        return transaction({
+            paymentOption,
+            transaction : async (): Promise<void> => {
                 try {
-                    authenticatedOrPaid = await authenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
-                    rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `authenticate()` call.
-                }
-                catch (error: any) { // an unexpected authentication error occured
-                    // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                    cancelOrder(rawOrderId);
+                    // createOrder:
+                    const orderBookedOrPaidOrAbort = await placeOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                    if (orderBookedOrPaidOrAbort === false) return; // aborted (maybe due to validation error) => no need further action
                     
-                    throw error;
+                    
+                    
+                    if (!('orderId' in orderBookedOrPaidOrAbort)) { // immediately paid => no need further action
+                        finishOrder(orderBookedOrPaidOrAbort satisfies PaymentDetail);
+                        return; // paid
+                    } // if
+                    
+                    
+                    
+                    let rawOrderId = orderBookedOrPaidOrAbort.orderId;
+                    let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
+                    try {
+                        authenticatedOrPaid = await authenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
+                        rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `authenticate()` call.
+                    }
+                    catch (error: any) { // an unexpected authentication error occured
+                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                        cancelOrder(rawOrderId);
+                        
+                        throw error;
+                    } // try
+                    
+                    
+                    
+                    if (typeof(authenticatedOrPaid) === 'object') {
+                        finishOrder(authenticatedOrPaid satisfies PaymentDetail);
+                    }
+                    else {
+                        switch (authenticatedOrPaid) {
+                            case AuthenticatedResult.FAILED     : {
+                                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                                cancelOrder(rawOrderId);
+                                
+                                
+                                
+                                showMessageError({
+                                    error: messageFailed,
+                                });
+                                break;
+                            }
+                            
+                            case AuthenticatedResult.CANCELED   : {
+                                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                                cancelOrder(rawOrderId);
+                                
+                                
+                                
+                                showMessageError({
+                                    error: messageCanceled,
+                                });
+                                break;
+                            }
+                            case AuthenticatedResult.EXPIRED    : {
+                                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                                cancelOrder(rawOrderId);
+                                
+                                
+                                
+                                showMessageError({
+                                    error: messageExpired,
+                                });
+                                break;
+                            }
+                            
+                            
+                            
+                            case AuthenticatedResult.AUTHORIZED : { // paid => waiting for the payment to be captured on server side
+                                // then forward the authentication to backend_API to receive the fund:
+                                if (rawOrderId /* ignore empty string */) {
+                                    const paymentDetail = await makePayment(rawOrderId);
+                                    finishOrder(paymentDetail);
+                                } // if
+                                break;
+                            }
+                            
+                            
+                            
+                            case AuthenticatedResult.PENDING    :
+                            case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                                // finishOrder(); // TODO: DISPLAY paid page
+                                break;
+                            }
+                            
+                            
+                            
+                            default : { // an unexpected authentication result occured
+                                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                                cancelOrder(rawOrderId);
+                                
+                                
+                                
+                                throw Error('Oops, an error occured!');
+                            }
+                        } // switch
+                    } // if
+                }
+                catch (fetchError: any) {
+                    if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
+                        const errorMessage : string = fetchError?.message ?? fetchError?.data?.error ?? '';
+                        showMessageError({
+                            error : (
+                                fetchError.shouldRetry
+                                ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(errorMessage))
+                                : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(errorMessage))
+                            ),
+                        });
+                    }
+                    else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' /* context: 'order' */ });
                 } // try
-                
-                
-                
-                if (typeof(authenticatedOrPaid) === 'object') {
-                    finishOrder(authenticatedOrPaid satisfies PaymentDetail);
-                }
-                else {
-                    switch (authenticatedOrPaid) {
-                        case AuthenticatedResult.FAILED     : {
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            cancelOrder(rawOrderId);
-                            
-                            
-                            
-                            showMessageError({
-                                error: messageFailed,
-                            });
-                            break;
-                        }
-                        
-                        case AuthenticatedResult.CANCELED   : {
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            cancelOrder(rawOrderId);
-                            
-                            
-                            
-                            showMessageError({
-                                error: messageCanceled,
-                            });
-                            break;
-                        }
-                        case AuthenticatedResult.EXPIRED    : {
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            cancelOrder(rawOrderId);
-                            
-                            
-                            
-                            showMessageError({
-                                error: messageExpired,
-                            });
-                            break;
-                        }
-                        
-                        
-                        
-                        case AuthenticatedResult.AUTHORIZED : { // paid => waiting for the payment to be captured on server side
-                            // then forward the authentication to backend_API to receive the fund:
-                            if (rawOrderId /* ignore empty string */) {
-                                const paymentDetail = await makePayment(rawOrderId);
-                                finishOrder(paymentDetail);
-                            } // if
-                            break;
-                        }
-                        
-                        
-                        
-                        case AuthenticatedResult.PENDING    :
-                        case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                            // finishOrder(); // TODO: DISPLAY paid page
-                            break;
-                        }
-                        
-                        
-                        
-                        default : { // an unexpected authentication result occured
-                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                            cancelOrder(rawOrderId);
-                            
-                            
-                            
-                            throw Error('Oops, an error occured!');
-                        }
-                    } // switch
-                } // if
-            }
-            catch (fetchError: any) {
-                if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
-                    const errorMessage : string = fetchError?.message ?? fetchError?.data?.error ?? '';
-                    showMessageError({
-                        error : (
-                            fetchError.shouldRetry
-                            ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(errorMessage))
-                            : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(errorMessage))
-                        ),
-                    });
-                }
-                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' /* context: 'order' */ });
-            } // try
+            },
         });
     });
     const placeOrder             = useEvent<TransactionState['placeOrder']>((options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|PaymentDetail> => {
