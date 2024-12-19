@@ -228,6 +228,11 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
             {paymentInstruction}
             
             <ButtonWithBusy
+                // behaviors:
+                busyType={paymentOption}
+                
+                
+                
                 // components:
                 buttonComponent={
                     <ButtonIcon
