@@ -51,6 +51,7 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
     } = createOrUpdatedata;
     
     const {
+        type,
         paymentMethodProvider,
         paymentMethodProviderId,
         paymentMethodProviderCustomerId,
@@ -98,6 +99,8 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
                         
                         sort                    : paymentMethodCount,
                         
+                        type                    : type,
+                        
                         provider                : paymentMethodProvider,
                         providerPaymentMethodId : paymentMethodProviderId,
                         
@@ -111,6 +114,8 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
                         parentId                : customerId, // important: the signedIn customerId
                     },
                     data   : {
+                        type                    : type,
+                        
                         provider                : paymentMethodProvider,
                         providerPaymentMethodId : paymentMethodProviderId,
                         

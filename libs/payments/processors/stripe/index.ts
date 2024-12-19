@@ -489,10 +489,18 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 (paymentMethod && paymentMethod.customer)
                 // needs to save the paymentMethod:
                 ? {
+                    type                            : (() => {
+                        switch (paymentMethod.type) {
+                            case 'card'   : return 'CARD';
+                            case 'paypal' : return 'PAYPAL';
+                            default       : throw Error('unexpected API response');
+                        } // switch
+                    })(),
+                    
                     paymentMethodProvider           : 'STRIPE',
                     paymentMethodProviderId         : paymentMethod.id,
                     paymentMethodProviderCustomerId : (typeof(paymentMethod.customer) === 'string') ? paymentMethod.customer : paymentMethod.customer.id,
-                }
+                } satisfies PaymentMethodCapture
                 // no need to save the paymentMethod:
                 : null,
             ] as const;
@@ -1135,6 +1143,10 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
         // save payment method without charging:
         customer                  : customer.id,
         usage                     : 'off_session',
+        
+        expand                    : [
+            'payment_method',
+        ],
     });
     /*
         // sample without 3DS:
@@ -1258,12 +1270,20 @@ export const stripeCreatePaymentMethodSetup = async (options: PaymentMethodSetup
         
         
         case 'succeeded': {
-            if (!setupIntent.payment_method) throw Error('unexpected API response');
+            if (!setupIntent.payment_method || (typeof(setupIntent.payment_method) !== 'object')) throw Error('unexpected API response');
             if (!setupIntent.customer) throw Error('unexpected API response');
             
             return {
+                type                            : (() => {
+                    switch (setupIntent.payment_method.type) {
+                        case 'card'   : return 'CARD';
+                        case 'paypal' : return 'PAYPAL';
+                        default       : throw Error('unexpected API response');
+                    } // switch
+                })(),
+                
                 paymentMethodProvider           : 'STRIPE',
-                paymentMethodProviderId         : (typeof(setupIntent.payment_method) === 'string') ? setupIntent.payment_method : setupIntent.payment_method.id,
+                paymentMethodProviderId         : setupIntent.payment_method.id,
                 paymentMethodProviderCustomerId : (typeof(setupIntent.customer)       === 'string') ? setupIntent.customer       : setupIntent.customer.id,
             } satisfies PaymentMethodCapture;
         }
@@ -1328,7 +1348,11 @@ export const stripeCapturePaymentMethod = async (vaultToken: string): Promise<Pa
     
     
     
-    const setupIntent = await stripe.setupIntents.retrieve(vaultToken);
+    const setupIntent = await stripe.setupIntents.retrieve(vaultToken, {
+        expand                    : [
+            'payment_method',
+        ],
+    });
     /*
         {
             id: "seti_1QTR9DD6SqU8owGYqa15rcX0",
@@ -1426,20 +1450,24 @@ export const stripeCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         }
     */
     if (setupIntent.status !== 'succeeded') throw Error('unexpected API response');
-    if (!setupIntent.payment_method) throw Error('unexpected API response');
+    if (!setupIntent.payment_method || (typeof(setupIntent.payment_method) !== 'object')) throw Error('unexpected API response');
     if (!setupIntent.customer) throw Error('unexpected API response');
     
-    const paymentMethodProviderId = (
-        (typeof(setupIntent.payment_method) === 'string')
-        ? setupIntent.payment_method
-        : setupIntent.payment_method.id
-    );
+    const paymentMethodProviderId = setupIntent.payment_method.id;
     const paymentMethodProviderCustomerId = (
         (typeof(setupIntent.customer) === 'string')
         ? setupIntent.customer
         : setupIntent.customer.id
     );
     return {
+        type                            : (() => {
+            switch (setupIntent.payment_method.type) {
+                case 'card'   : return 'CARD';
+                case 'paypal' : return 'PAYPAL';
+                default       : throw Error('unexpected API response');
+            } // switch
+        })(),
+        
         paymentMethodProvider : 'STRIPE',
         paymentMethodProviderId,
         paymentMethodProviderCustomerId,

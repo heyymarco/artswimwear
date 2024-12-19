@@ -40,7 +40,7 @@ export const PaymentMethodDetailSchema = z.object({
     // data:
     currency       : CurrencySchema,
     
-    type           : PaymentTypeSchema,
+    type           : PaymentTypeSchema.extract(['CARD', 'PAYPAL']),
     brand          : ModelNameSchema,
     identifier     : z.string().trim().min(0).max(50), // EmailSchema
     

@@ -22,6 +22,8 @@ export const paymentMethodDetailSelect = {
     // data:
     currency                : true,
     
+    type                    : true,
+    
     provider                : true,
     providerPaymentMethodId : true,
     
@@ -41,7 +43,6 @@ export function convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMetho
     if (!resolver) {
         return {
             ...restPaymentMethodDetail,
-            type           : 'CARD',
             brand          : '',
             identifier     : '',
             expiresAt      : null,

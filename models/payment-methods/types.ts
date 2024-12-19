@@ -2,6 +2,7 @@
 import {
     type PaymentType,
     type PaymentMethod,
+    type PaymentMethodType,
     type PaymentMethodProvider,
 }                           from '@prisma/client'
 import {
@@ -31,11 +32,12 @@ export interface PaymentMethodDetail
             
             
             // data:
+            |'type'
             |'currency'
         >
 {
     // data:
-    type           : PaymentType
+    type           : Extract<PaymentType, PaymentMethodType>
     brand          : string
     identifier     : string
     
@@ -98,7 +100,13 @@ export interface PaymentMethodSetup {
     paymentMethodSetupToken          : string
     redirectData                    ?: string
 }
-export interface PaymentMethodCapture {
+export interface PaymentMethodCapture
+    extends
+        Pick<PaymentMethodDetail,
+            // data:
+            |'type'
+        >
+{
     paymentMethodProvider            : PaymentMethodProvider
     paymentMethodProviderId          : string
     paymentMethodProviderCustomerId  : string

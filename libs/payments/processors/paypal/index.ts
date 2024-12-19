@@ -851,7 +851,11 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
         }
     */
     const captureData       = paypalPaymentData.purchase_units?.[0]?.payments?.captures?.[0];
-    const paymentMethodData = paypalPaymentData?.payment_source?.card?.attributes?.vault;
+    const paymentMethodData = (
+        paypalPaymentData?.payment_source?.card?.attributes?.vault
+        ??
+        paypalPaymentData?.payment_source?.paypal?.attributes?.vault
+    );
     
     
     
@@ -918,10 +922,18 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
                 (paymentMethodData?.id && paymentMethodData?.customer?.id)
                 // needs to save the paymentMethod:
                 ? {
+                    type                            : (() => {
+                        switch (paymentDetailPartial.type) {
+                            case 'CARD'   :
+                            case 'PAYPAL' : return paymentDetailPartial.type;
+                            default       : throw Error('unexpected API response');
+                        } // switch
+                    })(),
+                    
                     paymentMethodProvider           : 'PAYPAL',
                     paymentMethodProviderId         : paymentMethodData?.id           as string,
                     paymentMethodProviderCustomerId : paymentMethodData?.customer?.id as string,
-                }
+                } satisfies PaymentMethodCapture
                 // no need to save the paymentMethod:
                 : null,
             ] as const;
@@ -992,6 +1004,7 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         customer : {
             id : paymentMethodProviderCustomerId,
         },
+        payment_source : paymentSource,
     } = paypalPaymentData;
     if ((typeof(paymentMethodProviderId) !== 'string') || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
         // TODO: log unexpected response
@@ -999,6 +1012,12 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         throw Error('unexpected API response');
     } // if
     return {
+        type                            : (() => {
+            if ('card'   in paymentSource) return 'CARD';
+            if ('paypal' in paymentSource) return 'PAYPAL';
+            throw Error('unexpected API response');
+        })(),
+        
         paymentMethodProvider : 'PAYPAL',
         paymentMethodProviderId,
         paymentMethodProviderCustomerId,

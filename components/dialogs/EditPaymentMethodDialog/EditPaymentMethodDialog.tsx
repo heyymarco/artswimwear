@@ -189,7 +189,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         switch(model.type) {
             case 'CARD'    : return 'card';
             case 'PAYPAL'  : return 'paypal';
-            case 'EWALLET' : return 'e-wallet';
+            // case 'EWALLET' : return 'e-wallet';
             default        : return undefined;
         } // switch
     })();
@@ -259,10 +259,21 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             amount,
             fee,
         } = paymentDetail;
+        
+        switch (type) {
+            // recognized:
+            case 'CARD'   :
+            case 'PAYPAL' : break;
+            
+            // not yet recognized:
+            default       : throw Error('app error');
+        } // switch
+        
         return {
             id : '',
             currency,
             ...paymentDetail,
+            type,
             brand          : brand          ?? '',
             identifier     : identifier     ?? '',
             expiresAt      : expiresAt      ?? null,
