@@ -967,6 +967,7 @@ model PaymentMethod {
 }
 enum PaymentMethodType {
     CARD
+    PAYPAL
 }
 enum PaymentMethodProvider {
     PAYPAL
