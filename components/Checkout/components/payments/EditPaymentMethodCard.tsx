@@ -56,10 +56,6 @@ import {
 
 // states:
 import {
-    // states:
-    useCheckoutState,
-}                           from '../../states/checkoutState'
-import {
     useTransactionState,
 }                           from '@/components/payments/states'
 
@@ -76,11 +72,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     // states:
-    const {
-        // states:
-        isBusy,
-    } = useCheckoutState();
-    
     const {
         // payment data:
         paymentValidation,
@@ -104,7 +95,17 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     Pay with my saved card:
                 </p>
                 
-                <ConditionalCreditCardSavedButton className='savedButton' isBusy={isBusy === 'SAVED_CARD'} />
+                <ButtonWithBusy
+                    // behaviors:
+                    busyType='SAVED_CARD'
+                    
+                    
+                    
+                    // components:
+                    buttonComponent={
+                        <ConditionalCreditCardSavedButton className='savedButton' />
+                    }
+                />
                 
                 <AlternateSeparator className='horz1' />
             </ConditionalCreditCardSavedSection>
@@ -147,6 +148,11 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 </p>
             </div>
             <ButtonWithBusy
+                // behaviors:
+                busyType='CARD'
+                
+                
+                
                 // components:
                 buttonComponent={
                     <ConditionalCreditCardButton />

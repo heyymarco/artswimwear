@@ -10,12 +10,19 @@ import {
     // hooks:
     useState,
     useEffect,
+    useRef,
 }                           from 'react'
 
 // next-auth:
 import {
     useSession,
 }                           from 'next-auth/react'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useMergeRefs,
+}                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
@@ -31,6 +38,7 @@ import {
 
 // payment components:
 import {
+    type PayWithSavedCardButtonProps,
     PayWithSavedCardButton,
 }                           from '@/components/payments/PayWithSavedCardButton'
 import {
@@ -52,17 +60,65 @@ import {
 
 
 // react components:
-export interface ConditionalCreditCardSavedButtonProps
+export interface ConditionalCreditCardSavedButtonProps<out TElement extends Element = HTMLDivElement>
     extends
-        Omit<GroupProps,
+        Pick<GroupProps<TElement>,
+            // refs:
+            |'outerRef'       // moved to <Group>
+            
+            // identifiers:
+            |'id'             // moved to <Group>
+            
+            // variants:
+            |'size'           // moved to <Group>
+            |'theme'          // moved to <Group>
+            |'gradient'       // moved to <Group>
+            |'outlined'       // moved to <Group>
+            |'mild'           // moved to <Group>
+            
+            // classes:
+            |'mainClass'      // moved to <Group>
+            |'classes'        // moved to <Group>
+            |'variantClasses' // moved to <Group>
+            |'stateClasses'   // moved to <Group>
+            |'className'      // moved to <Group>
+            
+            // styles:
+            |'style'          // moved to <Group>
+            
             // children:
-            |'children'
+            |'children' // no children allowed
+        >,
+        Omit<PayWithSavedCardButtonProps,
+            // refs:
+            |'outerRef'       // moved to <Group>
+            
+            // identifiers:
+            |'id'             // moved to <Group>
+            
+            // variants:
+            |'size'           // moved to <Group>
+            |'theme'          // moved to <Group>
+            |'gradient'       // moved to <Group>
+            |'outlined'       // moved to <Group>
+            |'mild'           // moved to <Group>
+            
+            // classes:
+            |'mainClass'      // moved to <Group>
+            |'classes'        // moved to <Group>
+            |'variantClasses' // moved to <Group>
+            |'stateClasses'   // moved to <Group>
+            |'className'      // moved to <Group>
+            
+            // styles:
+            |'style'          // moved to <Group>
+            
+            // data:
+            |'model'          // the model is already defined internally
         >
 {
-    // states:
-    isBusy ?: boolean
 }
-const ConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps): JSX.Element|null => {
+const ConditionalCreditCardSavedButton            = <TElement extends Element = HTMLDivElement>(props: ConditionalCreditCardSavedButtonProps<TElement>): JSX.Element|null => {
     // sessions:
     const { data: session } = useSession();
     
@@ -71,10 +127,10 @@ const ConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButto
     // jsx:
     if (!session) return null;
     return (
-        <LoggedInConditionalCreditCardSavedButton {...props} />
+        <LoggedInConditionalCreditCardSavedButton<TElement> {...props} />
     );
 };
-const LoggedInConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps): JSX.Element|null => {
+const LoggedInConditionalCreditCardSavedButton    = <TElement extends Element = HTMLDivElement>(props: ConditionalCreditCardSavedButtonProps<TElement>): JSX.Element|null => {
     // states:
     const {
         data    : paymentMethodPagination,
@@ -89,25 +145,67 @@ const LoggedInConditionalCreditCardSavedButton = (props: ConditionalCreditCardSa
     // jsx:
     if (!paymentMethods?.length) return null;
     return (
-        <ImplementedConditionalCreditCardSavedButton {...props} paymentMethods={paymentMethods as [PaymentMethodDetail, ...PaymentMethodDetail[]]} />
+        <ImplementedConditionalCreditCardSavedButton<TElement> {...props} paymentMethods={paymentMethods as [PaymentMethodDetail, ...PaymentMethodDetail[]]} />
     );
 };
-const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCardSavedButtonProps & { paymentMethods: [PaymentMethodDetail, ...PaymentMethodDetail[]] }): JSX.Element|null => {
+const ImplementedConditionalCreditCardSavedButton = <TElement extends Element = HTMLDivElement>(props: ConditionalCreditCardSavedButtonProps<TElement> & { paymentMethods: [PaymentMethodDetail, ...PaymentMethodDetail[]] }): JSX.Element|null => {
     // props:
     const {
+        // refs:
+        elmRef,                                            // take, moved to <PayWithSavedCardButton>
+        outerRef,                                          // take, moved to <Group>
+        
+        
+        
+        // identifiers:
+        id,                                                // take, moved to <Group>
+        
+        
+        
+        // variants:
+        size      = 'lg',                                  // take, moved to <Group>
+        theme,                                             // take, moved to <Group>
+        gradient,                                          // take, moved to <Group>
+        outlined,                                          // take, moved to <Group>
+        mild,                                              // take, moved to <Group>
+        
+        
+        
+        // classes:
+        mainClass,                                         // take, moved to <Group>
+        classes,                                           // take, moved to <Group>
+        variantClasses,                                    // take, moved to <Group>
+        stateClasses,                                      // take, moved to <Group>
+        className,                                         // take, moved to <Group>
+        
+        
+        
+        // styles:
+        style,                                             // take, moved to <Group>
+        
+        
+        
         // data:
         paymentMethods,
-        
-        
-        
-        // states:
-        isBusy = false,
         
         
         
         // other props:
         ...restConditionalCreditCardSavedButtonProps
     } = props;
+    
+    
+    
+    // refs:
+    const outerRefInternal = useRef<TElement|null>(null);
+    const mergedOuterRef   = useMergeRefs(
+        // preserves the original `outerRef` from `props`:
+        outerRef,
+        
+        
+        
+        outerRefInternal,
+    );
     
     
     
@@ -129,36 +227,59 @@ const ImplementedConditionalCreditCardSavedButton = (props: ConditionalCreditCar
     
     // default props:
     const {
-        // variants:
-        size = 'lg',
-        
-        
-        
         // other props:
-        ...restGroupProps
+        ...restPayWithSavedCardButtonProps
     } = restConditionalCreditCardSavedButtonProps;
     
     
     
     // jsx:
     return (
-        <Group
-            // other props:
-            {...restGroupProps}
+        <Group<TElement>
+            // refs:
+            outerRef={mergedOuterRef}
+            
+            
+            
+            // identifiers:
+            id={id}
             
             
             
             // variants:
             size={size}
+            theme={theme}
+            gradient={gradient}
+            outlined={outlined}
+            mild={mild}
+            
+            
+            
+            // classes:
+            mainClass={mainClass}
+            classes={classes}
+            variantClasses={variantClasses}
+            stateClasses={stateClasses}
+            className={className}
+            
+            
+            
+            // styles:
+            style={style}
         >
             <PayWithSavedCardButton
+                // other props:
+                {...restPayWithSavedCardButtonProps}
+                
+                
+                
+                // refs:
+                elmRef={elmRef}
+                
+                
+                
                 // data:
                 model={selectedPaymentMethod}
-                
-                
-                
-                // appearances:
-                icon={isBusy ? 'busy' : undefined}
                 
                 
                 
