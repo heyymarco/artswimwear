@@ -155,6 +155,11 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
             {paymentInstruction}
             
             <ButtonWithBusy
+                // behaviors:
+                busyType={paymentOption}
+                
+                
+                
                 // components:
                 buttonComponent={
                     <ButtonIcon
