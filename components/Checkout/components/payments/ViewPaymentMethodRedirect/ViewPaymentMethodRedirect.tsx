@@ -49,6 +49,13 @@ import {
     AuthenticatedResult,
     useTransactionState,
 }                           from '@/components/payments/states'
+import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/redirect-error-messages'
 
 // internals:
 import {
@@ -179,44 +186,11 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
             
             
             // messages:
-            messageFailed        : <>
-                <p>
-                    The transaction has been <strong>denied</strong> by the payment system.
-                </p>
-                <p>
-                    <strong>No funds</strong> have been deducted.
-                </p>
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
-            messageCanceled      : <>
-                <p>
-                    The transaction has been <strong>canceled</strong> by the user.
-                </p>
-                <p>
-                    <strong>No funds</strong> have been deducted.
-                </p>
-            </>,
-            messageExpired       : <>
-                <p>
-                    The transaction has been <strong>canceled</strong> due to timeout.
-                </p>
-                <p>
-                    <strong>No funds</strong> have been deducted.
-                </p>
-            </>,
-            messageDeclined      : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using {appName}.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
+            messageFailed        : messageFailed,
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined(appName),
+            messageDeclinedRetry : messageDeclinedRetry,
         });
     });
     
