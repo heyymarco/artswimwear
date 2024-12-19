@@ -88,6 +88,13 @@ import {
     AuthenticatedResult,
     useTransactionState,
 }                           from '@/components/payments/states'
+import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/express-checkout-error-message'
 
 
 
@@ -203,38 +210,11 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             
             
             // messages:
-            messageFailed        : <>
-                <p>
-                    Unable to make a transaction using PayPal.
-                </p>
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
-            messageCanceled      : undefined, // use default canceled message
-            messageExpired       : undefined, // same as `messageCanceled`
-            messageDeclined      : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using PayPal.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
-            messageDeclinedRetry : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using PayPal.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please <strong>try again</strong> in a few minutes.
-                </p>
-            </>,
+            messageFailed        : messageFailed('PayPal'),
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined('PayPal'),
+            messageDeclinedRetry : messageDeclinedRetry('PayPal'),
         })
         .finally(async () => { // cleanups:
             signalAuthenticatedOrPaidRef.current = undefined; // unref the proxy_resolver
