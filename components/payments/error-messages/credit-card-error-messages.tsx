@@ -6,7 +6,7 @@ import {
 
 
 // messages:
-export const messageFailed        : StartTransactionArg['messageFailed'] = <>
+export const messageFailed        : StartTransactionArg['messageFailed'       ] = <>
     <p>
         The credit card <strong>verification failed</strong>.
     </p>
@@ -14,9 +14,9 @@ export const messageFailed        : StartTransactionArg['messageFailed'] = <>
         Please try using <strong>another card</strong>.
     </p>
 </>;
-export const messageCanceled      : StartTransactionArg['messageCanceled'] = undefined; // use default canceled message
-export const messageExpired       : StartTransactionArg['messageExpired'] = undefined; // same as `messageCanceled`
-export const messageDeclined      : StartTransactionArg['messageDeclined'] = (errorMessage) => <>
+export const messageCanceled      : StartTransactionArg['messageCanceled'     ] = undefined; // use default canceled message
+export const messageExpired       : StartTransactionArg['messageExpired'      ] = undefined; // same as `messageCanceled`
+export const messageDeclined      : StartTransactionArg['messageDeclined'     ] = (errorMessage) => <>
     <p>
         Unable to make a transaction using this card.
     </p>

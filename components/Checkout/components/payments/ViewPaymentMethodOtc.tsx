@@ -36,6 +36,13 @@ import {
     AuthenticatedResult,
     useTransactionState,
 }                           from '@/components/payments/states'
+import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/otc-error-messages'
 
 // models:
 import {
@@ -130,20 +137,11 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
             
             
             // messages:
-            messageFailed        : null, // the payment NEVER rejected
-            messageCanceled      : null, // the payment NEVER canceled
-            messageExpired       : null, // the payment NEVER expired
-            messageDeclined      : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
+            messageFailed        : messageFailed,
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined,
+            messageDeclinedRetry : messageDeclinedRetry,
         });
     });
     
