@@ -954,6 +954,7 @@ model PaymentMethod {
     // data:
     sort                            Int
     
+    type                            PaymentMethodType
     provider                        PaymentMethodProvider
     providerPaymentMethodId         String
     @@unique([provider, providerPaymentMethodId])
@@ -963,6 +964,9 @@ model PaymentMethod {
     // relations:
     parentId                        String
     parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related PaymentMethod(s) if the Customer deleted
+}
+enum PaymentMethodType {
+    CARD
 }
 enum PaymentMethodProvider {
     PAYPAL
