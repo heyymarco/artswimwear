@@ -91,6 +91,13 @@ import {
     AuthenticatedResult,
     useTransactionState,
 }                           from '@/components/payments/states'
+import {
+    messageFailed,
+    messageCanceled,
+    messageExpired,
+    messageDeclined,
+    messageDeclinedRetry,
+}                           from '@/components/payments/error-messages/express-checkout-error-message'
 
 // configs:
 import {
@@ -312,38 +319,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             // messages:
-            messageFailed        : <>
-                <p>
-                    Unable to make a transaction using {walletName}.
-                </p>
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
-            messageCanceled      : undefined, // use default canceled message
-            messageExpired       : undefined, // same as `messageCanceled`
-            messageDeclined      : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using {walletName}.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please try <strong>another payment method</strong>.
-                </p>
-            </>,
-            messageDeclinedRetry : (errorMessage) => <>
-                <p>
-                    Unable to make a transaction using {walletName}.
-                </p>
-                {!!errorMessage && <p>
-                    {errorMessage}
-                </p>}
-                <p>
-                    Please <strong>try again</strong> in a few minutes.
-                </p>
-            </>,
+            messageFailed        : messageFailed(walletName),
+            messageCanceled      : messageCanceled,
+            messageExpired       : messageExpired,
+            messageDeclined      : messageDeclined(walletName),
+            messageDeclinedRetry : messageDeclinedRetry(walletName),
         })
         .finally(async () => { // cleanups:
             signalOrderBookedOrPaidOrAbort.current = undefined; // unref the proxy_resolver
