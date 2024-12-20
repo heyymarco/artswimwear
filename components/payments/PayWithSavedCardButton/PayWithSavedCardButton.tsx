@@ -99,6 +99,7 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         
         // actions:
         startTransaction,
+        placeOrder,
     } = useTransactionState();
     
     
@@ -127,12 +128,13 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         });
     });
     const handlePlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|PaymentDetail|false> => {
-        await new Promise<void>((resolved) => setTimeout(resolved, 3000));
-        throw Error('not yet implemented');
+        return await placeOrder({
+            paymentSource  : 'savedCard',
+            cardToken      : model.id,
+        });
     });
     const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-        await new Promise<void>((resolved) => setTimeout(resolved, 3000));
-        throw Error('not yet implemented');
+        return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
     });
     
     

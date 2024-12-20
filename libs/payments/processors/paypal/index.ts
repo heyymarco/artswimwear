@@ -67,7 +67,21 @@ const paypalHandleResponse       = async (response: Response) => {
     throw new Error(errorMessage);
 }
 
-export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<AuthorizedFundData> => {
+export interface PaypalSavedCard
+    extends
+        Pick<PaymentMethodCapture,
+            |'type'
+            |'paymentMethodProviderId'
+        >
+{
+}
+
+/**
+ * @returns null                                       : Transaction creation was denied (for example due to a decline).  
+ * @returns AuthorizedFundData                         : Authorized for payment.  
+ * @returns [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).
+ */
+export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     const {
         currency,
         totalCostConverted,
@@ -94,12 +108,24 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
             'Accept'          : 'application/json',
             'Accept-Language' : 'en_US',
             'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+            
+            'Prefer'          : 'return=representation', // The server returns a complete resource representation, including the current state of the resource.
+            
+            // TODO: need to improve the idempotency:
+            ...(savedCard ? {
+                'PayPal-Request-Id' : `${savedCard.paymentMethodProviderId}:${new Date().toISOString()}`,
+            } : undefined)
         },
         body    : JSON.stringify({
             // intent enum required
             // The intent to either capture payment immediately or authorize a payment for an order after order creation.
             // The possible values are: 'CAPTURE'|'AUTHORIZE'
-            intent                        : 'CAPTURE',
+            intent                        : (
+                !savedCard
+                ? 'CAPTURE'   // for presentCard, we need to capture the created_order in another api request
+                // : 'AUTHORIZE' // for savedCard, do not immediately capture the payment, instead we prefer to capture the fund explicitly
+                : 'CAPTURE' // for savedCard, immediately capture the payment
+            ),
             
             // purchase_units array (contains the purchase_unit_request object) required
             purchase_units                : [{ // array of contract between a payer and the payee, in the case of this commerce order -- only ONE contract for ONE order
@@ -292,7 +318,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
             
             payment_source: {
                 card : {
-                    billing_address : (
+                    billing_address : !savedCard ? (
                         (hasBillingAddress && !!billingAddress)
                         ? {
                             // country_code string required
@@ -329,7 +355,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                             address_line_2    : undefined,
                         }
                         : undefined
-                    ),
+                    ) : undefined,
                     
                     
                     
@@ -363,6 +389,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                             : undefined
                         ),
                     },
+                    vault_id   : (savedCard && (savedCard.type === 'CARD')) ? savedCard.paymentMethodProviderId : undefined,
                 },
                 
                 
@@ -389,67 +416,623 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
     });
     const paypalOrderData = await paypalHandleResponse(paypalResponse);
     /*
-        example:
+        example with presentCard:
         {
-            id: '4AM48902TR915910H',
-            status: 'CREATED',
+            id: "46H55548GU006254C",
+            intent: "CAPTURE",
+            status: "CREATED",
+            payment_source: {
+                card: {
+                    billing_address: {
+                        address_line_1: "Jl Monjali Gang Perkutut 25",
+                        admin_area_2: "Sleman",
+                        admin_area_1: "DI Yogyakarta",
+                        postal_code: "55284",
+                        country_code: "ID",
+                    },
+                },
+            },
+            purchase_units: [
+                {
+                    reference_id: "default",
+                    amount: {
+                        currency_code: "USD",
+                        value: "61.27",
+                        breakdown: {
+                            item_total: {
+                                currency_code: "USD",
+                                value: "60.63",
+                            },
+                            shipping: {
+                                currency_code: "USD",
+                                value: "0.64",
+                            },
+                        },
+                    },
+                    payee: {
+                        email_address: "sb-ll80225278267@business.example.com",
+                        merchant_id: "MJRUQCVE8CVPN",
+                        display_data: {
+                            brand_name: "ArtSwimwear.com",
+                        },
+                    },
+                    items: [
+                        {
+                            name: "Dewata Plunge Onepiece - Dayak Woven (Sm)",
+                            unit_amount: {
+                                currency_code: "USD",
+                                value: "60.63",
+                            },
+                            quantity: "1",
+                            category: "PHYSICAL_GOODS",
+                        },
+                    ],
+                    shipping: {
+                        name: {
+                            full_name: "Yunus Kurniawan",
+                        },
+                        address: {
+                            address_line_1: "Jl Monjali Gang Perkutut 25",
+                            admin_area_2: "Sleman",
+                            admin_area_1: "DI Yogyakarta",
+                            postal_code: "55284",
+                            country_code: "ID",
+                        },
+                        type: "SHIPPING",
+                    },
+                },
+            ],
+            create_time: "2024-12-20T18:26:16Z",
             links: [
                 {
-                    href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H',
-                    rel: 'self',
-                    method: 'GET'
+                    href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C",
+                    rel: "self",
+                    method: "GET",
                 },
                 {
-                    href: 'https://www.sandbox.paypal.com/checkoutnow?token=4AM48902TR915910H',
-                    rel: 'approve',
-                    method: 'GET'
+                    href: "https://www.sandbox.paypal.com/checkoutnow?token=46H55548GU006254C",
+                    rel: "approve",
+                    method: "GET",
                 },
                 {
-                    href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H',
-                    rel: 'update',
-                    method: 'PATCH'
+                    href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C",
+                    rel: "update",
+                    method: "PATCH",
                 },
                 {
-                    href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H/capture',
-                    rel: 'capture',
-                    method: 'POST'
-                }
-            ]
+                    href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C/capture",
+                    rel: "capture",
+                    method: "POST",
+                },
+            ],
         }
     */
-    if ((paypalOrderData?.status !== 'CREATED')) {
-        // TODO: log unexpected response
-        console.log('unexpected response: ', paypalOrderData);
-        throw Error('unexpected API response');
-    } // if
-    
-    const paymentId   = paypalOrderData?.id;
-    if ((typeof(paymentId) !== 'string') || !paymentId) {
-        // TODO: log unexpected response
-        console.log('unexpected response: ', paypalOrderData);
-        throw Error('unexpected API response');
-    } // if
-    
-    
-    
     /*
-        The merchant needs to redirect the payer back to Paypal to complete 3D Secure authentication.
-        
-        To trigger the authentication:
-        1. Redirect the buyer to the "rel": "payer-action" HATEOAS link returned as part of the response before authorizing or capturing the order.
-        2. Append "redirect_uri" to the payer-action URL so that Paypal returns the payer to the merchant's checkout page after they complete 3D Secure authentication.
-        
-        Sample URL:
-        https://example.com/webapp/myshop?action=verify&flow=3ds&cart_id=ORDER-ID&redirect_uri=MERCHANT-LANDING-PAGE
+        example with savedCard with 'CAPTURE':
+        {
+            id: "5T710786T06567114",
+            intent: "CAPTURE",
+            status: "COMPLETED",
+            payment_source: {
+                card: {
+                    name: "Budi",
+                    last_digits: "0004",
+                    expiry: "2029-01",
+                    brand: "DISCOVER",
+                    available_networks: [
+                        "DINERS",
+                    ],
+                    type: "CREDIT",
+                    bin_details: {
+                        bin: "36259",
+                        products: [
+                            "COMMERCIAL",
+                        ],
+                    },
+                },
+            },
+            purchase_units: [
+                {
+                    reference_id: "default",
+                    amount: {
+                        currency_code: "USD",
+                        value: "25.07",
+                        breakdown: {
+                            item_total: {
+                                currency_code: "USD",
+                                value: "24.43",
+                            },
+                            shipping: {
+                                currency_code: "USD",
+                                value: "0.64",
+                            },
+                            handling: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            insurance: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            shipping_discount: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                        },
+                    },
+                    payee: {
+                        email_address: "sb-ll80225278267@business.example.com",
+                        merchant_id: "MJRUQCVE8CVPN",
+                        display_data: {
+                            brand_name: "ArtSwimwear.com",
+                        },
+                    },
+                    description: "Komodo V Cut Bottom  - Dayak Woven (Sm)",
+                    soft_descriptor: "TEST STORE",
+                    items: [
+                        {
+                            name: "Komodo V Cut Bottom  - Dayak Woven (Sm)",
+                            unit_amount: {
+                                currency_code: "USD",
+                                value: "24.43",
+                            },
+                            tax: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            quantity: "1",
+                            category: "PHYSICAL_GOODS",
+                        },
+                    ],
+                    shipping: {
+                        name: {
+                            full_name: "Yunus Kurniawan",
+                        },
+                        address: {
+                            address_line_1: "Jl Monjali Gang Perkutut 25",
+                            admin_area_2: "Sleman",
+                            admin_area_1: "DI Yogyakarta",
+                            postal_code: "55284",
+                            country_code: "ID",
+                        },
+                    },
+                    payments: {
+                        captures: [
+                            {
+                                id: "0XX3309307732590Y",
+                                status: "COMPLETED",
+                                amount: {
+                                    currency_code: "USD",
+                                    value: "25.07",
+                                },
+                                final_capture: true,
+                                disbursement_mode: "INSTANT",
+                                seller_protection: {
+                                    status: "NOT_ELIGIBLE",
+                                },
+                                seller_receivable_breakdown: {
+                                    gross_amount: {
+                                        currency_code: "USD",
+                                        value: "25.07",
+                                    },
+                                    paypal_fee: {
+                                        currency_code: "USD",
+                                        value: "1.52",
+                                    },
+                                    net_amount: {
+                                        currency_code: "USD",
+                                        value: "23.55",
+                                    },
+                                },
+                                links: [
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/payments/captures/0XX3309307732590Y",
+                                        rel: "self",
+                                        method: "GET",
+                                    },
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/payments/captures/0XX3309307732590Y/refund",
+                                        rel: "refund",
+                                        method: "POST",
+                                    },
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/checkout/orders/5T710786T06567114",
+                                        rel: "up",
+                                        method: "GET",
+                                    },
+                                ],
+                                create_time: "2024-12-20T18:48:14Z",
+                                update_time: "2024-12-20T18:48:14Z",
+                                network_transaction_reference: {
+                                    id: "864109425517117",
+                                    date: "0408",
+                                    network: "DISCOVER",
+                                },
+                                processor_response: {
+                                    avs_code: "Y",
+                                    cvv_code: "M",
+                                    response_code: "0000",
+                                },
+                            },
+                        ],
+                    },
+                },
+            ],
+            create_time: "2024-12-20T18:48:14Z",
+            update_time: "2024-12-20T18:48:14Z",
+            links: [
+                {
+                    href: "https://api.sandbox.paypal.com/v2/checkout/orders/5T710786T06567114",
+                    rel: "self",
+                    method: "GET",
+                },
+            ],
+        }
     */
-    
-    
-    
-    return {
-        paymentId,
-        redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
-    } satisfies AuthorizedFundData;
+    /*
+        example with savedCard with 'AUTHORIZE':
+        {
+            id: "8YY60073V53512231",
+            intent: "AUTHORIZE",
+            status: "COMPLETED",
+            payment_source: {
+                card: {
+                    name: "Budi",
+                    last_digits: "0004",
+                    expiry: "2029-01",
+                    brand: "DISCOVER",
+                    available_networks: [
+                        "DINERS",
+                    ],
+                    type: "CREDIT",
+                    bin_details: {
+                        bin: "36259",
+                        products: [
+                            "COMMERCIAL",
+                        ],
+                    },
+                },
+            },
+            purchase_units: [
+                {
+                    reference_id: "default",
+                    amount: {
+                        currency_code: "USD",
+                        value: "24.86",
+                        breakdown: {
+                            item_total: {
+                                currency_code: "USD",
+                                value: "24.43",
+                            },
+                            shipping: {
+                                currency_code: "USD",
+                                value: "0.43",
+                            },
+                            handling: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            insurance: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            shipping_discount: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                        },
+                    },
+                    payee: {
+                        email_address: "sb-ll80225278267@business.example.com",
+                        merchant_id: "MJRUQCVE8CVPN",
+                        display_data: {
+                            brand_name: "ArtSwimwear.com",
+                        },
+                    },
+                    description: "Bajo Halter Neck Top - Mega Mendung (Sm)",
+                    soft_descriptor: "TEST STORE",
+                    items: [
+                        {
+                            name: "Bajo Halter Neck Top - Mega Mendung (Sm)",
+                            unit_amount: {
+                                currency_code: "USD",
+                                value: "24.43",
+                            },
+                            tax: {
+                                currency_code: "USD",
+                                value: "0.00",
+                            },
+                            quantity: "1",
+                            category: "PHYSICAL_GOODS",
+                        },
+                    ],
+                    shipping: {
+                        name: {
+                            full_name: "Yunus Kurniawan",
+                        },
+                        address: {
+                            address_line_1: "Jl Monjali Gang Perkutut 25",
+                            admin_area_2: "Sleman",
+                            admin_area_1: "DI Yogyakarta",
+                            postal_code: "55284",
+                            country_code: "ID",
+                        },
+                    },
+                    payments: {
+                        authorizations: [
+                            {
+                                status: "CREATED",
+                                id: "92X28747BW716125D",
+                                amount: {
+                                    currency_code: "USD",
+                                    value: "24.86",
+                                },
+                                seller_protection: {
+                                    status: "NOT_ELIGIBLE",
+                                },
+                                processor_response: {
+                                    avs_code: "Y",
+                                    cvv_code: "M",
+                                    response_code: "0000",
+                                },
+                                expiration_time: "2025-01-18T18:10:42Z",
+                                links: [
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D",
+                                        rel: "self",
+                                        method: "GET",
+                                    },
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D/capture",
+                                        rel: "capture",
+                                        method: "POST",
+                                    },
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D/void",
+                                        rel: "void",
+                                        method: "POST",
+                                    },
+                                    {
+                                        href: "https://api.sandbox.paypal.com/v2/checkout/orders/8YY60073V53512231",
+                                        rel: "up",
+                                        method: "GET",
+                                    },
+                                ],
+                                create_time: "2024-12-20T18:10:42Z",
+                                update_time: "2024-12-20T18:10:42Z",
+                                network_transaction_reference: {
+                                    id: "864109425517117",
+                                    date: "0408",
+                                    network: "DISCOVER",
+                                },
+                            },
+                        ],
+                    },
+                },
+            ],
+            create_time: "2024-12-20T18:10:42Z",
+            update_time: "2024-12-20T18:10:42Z",
+            links: [
+                {
+                    href: "https://api.sandbox.paypal.com/v2/checkout/orders/8YY60073V53512231",
+                    rel: "self",
+                    method: "GET",
+                },
+            ],
+        }
+    */
+    switch (paypalOrderData?.status) {
+        //#region for presentCard response
+        case 'CREATED': { // The order was created with the specified context.
+            const paymentId = paypalOrderData?.id;
+            if (!paymentId || (typeof(paymentId) !== 'string')) {
+                // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                console.log('unexpected response: ', paypalOrderData);
+                throw Error('unexpected API response');
+            } // if
+            
+            
+            
+            return {
+                paymentId, // NOT prefixed with '#AUTHORIZED_', so we have a HINT to capture_the_order later (NOT to capture_the_authorized_payment later)
+                redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
+            } satisfies AuthorizedFundData;
+        }
+        //#endregion for presentCard response
+        
+        
+        
+        //#region for savedCard response
+        case 'COMPLETED': { // The payment was authorized or the authorized payment was captured for the order.
+            const authorizedOrCapturedData = (
+                // for `intent: 'AUTHORIZE'`:
+                paypalOrderData?.purchase_units?.[0]?.payments?.authorizations?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/authorizations&t=response
+                
+                ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously // QUESTION: is my assumption correct?
+                
+                // for `intent: 'CAPTURE'`:
+                paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/captures&t=response
+            );
+            
+            
+            
+            switch (authorizedOrCapturedData?.status) {
+                case /* for `intent: 'AUTHORIZE'` */ 'CREATED': { // The authorized payment is created. No captured payments have been made for this authorized payment.
+                    // const paymentId = authorizedOrCapturedData?.id; // when on `paypalCaptureFund()`, capture the authorized payment
+                    const paymentId = paypalOrderData?.id; // when on `paypalCaptureFund()`, we need to get the details of the order and then capture the authorized payment
+                    if (!paymentId || (typeof(paymentId) !== 'string')) {
+                        // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                        console.log('unexpected response: ', paypalOrderData);
+                        throw Error('unexpected API response');
+                    } // if
+                    
+                    
+                    
+                    return {
+                        paymentId    : `#AUTHORIZED_${paymentId}`, // prefixed with '#AUTHORIZED_', so we have a HINT to capture_the_authorized_payment later (NOT to capture_the_order later)
+                        redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
+                    } satisfies AuthorizedFundData;
+                }
+                
+                
+                
+                case /* for `intent: 'AUTHORIZE'` */ 'CAPTURED': // The authorized payment has one or more captures against it. The sum of these captured payments is greater than the amount of the original authorized payment.
+                case /* for `intent: 'CAPTURE'`   */ 'COMPLETED': { // The funds for this captured payment were credited to the payee's PayPal account.
+                    const paymentBreakdown = authorizedOrCapturedData?.seller_receivable_breakdown;
+                    // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
+                    const amount           = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
+                    // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
+                    const fee              = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
+                    // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
+                    
+                    
+                    
+                    const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+                        const paymentSource = paypalOrderData.payment_source;
+                        
+                        
+                        
+                        /* PAY WITH CARD */
+                        const card = paymentSource?.card;
+                        if (card) {
+                            return {
+                                type       : 'CARD',
+                                brand      : card.brand?.toLowerCase() ?? null,
+                                identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                            };
+                        } // if
+                        
+                        
+                        
+                        /* PAY WITH PAYPAL */
+                        const paypal = paymentSource?.paypal;
+                        if (paypal) {
+                            return {
+                                type       : 'PAYPAL',
+                                brand      : 'paypal',
+                                identifier : paypal.email_address || null,
+                            };
+                        } // if
+                        
+                        
+                        
+                        /* PAY WITH OTHER */
+                        return {
+                            type       : 'CUSTOM',
+                            brand      : null,
+                            identifier : null,
+                        };
+                    })();
+                    return [
+                        {
+                            ...paymentDetailPartial,
+                            
+                            amount,
+                            fee,
+                        } satisfies PaymentDetail,
+                        
+                        
+                        
+                        null, // the savedCard is already saved, no need to save it again, so we don't need to pass the PaymentMethodCapture object
+                    ] satisfies [PaymentDetail, PaymentMethodCapture|null];
+                }
+                
+                
+                
+                case /* for `intent: 'AUTHORIZE'` */ 'DENIED': // PayPal cannot authorize funds for this authorized payment.
+                case /* for `intent: 'CAPTURE'`   */ 'DECLINED': // The funds could not be captured.
+                case /* for `intent: 'CAPTURE'`   */ 'FAILED': { // There was an error while capturing payment.
+                    return null;
+                }
+                
+                
+                
+                // never happened (the request configuration SHOULD not produce these conditions):
+                case /* for `intent: 'AUTHORIZE'` */ 'PARTIALLY_CAPTURED': // A captured payment was made for the authorized payment for an amount that is less than the amount of the original authorized payment.
+                case /* for `intent: 'CAPTURE'`   */ 'PARTIALLY_REFUNDED': // An amount less than this captured payment's amount was partially refunded to the payer.
+                
+                case /* for `intent: 'AUTHORIZE'` */ 'VOIDED': // The authorized payment was voided. No more captured payments can be made against this authorized payment.
+                
+                // case /* for `intent: 'AUTHORIZE'` */ 'PENDING': // The created authorization is in pending state. For more information, see status.details.
+                case /* for `intent: 'CAPTURE'`   */ 'PENDING': // The funds for this captured payment was not yet credited to the payee's PayPal account. For more information, see status.details.
+                
+                case /* for `intent: 'CAPTURE'`   */ 'REFUNDED': // An amount greater than or equal to this captured payment's amount was refunded to the payer.
+                
+                default:
+                    // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                    console.log('unexpected response: ', paypalOrderData);
+                    throw Error('unexpected API response');
+            } // switch
+        }
+        //#endregion for savedCard response
+        
+        
+        
+        //#region WARNING: not yet tested, just a assumtion code
+        case 'PAYER_ACTION_REQUIRED': { // The order requires an action from the payer (e.g. 3DS authentication). Redirect the payer to the "rel":"payer-action" HATEOAS link returned as part of the response prior to authorizing or capturing the order. Some payment sources may not return a payer-action HATEOAS link (eg. MB WAY). For these payment sources the payer-action is managed by the scheme itself (eg. through SMS, email, in-app notification, etc).
+            /*
+                The merchant needs to redirect the payer back to Paypal to complete 3D Secure authentication.
+                
+                To trigger the authentication:
+                1. Redirect the buyer to the "rel": "payer-action" HATEOAS link returned as part of the response before authorizing or capturing the order.
+                2. Append "redirect_uri" to the payer-action URL so that Paypal returns the payer to the merchant's checkout page after they complete 3D Secure authentication.
+                
+                Sample URL:
+                https://example.com/webapp/myshop?action=verify&flow=3ds&cart_id=ORDER-ID&redirect_uri=MERCHANT-LANDING-PAGE
+            */
+            
+            
+            
+            const paymentId = paypalOrderData?.id;
+            if (!paymentId || (typeof(paymentId) !== 'string')) {
+                // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                console.log('unexpected response: ', paypalOrderData);
+                throw Error('unexpected API response');
+            } // if
+            
+            const links = paypalOrderData.links;
+            if (!Array.isArray(links)) {
+                // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                console.log('unexpected response: ', paypalOrderData);
+                throw Error('unexpected API response');
+            } // if
+            const payerAction = links.find((link) => (link?.rel === 'payer-action'));
+            const payerActionHref = payerAction?.href;
+            if (!payerActionHref || (typeof(payerActionHref) !== 'string')) {
+                // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                console.log('unexpected response: ', paypalOrderData);
+                throw Error('unexpected API response');
+            } // if
+            
+            
+            
+            return {
+                paymentId    : (
+                    !!paypalOrderData?.purchase_units?.[0]?.payments?.authorizations?.[0]
+                    ? `#AUTHORIZED_${paymentId}` // prefixed with '#AUTHORIZED_', so we have a HINT to capture_the_authorized_payment later (NOT to capture_the_order later)
+                    : paymentId // NOT prefixed with '#AUTHORIZED_', so we have a HINT to capture_the_order later (NOT to capture_the_authorized_payment later)
+                ),
+                redirectData : payerActionHref, // requires to handle redirectData before we passed it to `paypalCaptureFund()` to capture the fund
+            } satisfies AuthorizedFundData;
+        }
+        //#endregion WARNING: not yet tested, just a assumtion code
+        
+        
+        
+        // never happened (the request configuration SHOULD not produce these conditions):
+        case 'SAVED': // The order was saved and persisted. The order status continues to be in progress until a capture is made with final_capture = true for all purchase units within the order.
+        case 'APPROVED': // The customer approved the payment through the PayPal wallet or another form of guest or unbranded payment. For example, a card, bank account, or so on. // QUESTION: we sent the invoice to customer paypal account and then the customer approve the invoice?
+        case 'VOIDED': // All purchase units in the order are voided.
+        default:
+            // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+            console.log('unexpected response: ', paypalOrderData);
+            throw Error('unexpected API response');
+    } // switch
 }
+
+/**
+ * @returns PaymentMethodSetup                         : The authorization for saving the card for future use without deducting funds.
+ */
 export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetupOptions): Promise<PaymentMethodSetup> => {
     const {
         paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
@@ -587,7 +1170,7 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
         }
     */
     if ((paypalOrderData?.status !== 'CREATED')) {
-        // TODO: log unexpected response
+        // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
@@ -597,8 +1180,8 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
             id : paymentMethodProviderCustomerId,
         },
     } = paypalOrderData;
-    if ((typeof(paymentMethodSetupToken) !== 'string') || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
-        // TODO: log unexpected response
+    if (!paymentMethodSetupToken || (typeof(paymentMethodSetupToken) !== 'string') || paymentMethodProviderCustomerId || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
+        // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
@@ -608,249 +1191,473 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     } satisfies PaymentMethodSetup;
 }
 
+
+
+/**
+ * @returns null                                       : Transaction creation was denied (for example due to a decline).  
+ * @returns [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).
+ */
 export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDetail, PaymentMethodCapture|null]|null> => {
-    const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
-        method  : 'POST',
-        headers : {
-            'Content-Type'    : 'application/json',
-            'Accept'          : 'application/json',
-            'Accept-Language' : 'en_US',
-            'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
-        },
-    });
-    const paypalPaymentData = await paypalHandleResponse(response);
-    /*
-        example:
-        {
-            "id": "3VR64557R6628232K",
-            "status": "COMPLETED",
-            "payment_source": {
-                "card": {
-                    "last_digits": "8431",
-                    "brand": "AMEX",
-                    "type": "CREDIT"
-                    
-                    // TODO: if exists and `payment_source.card.attributes.vault.status === 'VAULTED'`, store `payment_source.card.attributes.vault.id` and `payment_source.card.attributes.vault.customer.id` to the database
-                    // OTHERWISE, when `payment_source.card.attributes.vault.status === 'APPROVED'`, neither the `payment_source.card.attributes.vault.id` nor `payment_source.card.attributes.vault.customer.id` is not received immediately
-                    // The `VAULT.PAYMENT-TOKEN.CREATED` will be sent to webhook
-                    attributes : {
-                        vault : {
-                            id : 'nkq2y9g',
-                            customer : {
-                                id: '695922590',
+    const paypalPaymentData = (
+        paymentId.startsWith('#AUTHORIZED_')
+        ? await (async () => { // Get the order detail, and then capture authorized payment, and finally return the captured order detail
+            paymentId = paymentId.slice(12); // remove prefix: '#AUTHORIZED_'
+            
+            
+            
+            const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}`, {
+                method  : 'GET',
+                headers : {
+                    'Content-Type'    : 'application/json',
+                    'Accept'          : 'application/json',
+                    'Accept-Language' : 'en_US',
+                    'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+                },
+            });
+            const paypalOrderData = await paypalHandleResponse(response);
+            /*
+                example:
+                {
+                    id: "8YY60073V53512231",
+                    intent: "AUTHORIZE",
+                    status: "COMPLETED",
+                    payment_source: {
+                        card: {
+                            name: "Budi",
+                            last_digits: "0004",
+                            expiry: "2029-01",
+                            brand: "DISCOVER",
+                            available_networks: [
+                                "DINERS",
+                            ],
+                            type: "CREDIT",
+                            bin_details: {
+                                bin: "36259",
+                                products: [
+                                    "COMMERCIAL",
+                                ],
                             },
-                            status : 'VAULTED',
-                            links : [
-                                {
-                                    "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
-                                    "rel": "self",
-                                    "method": "GET"
+                        },
+                    },
+                    purchase_units: [
+                        {
+                            reference_id: "default",
+                            amount: {
+                                currency_code: "USD",
+                                value: "24.86",
+                                breakdown: {
+                                    item_total: {
+                                        currency_code: "USD",
+                                        value: "24.43",
+                                    },
+                                    shipping: {
+                                        currency_code: "USD",
+                                        value: "0.43",
+                                    },
                                 },
-                                {
-                                    "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
-                                    "rel": "delete",
-                                    "method": "DELETE"
+                            },
+                            payee: {
+                                email_address: "sb-ll80225278267@business.example.com",
+                                merchant_id: "MJRUQCVE8CVPN",
+                                display_data: {
+                                    brand_name: "ArtSwimwear.com",
                                 },
+                            },
+                            soft_descriptor: "TEST STORE",
+                            items: [
                                 {
-                                    "href": "https://api-m.sandbox.paypal.com/v2/checkout/orders/5O190127TN364715T",
-                                    "rel": "up",
-                                    "method": "GET"
+                                    name: "Bajo Halter Neck Top - Mega Mendung (Sm)",
+                                    unit_amount: {
+                                        currency_code: "USD",
+                                        value: "24.43",
+                                    },
+                                    quantity: "1",
+                                    category: "PHYSICAL_GOODS",
                                 },
                             ],
-                        },
-                    },
-                },
-            },
-            "purchase_units": [
-                {
-                    "reference_id": "default",
-                    "shipping": {
-                        "name": {
-                            "full_name": "Yunus Kurniawan"
-                        },
-                        "address": {
-                            "address_line_1": "Jl Monjali Gang Temulawak no 26",
-                            "admin_area_2": "Sleman",
-                            "admin_area_1": "Yogyakarta",
-                            "postal_code": "55284",
-                            "country_code": "ID"
-                        }
-                    },
-                    "payments": {
-                        "captures": [
-                            {
-                                "id": "24H17413S3123762P",
-                                "status": "COMPLETED",
-                                "amount": {
-                                    "currency_code": "USD",
-                                    "value": "772.72"
+                            shipping: {
+                                name: {
+                                    full_name: "Yunus Kurniawan",
                                 },
-                                "final_capture": true,
-                                "disbursement_mode": "INSTANT",
-                                "seller_protection": {
-                                    "status": "NOT_ELIGIBLE"
+                                address: {
+                                    address_line_1: "Jl Monjali Gang Perkutut 25",
+                                    admin_area_2: "Sleman",
+                                    admin_area_1: "DI Yogyakarta",
+                                    postal_code: "55284",
+                                    country_code: "ID",
                                 },
-                                "seller_receivable_breakdown": {
-                                    "gross_amount": {
-                                        "currency_code": "USD",
-                                        "value": "772.72"
-                                    },
-                                    "paypal_fee": {
-                                        "currency_code": "USD",
-                                        "value": "32.09"
-                                    },
-                                    "net_amount": {
-                                        "currency_code": "USD",
-                                        "value": "740.63"
-                                    }
-                                },
-                                "links": [
+                                type: "SHIPPING",
+                            },
+                            payments: {
+                                authorizations: [
                                     {
-                                        "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P",
-                                        "rel": "self",
-                                        "method": "GET"
+                                        status: "CREATED",
+                                        id: "92X28747BW716125D",
+                                        amount: {
+                                            currency_code: "USD",
+                                            value: "24.86",
+                                        },
+                                        seller_protection: {
+                                            status: "NOT_ELIGIBLE",
+                                        },
+                                        processor_response: {
+                                            avs_code: "Y",
+                                            cvv_code: "M",
+                                            response_code: "0000",
+                                        },
+                                        expiration_time: "2025-01-18T18:10:42Z",
+                                        links: [
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D",
+                                                rel: "self",
+                                                method: "GET",
+                                            },
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D/capture",
+                                                rel: "capture",
+                                                method: "POST",
+                                            },
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D/void",
+                                                rel: "void",
+                                                method: "POST",
+                                            },
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/checkout/orders/8YY60073V53512231",
+                                                rel: "up",
+                                                method: "GET",
+                                            },
+                                        ],
+                                        create_time: "2024-12-20T18:10:42Z",
+                                        update_time: "2024-12-20T18:10:42Z",
+                                        network_transaction_reference: {
+                                            id: "864109425517117",
+                                            date: "0408",
+                                            network: "DISCOVER",
+                                        },
                                     },
-                                    {
-                                        "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P/refund",
-                                        "rel": "refund",
-                                        "method": "POST"
-                                    },
-                                    {
-                                        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
-                                        "rel": "up",
-                                        "method": "GET"
-                                    }
                                 ],
-                                "create_time": "2023-03-18T11:39:49Z",
-                                "update_time": "2023-03-18T11:39:49Z",
-                                "processor_response": {
-                                    "avs_code": "A",
-                                    "cvv_code": "U",
-                                    "response_code": "0000"
-                                }
-                            }
-                        ]
-                    }
+                            },
+                        },
+                    ],
+                    create_time: "2024-12-20T18:10:39Z",
+                    update_time: "2024-12-20T18:10:42Z",
+                    links: [
+                        {
+                            href: "https://api.sandbox.paypal.com/v2/checkout/orders/8YY60073V53512231",
+                            rel: "self",
+                            method: "GET",
+                        },
+                    ],
                 }
-            ],
-            "links": [
+            */
+            
+            
+            const authorizations = paypalOrderData?.purchase_units?.[0]?.payments?.authorizations
+            const authorizedId   = authorizations?.[0]?.id;
+            if (!authorizedId || (typeof(authorizedId) !== 'string')) {
+                // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+                console.log('unexpected response: ', paypalOrderData);
+                throw Error('unexpected API response');
+            } // if
+            
+            
+            
+            const response2 = await fetch(`${paypalUrl}/v2/payments/authorizations/${authorizedId}/capture`, {
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type'    : 'application/json',
+                        'Accept'          : 'application/json',
+                        'Accept-Language' : 'en_US',
+                        'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+                        
+                        'Prefer'          : 'return=representation', // The server returns a complete resource representation, including the current state of the resource.
+                    },
+                }
+            );
+            const paypalCapturedData = await paypalHandleResponse(response2);
+            /*
+                example:
                 {
-                    "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
-                    "rel": "self",
-                    "method": "GET"
+                    id: "1YE65299KT059304Y",
+                    amount: {
+                        currency_code: "USD",
+                        value: "24.86",
+                    },
+                    final_capture: true,
+                    seller_protection: {
+                        status: "NOT_ELIGIBLE",
+                    },
+                    disbursement_mode: "INSTANT",
+                    seller_receivable_breakdown: {
+                        gross_amount: {
+                            currency_code: "USD",
+                            value: "24.86",
+                        },
+                        paypal_fee: {
+                            currency_code: "USD",
+                            value: "1.51",
+                        },
+                        net_amount: {
+                            currency_code: "USD",
+                            value: "23.35",
+                        },
+                    },
+                    status: "COMPLETED",
+                    processor_response: {
+                        avs_code: "Y",
+                        cvv_code: "M",
+                        response_code: "0000",
+                    },
+                    payee: {
+                        email_address: "sb-ll80225278267@business.example.com",
+                        merchant_id: "MJRUQCVE8CVPN",
+                    },
+                    create_time: "2024-12-20T18:11:31Z",
+                    update_time: "2024-12-20T18:11:31Z",
+                    links: [
+                        {
+                            href: "https://api.sandbox.paypal.com/v2/payments/captures/1YE65299KT059304Y",
+                            rel: "self",
+                            method: "GET",
+                        },
+                        {
+                            href: "https://api.sandbox.paypal.com/v2/payments/captures/1YE65299KT059304Y/refund",
+                            rel: "refund",
+                            method: "POST",
+                        },
+                        {
+                            href: "https://api.sandbox.paypal.com/v2/payments/authorizations/92X28747BW716125D",
+                            rel: "up",
+                            method: "GET",
+                        },
+                    ],
+                    network_transaction_reference: {
+                        id: "864109425517117",
+                        date: "0408",
+                        network: "DISCOVER",
+                    },
                 }
-            ]
-        }
+            */
+            authorizations[0] = paypalCapturedData; // update the uncaptured authorization to captured one
+            
+            
+            
+            return paypalOrderData;
+        })()
+        : await (async () => { // Capture payment for order and then return the order detail
+            const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type'    : 'application/json',
+                        'Accept'          : 'application/json',
+                        'Accept-Language' : 'en_US',
+                        'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
+                        
+                        'Prefer'          : 'return=representation', // The server returns a complete resource representation, including the current state of the resource.
+                    },
+                }
+            );
+            const paypalCapturedData = await paypalHandleResponse(response);
+            /*
+                example:
+                {
+                    id: "46H55548GU006254C",
+                    intent: "CAPTURE",
+                    status: "COMPLETED",
+                    payment_source: {
+                        card: {
+                            name: "Bambang Budiman",
+                            last_digits: "5047",
+                            expiry: "2025-01",
+                            brand: "MASTERCARD",
+                            available_networks: [
+                                "MASTERCARD",
+                            ],
+                            type: "DEBIT",
+                            attributes: {
+                                vault: {
+                                    id: "6ku98087c53665010",
+                                    status: "VAULTED",
+                                    customer: {
+                                        id: "VIHhQdluoo",
+                                    },
+                                    links: [
+                                        {
+                                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/6ku98087c53665010",
+                                            rel: "self",
+                                            method: "GET",
+                                        },
+                                        {
+                                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/6ku98087c53665010",
+                                            rel: "delete",
+                                            method: "DELETE",
+                                        },
+                                        {
+                                            href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C",
+                                            rel: "up",
+                                            method: "GET",
+                                        },
+                                    ],
+                                },
+                            },
+                            bin_details: {
+                                bin: "506351",
+                                issuing_bank: "NCUBO CAPITAL ",
+                                bin_country_code: "MX",
+                            },
+                        },
+                    },
+                    purchase_units: [
+                        {
+                            reference_id: "default",
+                            amount: {
+                                currency_code: "USD",
+                                value: "61.27",
+                                breakdown: {
+                                    item_total: {
+                                        currency_code: "USD",
+                                        value: "60.63",
+                                    },
+                                    shipping: {
+                                        currency_code: "USD",
+                                        value: "0.64",
+                                    },
+                                    handling: {
+                                        currency_code: "USD",
+                                        value: "0.00",
+                                    },
+                                    insurance: {
+                                        currency_code: "USD",
+                                        value: "0.00",
+                                    },
+                                    shipping_discount: {
+                                        currency_code: "USD",
+                                        value: "0.00",
+                                    },
+                                },
+                            },
+                            payee: {
+                                email_address: "sb-ll80225278267@business.example.com",
+                                merchant_id: "MJRUQCVE8CVPN",
+                                display_data: {
+                                    brand_name: "ArtSwimwear.com",
+                                },
+                            },
+                            description: "Dewata Plunge Onepiece - Dayak Woven (Sm)",
+                            soft_descriptor: "TEST STORE",
+                            items: [
+                                {
+                                    name: "Dewata Plunge Onepiece - Dayak Woven (Sm)",
+                                    unit_amount: {
+                                        currency_code: "USD",
+                                        value: "60.63",
+                                    },
+                                    tax: {
+                                        currency_code: "USD",
+                                        value: "0.00",
+                                    },
+                                    quantity: "1",
+                                    category: "PHYSICAL_GOODS",
+                                },
+                            ],
+                            shipping: {
+                                name: {
+                                    full_name: "Yunus Kurniawan",
+                                },
+                                address: {
+                                    address_line_1: "Jl Monjali Gang Perkutut 25",
+                                    admin_area_2: "Sleman",
+                                    admin_area_1: "DI Yogyakarta",
+                                    postal_code: "55284",
+                                    country_code: "ID",
+                                },
+                            },
+                            payments: {
+                                captures: [
+                                    {
+                                        id: "5KV02158HD8066142",
+                                        status: "COMPLETED",
+                                        amount: {
+                                            currency_code: "USD",
+                                            value: "61.27",
+                                        },
+                                        final_capture: true,
+                                        disbursement_mode: "INSTANT",
+                                        seller_protection: {
+                                            status: "NOT_ELIGIBLE",
+                                        },
+                                        seller_receivable_breakdown: {
+                                            gross_amount: {
+                                                currency_code: "USD",
+                                                value: "61.27",
+                                            },
+                                            paypal_fee: {
+                                                currency_code: "USD",
+                                                value: "3.00",
+                                            },
+                                            net_amount: {
+                                                currency_code: "USD",
+                                                value: "58.27",
+                                            },
+                                        },
+                                        links: [
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/payments/captures/5KV02158HD8066142",
+                                                rel: "self",
+                                                method: "GET",
+                                            },
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/payments/captures/5KV02158HD8066142/refund",
+                                                rel: "refund",
+                                                method: "POST",
+                                            },
+                                            {
+                                                href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C",
+                                                rel: "up",
+                                                method: "GET",
+                                            },
+                                        ],
+                                        create_time: "2024-12-20T18:26:44Z",
+                                        update_time: "2024-12-20T18:26:44Z",
+                                        network_transaction_reference: {
+                                            id: "VIS01106K",
+                                            date: "0123",
+                                            network: "MASTERCARD",
+                                        },
+                                        processor_response: {
+                                            avs_code: "Y",
+                                            cvv_code: "M",
+                                            response_code: "0000",
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                    create_time: "2024-12-20T18:26:44Z",
+                    update_time: "2024-12-20T18:26:44Z",
+                    links: [
+                        {
+                            href: "https://api.sandbox.paypal.com/v2/checkout/orders/46H55548GU006254C",
+                            rel: "self",
+                            method: "GET",
+                        },
+                    ],
+                }
+            */
+            return paypalCapturedData;
+        })()
+    );
+    const authorizedOrCapturedData = (
+        // for `intent: 'AUTHORIZE'`:
+        paypalPaymentData?.purchase_units?.[0]?.payments?.authorizations?.[0]
         
-        example:
-        {
-            "id": "314769333S968980X",
-            "status": "COMPLETED",
-            "payment_source": {
-                "paypal": {
-                    "email_address": "sb-fsqwb25273882@personal.example.com",
-                    "account_id": "6UZV9866JZEPA",
-                    "name": {
-                        "given_name": "John",
-                        "surname": "Doe"
-                    },
-                    "address": {
-                        "country_code": "ID"
-                    }
-                }
-            },
-            "purchase_units": [
-                {
-                    "reference_id": "default",
-                    "shipping": {
-                        "name": {
-                            "full_name": "Yunus Kurniawan"
-                        },
-                        "address": {
-                            "address_line_1": "Jl Monjali Gang Temulawak no 26",
-                            "admin_area_2": "Sleman",
-                            "admin_area_1": "Yogyakarta",
-                            "postal_code": "55284",
-                            "country_code": "ID"
-                        }
-                    },
-                    "payments": {
-                        "captures": [
-                            {
-                                "id": "60C01638HN2535717",
-                                "status": "COMPLETED",
-                                "amount": {
-                                    "currency_code": "USD",
-                                    "value": "772.72"
-                                },
-                                "final_capture": true,
-                                "disbursement_mode": "INSTANT",
-                                "seller_protection": {
-                                    "status": "ELIGIBLE",
-                                    "dispute_categories": [
-                                        "ITEM_NOT_RECEIVED",
-                                        "UNAUTHORIZED_TRANSACTION"
-                                    ]
-                                },
-                                "seller_receivable_breakdown": {
-                                    "gross_amount": {
-                                        "currency_code": "USD",
-                                        "value": "772.72"
-                                    },
-                                    "paypal_fee": {
-                                        "currency_code": "USD",
-                                        "value": "39.05"
-                                    },
-                                    "net_amount": {
-                                        "currency_code": "USD",
-                                        "value": "733.67"
-                                    }
-                                },
-                                "links": [
-                                    {
-                                        "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717",
-                                        "rel": "self",
-                                        "method": "GET"
-                                    },
-                                    {
-                                        "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717/refund",
-                                        "rel": "refund",
-                                        "method": "POST"
-                                    },
-                                    {
-                                        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
-                                        "rel": "up",
-                                        "method": "GET"
-                                    }
-                                ],
-                                "create_time": "2023-03-18T11:36:29Z",
-                                "update_time": "2023-03-18T11:36:29Z"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "payer": {
-                "name": {
-                    "given_name": "John",
-                    "surname": "Doe"
-                },
-                "email_address": "sb-fsqwb25273882@personal.example.com",
-                "payer_id": "6UZV9866JZEPA",
-                "address": {
-                    "country_code": "ID"
-                }
-            },
-            "links": [
-                {
-                    "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
-                    "rel": "self",
-                    "method": "GET"
-                }
-            ]
-        }
-    */
-    const captureData       = paypalPaymentData.purchase_units?.[0]?.payments?.captures?.[0];
+        ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously // QUESTION: is my assumption correct?
+        
+        // for `intent: 'CAPTURE'`:
+        paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0]
+    );
     const paymentMethodData = (
         paypalPaymentData?.payment_source?.card?.attributes?.vault
         ??
@@ -859,17 +1666,15 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
     
     
     
-    // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
-    
-    
-    
-    switch (captureData?.status) {
-        case 'COMPLETED' : {
-            const paymentBreakdown = captureData?.seller_receivable_breakdown;
+    switch (authorizedOrCapturedData?.status) {
+        // case /* for `intent: 'AUTHORIZE'` */ 'COMPLETED': // The funds for this captured payment were credited to the payee's PayPal account.
+        case /* for `intent: 'CAPTURE'`   */ 'COMPLETED': { // The funds for this captured payment were credited to the payee's PayPal account.
+            const paymentBreakdown = authorizedOrCapturedData?.seller_receivable_breakdown;
             // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
             const amount    = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
             // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
             const fee       = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
+            // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
             
             
             
@@ -936,20 +1741,36 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
                 } satisfies PaymentMethodCapture
                 // no need to save the paymentMethod:
                 : null,
-            ] as const;
+            ] satisfies [PaymentDetail, PaymentMethodCapture|null];
         }
         
-        case 'DECLINED'  : {
+        
+        
+        // case /* for `intent: 'AUTHORIZE'` */ 'DECLINED': // The funds could not be captured.
+        case /* for `intent: 'CAPTURE'`   */ 'DECLINED': // The funds could not be captured.
+        // case /* for `intent: 'AUTHORIZE'` */ 'FAILED': // There was an error while capturing payment.
+        case /* for `intent: 'CAPTURE'`   */ 'FAILED': { // There was an error while capturing payment.
             return null;
         }
         
-        default          : {
-            // TODO: log unexpected response
-            console.log('unexpected response: ', paypalPaymentData, captureData);
+        
+        
+        // case /* for `intent: 'AUTHORIZE'` */ 'PARTIALLY_REFUNDED': // An amount less than this captured payment's amount was partially refunded to the payer.
+        case /* for `intent: 'CAPTURE'`   */ 'PARTIALLY_REFUNDED': // An amount less than this captured payment's amount was partially refunded to the payer.
+        // case /* for `intent: 'AUTHORIZE'` */ 'PENDING': // The funds for this captured payment was not yet credited to the payee's PayPal account. For more information, see status.details.
+        case /* for `intent: 'CAPTURE'`   */ 'PENDING': // The funds for this captured payment was not yet credited to the payee's PayPal account. For more information, see status.details.
+        // case /* for `intent: 'AUTHORIZE'` */ 'REFUNDED': // An amount greater than or equal to this captured payment's amount was refunded to the payer.
+        case /* for `intent: 'CAPTURE'`   */ 'REFUNDED': // An amount greater than or equal to this captured payment's amount was refunded to the payer.
+        default:
+            // TODO: await logToDatabase({ level: 'ERROR', data: paypalPaymentData });
+            console.log('unexpected response: ', paypalPaymentData);
             throw Error('unexpected API response');
-        }
     } // switch
 }
+
+/**
+ * @returns PaymentMethodCapture                       : PaymentMethod information needs to be saved into the database, so that customers can reuse it for future use.
+ */
 export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<PaymentMethodCapture> => {
     const response = await fetch(`${paypalUrl}/v3/vault/payment-tokens`, {
         method  : 'POST',
@@ -1006,8 +1827,8 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         },
         payment_source : paymentSource,
     } = paypalPaymentData;
-    if ((typeof(paymentMethodProviderId) !== 'string') || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
-        // TODO: log unexpected response
+    if (!paymentMethodProviderId || (typeof(paymentMethodProviderId) !== 'string') || !paymentMethodProviderCustomerId || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
+        // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
         console.log('unexpected response: ', paypalPaymentData);
         throw Error('unexpected API response');
     } // if
@@ -1023,6 +1844,7 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         paymentMethodProviderCustomerId,
     } satisfies PaymentMethodCapture;
 }
+
 
 
 export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMax: number): Promise<Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>> => {

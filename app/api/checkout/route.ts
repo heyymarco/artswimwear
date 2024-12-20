@@ -58,6 +58,7 @@ import {
     type PaymentDeclined,
     type LimitedStockItem,
     
+    type PaymentMethodProvider,
     type PaymentMethodCapture,
     
     
@@ -241,21 +242,27 @@ router
     
     
     
-    const usePaypalGateway   = !simulateOrder && (['paypalCard'].includes(paymentSource) || !['manual', 'stripeCard', 'stripeExpress', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource)); // if undefined || not 'manual' => use paypal gateway
+    const usePaypalGateway   = !simulateOrder && (['paypalCard'].includes(paymentSource) || !['manual', 'savedCard', 'stripeCard', 'stripeExpress', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource)); // if undefined || not 'manual' => use paypal gateway
     const useStripeGateway   = !simulateOrder && ['stripeCard', 'stripeExpress'].includes(paymentSource);
     const useMidtransGateway = !simulateOrder && ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
+    const useSavedCard       = !simulateOrder && (paymentSource === 'savedCard');
     
-    if (usePaypalGateway   && (!checkoutConfigServer.payment.processors.paypal.enabled   || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
+    if      (usePaypalGateway   && (!checkoutConfigServer.payment.processors.paypal.enabled   || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    if (useStripeGateway   && (!checkoutConfigServer.payment.processors.stripe.enabled   || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
+    else if (useStripeGateway   && (!checkoutConfigServer.payment.processors.stripe.enabled   || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
+    else if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    }
+    else if (!usePaypalGateway && !useStripeGateway && !useMidtransGateway && !useSavedCard && !simulateOrder) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -278,7 +285,7 @@ router
             cardToken = cardTokenRaw;
         } // if
     }
-    if (useMidtransGateway) {
+    else if (useMidtransGateway) {
         const {
             cardToken: cardTokenRaw,
         } = placeOrderData;
@@ -291,7 +298,20 @@ router
             } // if
             cardToken = cardTokenRaw;
         } // if
-    } // if
+    }
+    else if (useSavedCard) {
+        const {
+            cardToken: cardTokenRaw,
+        } = placeOrderData;
+        
+        if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
+            return Response.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        cardToken = cardTokenRaw;
+    }
     
     
     
@@ -420,6 +440,16 @@ router
     
     
     
+    //#region validate cardToken when useSavedCard
+    if (useSavedCard && !customerId) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    //#endregion validate cardToken when useSavedCard
+    
+    
+    
     //#region validate shipping address
     const {
         // shippings:
@@ -531,6 +561,7 @@ router
     
     
     // performing complex transactions:
+    let savedPaymentMethodName : string|null = null;
     const authorizedOrPaidOrDeclinedOrSimulatedOrError = await (async (): Promise<AuthorizedFundData|PaymentDetail|null|0|Response> => {
         try {
             const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentSource);
@@ -994,7 +1025,7 @@ router
                 //#region fetch payment gateway API
                 const gatewayResult = await(async (): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
                     if (usePaypalGateway) {
-                        return paypalCreateOrder({
+                        return paypalCreateOrder(null, {
                             currency,
                             totalCostConverted,
                             totalProductPriceConverted,
@@ -1047,6 +1078,51 @@ router
                                 
                                 paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.midtransCustomerId, // save payment method during purchase (if opted)
                             });
+                        }
+                        else if (useSavedCard) {
+                            const savedPaymentMethod = await prismaTransaction.paymentMethod.findUnique({
+                                where  : {
+                                    id       : cardToken,
+                                    parentId : customerId, // important: the signedIn customerId
+                                    provider : { in: [
+                                        ...(checkoutConfigServer.payment.processors.paypal.enabled   ? (['PAYPAL'  ] satisfies PaymentMethodProvider[]) : []),
+                                        ...(checkoutConfigServer.payment.processors.stripe.enabled   ? (['STRIPE'  ] satisfies PaymentMethodProvider[]) : []),
+                                        ...(checkoutConfigServer.payment.processors.midtrans.enabled ? (['MIDTRANS'] satisfies PaymentMethodProvider[]) : []),
+                                    ]},
+                                },
+                                select : {
+                                    type                     : true,
+                                    provider                 : true,
+                                    providerPaymentMethodId  : true,
+                                },
+                            });
+                            if (!savedPaymentMethod) return null; // savedPaymentMethod not found (or disabled) in database => payment declined
+                            
+                            
+                            
+                            savedPaymentMethodName = savedPaymentMethod.provider;
+                            switch (savedPaymentMethod.provider) {
+                                case 'PAYPAL' : return paypalCreateOrder({ type: savedPaymentMethod.type, paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, {
+                                    currency,
+                                    totalCostConverted,
+                                    totalProductPriceConverted,
+                                    totalShippingCostConverted,
+                                    
+                                    hasShippingAddress,
+                                    shippingAddress,
+                                    
+                                    hasBillingAddress,
+                                    billingAddress,
+                                    
+                                    detailedItems,
+                                    
+                                    paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.paypalCustomerId, // save payment method during purchase (if opted)
+                                });
+                                
+                                
+                                
+                                default       : return null;
+                            } // switch
                         }
                         else {
                             throw Error('unexpected condition');
@@ -1518,6 +1594,7 @@ router
                 if      (usePaypalGateway  ) prefix = '#PAYPAL_';
                 else if (useStripeGateway  ) prefix = '#STRIPE_'
                 else if (useMidtransGateway) prefix = '#MIDTRANS_';
+                else if (useSavedCard      ) prefix = `#${savedPaymentMethodName}_`;
                 
                 return `${prefix}${paymentId}`;
             })(),

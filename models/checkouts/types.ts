@@ -58,6 +58,7 @@ export interface CheckoutDetail
 
 export type PaymentOption =
     | 'CARD'
+    | 'SAVED_CARD'
     
     | 'PAYPAL'
     | 'GOOGLEPAY'
@@ -71,7 +72,6 @@ export type PaymentOption =
     | 'INDOMARET'
     | 'ALFAMART'
     
-    | 'SAVED_CARD'
     | 'MANUAL'
 
 
@@ -215,6 +215,9 @@ export interface PlaceOrderRequestOptions
         
         // midtrans:
         |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
+        
+        // saved card:
+        |'savedCard'
     
     cardToken     ?: string
     captcha       ?: string
