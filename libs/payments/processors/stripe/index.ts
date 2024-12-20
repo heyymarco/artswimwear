@@ -503,7 +503,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 } satisfies PaymentMethodCapture
                 // no need to save the paymentMethod:
                 : null,
-            ] as const;
+            ] satisfies [PaymentDetail, PaymentMethodCapture|null];
         }
         
         
