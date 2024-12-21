@@ -43,8 +43,6 @@ const paypalCreateAccessToken  = async () => {
         sample responses:
         './sample-responses/sample-accessTokenResponse.js'
     */
-    console.log('created: accessTokenData');
-    // console.log('created: accessTokenData: ', accessTokenData);
     if (!accessTokenData || accessTokenData.error) throw accessTokenData?.error_description ?? accessTokenData?.error ?? Error('Fetch access token failed.');
     return accessTokenData.access_token;
 }
@@ -57,6 +55,8 @@ const paypalHandleResponse       = async (response: Response) => {
     
     
     const errorMessage = await response.text();
+    // TODO: await logToDatabase({ level: 'ERROR', data: errorMessage });
+    console.log('unexpected response: ', errorMessage);
     throw new Error(errorMessage);
 }
 
