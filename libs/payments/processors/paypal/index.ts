@@ -496,7 +496,7 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
                     
                     
                     const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                        const paymentSource = paypalOrderData.payment_source;
+                        const paymentSource = paypalOrderData?.payment_source;
                         
                         
                         
