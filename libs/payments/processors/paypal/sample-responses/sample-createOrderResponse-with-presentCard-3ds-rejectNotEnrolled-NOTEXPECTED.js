@@ -1,5 +1,5 @@
 const sample = {
-    id: "3J505126KW887582A",
+    id: "1CG035169X396191S",
     intent: "CAPTURE",
     status: "CREATED",
     payment_source: {
@@ -63,25 +63,25 @@ const sample = {
             },
         },
     ],
-    create_time: "2024-12-21T09:55:49Z",
+    create_time: "2024-12-21T10:28:55Z",
     links: [
         {
-            href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A",
+            href: "https://api.sandbox.paypal.com/v2/checkout/orders/1CG035169X396191S",
             rel: "self",
             method: "GET",
         },
         {
-            href: "https://www.sandbox.paypal.com/checkoutnow?token=3J505126KW887582A",
+            href: "https://www.sandbox.paypal.com/checkoutnow?token=1CG035169X396191S",
             rel: "approve",
             method: "GET",
         },
         {
-            href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A",
+            href: "https://api.sandbox.paypal.com/v2/checkout/orders/1CG035169X396191S",
             rel: "update",
             method: "PATCH",
         },
         {
-            href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A/capture",
+            href: "https://api.sandbox.paypal.com/v2/checkout/orders/1CG035169X396191S/capture",
             rel: "capture",
             method: "POST",
         },

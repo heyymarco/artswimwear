@@ -412,6 +412,11 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
         sample responses:
         './sample-responses/sample-createOrderResponse-with-presentCard.js'
         './sample-responses/sample-createOrderResponse-with-presentCard-3ds.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds-rejectFailedSignature-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds-rejectFailedAuthentication-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds-rejectAttempts_NonParticipating-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds-rejectTimeout-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds-rejectNotEnrolled-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
         './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardRefused.js'
         './sample-responses/sample-createOrderResponse-with-presentCard-rejectFraudulentCard.js'
         './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardExpired.js'
@@ -573,9 +578,16 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
         
         // QUESTION:
         // The 'PAYER_ACTION_REQUIRED' condition is never occurs.
-        // I tried using a test card with 3DS, the condition is always 'CREATED', then PayPal automatically opens a popup in my frontend, then the transaction immediately calls `paypalCaptureFund()` and the transaction succeeded.
-        // I think when this condition occurs, i should pass the 'payer-action' link to my frontend, then manually open a modal popup to display the provided link, then after user approves the verification, close the popup and calls `paypalCaptureFund()`.
+        // I tried using a test card with 3DS, the condition is always 'CREATED', then PayPal automatically opens a popup in my frontend, see:
+        // './sample-responses/3ds-popup.png',
+        // then the transaction immediately calls `paypalCaptureFund()` and the transaction succeeded.
+        //
+        // I expect when this condition occurs, i should pass the 'payer-action' link to my frontend, then manually open my_modal_popup_implemetation to display the provided link, then after user approves the verification, close the popup and calls `paypalCaptureFund()`.
         // How should i handle this condition? Just simply handled with 'unexpected response'?
+        //
+        // I also unable to simulate 3DS with rejection as the paypal guide on https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/test/#link-dsecuretestscenarios.
+        // See './sample-responses/sample-createOrderResponse-with-presentCard-3ds-reject**' and './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-reject**'
+        // I got succeeded of all of them.
         
         //#region WARNING: not yet tested, just a assumtion code
         case 'PAYER_ACTION_REQUIRED': { // The order requires an action from the payer (e.g. 3DS authentication). Redirect the payer to the "rel":"payer-action" HATEOAS link returned as part of the response prior to authorizing or capturing the order. Some payment sources may not return a payer-action HATEOAS link (eg. MB WAY). For these payment sources the payer-action is managed by the scheme itself (eg. through SMS, email, in-app notification, etc).
@@ -863,6 +875,11 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
                 sample responses:
                 './sample-responses/sample-captureOrderResponse-with-presentCard.js'
                 './sample-responses/sample-captureOrderResponse-with-presentCard-3ds.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-rejectFailedSignature-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-rejectFailedAuthentication-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-rejectAttempts_NonParticipating-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-rejectTimeout-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds-rejectNotEnrolled-NOTEXPECTED.js' // I got succeed transaction instead of card rejection
                 './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardRefused.js'
                 './sample-responses/sample-captureOrderResponse-with-presentCard-rejectFraudulentCard.js'
                 './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardExpired.js'

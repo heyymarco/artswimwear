@@ -1,11 +1,11 @@
 const sample = {
-    id: "3J505126KW887582A",
+    id: "2V348991C6154690K",
     intent: "CAPTURE",
     status: "COMPLETED",
     payment_source: {
         card: {
             name: "Bambang",
-            last_digits: "4393",
+            last_digits: "6650",
             expiry: "2025-01",
             brand: "MASTERCARD",
             available_networks: [
@@ -14,24 +14,24 @@ const sample = {
             type: "CREDIT",
             attributes: {
                 vault: {
-                    id: "92s28286d1116674t",
+                    id: "50660535fp389963a",
                     status: "VAULTED",
                     customer: {
                         id: "VIHhQdluoo",
                     },
                     links: [
                         {
-                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/92s28286d1116674t",
+                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/50660535fp389963a",
                             rel: "self",
                             method: "GET",
                         },
                         {
-                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/92s28286d1116674t",
+                            href: "https://api.sandbox.paypal.com/v3/vault/payment-tokens/50660535fp389963a",
                             rel: "delete",
                             method: "DELETE",
                         },
                         {
-                            href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A",
+                            href: "https://api.sandbox.paypal.com/v2/checkout/orders/2V348991C6154690K",
                             rel: "up",
                             method: "GET",
                         },
@@ -113,7 +113,7 @@ const sample = {
             payments: {
                 captures: [
                     {
-                        id: "0UR12402H01685943",
+                        id: "84A93538EF6742126",
                         status: "COMPLETED",
                         amount: {
                             currency_code: "USD",
@@ -140,23 +140,23 @@ const sample = {
                         },
                         links: [
                             {
-                                href: "https://api.sandbox.paypal.com/v2/payments/captures/0UR12402H01685943",
+                                href: "https://api.sandbox.paypal.com/v2/payments/captures/84A93538EF6742126",
                                 rel: "self",
                                 method: "GET",
                             },
                             {
-                                href: "https://api.sandbox.paypal.com/v2/payments/captures/0UR12402H01685943/refund",
+                                href: "https://api.sandbox.paypal.com/v2/payments/captures/84A93538EF6742126/refund",
                                 rel: "refund",
                                 method: "POST",
                             },
                             {
-                                href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A",
+                                href: "https://api.sandbox.paypal.com/v2/checkout/orders/2V348991C6154690K",
                                 rel: "up",
                                 method: "GET",
                             },
                         ],
-                        create_time: "2024-12-21T09:56:41Z",
-                        update_time: "2024-12-21T09:56:41Z",
+                        create_time: "2024-12-21T10:11:03Z",
+                        update_time: "2024-12-21T10:11:03Z",
                         network_transaction_reference: {
                             id: "VIS01106K",
                             date: "0123",
@@ -172,11 +172,11 @@ const sample = {
             },
         },
     ],
-    create_time: "2024-12-21T09:56:41Z",
-    update_time: "2024-12-21T09:56:41Z",
+    create_time: "2024-12-21T10:11:03Z",
+    update_time: "2024-12-21T10:11:03Z",
     links: [
         {
-            href: "https://api.sandbox.paypal.com/v2/checkout/orders/3J505126KW887582A",
+            href: "https://api.sandbox.paypal.com/v2/checkout/orders/2V348991C6154690K",
             rel: "self",
             method: "GET",
         },
