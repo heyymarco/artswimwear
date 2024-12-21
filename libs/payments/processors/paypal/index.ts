@@ -41,7 +41,7 @@ const paypalCreateAccessToken  = async () => {
     const accessTokenData = await response.json();
     /*
         sample responses:
-        './sample-accessTokenResponse.js'
+        './sample-responses/sample-accessTokenResponse.js'
     */
     console.log('created: accessTokenData');
     // console.log('created: accessTokenData: ', accessTokenData);
@@ -410,10 +410,19 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
     const paypalOrderData = await paypalHandleResponse(paypalResponse);
     /*
         sample responses:
-        './sample-createOrderResponse-with-presentCard.js'
-        './sample-createOrderResponse-with-presentCard-3ds.js'
-        './sample-createOrderResponse-with-savedCard-capture.js'
-        './sample-createOrderResponse-with-savedCard-authorize.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-3ds.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardRefused.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectFraudulentCard.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardExpired.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectLuhnCheckFails.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectInsufficientFunds.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardLostOrStolen.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardNotValid.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCardIsDeclined.js'
+        './sample-responses/sample-createOrderResponse-with-presentCard-rejectCvcCheckFails.js'
+        './sample-responses/sample-createOrderResponse-with-savedCard-capture.js'
+        './sample-responses/sample-createOrderResponse-with-savedCard-authorize.js'
     */
     switch (paypalOrderData?.status) {
         //#region for presentCard response
@@ -749,7 +758,7 @@ export const paypalCreatePaymentMethodSetup = async (options: PaymentMethodSetup
     const paypalOrderData = await paypalHandleResponse(paypalResponse);
     /*
         sample responses:
-        './sample-vaultSetupTokenResponse.js'
+        './sample-responses/sample-vaultSetupTokenResponse.js'
     */
     if ((paypalOrderData?.status !== 'CREATED')) {
         // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
@@ -799,7 +808,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
             const paypalOrderData = await paypalHandleResponse(response);
             /*
                 sample responses:
-                './sample-getOrderResponse-with-savedCard-authorize.js'
+                './sample-responses/sample-getOrderResponse-with-savedCard-authorize.js'
             */
             
             
@@ -828,7 +837,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
             const paypalCapturedData = await paypalHandleResponse(response2);
             /*
                 sample responses:
-                './sample-captureAuthorizationResponse-with-savedCard-authorize.js'
+                './sample-responses/sample-captureAuthorizationResponse-with-savedCard-authorize.js'
             */
             authorizations[0] = paypalCapturedData; // update the uncaptured authorization to captured one
             
@@ -852,8 +861,17 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
             const paypalCapturedData = await paypalHandleResponse(response);
             /*
                 sample responses:
-                './sample-captureOrderResponse-with-presentCard.js'
-                './sample-captureOrderResponse-with-presentCard-3ds.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-3ds.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardRefused.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectFraudulentCard.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardExpired.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectLuhnCheckFails.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectInsufficientFunds.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardLostOrStolen.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardNotValid.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCardIsDeclined.js'
+                './sample-responses/sample-captureOrderResponse-with-presentCard-rejectCvcCheckFails.js'
             */
             return paypalCapturedData;
         })()
@@ -1069,7 +1087,7 @@ export const paypalListPaymentMethods = async (paypalCustomerId: string, limitMa
     const paypalPaymentMethodsData = await paypalHandleResponse(response);
     /*
         sample responses:
-        './sample-vaultListPaymentsResponse.js'
+        './sample-responses/sample-vaultListPaymentsResponse.js'
     */
     
     
