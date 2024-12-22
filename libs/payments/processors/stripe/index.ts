@@ -212,7 +212,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 
                 
                 
-                (paymentMethod && paymentMethod.customer)
+                (paymentMethod && paymentMethod.customer && (paymentIntent.setup_future_usage === 'off_session'))
                 // needs to save the paymentMethod:
                 ? {
                     type                            : (() => {
@@ -266,12 +266,20 @@ export const stripeGetPaymentFee = async (charge: Stripe.Charge): Promise<number
 
 
 
+export interface StripeSavedCard
+    extends
+        Pick<PaymentMethodCapture,
+            |'paymentMethodProviderId'
+        >
+{
+}
+
 /**
  * @returns null                                       : Transaction creation was denied (for example due to a decline).  
  * @returns AuthorizedFundData                         : Authorized for payment.  
  * @returns [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).
  */
-export const stripeCreateOrder = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
+export const stripeCreateOrder = async (paymentMethodOrConfirmationOrSavedCard: string|StripeSavedCard, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     if (!stripe) throw Error('stripe is not loaded');
     
     
@@ -292,8 +300,22 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
     
     
     
-    const isPaymentMethodToken = cardToken.startsWith('pm_');
-    const isConfirmationToken  = cardToken.startsWith('ctoken_');
+    const paymentMethodToken = (
+        ((typeof(paymentMethodOrConfirmationOrSavedCard) === 'string') && paymentMethodOrConfirmationOrSavedCard.startsWith('pm_'))
+        ? paymentMethodOrConfirmationOrSavedCard
+        : (
+            (typeof(paymentMethodOrConfirmationOrSavedCard) === 'object')
+            ? (paymentMethodOrConfirmationOrSavedCard satisfies StripeSavedCard).paymentMethodProviderId // a paymentMethod id wrapped in `StripeSavedCard`
+            : undefined
+        )
+    );
+    const confirmationToken  = (
+        ((typeof(paymentMethodOrConfirmationOrSavedCard) === 'string') && paymentMethodOrConfirmationOrSavedCard.startsWith('ctoken_'))
+        ? paymentMethodOrConfirmationOrSavedCard
+        : undefined
+    );
+    const isUsingSavedCard   = !!paymentMethodOrConfirmationOrSavedCard && (typeof(paymentMethodOrConfirmationOrSavedCard) === 'object');
+    
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
         const customer = (existingPaymentMethodProviderCustomerId !== undefined) ? (
@@ -330,23 +352,27 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
             
             
             
-            capture_method            : isPaymentMethodToken ? 'manual' : undefined, // the fund must be captured on server_side
+            capture_method            : (
+                isUsingSavedCard
+                ? 'automatic' // capture immediately when using savedCard
+                : (paymentMethodToken ? 'manual' : undefined) // the fund must be captured on server_side
+            ),
             // confirmation_method       : isConfirmationToken  ? 'manual' : undefined, // the fund must be captured on server_side // DOESN'T WORK
             
             confirm                   : true, // auto confirm because the payment_method is already provided
-            payment_method            : isPaymentMethodToken ? cardToken : undefined,
+            payment_method            : paymentMethodToken,
             automatic_payment_methods : {
                 enabled         : true,
                 allow_redirects : 'never',
             },
-            confirmation_token        : isConfirmationToken  ? cardToken : undefined,
-            return_url                : isConfirmationToken  ? `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
+            confirmation_token        : confirmationToken,
+            return_url                : confirmationToken  ? `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             
             
             
             // save payment method during purchase:
             customer                  : customer?.id,
-            setup_future_usage        : customer ? 'off_session' : undefined,
+            setup_future_usage        : (customer && !isUsingSavedCard) ? 'off_session' : undefined,
             
             
             

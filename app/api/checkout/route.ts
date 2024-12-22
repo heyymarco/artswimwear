@@ -1091,9 +1091,17 @@ router
                                     ]},
                                 },
                                 select : {
-                                    type                     : true,
-                                    provider                 : true,
-                                    providerPaymentMethodId  : true,
+                                    type                       : true,
+                                    provider                   : true,
+                                    providerPaymentMethodId    : true,
+                                    
+                                    parent                     : {
+                                        select : {
+                                            paypalCustomerId   : true,
+                                            stripeCustomerId   : true,
+                                            midtransCustomerId : true,
+                                        },
+                                    },
                                 },
                             });
                             if (!savedPaymentMethod) return null; // savedPaymentMethod not found (or disabled) in database => payment declined
@@ -1116,7 +1124,23 @@ router
                                     
                                     detailedItems,
                                     
-                                    paymentMethodProviderCustomerId : paymentMethodProviderCustomerIds?.paypalCustomerId, // save payment method during purchase (if opted)
+                                    paymentMethodProviderCustomerId : savedPaymentMethod.parent.paypalCustomerId,
+                                });
+                                case 'STRIPE' : return stripeCreateOrder({ paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, orderId, {
+                                    currency,
+                                    totalCostConverted,
+                                    totalProductPriceConverted,
+                                    totalShippingCostConverted,
+                                    
+                                    hasShippingAddress,
+                                    shippingAddress,
+                                    
+                                    hasBillingAddress,
+                                    billingAddress,
+                                    
+                                    detailedItems,
+                                    
+                                    paymentMethodProviderCustomerId : savedPaymentMethod.parent.stripeCustomerId,
                                 });
                                 
                                 
