@@ -60,7 +60,8 @@ const paypalHandleResponse        = async (response: Response) => {
     throw new Error(errorMessage);
 }
 
-const extractPaymentDetailPartial = (paymentSource: any): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+const extractPaymentDetailPartial = (orderDataOrPaymentData: any): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+    const paymentSource = orderDataOrPaymentData?.payment_source;
     if (!paymentSource || (typeof(paymentSource) !== 'object')) {
         // TODO: await logToDatabase({ level: 'ERROR', data: paymentSource });
         console.log('unexpected response: ', paymentSource);
@@ -99,6 +100,28 @@ const extractPaymentDetailPartial = (paymentSource: any): Pick<PaymentDetail, 't
         brand      : null,
         identifier : null,
     };
+}
+const extractPaymentDetail        = (authorizedOrCapturedData: any, orderDataOrPaymentData: any): PaymentDetail => {
+    const paymentBreakdown = authorizedOrCapturedData?.seller_receivable_breakdown;
+    if (!paymentBreakdown || (typeof(paymentBreakdown) !== 'object')) {
+        // TODO: await logToDatabase({ level: 'ERROR', data: paymentBreakdown });
+        console.log('unexpected response: ', paymentBreakdown);
+        throw Error('unexpected API response');
+    } // if
+    // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
+    const amount           = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
+    // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
+    const fee              = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
+    // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
+    
+    
+    
+    return {
+        ...extractPaymentDetailPartial(orderDataOrPaymentData),
+        
+        amount,
+        fee,
+    } satisfies PaymentDetail;
 }
 
 export interface PaypalSavedCard
@@ -527,27 +550,14 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
                 
                 case /* for `intent: 'AUTHORIZE'` */ 'CAPTURED': // The authorized payment has one or more captures against it. The sum of these captured payments is greater than the amount of the original authorized payment.
                 case /* for `intent: 'CAPTURE'`   */ 'COMPLETED': { // The funds for this captured payment were credited to the payee's PayPal account.
-                    const paymentBreakdown = authorizedOrCapturedData?.seller_receivable_breakdown;
-                    // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
-                    const amount           = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
-                    // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
-                    const fee              = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
-                    // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
-                    
-                    
-                    
-                    const paymentDetailPartial = extractPaymentDetailPartial(paypalOrderData?.payment_source);
+                    const paymentDetail = extractPaymentDetail(authorizedOrCapturedData, paypalOrderData);
                     return [
-                        {
-                            ...paymentDetailPartial,
-                            
-                            amount,
-                            fee,
-                        } satisfies PaymentDetail,
+                        paymentDetail,
                         
                         
                         
-                        null, // the savedCard is already saved, no need to save it again, so we don't need to pass the PaymentMethodCapture object
+                        // the savedCard is already saved, no need to save it again, so we don't need to pass the PaymentMethodCapture object:
+                        null,
                     ] satisfies [PaymentDetail, PaymentMethodCapture|null];
                 }
                 
@@ -900,12 +910,12 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
     );
     const authorizedOrCapturedData = (
         // for `intent: 'AUTHORIZE'`:
-        paypalPaymentData?.purchase_units?.[0]?.payments?.authorizations?.[0]
+        paypalPaymentData?.purchase_units?.[0]?.payments?.authorizations?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/authorizations&t=response
         
         ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously
         
         // for `intent: 'CAPTURE'`:
-        paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0]
+        paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/captures&t=response
     );
     const paymentMethodData = (
         paypalPaymentData?.payment_source?.card?.attributes?.vault
@@ -918,23 +928,9 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
     switch (authorizedOrCapturedData?.status) {
         // case /* for `intent: 'AUTHORIZE'` */ 'COMPLETED': // The funds for this captured payment were credited to the payee's PayPal account.
         case /* for `intent: 'CAPTURE'`   */ 'COMPLETED': { // The funds for this captured payment were credited to the payee's PayPal account.
-            const paymentBreakdown = authorizedOrCapturedData?.seller_receivable_breakdown;
-            // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
-            const amount    = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
-            // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
-            const fee       = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
-            // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
-            
-            
-            
-            const paymentDetailPartial = extractPaymentDetailPartial(paypalPaymentData?.payment_source);
+            const paymentDetail = extractPaymentDetail(authorizedOrCapturedData, paypalPaymentData);
             return [
-                {
-                    ...paymentDetailPartial,
-                    
-                    amount,
-                    fee,
-                } satisfies PaymentDetail,
+                paymentDetail,
                 
                 
                 
@@ -942,9 +938,9 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
                 // needs to save the paymentMethod:
                 ? {
                     type                            : (() => {
-                        switch (paymentDetailPartial.type) {
+                        switch (paymentDetail.type) {
                             case 'CARD'   :
-                            case 'PAYPAL' : return paymentDetailPartial.type;
+                            case 'PAYPAL' : return paymentDetail.type;
                             default       : throw Error('unexpected API response');
                         } // switch
                     })(),
