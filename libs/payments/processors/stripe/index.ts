@@ -212,7 +212,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 
                 
                 
-                (paymentMethod && paymentMethod.customer && (paymentIntent.setup_future_usage === 'off_session'))
+                (paymentMethod && paymentMethod.customer && paymentIntent.setup_future_usage)
                 // needs to save the paymentMethod:
                 ? {
                     type                            : (() => {
