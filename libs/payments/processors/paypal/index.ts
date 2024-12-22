@@ -934,21 +934,34 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
                 
                 
                 
-                (paymentMethodData?.id && paymentMethodData?.customer?.id)
+                !!paymentMethodData // the `vault` prop is exist
                 // needs to save the paymentMethod:
-                ? {
-                    type                            : (() => {
-                        switch (paymentDetail.type) {
-                            case 'CARD'   :
-                            case 'PAYPAL' : return paymentDetail.type;
-                            default       : throw Error('unexpected API response');
-                        } // switch
-                    })(),
-                    
-                    paymentMethodProvider           : 'PAYPAL',
-                    paymentMethodProviderId         : paymentMethodData?.id           as string,
-                    paymentMethodProviderCustomerId : paymentMethodData?.customer?.id as string,
-                } satisfies PaymentMethodCapture
+                ? ((): PaymentMethodCapture => {
+                    const {
+                        id       : paymentMethodProviderId,
+                        customer : {
+                            id   : paymentMethodProviderCustomerId,
+                        },
+                    } = paymentMethodData;
+                    if (!paymentMethodProviderId || (typeof(paymentMethodProviderId) !== 'string') || !paymentMethodProviderCustomerId || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
+                        // TODO: await logToDatabase({ level: 'ERROR', data: paypalPaymentData });
+                        console.log('unexpected response: ', paypalPaymentData);
+                        throw Error('unexpected API response');
+                    } // if
+                    return {
+                        type : ((): PaymentMethodCapture['type'] => {
+                            switch (paymentDetail.type) {
+                                case 'CARD'   :
+                                case 'PAYPAL' : return paymentDetail.type;
+                                default       : throw Error('unexpected API response');
+                            } // switch
+                        })(),
+                        
+                        paymentMethodProvider : 'PAYPAL',
+                        paymentMethodProviderId,
+                        paymentMethodProviderCustomerId,
+                    } satisfies PaymentMethodCapture;
+                })()
                 // no need to save the paymentMethod:
                 : null,
             ] satisfies [PaymentDetail, PaymentMethodCapture|null];
@@ -1005,19 +1018,19 @@ export const paypalCapturePaymentMethod = async (vaultToken: string): Promise<Pa
         './sample-responses/sample-capturePaymentMethod.js'
     */
     const {
-        id : paymentMethodProviderId,
+        id       : paymentMethodProviderId,
         customer : {
-            id : paymentMethodProviderCustomerId,
+            id   : paymentMethodProviderCustomerId,
         },
         payment_source : paymentSource,
     } = paypalPaymentData;
     if (!paymentMethodProviderId || (typeof(paymentMethodProviderId) !== 'string') || !paymentMethodProviderCustomerId || (typeof(paymentMethodProviderCustomerId) !== 'string')) {
-        // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
+        // TODO: await logToDatabase({ level: 'ERROR', data: paypalPaymentData });
         console.log('unexpected response: ', paypalPaymentData);
         throw Error('unexpected API response');
     } // if
     return {
-        type                            : (() => {
+        type : ((): PaymentMethodCapture['type'] => {
             if ('card'   in paymentSource) return 'CARD';
             if ('paypal' in paymentSource) return 'PAYPAL';
             throw Error('unexpected API response');
