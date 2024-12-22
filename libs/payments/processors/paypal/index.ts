@@ -839,7 +839,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
             */
             
             
-            const authorizations = paypalOrderData?.purchase_units?.[0]?.payments?.authorizations
+            const authorizations = paypalOrderData?.purchase_units?.[0]?.payments?.authorizations;
             const authorizedId   = authorizations?.[0]?.id;
             if (!authorizedId || (typeof(authorizedId) !== 'string')) {
                 // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
