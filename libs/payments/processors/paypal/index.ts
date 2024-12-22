@@ -29,7 +29,7 @@ const paypalUrl = (paypalBaseUrl?.[(process.env.PAYPAL_ENV ?? 'sandbox') as keyo
 /**
  * Access token is used to authenticate all REST API requests.
  */
-const paypalCreateAccessToken  = async () => {
+const paypalCreateAccessToken     = async () => {
     const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const response = await fetch(`${paypalUrl}/v1/oauth2/token`, {
         method  : 'POST',
@@ -47,7 +47,7 @@ const paypalCreateAccessToken  = async () => {
     return accessTokenData.access_token;
 }
 
-const paypalHandleResponse       = async (response: Response) => {
+const paypalHandleResponse        = async (response: Response) => {
     if (response.status === 200 || response.status === 201) {
         return response.json();
     } // if
@@ -58,6 +58,47 @@ const paypalHandleResponse       = async (response: Response) => {
     // TODO: await logToDatabase({ level: 'ERROR', data: errorMessage });
     console.log('unexpected response: ', errorMessage);
     throw new Error(errorMessage);
+}
+
+const extractPaymentDetailPartial = (paymentSource: any): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+    if (!paymentSource || (typeof(paymentSource) !== 'object')) {
+        // TODO: await logToDatabase({ level: 'ERROR', data: paymentSource });
+        console.log('unexpected response: ', paymentSource);
+        throw Error('unexpected API response');
+    } // if
+    
+    
+    
+    /* PAY WITH CARD */
+    const card = paymentSource?.card;
+    if (card) {
+        return {
+            type       : 'CARD',
+            brand      : card.brand?.toLowerCase() ?? null,
+            identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+        };
+    } // if
+    
+    
+    
+    /* PAY WITH PAYPAL */
+    const paypal = paymentSource?.paypal;
+    if (paypal) {
+        return {
+            type       : 'PAYPAL',
+            brand      : 'paypal',
+            identifier : paypal.email_address || null,
+        };
+    } // if
+    
+    
+    
+    /* PAY WITH OTHER */
+    return {
+        type       : 'CUSTOM',
+        brand      : null,
+        identifier : null,
+    };
 }
 
 export interface PaypalSavedCard
@@ -456,7 +497,7 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
                 // for `intent: 'AUTHORIZE'`:
                 paypalOrderData?.purchase_units?.[0]?.payments?.authorizations?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/authorizations&t=response
                 
-                ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously // QUESTION: is my assumption correct?
+                ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously
                 
                 // for `intent: 'CAPTURE'`:
                 paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0] // https://developer.paypal.com/docs/api/orders/v2/#orders_create!c=200&path=purchase_units/payments/captures&t=response
@@ -495,42 +536,7 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
                     
                     
                     
-                    const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                        const paymentSource = paypalOrderData?.payment_source;
-                        
-                        
-                        
-                        /* PAY WITH CARD */
-                        const card = paymentSource?.card;
-                        if (card) {
-                            return {
-                                type       : 'CARD',
-                                brand      : card.brand?.toLowerCase() ?? null,
-                                identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
-                            };
-                        } // if
-                        
-                        
-                        
-                        /* PAY WITH PAYPAL */
-                        const paypal = paymentSource?.paypal;
-                        if (paypal) {
-                            return {
-                                type       : 'PAYPAL',
-                                brand      : 'paypal',
-                                identifier : paypal.email_address || null,
-                            };
-                        } // if
-                        
-                        
-                        
-                        /* PAY WITH OTHER */
-                        return {
-                            type       : 'CUSTOM',
-                            brand      : null,
-                            identifier : null,
-                        };
-                    })();
+                    const paymentDetailPartial = extractPaymentDetailPartial(paypalOrderData?.payment_source);
                     return [
                         {
                             ...paymentDetailPartial,
@@ -576,7 +582,6 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
         
         
         
-        // QUESTION:
         // The 'PAYER_ACTION_REQUIRED' condition is never occurs.
         // I tried using a test card with 3DS, the condition is always 'CREATED', then PayPal automatically opens a popup in my frontend, see:
         // './sample-responses/3ds-popup.png',
@@ -642,7 +647,7 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
         
         // never happened (the request configuration SHOULD not produce these conditions):
         case 'SAVED': // The order was saved and persisted. The order status continues to be in progress until a capture is made with final_capture = true for all purchase units within the order.
-        case 'APPROVED': // The customer approved the payment through the PayPal wallet or another form of guest or unbranded payment. For example, a card, bank account, or so on. // QUESTION: we sent the invoice to customer paypal account and then the customer approve the invoice?
+        case 'APPROVED': // The customer approved the payment through the PayPal wallet or another form of guest or unbranded payment. For example, a card, bank account, or so on.
         case 'VOIDED': // All purchase units in the order are voided.
         default:
             // TODO: await logToDatabase({ level: 'ERROR', data: paypalOrderData });
@@ -897,7 +902,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
         // for `intent: 'AUTHORIZE'`:
         paypalPaymentData?.purchase_units?.[0]?.payments?.authorizations?.[0]
         
-        ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously // QUESTION: is my assumption correct?
+        ?? // our payment data should be singular, so we can assume the authorization and capture never happen simultaneously
         
         // for `intent: 'CAPTURE'`:
         paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0]
@@ -922,42 +927,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<[PaymentDeta
             
             
             
-            const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                const paymentSource = paypalPaymentData.payment_source;
-                
-                
-                
-                /* PAY WITH CARD */
-                const card = paymentSource?.card;
-                if (card) {
-                    return {
-                        type       : 'CARD',
-                        brand      : card.brand?.toLowerCase() ?? null,
-                        identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
-                    };
-                } // if
-                
-                
-                
-                /* PAY WITH PAYPAL */
-                const paypal = paymentSource?.paypal;
-                if (paypal) {
-                    return {
-                        type       : 'PAYPAL',
-                        brand      : 'paypal',
-                        identifier : paypal.email_address || null,
-                    };
-                } // if
-                
-                
-                
-                /* PAY WITH OTHER */
-                return {
-                    type       : 'CUSTOM',
-                    brand      : null,
-                    identifier : null,
-                };
-            })();
+            const paymentDetailPartial = extractPaymentDetailPartial(paypalPaymentData?.payment_source);
             return [
                 {
                     ...paymentDetailPartial,
