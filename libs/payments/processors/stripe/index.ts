@@ -520,14 +520,23 @@ export const stripeCaptureFund = async (paymentId: string): Promise<[PaymentDeta
     const paymentIntentId = ((): string => { // pi_3Pg295D6SqU8owGY1RScPekB
         var secretIndex = paymentId.indexOf('_secret_');
         if (secretIndex < 0) return paymentId;
-        return paymentId.slice(0, secretIndex);
+        return paymentId.slice(0, secretIndex); // remove _secret_**
     })();
-    const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId, {
-        expand : [
-            'latest_charge.balance_transaction',
-            'payment_method',
-        ],
-    });
+    const paymentIntent = (
+        paymentIntentId.startsWith('#CAPTURED_')
+        ? await stripe.paymentIntents.retrieve(paymentIntentId.slice(10) /* remove prefix #CAPTURED_ */, {
+            expand : [
+                'latest_charge.balance_transaction',
+                'payment_method',
+            ],
+        })
+        : await stripe.paymentIntents.capture(paymentIntentId, {
+            expand : [
+                'latest_charge.balance_transaction',
+                'payment_method',
+            ],
+        })
+    );
     const result = await stripeTranslateData(paymentIntent);
     switch (result) {
         // unexpected results:

@@ -406,8 +406,9 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
                     let rawOrderId = orderBookedOrPaidOrAbort.orderId;
                     let authenticatedOrPaid : AuthenticatedResult|PaymentDetail;
                     try {
-                        authenticatedOrPaid = await authenticate(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail);
-                        rawOrderId = orderBookedOrPaidOrAbort.orderId; // the `placeOrderDetail.orderId` may be updated during `authenticate()` call.
+                        const orderBookedMutable : PlaceOrderDetail = {...(orderBookedOrPaidOrAbort satisfies PlaceOrderDetail)};
+                        authenticatedOrPaid = await authenticate(orderBookedMutable);
+                        rawOrderId = orderBookedMutable.orderId; // the `placeOrderDetail.orderId` may be updated during `authenticate()` call.
                     }
                     catch (error: any) { // an unexpected authentication error occured
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:

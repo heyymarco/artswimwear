@@ -9,6 +9,11 @@ import {
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -28,9 +33,7 @@ import {
 // payment components:
 import {
     AuthenticatedResult,
-    type StartTransactionArg,
     useTransactionState,
-    useOnFinishOrder,
 }                           from '@/components/payments/states'
 import {
     messageFailed,
@@ -45,6 +48,12 @@ import {
 import {
     PaymentMethodIdentifier,
 }                           from '@/components/payments/PaymentMethodIdentifier'
+import {
+    ConditionalStripeScriptProvider,
+}                           from '@/components/payments/ConditionalStripeScriptProvider'
+import {
+    type ImperativeAuthenticate,
+}                           from './ImperativeStripeAuthenticate'
 
 // models:
 import {
@@ -54,6 +63,9 @@ import {
     
     type PaymentMethodDetail,
 }                           from '@/models'
+
+// react lazies:
+const ImperativeStripeAuthenticateLazy = React.lazy(() => import('./ImperativeStripeAuthenticate'));
 
 
 
@@ -92,15 +104,15 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
     
     // states:
     const {
-        // states:
-        isTransactionReady,
-        
-        
-        
         // actions:
         startTransaction,
         placeOrder,
     } = useTransactionState();
+    
+    
+    
+    // refs:
+    const imperativeAuthenticateRef = useRef<ImperativeAuthenticate>(null);
     
     
     
@@ -134,7 +146,20 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
         });
     });
     const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
-        return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
+        if (!placeOrderDetail.redirectData) return AuthenticatedResult.AUTHORIZED; // paid => waiting for the payment to be captured on server side
+        
+        
+        
+        // handle 3ds verification for stripe:
+        if (placeOrderDetail.orderId.startsWith('#STRIPE_')) {
+            const handleStripeAuthenticate = imperativeAuthenticateRef.current?.onAuthenticate;
+            if (!handleStripeAuthenticate) return AuthenticatedResult.FAILED;
+            return handleStripeAuthenticate(placeOrderDetail);
+        } // if
+        
+        
+        
+        return AuthenticatedResult.FAILED; // no idea to handle => defaults to FAILED
     });
     
     
@@ -176,28 +201,34 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
     
     // jsx:
     return (
-        <ButtonIcon
-            // other props:
-            {...restButtonIconProps}
+        <>
+            <ButtonIcon
+                // other props:
+                {...restButtonIconProps}
+                
+                
+                
+                // variants:
+                size={size}
+                gradient={gradient}
+                
+                
+                
+                // classes:
+                className={`${styles.main} ${className}`}
+                
+                
+                
+                // handlers:
+                onClick={handlePayButtonClick}
+            >
+                {children}
+            </ButtonIcon>
             
-            
-            
-            // variants:
-            size={size}
-            gradient={gradient}
-            
-            
-            
-            // classes:
-            className={`${styles.main} ${className}`}
-            
-            
-            
-            // handlers:
-            onClick={handlePayButtonClick}
-        >
-            {children}
-        </ButtonIcon>
+            <ConditionalStripeScriptProvider>
+                <ImperativeStripeAuthenticateLazy authenticateRef={imperativeAuthenticateRef} />
+            </ConditionalStripeScriptProvider>
+        </>
     );
 };
 export {
