@@ -46,15 +46,7 @@ export interface StripeTranslateDataOptions {
  * @returns false                                      : Transaction was deleted due to canceled.  
  * @returns empty_string                               : (never happened) Transaction was deleted due to expired.  
  */
-export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|false> => {
-    // options:
-    const {
-        resolveMissingFee           = false, // false by default because the operation may take quite long time
-        resolveMissingPaymentMethod = true,  // true  by default because the operation can be done quickly
-    } = options ?? {};
-    
-    
-    
+export const stripeTranslateData    = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|false> => {
     switch (paymentIntent.status) {
         // step 1:
         case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
@@ -110,123 +102,38 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 sample responses:
                 './sample-responses/sample-paymentIntent-succeeded.js'
             */
-            const {
-                currency        : currencyFallback,
-                amount_received : amountFallback,
-                
-                payment_method  : paymentMethodRaw,
-            } = paymentIntent;
-            const latestCharge       = ((paymentIntent.latest_charge       && (typeof(paymentIntent.latest_charge     ) === 'object')) ? paymentIntent.latest_charge      : undefined);
-            let   balanceTransaction = ((latestCharge?.balance_transaction && (typeof(latestCharge.balance_transaction) === 'object')) ? latestCharge.balance_transaction : undefined);
-            if (resolveMissingFee && !!paymentIntent.latest_charge && !balanceTransaction && stripe) {
-                for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
-                    const prevTick = performance.now();
-                    try {
-                        const newLatestCharge = await stripe.charges.retrieve(((typeof(paymentIntent.latest_charge) === 'string') ? paymentIntent.latest_charge : paymentIntent.latest_charge.id), {
-                            expand : [
-                                'balance_transaction',
-                            ],
-                        });
-                        balanceTransaction = ((newLatestCharge.balance_transaction && (typeof(newLatestCharge.balance_transaction) === 'object')) ? newLatestCharge.balance_transaction : undefined);
-                        if (balanceTransaction) {
-                            break;
-                        } // if
-                    }
-                    catch {
-                        // ignore any error
-                    } // try
-                    const executionInterval = performance.now() - prevTick;
-                    
-                    
-                    
-                    if (remainingRetries > 0) {
-                        // wait for a brief moment for next retry:
-                        const absoluteDelay = (((1.4 ** retryCounter) - 1) * 1000); // absoluteDelay: 0, 0.4, 0.96, 1.74, 2.84, 4.38, 6.53, 9.54, 13.76 => sum 40.15 secs
-                        const relativeDelay = Math.max(absoluteDelay - executionInterval, 0);
-                        console.log(`wait for: ${absoluteDelay} => ${relativeDelay}`);
-                        await new Promise<void>((resolve) => {
-                            setTimeout(resolve, relativeDelay);
-                        });
-                    } // if
-                } // for
-            } // if
-            const currency           = balanceTransaction?.currency ?? latestCharge?.currency        ?? currencyFallback;
-            const amount             = balanceTransaction?.amount   ?? latestCharge?.amount_captured ?? amountFallback;
-            const fee                = balanceTransaction?.fee      ?? 0;
-            const paymentMethod      = (
-                (paymentMethodRaw && (typeof(paymentMethodRaw) === 'object'))
-                ? paymentMethodRaw
-                : (
-                    (!resolveMissingPaymentMethod || (typeof(paymentMethodRaw) !== 'string') || !stripe)
-                    ? undefined
-                    : await stripe.paymentMethods.retrieve(paymentMethodRaw)
-                )
-            );
             
             
             
-            const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                if (paymentMethod) {
-                    /* PAY WITH CARD */
-                    if ((paymentMethod.type === 'card') && paymentMethod.card) return {
-                        type       : 'CARD',
-                        brand      : paymentMethod.card.brand /* machine readable name */ ?? paymentMethod.card.display_brand /* human readable name */,
-                        identifier : paymentMethod.card.last4,
-                    };
-                    
-                    
-                    
-                    /* PAY WITH AMAZON_PAY */
-                    if ((paymentMethod.type === 'amazon_pay') && paymentMethod.amazon_pay) return {
-                        type       : 'EWALLET',
-                        brand      : 'amazonpay',
-                        identifier : null,
-                    };
-                    
-                    
-                    
-                    /* PAY WITH LINK */
-                    if ((paymentMethod.type === 'link') && paymentMethod.link) return {
-                        type       : 'EWALLET',
-                        brand      : 'link',
-                        identifier : paymentMethod.link.email,
-                    };
-                } // if
-                
-                
-                
-                /* PAY WITH OTHER */
-                return {
-                    type       : 'CUSTOM',
-                    brand      : null,
-                    identifier : null,
-                };
-            })();
+            const [paymentMethod, paymentDetail] = await extractPaymentMethodAndDetail(paymentIntent);
             return [
-                {
-                    ...paymentDetailPartial,
-                    
-                    amount : revertCurrencyFromStripeNominal(amount, currency),
-                    fee    : revertCurrencyFromStripeNominal(fee   , currency),
-                } satisfies PaymentDetail,
+                paymentDetail,
                 
                 
                 
-                (paymentMethod && paymentMethod.customer && paymentIntent.setup_future_usage)
+                (paymentMethod && paymentMethod.customer && paymentIntent.setup_future_usage) // the `setup_future_usage` prop is set
                 // needs to save the paymentMethod:
-                ? {
-                    type                            : (() => {
-                        switch (paymentMethod.type) {
-                            case 'card'   : return 'CARD';
-                            case 'paypal' : return 'PAYPAL';
-                            default       : throw Error('unexpected API response');
-                        } // switch
-                    })(),
-                    
-                    paymentMethodProvider           : 'STRIPE',
-                    paymentMethodProviderId         : paymentMethod.id,
-                    paymentMethodProviderCustomerId : (typeof(paymentMethod.customer) === 'string') ? paymentMethod.customer : paymentMethod.customer.id,
-                } satisfies PaymentMethodCapture
+                ? ((): PaymentMethodCapture => {
+                    const {
+                        type     : paymentMethodType,
+                        id       : paymentMethodProviderId,
+                        customer : paymentMethodCustomer,
+                    } = paymentMethod;
+                    const paymentMethodProviderCustomerId = (typeof(paymentMethodCustomer) === 'string') ? paymentMethodCustomer : paymentMethodCustomer.id;
+                    return {
+                        type : ((): PaymentMethodCapture['type'] => {
+                            switch (paymentMethodType) {
+                                case 'card'   : return 'CARD';
+                                case 'paypal' : return 'PAYPAL';
+                                default       : throw Error('unexpected API response');
+                            } // switch
+                        })(),
+                        
+                        paymentMethodProvider : 'STRIPE',
+                        paymentMethodProviderId,
+                        paymentMethodProviderCustomerId,
+                    } satisfies PaymentMethodCapture;
+                })()
                 // no need to save the paymentMethod:
                 : null,
             ] satisfies [PaymentDetail, PaymentMethodCapture|null];
@@ -241,7 +148,122 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
     } // switch
 }
 
-export const stripeGetPaymentFee = async (charge: Stripe.Charge): Promise<number|undefined> => {
+const extractPaymentDetailPartial   = (paymentMethod: Stripe.PaymentMethod|undefined): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+    if (paymentMethod) {
+        /* PAY WITH CARD */
+        if ((paymentMethod.type === 'card') && paymentMethod.card) return {
+            type       : 'CARD',
+            brand      : paymentMethod.card.brand /* machine readable name */ ?? paymentMethod.card.display_brand /* human readable name */,
+            identifier : paymentMethod.card.last4,
+        };
+        
+        
+        
+        /* PAY WITH AMAZON_PAY */
+        if ((paymentMethod.type === 'amazon_pay') && paymentMethod.amazon_pay) return {
+            type       : 'EWALLET',
+            brand      : 'amazonpay',
+            identifier : null,
+        };
+        
+        
+        
+        /* PAY WITH LINK */
+        if ((paymentMethod.type === 'link') && paymentMethod.link) return {
+            type       : 'EWALLET',
+            brand      : 'link',
+            identifier : paymentMethod.link.email,
+        };
+    } // if
+    
+    
+    
+    /* PAY WITH OTHER */
+    return {
+        type       : 'CUSTOM',
+        brand      : null,
+        identifier : null,
+    };
+}
+const extractPaymentMethodAndDetail = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<[Stripe.PaymentMethod|undefined, PaymentDetail]> => {
+    // options:
+    const {
+        resolveMissingFee           = false, // false by default because the operation may take quite long time
+        resolveMissingPaymentMethod = true,  // true  by default because the operation can be done quickly
+    } = options ?? {};
+    
+    
+    
+    const {
+        currency        : currencyFallback,
+        amount_received : amountFallback,
+        
+        payment_method  : paymentMethodRaw,
+    } = paymentIntent;
+    const latestCharge       = ((paymentIntent.latest_charge       && (typeof(paymentIntent.latest_charge     ) === 'object')) ? paymentIntent.latest_charge      : undefined);
+    let   balanceTransaction = ((latestCharge?.balance_transaction && (typeof(latestCharge.balance_transaction) === 'object')) ? latestCharge.balance_transaction : undefined);
+    if (resolveMissingFee && !!paymentIntent.latest_charge && !balanceTransaction && stripe) {
+        for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
+            const prevTick = performance.now();
+            try {
+                const newLatestCharge = await stripe.charges.retrieve(((typeof(paymentIntent.latest_charge) === 'string') ? paymentIntent.latest_charge : paymentIntent.latest_charge.id), {
+                    expand : [
+                        'balance_transaction',
+                    ],
+                });
+                balanceTransaction = ((newLatestCharge.balance_transaction && (typeof(newLatestCharge.balance_transaction) === 'object')) ? newLatestCharge.balance_transaction : undefined);
+                if (balanceTransaction) {
+                    break;
+                } // if
+            }
+            catch {
+                // ignore any error
+            } // try
+            const executionInterval = performance.now() - prevTick;
+            
+            
+            
+            if (remainingRetries > 0) {
+                // wait for a brief moment for next retry:
+                const absoluteDelay = (((1.4 ** retryCounter) - 1) * 1000); // absoluteDelay: 0, 0.4, 0.96, 1.74, 2.84, 4.38, 6.53, 9.54, 13.76 => sum 40.15 secs
+                const relativeDelay = Math.max(absoluteDelay - executionInterval, 0);
+                console.log(`wait for: ${absoluteDelay} => ${relativeDelay}`);
+                await new Promise<void>((resolve) => {
+                    setTimeout(resolve, relativeDelay);
+                });
+            } // if
+        } // for
+    } // if
+    const currency           = balanceTransaction?.currency ?? latestCharge?.currency        ?? currencyFallback;
+    const amount             = balanceTransaction?.amount   ?? latestCharge?.amount_captured ?? amountFallback;
+    const fee                = balanceTransaction?.fee      ?? 0;
+    const paymentMethod      = (
+        (paymentMethodRaw && (typeof(paymentMethodRaw) === 'object'))
+        ? paymentMethodRaw
+        : (
+            (!resolveMissingPaymentMethod || (typeof(paymentMethodRaw) !== 'string') || !stripe)
+            ? undefined
+            : await stripe.paymentMethods.retrieve(paymentMethodRaw)
+        )
+    );
+    
+    
+    
+    return [
+        paymentMethod,
+        
+        
+        
+        {
+            ...extractPaymentDetailPartial(paymentMethod),
+            
+            amount : revertCurrencyFromStripeNominal(amount, currency),
+            fee    : revertCurrencyFromStripeNominal(fee   , currency),
+        } satisfies PaymentDetail,
+    ] satisfies [Stripe.PaymentMethod|undefined, PaymentDetail];
+}
+
+export const stripeGetPaymentFee    = async (charge: Stripe.Charge): Promise<number|undefined> => {
     const balanceTransaction = (
         !charge.balance_transaction
         ? undefined
