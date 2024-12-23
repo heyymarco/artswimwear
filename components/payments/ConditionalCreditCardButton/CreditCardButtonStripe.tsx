@@ -146,7 +146,8 @@ const CreditCardButtonStripe   = (props: ImplementedCreditCardButtonGeneralProps
                         return AuthenticatedResult.AUTHORIZED;                   // if setupIntent => simulates as paid
                     }
                     else {
-                        return AuthenticatedResult.CAPTURED;                     // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                        placeOrderDetail.orderId = `#STRIPE_#CAPTURED_${paymentIntent.id}`;
+                        return AuthenticatedResult.AUTHORIZED;                   // if paymentIntent => simulates as paid
                     } // if
                 default                 : return AuthenticatedResult.FAILED;     // payment failed due to unexpected error
             } // switch
