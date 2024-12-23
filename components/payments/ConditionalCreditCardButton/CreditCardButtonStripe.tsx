@@ -116,7 +116,6 @@ const CreditCardButtonStripe   = (props: ImplementedCreditCardButtonGeneralProps
     });
     const handleAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult|PaymentDetail> => {
         if (!stripe)   return AuthenticatedResult.FAILED; // payment failed due to unexpected error
-        if (!elements) return AuthenticatedResult.FAILED; // payment failed due to unexpected error
         
         
         
