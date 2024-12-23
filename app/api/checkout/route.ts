@@ -1686,6 +1686,8 @@ router
             }, { status: 400 }); // handled with error
         } // if
         stripePaymentId = paymentId;
+        
+        if (paymentId.startsWith('#CAPTURED_')) paymentId = paymentId.slice(10); // remove prefix #CAPTURED_
     }
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
         paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
@@ -1743,6 +1745,7 @@ router
                     // no need an order cancelation for paypal
                 }
                 else if (stripePaymentId) {
+                    if (stripePaymentId.startsWith('#CAPTURED_')) stripePaymentId = stripePaymentId.slice(10); // remove prefix #CAPTURED_
                     await stripeCancelOrder(stripePaymentId);
                 }
                 else if (midtransPaymentId) {
