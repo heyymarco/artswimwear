@@ -49,7 +49,7 @@ import {
     PaymentMethodIdentifier,
 }                           from '@/components/payments/PaymentMethodIdentifier'
 import {
-    ConditionalStripeScriptProvider,
+    IfInStripeScriptProvider,
 }                           from '@/components/payments/ConditionalStripeScriptProvider'
 import {
     type ImperativeAuthenticate,
@@ -225,9 +225,9 @@ const PayWithSavedCardButton = (props: PayWithSavedCardButtonProps): JSX.Element
                 {children}
             </ButtonIcon>
             
-            <ConditionalStripeScriptProvider>
+            <IfInStripeScriptProvider>
                 <ImperativeStripeAuthenticateLazy authenticateRef={imperativeAuthenticateRef} />
-            </ConditionalStripeScriptProvider>
+            </IfInStripeScriptProvider>
         </>
     );
 };
