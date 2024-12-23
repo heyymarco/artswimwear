@@ -376,7 +376,8 @@ export const stripeCreateOrder = async (paymentMethodOrConfirmationOrSavedCard: 
             
             capture_method            : (
                 isUsingSavedCard
-                ? 'automatic' // capture immediately when using savedCard
+                // ? 'automatic' // capture immediately when using savedCard // in case the savedCard requires 3DS verification, the funds are captured immediately on the client_side after the user completes the verification, not very reliable
+                ? 'manual' // in case the savedCard requires 3DS verification, we want to ensure that the funds are captured on the server_side.
                 : (paymentMethodToken ? 'manual' : undefined) // the fund must be captured on server_side
             ),
             // confirmation_method       : isConfirmationToken  ? 'manual' : undefined, // the fund must be captured on server_side // DOESN'T WORK
