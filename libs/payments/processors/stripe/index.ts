@@ -531,6 +531,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<[PaymentDeta
         if (secretIndex < 0) return paymentId;
         return paymentId.slice(0, secretIndex); // remove _secret_**
     })();
+    
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
         paymentIntent = (
