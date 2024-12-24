@@ -13,11 +13,15 @@ import {
 import {
     type ImplementedCreditCardButtonGeneralProps,
 }                           from './CreditCardButtonGeneral'
-
-// react lazies:
-const CreditCardButtonPaypalLazy   = React.lazy(() => import('./CreditCardButtonPaypal'));
-const CreditCardButtonStripeLazy   = React.lazy(() => import('./CreditCardButtonStripe'));
-const CreditCardButtonMidtransLazy = React.lazy(() => import('./CreditCardButtonMidtrans'));
+import {
+    CreditCardButtonPaypalLazy,
+}                           from './CreditCardButtonPaypalLazy'
+import {
+    CreditCardButtonStripeLazy,
+}                           from './CreditCardButtonStripeLazy'
+import {
+    CreditCardButtonMidtransLazy,
+}                           from './CreditCardButtonMidtransLazy'
 
 
 

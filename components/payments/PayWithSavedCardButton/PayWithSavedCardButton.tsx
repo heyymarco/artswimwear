@@ -54,6 +54,9 @@ import {
 import {
     type ImperativeAuthenticate,
 }                           from './ImperativeStripeAuthenticate'
+import {
+    ImperativeStripeAuthenticateLazy,
+}                           from './ImperativeStripeAuthenticateLazy'
 
 // models:
 import {
@@ -63,9 +66,6 @@ import {
     
     type PaymentMethodDetail,
 }                           from '@/models'
-
-// react lazies:
-const ImperativeStripeAuthenticateLazy = React.lazy(() => import('./ImperativeStripeAuthenticate'));
 
 
 
