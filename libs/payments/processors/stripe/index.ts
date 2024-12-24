@@ -395,7 +395,15 @@ export const stripeCreateOrder = async (paymentMethodOrConfirmationOrSavedCard: 
             
             // save payment method during purchase:
             customer                  : customer?.id,
-            setup_future_usage        : (customer && !isUsingSavedCard) ? 'off_session' : undefined,
+            setup_future_usage        : (
+                (customer /* not a guest (customer is present) */ && !isUsingSavedCard /* not (already) using savedCard */)
+                
+                /* save the customer's card to database */
+                ? 'off_session'
+                
+                /* do not save the guest's card -or- customer's (already) savedCard */
+                : undefined
+            ),
             
             
             
