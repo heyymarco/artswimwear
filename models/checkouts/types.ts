@@ -173,7 +173,7 @@ export interface CreateOrderOptions
     /**
      * If provided => save the customer's card to database.  
      * If null => create a new customer and then save the customer's card to database.  
-     * If undefined => do not save the customer's card.
+     * If undefined => do not save the guest's card.
      */
     paymentMethodProviderCustomerId ?: string|null
 }

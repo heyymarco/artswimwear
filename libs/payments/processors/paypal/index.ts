@@ -435,14 +435,14 @@ export const paypalCreateOrder = async (savedCard : PaypalSavedCard|null, option
                             : undefined
                         ),
                         vault : (
-                            (existingPaymentMethodProviderCustomerId !== undefined)
+                            ((existingPaymentMethodProviderCustomerId !== undefined /* not a guest (customer is present) */) && !savedCard /* not (already) using savedCard */)
                             
                             /* save the customer's card to database */
                             ? {
                                 store_in_vault : 'ON_SUCCESS',
                             }
                             
-                            /* do not save the customer's card */
+                            /* do not save the guest's card -or- customer's (already) savedCard */
                             : undefined
                         ),
                     },
