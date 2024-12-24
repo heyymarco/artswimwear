@@ -531,21 +531,32 @@ export const stripeCaptureFund = async (paymentId: string): Promise<[PaymentDeta
         if (secretIndex < 0) return paymentId;
         return paymentId.slice(0, secretIndex); // remove _secret_**
     })();
-    const paymentIntent = (
-        paymentIntentId.startsWith('#CAPTURED_')
-        ? await stripe.paymentIntents.retrieve(paymentIntentId.slice(10) /* remove prefix #CAPTURED_ */, {
-            expand : [
-                'latest_charge.balance_transaction',
-                'payment_method',
-            ],
-        })
-        : await stripe.paymentIntents.capture(paymentIntentId, {
-            expand : [
-                'latest_charge.balance_transaction',
-                'payment_method',
-            ],
-        })
-    );
+    let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
+    try {
+        paymentIntent = (
+            paymentIntentId.startsWith('#CAPTURED_')
+            ? await stripe.paymentIntents.retrieve(paymentIntentId.slice(10) /* remove prefix #CAPTURED_ */, {
+                expand : [
+                    'latest_charge.balance_transaction',
+                    'payment_method',
+                ],
+            })
+            : await stripe.paymentIntents.capture(paymentIntentId, {
+                expand : [
+                    'latest_charge.balance_transaction',
+                    'payment_method',
+                ],
+            })
+        );
+    }
+    catch (error: any) {
+        /*
+            sample responses:
+            './sample-responses/sample-paymentIntent-declined.js'
+        */
+        
+        return null;
+    } // try
     const result = await stripeTranslateData(paymentIntent);
     switch (result) {
         // unexpected results:
