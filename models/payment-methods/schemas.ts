@@ -12,6 +12,7 @@ import {
     type PaymentMethodUpdateRequest,
     type PaymentMethodSetupRequest,
     type PaymentMethodSortRequest,
+    type PaymentMethodOfCurrencyRequest,
 }                           from './types'
 import {
     CurrencySchema,
@@ -86,3 +87,9 @@ export const PaymentMethodSetupRequestSchema = z.object({
 export const PaymentMethodSortRequestSchema = z.object({
     ids : z.array(ModelIdSchema).min(2),
 }) satisfies z.Schema<PaymentMethodSortRequest>;
+
+
+
+export const PaymentMethodOfCurrencyRequestSchema = z.object({
+    currency : CurrencySchema,
+}) satisfies z.Schema<PaymentMethodOfCurrencyRequest>;

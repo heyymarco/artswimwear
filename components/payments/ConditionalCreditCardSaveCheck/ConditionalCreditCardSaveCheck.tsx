@@ -18,6 +18,11 @@ import {
     Check,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // models:
 import {
     paymentMethodLimitMax,
@@ -26,7 +31,7 @@ import {
 // stores:
 import {
     // hooks:
-    useGetPaymentMethodPage,
+    useGetPaymentMethodOfCurreny,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -53,12 +58,15 @@ const ConditionalCreditCardSaveCheck = (props: ConditionalCreditCardSaveCheckPro
 const ImplementedConditionalCreditCardSaveCheck = (props: ConditionalCreditCardSaveCheckProps): JSX.Element|null => {
     // states:
     const {
-        data    : paymentMethodPagination,
-    } = useGetPaymentMethodPage({
-        page    : 0, // show the first page (zero_based index)
-        perPage : paymentMethodLimitMax, // show all items at one page
+        // accessibilities:
+        currency,
+    } = useCartState();
+    const {
+        data    : compatiblePaymentMethods,
+    } = useGetPaymentMethodOfCurreny({
+        currency,
     });
-    const isMaxLimitReached = ((paymentMethodPagination?.total ?? 0) >= paymentMethodLimitMax);
+    const isMaxLimitReached = ((compatiblePaymentMethods?.length ?? 0) >= paymentMethodLimitMax);
     
     
     

@@ -26,6 +26,7 @@ import {
     PaymentMethodUpdateRequestSchema,
     type PaymentMethodCapture,
     type AffectedPaymentMethods,
+    PaymentMethodOfCurrencyRequestSchema,
     
     
     
@@ -104,6 +105,101 @@ router
     
     // authorized => next:
     return await next();
+})
+.get(async (req) => {
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+            return {
+                arg : PaymentMethodOfCurrencyRequestSchema.parse(data),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        arg : {
+            currency,
+        },
+    } = requestData;
+    //#endregion parsing and validating request
+    
+    
+    
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) {
+        return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    } // if
+    //#endregion validating privileges
+    
+    
+    
+    //#region query result
+    try {
+        const [customerIds, compatiblePaymentMethodData] = await prisma.$transaction([
+            //#region find existing paymentMethodProviderCustomerId
+            prisma.customer.findUnique({
+                where  : {
+                    id : customerId, // important: the signedIn customerId
+                },
+                select : {
+                    paypalCustomerId   : true,
+                    stripeCustomerId   : true,
+                    midtransCustomerId : true,
+                },
+            }),
+            //#endregion find existing paymentMethodProviderCustomerId
+            
+            prisma.paymentMethod.findMany({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                    currency : currency,
+                },
+                select : paymentMethodDetailSelect,
+                orderBy : {
+                    sort: 'desc',
+                },
+            }),
+        ]);
+        if (!customerIds) return Response.json([] satisfies PaymentMethodDetail[]);
+        
+        
+        
+        //#region query api
+        //#region find existing paymentMethodProviderCustomerId
+        const {
+            paypalCustomerId,
+            stripeCustomerId,
+            // midtransCustomerId,
+        } = customerIds;
+        //#endregion find existing paymentMethodProviderCustomerId
+        
+        const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
+            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
+            ...((stripeCustomerId && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
+        ]);
+        //#endregion query api
+        
+        
+        
+        const compatiblePaymentMethods = compatiblePaymentMethodData.map((item) =>
+            convertPaymentMethodDetailDataToPaymentMethodDetail(item, compatiblePaymentMethodData.length, resolver) ?? convertPaymentMethodDetailDataToPaymentMethodDetail(item, compatiblePaymentMethodData.length, null)
+        ) satisfies PaymentMethodDetail[];
+        return Response.json(compatiblePaymentMethods); // handled with success
+    }
+    catch (error: any) {
+        console.log('ERROR: ', error);
+        return Response.json({ error: 'unexpected error' }, { status: 500 }); // handled with error
+    } // try
 })
 .post(async (req) => {
     //#region parsing and validating request
@@ -204,7 +300,9 @@ router
             total    : total,
             entities : (
                 paged
-                .map((item) => convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, resolver) ?? convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, null))
+                .map((item) =>
+                    convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, resolver) ?? convertPaymentMethodDetailDataToPaymentMethodDetail(item, total, null)
+                )
             ) satisfies PaymentMethodDetail[],
         };
         return Response.json(paginationPaymentMethodDetail); // handled with success

@@ -11,15 +11,15 @@ import {
     useSession,
 }                           from 'next-auth/react'
 
-// models:
+// cart components:
 import {
-    paymentMethodLimitMax,
-}                           from '@/models'
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
 
 // stores:
 import {
     // hooks:
-    useGetPaymentMethodPage,
+    useGetPaymentMethodOfCurreny,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -50,12 +50,15 @@ const ImplementedConditionalCreditCardSavedSection = (props: React.PropsWithChil
     
     // states:
     const {
-        data    : paymentMethodPagination,
-    } = useGetPaymentMethodPage({
-        page    : 0, // show the first page (zero_based index)
-        perPage : paymentMethodLimitMax, // show all items at one page
+        // accessibilities:
+        currency,
+    } = useCartState();
+    const {
+        data    : compatiblePaymentMethods,
+    } = useGetPaymentMethodOfCurreny({
+        currency,
     });
-    const paymentMethods = paymentMethodPagination?.entities;
+    const paymentMethods = compatiblePaymentMethods;
     
     
     

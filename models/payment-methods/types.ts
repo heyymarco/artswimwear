@@ -127,3 +127,9 @@ export interface AffectedPaymentMethods {
     deleted : string[]
     shifted : [string, number][]
 }
+
+
+
+export interface PaymentMethodOfCurrencyRequest {
+    currency : string // required
+}

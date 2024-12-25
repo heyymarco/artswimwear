@@ -36,6 +36,11 @@ import {
     Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// cart components:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
 // payment components:
 import {
     type PayWithSavedCardButtonProps,
@@ -48,13 +53,12 @@ import {
 // models:
 import {
     type PaymentMethodDetail,
-    paymentMethodLimitMax,
 }                           from '@/models'
 
 // stores:
 import {
     // hooks:
-    useGetPaymentMethodPage,
+    useGetPaymentMethodOfCurreny,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -133,12 +137,15 @@ const ConditionalCreditCardSavedButton            = <TElement extends Element = 
 const LoggedInConditionalCreditCardSavedButton    = <TElement extends Element = HTMLDivElement>(props: ConditionalCreditCardSavedButtonProps<TElement>): JSX.Element|null => {
     // states:
     const {
-        data    : paymentMethodPagination,
-    } = useGetPaymentMethodPage({
-        page    : 0, // show the first page (zero_based index)
-        perPage : paymentMethodLimitMax, // show all items at one page
+        // accessibilities:
+        currency,
+    } = useCartState();
+    const {
+        data    : compatiblePaymentMethods,
+    } = useGetPaymentMethodOfCurreny({
+        currency,
     });
-    const paymentMethods = paymentMethodPagination?.entities;
+    const paymentMethods = compatiblePaymentMethods;
     
     
     

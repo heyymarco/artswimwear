@@ -87,6 +87,7 @@ import {
     type PaymentMethodSetupRequest,
     type PaymentMethodSortRequest,
     type PaymentMethodSortDetail,
+    type PaymentMethodOfCurrencyRequest,
 }                           from '@/models'
 
 import {
@@ -165,7 +166,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable', 'PaymentMethod'],
+    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable', 'PaymentMethod', 'PaymentMethodList'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, GetProductPageRequest>({
             query: (arg) => ({
@@ -728,6 +729,16 @@ export const apiSlice = createApi({
         
         
         
+        getPaymentMethodOfCurreny   : builder.query<PaymentMethodDetail[], PaymentMethodOfCurrencyRequest>({
+            query : (arg) => ({
+                url    : `customer/payment-methods?currency=${encodeURIComponent(arg.currency)}`,
+                method : 'GET',
+            }),
+            providesTags: (data, error, arg) => [
+                { type: 'PaymentMethod', id: undefined /* any_page */ }, // very fragile cache, any operation of create|update|delete|sort of PaymentMethod will invalidate this cache
+                'PaymentMethodList'
+            ],
+        }),
         getPaymentMethodPage        : builder.query<Pagination<PaymentMethodDetail>, PaginationArgs>({
             query : (arg) => ({
                 url    : 'customer/payment-methods',
@@ -864,12 +875,22 @@ export const apiSlice = createApi({
                             currentQueryCacheData.entities = (
                                 currentQueryCacheData.entities
                                 .map((item, indexAsc, array) => ({
+                                    // the original data:
                                     ...item,
-                                    sort : optimisticSortIndices.get(item.id) ?? (array.length - indexAsc - 1) + indexStart, // descending index
+                                    
+                                    // a temporary sort index for the optimistic update:
+                                    sort : (
+                                        optimisticSortIndices.get(item.id) // the optimistic sort index (if found)
+                                        ??
+                                        (array.length - indexAsc - 1) + indexStart // descending index
+                                    ),
                                 }))
                                 .sort(({sort: sortA}, {sort: sortB}) => (sortB - sortA)) // sort descending
                                 .map(({sort, ...restPaymentMethodDetail}) => ({
+                                    // the original data:
                                     ...restPaymentMethodDetail,
+                                    
+                                    // update the priority based on the sort index:
                                     priority : totalRecords - sort - 1, // zero_based priority
                                 }))
                             );
@@ -905,6 +926,13 @@ export const apiSlice = createApi({
                         )
                     );
                 } // if
+                
+                
+                
+                // the paymentMethodList is indirectly affected by the sort, so we need to clear the cache:
+                api.dispatch(
+                    apiSlice.util.invalidateTags(['PaymentMethodList'])
+                );
             },
         }),
     }),
@@ -1100,6 +1128,7 @@ export const {
     
     
     
+    useGetPaymentMethodOfCurrenyQuery      : useGetPaymentMethodOfCurreny,
     useGetPaymentMethodPageQuery           : useGetPaymentMethodPage,
     useCreatePaymentMethodSetupMutation    : useCreatePaymentMethodSetup,
     useUpdatePaymentMethodMutation         : useUpdatePaymentMethod,
