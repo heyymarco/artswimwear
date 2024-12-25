@@ -28,7 +28,7 @@ import {
 // stores:
 import {
     // hooks:
-    usePrefetchCategoryPage,
+    useLazyGetCategoryPage,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -57,7 +57,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     
     
     // apis:
-    const prefetchCategoryPage = usePrefetchCategoryPage();
+    const [prefetchCategoryPage] = useLazyGetCategoryPage();
     
     
     

@@ -22,7 +22,7 @@ import {
 // stores:
 import {
     // hooks:
-    usePrefetchCategoryDetail,
+    useLazyGetCategoryDetail,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -51,7 +51,7 @@ const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element
     
     
     // apis:
-    const prefetchCategoryDetail = usePrefetchCategoryDetail();
+    const [prefetchCategoryDetail] = useLazyGetCategoryDetail();
     
     
     

@@ -1055,15 +1055,19 @@ const updateAffectedPaymentMethods = (api: MutationLifecycleApi<unknown, BaseQue
 
 
 export const {
+    useLazyGetProductPageQuery             : useLazyGetProductPage,
     useGetProductPageQuery                 : useGetProductPage,
     
     useGetProductPreviewQuery              : useGetProductPreview,
+    useLazyGetProductDetailQuery           : useLazyGetProductDetail,
     useGetProductDetailQuery               : useGetProductDetail,
     
     
     
+    useLazyGetCategoryPageQuery            : useLazyGetCategoryPage,
     useGetCategoryPageQuery                : useGetCategoryPage,
     
+    useLazyGetCategoryDetailQuery          : useLazyGetCategoryDetail,
     useGetCategoryDetailQuery              : useGetCategoryDetail,
     
     
@@ -1152,10 +1156,10 @@ export const {
     makePayment       : { initiate : makePayment       },
 } = apiSlice.endpoints;
 
-export const usePrefetchProductDetail  = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail' , options);
-export const usePrefetchCategoryDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryDetail', options);
-export const usePrefetchProductPage    = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductPage'   , options);
-export const usePrefetchCategoryPage   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryPage'  , options);
+// export const usePrefetchProductDetail  = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail' , options); // use `useLazyGetProductDetail`  instead
+// export const usePrefetchCategoryDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryDetail', options); // use `useLazyGetCategoryDetail` instead
+// export const usePrefetchProductPage    = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductPage'   , options); // use `useLazyGetProductPage`    instead
+// export const usePrefetchCategoryPage   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryPage'  , options); // use `useLazyGetCategoryPage`   instead
 
 
 
