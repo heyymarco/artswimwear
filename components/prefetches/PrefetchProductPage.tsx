@@ -65,7 +65,7 @@ const PrefetchProductPage = (props: PrefetchProductPageProps): JSX.Element|null 
         prefetchProductPage({
             ...paginationArgs,
             categoryPath : categoryPath ?? undefined,
-        });
+        }, /* preferCacheValue: */true);
     });
     
     

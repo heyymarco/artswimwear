@@ -57,7 +57,7 @@ const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|n
     
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
-        prefetchProductDetail(path);
+        prefetchProductDetail(path, /* preferCacheValue: */true);
     });
     
     

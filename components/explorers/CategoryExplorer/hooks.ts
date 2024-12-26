@@ -44,5 +44,9 @@ export const useGetHasCategories = (): [boolean|undefined, CategoryPreview|null|
         perPage : defaultRootCategoryPerPage,
     });
     if (!categoryPreviewPagination) return [undefined, undefined];
-    return [!!categoryPreviewPagination.total, categoryPreviewPagination.entities[0] ?? null];
+    return [
+        !!categoryPreviewPagination.total, // if non_zero => it have a/some categories
+        
+        categoryPreviewPagination.entities[0] ?? null // expose the first root_category, because it selected by default when the <CategoryExplorerDropdown> shown, so we need to prefetch the first_root_category and the prefetch subcategories of it
+    ];
 };

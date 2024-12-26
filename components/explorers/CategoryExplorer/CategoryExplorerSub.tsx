@@ -77,6 +77,11 @@ import {
 // react components:
 export interface CategoryExplorerSubProps {
     // configs:
+    /**
+     * The minimum depth the current category can go up to parent categories.
+     * Set to 0 to allow the user to go up to the root category.
+     * Set to 1 to allow the user to go up to the first nested category.
+     */
     minDepth ?: number
 }
 const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null => {
@@ -92,19 +97,25 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
         restoreIndex,
     } = useCategoryExplorerState();
     
-    const directParent : CategoryParentInfo|null = (
+    /*
+     * immediateParent:
+     * The immediate parent category of the current category.
+     * Hierarchy: root_parent_category > parent_level_1_category > parent_level_2_category > ... > immediate_parent_category > current_category
+     */
+    const immediateParent : CategoryParentInfo|null|undefined = (
         (parentCategories.length >= minDepth)
         
-        // the_parents_deep SATISFIES minDepth => select the DIRECT parent:
+        // If the number of parent categories meets or exceeds minDepth, select the immediate parent:
         ? (parentCategories.at(-1) ?? null)
         
-        // the_parents_deep DOESNT_SATISFY minDepth => nothing to select:
-        : null
+        // If the number of parent categories is less than minDepth, the parent categories are invalid, hence immediateParent is undefined:
+        : undefined
     );
     
     
     
     // jsx:
+    if (immediateParent === undefined) return null; // do not render invalid component
     return (
         <CategoryExplorerSubConditional
             // other props:
@@ -113,12 +124,12 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             
             // identifiers:
-            key={directParent?.category.id ?? null} // when switched to DIFFERENT `directParent`, the STATE should be CLEARED
+            key={immediateParent?.category.id ?? null} // when switched to DIFFERENT `immediateParent`, the STATE should be CLEARED
             
             
             
             // data:
-            parentCategory={directParent?.category ?? null}
+            parentCategory={immediateParent?.category ?? null}
             
             
             

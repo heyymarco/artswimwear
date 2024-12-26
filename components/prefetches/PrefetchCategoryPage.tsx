@@ -66,7 +66,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
         prefetchCategoryPage({
             ...paginationArgs,
             parent  : model?.id ?? null,
-        });
+        }, /* preferCacheValue: */true);
     });
     
     

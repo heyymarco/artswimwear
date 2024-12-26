@@ -37,7 +37,6 @@ import {
     type ProductDetail,
     type GetProductPageRequest,
     
-    type CategoryPreview,
     type CategoryDetail,
     type CategoryPageRequest,
     type CategoryPreviewPagination,

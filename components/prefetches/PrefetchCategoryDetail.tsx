@@ -57,7 +57,7 @@ const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element
     
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
-        prefetchCategoryDetail(categoryPath);
+        prefetchCategoryDetail(categoryPath, /* preferCacheValue: */true);
     });
     
     

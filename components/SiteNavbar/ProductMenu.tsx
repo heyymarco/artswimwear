@@ -89,7 +89,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         toggleList,
     } = useNavbarState();
     
-    const [hasCategories, firstSubcategory] = useGetHasCategories();
+    const [hasCategories, firstRootcategory] = useGetHasCategories();
     
     
     
@@ -111,8 +111,8 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         startIntercept,
     } = usePageInterceptState();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (!hasCategories) return; // not having categories => ignore => just displaying products page
-        event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
+        if (!hasCategories) return; // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        event.preventDefault();  // prevents the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
         
         
@@ -273,15 +273,15 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 prefetchKind={PrefetchKind.FULL}
             />}
             
-            {/* PREFETCH for displaying the FIRST sub category: */}
-            { !!firstSubcategory && <PrefetchCategoryPage
+            {/* PREFETCH for displaying the sub categories of the (default selected) FIRST root category: */}
+            { !!firstRootcategory && <PrefetchCategoryPage
                 // refs:
                 subjectRef={null} // always prefetch
                 
                 
                 
                 // data:
-                model={firstSubcategory}
+                model={firstRootcategory} // the parent category
                 
                 
                 
