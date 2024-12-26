@@ -410,15 +410,40 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const [productPreviewMap       , setProductPreviewMap       ] = useState<Map<string, ProductPreview|ProductWatchdogFail>>(() => new Map<string, ProductPreview|ProductWatchdogFail>());
     const [realProductPreviews     , setRealProductPreviews     ] = useState<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
     useIsomorphicLayoutEffect(() => {
-        setRealProductPreviews(
-            items.length
-            ? undefined                         /* = loading|uninitialized */
-            : new Map<string, ProductPreview>() /* ready with empty productList */
-        );
-        setProductPreviewMap(new Map<string, ProductPreview|ProductWatchdogFail>(
-            items
-            .map(({productId}) => [productId, ProductWatchdogFail.Loading])
-        ));
+        if (!items.length) {
+            setRealProductPreviews(new Map<string, ProductPreview>()); // ready with empty productList
+            setProductPreviewMap(new Map<string, ProductPreview|ProductWatchdogFail>()); // empty map of productList
+            return;
+        } // if
+        
+        
+        
+        setProductPreviewMap((currentProductPreviewMap) => {
+            const productIds = items.map(({productId}) => productId);
+            const newProductPreviewMap = new Map<string, ProductPreview|ProductWatchdogFail>( // preserve the current recognized productPreview(s)
+                Array.from(currentProductPreviewMap.entries())
+                .filter(([productId]) => productIds.includes(productId)) // filter the current recognized productPreview(s) by the incoming productIds
+            );
+            
+            
+            
+            let modified = (newProductPreviewMap.size !== currentProductPreviewMap.size); // the newProductPreviewMap is different compared to the currentProductPreviewMap
+            for (const productId of productIds) {
+                if (!newProductPreviewMap.has(productId)) {
+                    newProductPreviewMap.set(productId, ProductWatchdogFail.Loading); // new incoming productId => mark as loading, we want the `handleProductWatchdogUpdate` to re-mark the incoming productId with `ProductPreview|ProductWatchdogFail`
+                    modified = true; // the newProductPreviewMap is marked as different compared to the currentProductPreviewMap
+                } // if
+            } // for
+            if (modified) updateRealProductPreviews(newProductPreviewMap); // the newProductPreviewMap is marked as different compared to the currentProductPreviewMap => update the realProductPreviews
+            
+            
+            
+            return (
+                modified
+                ? newProductPreviewMap     // if newProductPreviewMap is different compared to the currentProductPreviewMap => return the newProductPreviewMap
+                : currentProductPreviewMap // if newProductPreviewMap is the same  compared to the currentProductPreviewMap => return the currentProductPreviewMap to avoid re-render
+            );
+        });
     }, [items]);
     const handleProductWatchdogUpdate = useEvent<EventHandler<ProductWatchdogEvent>>(({productId, data}) => {
         if (productPreviewMap.has(productId)) productPreviewMap.set(productId, data);
@@ -426,17 +451,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // update realProductPreviews:
-        const productPreviewArr    = Array.from(productPreviewMap.entries());
-        const validProductPreviews = new Map<string, ProductPreview>();
-        for (const [productId, data] of productPreviewArr) {
-            switch (data) {
-                case ProductWatchdogFail.Error       : setRealProductPreviews(null)      ; return; /* = error */
-                case ProductWatchdogFail.Loading     : setRealProductPreviews(undefined) ; return; /* = loading|uninitialized */
-                case ProductWatchdogFail.Unavailable : continue;
-                default                              : validProductPreviews.set(productId, data);
-            } // switch
-        } // for
-        setRealProductPreviews(validProductPreviews);
+        const validProductPreviews = updateRealProductPreviews(productPreviewMap);
+        if (!validProductPreviews) return; // has a/some productPreviews with /* = error */ or /* = loading|uninitialized */ => nothing to do further
         
         
         
@@ -462,11 +478,28 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             );
         } // if
     });
-    const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
-    const realIsProductError         = (realProductPreviews === /* = error */ null);
-    const productPreviews            = mockProductPreviews        ??        realProductPreviews;
-    const isProductLoading           = mockProductPreviews ?    false     : realIsProductLoading;
-    const isProductError             = mockProductPreviews ?    false     : realIsProductError;
+    const updateRealProductPreviews   = useEvent((currentProductPreviewMap: Map<string, ProductPreview|ProductWatchdogFail>): Map<string, ProductPreview>|false => {
+        const productPreviewArr    = Array.from(currentProductPreviewMap.entries());
+        const validProductPreviews = new Map<string, ProductPreview>();
+        for (const [productId, data] of productPreviewArr) {
+            switch (data) {
+                case ProductWatchdogFail.Error       : setRealProductPreviews(null)      ; return false; // has a/some productPreviews with /* = error */
+                case ProductWatchdogFail.Loading     : setRealProductPreviews(undefined) ; return false; // has a/some productPreviews with /* = loading|uninitialized */
+                case ProductWatchdogFail.Unavailable : continue;                                         // ignore a/some deleted productPreviews
+                default                              : validProductPreviews.set(productId, data);
+            } // switch
+        } // for
+        setRealProductPreviews(validProductPreviews); // all productPreviews are loaded (except the deleted ones)
+        
+        
+        
+        return validProductPreviews;
+    });
+    const realIsProductLoading        = (realProductPreviews === /* = loading|uninitialized */ undefined);
+    const realIsProductError          = (realProductPreviews === /* = error */ null);
+    const productPreviews             = mockProductPreviews        ??        realProductPreviews;
+    const isProductLoading            = mockProductPreviews ?    false     : realIsProductLoading;
+    const isProductError              = mockProductPreviews ?    false     : realIsProductError;
     
     
     
