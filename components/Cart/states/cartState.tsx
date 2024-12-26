@@ -418,11 +418,18 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         
+        refreshProductPreviewMap(); // refresh the productPreviewMap states
+    }, [items]);
+    const refreshProductPreviewMap    = useEvent((resetErrors: boolean = false) => {
         setProductPreviewMap((currentProductPreviewMap) => {
             const productIds = items.map(({productId}) => productId);
-            const newProductPreviewMap = new Map<string, ProductPreview|ProductWatchdogFail>( // preserve the current recognized productPreview(s)
-                Array.from(currentProductPreviewMap.entries())
-                .filter(([productId]) => productIds.includes(productId)) // filter the current recognized productPreview(s) by the incoming productIds
+            const newProductPreviewMap = new Map<string, ProductPreview|ProductWatchdogFail>(
+                Array.from(currentProductPreviewMap.entries()) // preserve the prev states so we can optimistic update the realProductPreviews without waiting all `handleProductWatchdogUpdate` responses
+                .filter(([productId, data]) =>
+                    productIds.includes(productId) // remove the productPreview(s) that are not in the cart
+                    &&
+                    (!resetErrors || (data !== ProductWatchdogFail.Error)) // remove the error(s) if `resetErrors` is true
+                )
             );
             
             
@@ -444,7 +451,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 : currentProductPreviewMap // if newProductPreviewMap is the same  compared to the currentProductPreviewMap => return the currentProductPreviewMap to avoid re-render
             );
         });
-    }, [items]);
+    });
     const handleProductWatchdogUpdate = useEvent<EventHandler<ProductWatchdogEvent>>(({productId, data}) => {
         if (productPreviewMap.has(productId)) productPreviewMap.set(productId, data);
         
@@ -942,7 +949,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     
     const refetchCart           = useEvent((): void => {
-        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewGeneration((current) => (current + 1)); // force to re-create the `productPreviewPromises`
+        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) {
+            refreshProductPreviewMap(/* resetErrors: */true); // remove the productPreviewMap error states
+            setProductPreviewGeneration((current) => (current + 1)); // trigger the <ProductWatchdog> to re-fetch the productPreviews
+        } // if
     });
     const resetCart             = useEvent((): void => {
         lastRestoredCartDetailRef.current = undefined;
@@ -1123,7 +1133,7 @@ const ProductWatchdog = (props: ProductWatchdogProps): null => {
     
     
     // apis:
-    const { data: product, error } = useGetProductPreview(productId, {
+    const { data: product, error, isFetching } = useGetProductPreview(productId, {
         // forceRefetch           : false,              // take from cache (if available)
         // subscribe              : true,               // must be true in order to get the response result
         // subscriptionOptions    : {
@@ -1137,16 +1147,17 @@ const ProductWatchdog = (props: ProductWatchdogProps): null => {
     
     // effects:
     useIsomorphicLayoutEffect(() => {
+        // actions:
         if (product) {
             onUpdate({ productId, data: product });
         }
-        else if (error) {
+        else if (error && !isFetching) {
             onUpdate({ productId, data: ProductWatchdogFail.Error });
         }
         else {
             onUpdate({ productId, data: ProductWatchdogFail.Loading });
         } // if
-    }, [product, error]);
+    }, [product, error, isFetching]);
     
     
     
