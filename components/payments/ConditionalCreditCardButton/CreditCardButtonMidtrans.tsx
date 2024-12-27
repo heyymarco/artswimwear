@@ -94,10 +94,10 @@ const CreditCardButtonMidtrans = (props: ImplementedCreditCardButtonGeneralProps
             
             try {
                 const cardData       = {
-                    card_number         : (paymentCardSectionElm.querySelector('input[name="cardNumber"]') as HTMLInputElement|null)?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
-                    card_exp_month      : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.toString()?.trim()?.split('/')?.[0] || undefined,
-                    card_exp_year       : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.toString()?.trim()?.split('/')?.[1] || undefined,
-                    card_cvv            : (paymentCardSectionElm.querySelector('input[name="cardCvv"]'   ) as HTMLInputElement|null)?.toString()?.trim(),
+                    card_number         : (paymentCardSectionElm.querySelector('input[name="cardNumber"]') as HTMLInputElement|null)?.value?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                    card_exp_month      : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.value?.toString()?.trim()?.split('/')?.[0] || undefined,
+                    card_exp_year       : (paymentCardSectionElm.querySelector('input[name="cardExpiry"]') as HTMLInputElement|null)?.value?.toString()?.trim()?.split('/')?.[1] || undefined,
+                    card_cvv            : (paymentCardSectionElm.querySelector('input[name="cardCvv"]'   ) as HTMLInputElement|null)?.value?.toString()?.trim(),
                     // bank_one_time_token : "12345678"
                 };
                 MidtransNew3ds.getCardToken(cardData, {
