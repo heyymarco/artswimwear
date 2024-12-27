@@ -23,6 +23,11 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 
+// others:
+import {
+    customAlphabet,
+}                           from 'nanoid/async'
+
 // configs:
 import {
     checkoutConfigServer,
@@ -39,11 +44,134 @@ const midtransUrl = midtransBaseUrl.development; // TODO: auto switch developmen
 
 
 
+const extractPaymentDetailPartial = (midtransPaymentData: any): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+    switch (midtransPaymentData.payment_type) {
+        /* PAY WITH CARD */
+        case 'credit_card': return {
+            type       : 'CARD',
+            brand      : midtransPaymentData.bank ?? null,
+            identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+        };
+        
+        
+        
+        /* PAY WITH EWALLET */
+        case 'gopay'    :
+        case 'shopeepay':
+        case 'qris'     : return {
+            type       : 'EWALLET',
+            brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type ?? null,
+            // identifier : midtransPaymentData.merchant_id ?? null,
+            identifier : null,
+        };
+        
+        
+        
+        /* PAY WITH CSTORE */
+        case 'cstore': return {
+            type       : 'MANUAL_PAID',
+            brand      : midtransPaymentData.store,
+            identifier : midtransPaymentData.payment_code,
+        };
+        
+        
+        
+        /* PAY WITH OTHER */
+        default : return {
+            type       : 'CUSTOM',
+            brand      : null,
+            identifier : null,
+        };
+    } // switch
+}
+const extractPaymentDetail        = (midtransPaymentData: any): PaymentDetail => {
+    const paymentDetailPartial = extractPaymentDetailPartial(midtransPaymentData);
+    
+    let amountRaw = midtransPaymentData.gross_amount;
+    const amount  = decimalify(
+        (typeof(amountRaw) === 'number')
+        ? amountRaw
+        : Number.parseFloat(amountRaw)
+    );
+    const fee     = ((): number => {
+        let mdrFee = 0;
+        switch (paymentDetailPartial.type) {
+            case 'CARD':
+                mdrFee = (amount * (2.9 / 100)) + 2000; // 2.9% + Rp2000
+                break;
+            
+            case 'EWALLET':
+                switch (paymentDetailPartial.brand?.toLowerCase()) {
+                    case 'gopay':
+                        mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                        break;
+                    
+                    case 'shopeepay':
+                        mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                        break;
+                    
+                    case 'qris':
+                        mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
+                        break;
+                    
+                    default:
+                        mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                        break;
+                } // switch
+                break;
+            
+            case 'MANUAL_PAID':
+                switch (paymentDetailPartial.brand?.toLowerCase()) {
+                    case 'indomaret':
+                        mdrFee = 5000; // Rp5000
+                        break;
+                    
+                    case 'alfamart':
+                        mdrFee = 5000; // Rp5000
+                        break;
+                    
+                    default:
+                        mdrFee = 5000; // Rp5000
+                        break;
+                } // switch
+                break;
+        } // switch
+        
+        
+        
+        const vat = (mdrFee * (11 / 100)); // VAT is 11%
+        
+        
+        
+        const totalFeeRaw  = (mdrFee + vat);
+        const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
+        const rounding     = {
+            ROUND : Math.round,
+            CEIL  : Math.ceil,
+            FLOOR : Math.floor,
+        }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
+        const fractions       = rounding(totalFeeRaw / fractionUnit);
+        const totalFeeStepped = fractions * fractionUnit;
+        return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
+    })();
+    
+    
+    
+    return {
+        ...paymentDetailPartial,
+        
+        amount,
+        fee,
+    } satisfies PaymentDetail;
+}
+
+
+
 /**
  * undefined                                  : Transaction not found.  
  * null                                       : Transaction creation was denied.  
  * AuthorizedFundData                         : Authorized for payment.  
- * [PaymentDetail, PaymentMethodCapture|null] : Paid.  
+ * [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).  
  * false                                      : Transaction was deleted due to canceled.  
  * empty_string                               : Transaction was deleted due to expired.  
  */
@@ -234,127 +362,35 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                 
                 case 'capture'   :
                 case 'settlement': {
-                    let amountRaw = midtransPaymentData.gross_amount;
-                    const amount  = decimalify(
-                        (typeof(amountRaw) === 'number')
-                        ? amountRaw
-                        : Number.parseFloat(amountRaw)
-                    );
-                    
-                    
-                    
-                    const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                        switch (midtransPaymentData.payment_type) {
-                            /* PAY WITH CARD */
-                            case 'credit_card': return {
-                                type       : 'CARD',
-                                brand      : midtransPaymentData.bank ?? null,
-                                identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                            };
-                            
-                            
-                            
-                            /* PAY WITH EWALLET */
-                            case 'gopay'    :
-                            case 'shopeepay':
-                            case 'qris'     : return {
-                                type       : 'EWALLET',
-                                brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type ?? null,
-                                // identifier : midtransPaymentData.merchant_id ?? null,
-                                identifier : null,
-                            };
-                            
-                            
-                            
-                            /* PAY WITH CSTORE */
-                            case 'cstore': return {
-                                type       : 'MANUAL_PAID',
-                                brand      : midtransPaymentData.store,
-                                identifier : midtransPaymentData.payment_code,
-                            };
-                            
-                            
-                            
-                            /* PAY WITH OTHER */
-                            default : return {
-                                type       : 'CUSTOM',
-                                brand      : null,
-                                identifier : null,
-                            };
-                        } // switch
-                    })();
+                    const paymentDetail = extractPaymentDetail(midtransPaymentData);
                     return [
-                        {
-                            ...paymentDetailPartial,
-                            
-                            amount : amount,
-                            fee    : ((): number => {
-                                let mdrFee = 0;
-                                switch (paymentDetailPartial.type) {
-                                    case 'CARD':
-                                        mdrFee = (amount * (2.9 / 100)) + 2000; // 2.9% + Rp2000
-                                        break;
-                                    
-                                    case 'EWALLET':
-                                        switch (paymentDetailPartial.brand?.toLowerCase()) {
-                                            case 'gopay':
-                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                                break;
-                                            
-                                            case 'shopeepay':
-                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                                break;
-                                            
-                                            case 'qris':
-                                                mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
-                                                break;
-                                            
-                                            default:
-                                                mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
-                                                break;
-                                        } // switch
-                                        break;
-                                    
-                                    case 'MANUAL_PAID':
-                                        switch (paymentDetailPartial.brand?.toLowerCase()) {
-                                            case 'indomaret':
-                                                mdrFee = 5000; // Rp5000
-                                                break;
-                                            
-                                            case 'alfamart':
-                                                mdrFee = 5000; // Rp5000
-                                                break;
-                                            
-                                            default:
-                                                mdrFee = 5000; // Rp5000
-                                                break;
-                                        } // switch
-                                        break;
-                                } // switch
-                                
-                                
-                                
-                                const vat = (mdrFee * (11 / 100)); // VAT is 11%
-                                
-                                
-                                
-                                const totalFeeRaw  = (mdrFee + vat);
-                                const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
-                                const rounding     = {
-                                    ROUND : Math.round,
-                                    CEIL  : Math.ceil,
-                                    FLOOR : Math.floor,
-                                }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
-                                const fractions       = rounding(totalFeeRaw / fractionUnit);
-                                const totalFeeStepped = fractions * fractionUnit;
-                                return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                            })(),
-                        } satisfies PaymentDetail,
+                        paymentDetail,
                         
                         
                         
+                        midtransPaymentData.saved_token_id // the `saved_token_id` prop is exist
+                        // needs to save the paymentMethod:
+                        ? ((): PaymentMethodCapture => {
+                            const {
+                                payment_type   : paymentMethodType,
+                                saved_token_id : paymentMethodProviderId,
+                                user_id        : paymentMethodProviderCustomerId,
+                            } = midtransPaymentData;
+                            return {
+                                type : ((): PaymentMethodCapture['type'] => {
+                                    switch (paymentMethodType) {
+                                        case 'credit_card' : return 'CARD';
+                                        default            : throw Error('unexpected API response');
+                                    } // switch
+                                })(),
+                                
+                                paymentMethodProvider : 'MIDTRANS',
+                                paymentMethodProviderId,
+                                paymentMethodProviderCustomerId,
+                            } satisfies PaymentMethodCapture;
+                        })()
                         // no need to save the paymentMethod:
-                        null,
+                        : null,
                     ];
                 }
                 
@@ -406,10 +442,13 @@ type MidtransPaymentOption =
     |'cstore'
 type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
-        payment_type          : TPayment;
+        payment_type           : TPayment;
     }
     &{
-        [payment in TPayment] : object;
+        [payment in TPayment]  : object;
+    }
+    &{
+        user_id               ?: string;
     }
 export const midtransCreateOrderGeneric       = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
     const {
@@ -426,7 +465,7 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
         hasBillingAddress,
         billingAddress,
         
-        paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
+        // paymentMethodProviderCustomerId : existingPaymentMethodProviderCustomerId,
     } = options;
     
     
@@ -512,22 +551,52 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
                 expected result:
                 * null                                       : Transaction creation was denied.
                 * AuthorizedFundData                         : Authorized for payment.
-                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).
             */
             return result;
     } // switch
 }
-export const midtransCreateOrderWithCard      = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
+
+export interface MidtransSavedCard
+    extends
+        Pick<PaymentMethodCapture,
+            |'paymentMethodProviderId'
+        >
+{
+}
+export const midtransCreateOrderWithCard      = async (cardTokenOrSavedCard: string|MidtransSavedCard, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
+    const cardToken = (
+        (typeof(cardTokenOrSavedCard) === 'string')
+        ? cardTokenOrSavedCard                         // card token
+        : cardTokenOrSavedCard.paymentMethodProviderId // saved card token
+    );
+    const isUsingSavedCard = !!cardTokenOrSavedCard && (typeof(cardTokenOrSavedCard) === 'object');
+    
+    const existingPaymentMethodProviderCustomerId = options.paymentMethodProviderCustomerId;
+    const customerId = (existingPaymentMethodProviderCustomerId !== undefined) ? (
+        existingPaymentMethodProviderCustomerId                            // use the existing customerId
+        ??
+        await customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 10)() // generate a new customerId
+    ) : undefined;
+    
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
             token_id         : cardToken,
             authentication   : true, // Flag to enable the 3D secure authentication. Default value is false.
+            // secure           : true, // Enable 3D Secure authentication // causing error: 503 : 'Sorry. The bank/payment partner is experiencing some connection issues. Please retry later.'
             callback_type    : 'js_event',
             
             // features:
             type             : 'authorize',
+            
+            // save payment method during purchase:
+            save_card        : ((existingPaymentMethodProviderCustomerId !== undefined /* not a guest (customer is present) */) && !isUsingSavedCard /* not (already) using savedCard */),
+            save_token_id    : ((existingPaymentMethodProviderCustomerId !== undefined /* not a guest (customer is present) */) && !isUsingSavedCard /* not (already) using savedCard */),
         },
+        
+        // save payment method during purchase:
+        user_id              : customerId,
     }, orderId, options);
 }
 export const midtransCreateOrderWithQris      = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|[PaymentDetail, PaymentMethodCapture|null]|null> => {
@@ -746,7 +815,7 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<[
             /*
                 expected result:
                 * null                                       : Transaction creation was denied.
-                * [PaymentDetail, PaymentMethodCapture|null] : Paid.
+                * [PaymentDetail, PaymentMethodCapture|null] : Paid (with optionally an authorization for saving the card for future use).
             */
             return result;
     } // switch

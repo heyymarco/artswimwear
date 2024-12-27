@@ -1110,7 +1110,7 @@ router
                             
                             savedPaymentMethodName = savedPaymentMethod.provider;
                             switch (savedPaymentMethod.provider) {
-                                case 'PAYPAL' : return paypalCreateOrder({ type: savedPaymentMethod.type, paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, {
+                                case 'PAYPAL'   : return paypalCreateOrder({ type: savedPaymentMethod.type, paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, {
                                     currency,
                                     totalCostConverted,
                                     totalProductPriceConverted,
@@ -1126,7 +1126,7 @@ router
                                     
                                     paymentMethodProviderCustomerId : savedPaymentMethod.parent.paypalCustomerId,
                                 });
-                                case 'STRIPE' : return stripeCreateOrder({ paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, orderId, {
+                                case 'STRIPE'   : return stripeCreateOrder({ paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, orderId, {
                                     currency,
                                     totalCostConverted,
                                     totalProductPriceConverted,
@@ -1141,6 +1141,22 @@ router
                                     detailedItems,
                                     
                                     paymentMethodProviderCustomerId : savedPaymentMethod.parent.stripeCustomerId,
+                                });
+                                case 'MIDTRANS' : return midtransCreateOrderWithCard({ paymentMethodProviderId: savedPaymentMethod.providerPaymentMethodId }, orderId, {
+                                    currency,
+                                    totalCostConverted,
+                                    totalProductPriceConverted,
+                                    totalShippingCostConverted,
+                                    
+                                    hasShippingAddress,
+                                    shippingAddress,
+                                    
+                                    hasBillingAddress,
+                                    billingAddress,
+                                    
+                                    detailedItems,
+                                    
+                                    paymentMethodProviderCustomerId : savedPaymentMethod.parent.midtransCustomerId,
                                 });
                                 
                                 
