@@ -28,13 +28,6 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
                 fractionMax         : 2,
                 fractionUnit        : 0.01,
             },
-            EUR: {
-                locale              : 'en-US',
-                sign                : '€',
-                fractionMin         : 2,
-                fractionMax         : 2,
-                fractionUnit        : 0.01,
-            },
         },
         /**
          * @deprecated Use `checkoutConfigXXX.payment.defaultCurrency` instead.
@@ -46,7 +39,6 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
         currencyOptions             : [
             'USD',
             'IDR',
-            'EUR',
         ],
         defaultCurrency             : 'IDR',
         processors                  : {
@@ -60,20 +52,28 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
                 enabled             : true,
                 supportedCurrencies : [
                     'USD',
-                    'EUR'
                 ],
+                savePaymentMethods  : {
+                    card            : true,
+                },
             },
             stripe                  : {
                 enabled             : true,
                 supportedCurrencies : [
                     'USD',
                 ],
+                savePaymentMethods  : {
+                    card            : true,
+                },
             },
             midtrans                : {
                 enabled             : true,
                 supportedCurrencies : [
                     'IDR',
                 ],
+                savePaymentMethods  : {
+                    card            : false,
+                },
             },
         },
         preferredProcessors         : [

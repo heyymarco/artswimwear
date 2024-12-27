@@ -27,6 +27,9 @@ export interface IntlConfig {
     defaultTimezone             : number
     
     currencies                  : CurrenciesConfig
+    /**
+     * @deprecated Use `checkoutConfigXXX.payment.defaultCurrency` instead.
+     */
     defaultCurrency             : CurrencyCode
     currencyConversionRounding  : CurrencyConversionRounding
 }
@@ -52,8 +55,12 @@ export interface PaymentConfigShared {
     preferredProcessors         : (keyof PaymentConfigShared['processors'])[]
 }
 export interface PaymentProcessorConfig {
-    enabled             : boolean
-    supportedCurrencies : CurrencyCode[]
+    enabled              : boolean
+    supportedCurrencies  : CurrencyCode[]
+    savePaymentMethods  ?: {
+        card            ?: boolean
+        paypal          ?: boolean
+    }
 }
 export interface ShippingConfig {
     trackingUrl                 : string
