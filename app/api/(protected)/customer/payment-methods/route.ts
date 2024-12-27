@@ -56,6 +56,13 @@ import {
     stripeListPaymentMethods,
 }                           from '@/libs/payments/processors/stripe'
 import {
+    // configs:
+    paypalPaymentMethodEnabledOfAnyMethod,
+    stripePaymentMethodEnabledOfAnyMethod,
+    
+    
+    
+    // utilities:
     limitMaxPaymentMethodList,
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
@@ -184,8 +191,8 @@ router
         //#endregion find existing paymentMethodProviderCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
-            ...((stripeCustomerId && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
+            ...((paypalCustomerId && paypalPaymentMethodEnabledOfAnyMethod) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
+            ...((stripeCustomerId && stripePaymentMethodEnabledOfAnyMethod) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
         ]);
         //#endregion query api
         
@@ -289,8 +296,8 @@ router
         //#endregion find existing paymentMethodProviderCustomerId
         
         const resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-            ...((paypalCustomerId && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
-            ...((stripeCustomerId && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
+            ...((paypalCustomerId && paypalPaymentMethodEnabledOfAnyMethod) ? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList) : []),
+            ...((stripeCustomerId && stripePaymentMethodEnabledOfAnyMethod) ? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList) : []),
         ]);
         //#endregion query api
         
@@ -387,8 +394,8 @@ router
         //#region process the vault token
         const paymentMethodCapture = await (async (): Promise<PaymentMethodCapture|null> => {
             switch (paymentMethodProvider) {
-                case 'PAYPAL': return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCapturePaymentMethod(providerVaultToken) : null;
-                case 'STRIPE': return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCapturePaymentMethod(providerVaultToken) : null;
+                case 'PAYPAL': return paypalPaymentMethodEnabledOfAnyMethod ? paypalCapturePaymentMethod(providerVaultToken) : null;
+                case 'STRIPE': return stripePaymentMethodEnabledOfAnyMethod ? stripeCapturePaymentMethod(providerVaultToken) : null;
                 default      : return null;
             } // switch
         })();

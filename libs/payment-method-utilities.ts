@@ -34,11 +34,50 @@ import {
 import {
     checkoutConfigServer,
 }                           from '@/checkout.config.server'
+import exp from 'constants'
 
 
 
 // configs:
 export const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
+
+export const paypalPaymentMethodEnabledOfAnyMethod    = (
+    checkoutConfigServer.payment.processors.paypal.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.paypal.savePaymentMethods
+    &&
+    Object.values(checkoutConfigServer.payment.processors.paypal.savePaymentMethods).some((value) => value)
+);
+export const stripePaymentMethodEnabledOfAnyMethod    = (
+    checkoutConfigServer.payment.processors.stripe.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.stripe.savePaymentMethods
+    &&
+    Object.values(checkoutConfigServer.payment.processors.stripe.savePaymentMethods).some((value) => value)
+);
+export const midtransPaymentMethodEnabledOfAnyMethod  = (
+    checkoutConfigServer.payment.processors.midtrans.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.midtrans.savePaymentMethods
+    &&
+    Object.values(checkoutConfigServer.payment.processors.midtrans.savePaymentMethods).some((value) => value)
+);
+
+export const paypalPaymentMethodEnabledOfCardMethod   = (
+    checkoutConfigServer.payment.processors.paypal.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.paypal.savePaymentMethods?.card
+);
+export const stripePaymentMethodEnabledOfCardMethod   = (
+    checkoutConfigServer.payment.processors.stripe.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.stripe.savePaymentMethods?.card
+);
+export const midtransPaymentMethodEnabledOfCardMethod = (
+    checkoutConfigServer.payment.processors.midtrans.enabled
+    &&
+    !!checkoutConfigServer.payment.processors.midtrans.savePaymentMethods?.card
+);
 
 
 
@@ -171,8 +210,8 @@ export const createOrUpdatePaymentMethod = async (prismaTransaction: Parameters<
         let resolver : Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>|undefined = undefined;
         for (let attempts = 15; attempts > 0; attempts--) {
             resolver = new Map<string, Pick<PaymentMethodDetail, 'type'|'brand'|'identifier'|'expiresAt'|'billingAddress'>>([
-                ...(((paymentMethodProvider === 'PAYPAL') && checkoutConfigServer.payment.processors.paypal.enabled) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
-                ...(((paymentMethodProvider === 'STRIPE') && checkoutConfigServer.payment.processors.stripe.enabled) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+                ...(((paymentMethodProvider === 'PAYPAL') && paypalPaymentMethodEnabledOfAnyMethod) ? await paypalListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
+                ...(((paymentMethodProvider === 'STRIPE') && stripePaymentMethodEnabledOfAnyMethod) ? await stripeListPaymentMethods(paymentMethodProviderCustomerId, limitMaxPaymentMethodList) : []),
             ]);
             const paymentMethod : PaymentMethodDetail|null = convertPaymentMethodDetailDataToPaymentMethodDetail(paymentMethodData, paymentMethodCount, resolver);
             if (paymentMethod) {
@@ -228,8 +267,8 @@ export const deletePaymentMethodAccount  = async (paymentMethodCapture: Pick<Pay
     
     try {
         switch (paymentMethodProvider) {
-            case 'PAYPAL': checkoutConfigServer.payment.processors.paypal.enabled && await paypalDeletePaymentMethod(paymentMethodProviderId);
-            case 'STRIPE': checkoutConfigServer.payment.processors.stripe.enabled && await stripeDeletePaymentMethod(paymentMethodProviderId);
+            case 'PAYPAL': paypalPaymentMethodEnabledOfAnyMethod && await paypalDeletePaymentMethod(paymentMethodProviderId);
+            case 'STRIPE': stripePaymentMethodEnabledOfAnyMethod && await stripeDeletePaymentMethod(paymentMethodProviderId);
         } // switch
         return true; // succeeded
     }
@@ -275,7 +314,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
         const mergedExcessExternalPaymentMethodsIdsDeletedPromises : Promise<void>[] = [];
         await Promise.allSettled([
             // delete api for paypal:
-            checkoutConfigServer.payment.processors.paypal.enabled && paypalCustomerId && (async (): Promise<void> => {
+            paypalPaymentMethodEnabledOfAnyMethod && paypalCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'PAYPAL')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
                 const allExternalPaymentMethods       = Array.from((resolver ?? await paypalListPaymentMethods(paypalCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('PAYPAL/') ? item.slice(7) : item); // remove prefix `PAYPAL/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);
@@ -296,7 +335,7 @@ export const deleteNonRelatedAccounts    = async (prismaTransaction: Parameters<
             
             
             // delete api for stripe:
-            checkoutConfigServer.payment.processors.stripe.enabled && stripeCustomerId && (async (): Promise<void> => {
+            stripePaymentMethodEnabledOfAnyMethod && stripeCustomerId && (async (): Promise<void> => {
                 const allInternalPaymentMethods       = paymentMethodProviderCustomerIds.paymentMethods.filter(({provider}) => (provider === 'STRIPE')).map(({id, providerPaymentMethodId}) => ({id, providerPaymentMethodId}));
                 const allExternalPaymentMethods       = Array.from((resolver ?? await stripeListPaymentMethods(stripeCustomerId, limitMaxPaymentMethodList)).keys()).map((item) => item.startsWith('STRIPE/') ? item.slice(7) : item); // remove prefix `STRIPE/`
                 const excessInternalPaymentMethodIds  = allInternalPaymentMethods.filter(({providerPaymentMethodId: item}) => !allExternalPaymentMethods.includes(item)).map(({id}) => id);

@@ -41,6 +41,13 @@ import {
     stripeCreatePaymentMethodSetup,
 }                           from '@/libs/payments/processors/stripe'
 import {
+    // configs:
+    paypalPaymentMethodEnabledOfAnyMethod,
+    stripePaymentMethodEnabledOfAnyMethod,
+    
+    
+    
+    // utilities:
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
 }                           from '@/libs/payment-method-utilities'
@@ -154,8 +161,8 @@ router
     
     const paymentMethodSetupOrCapture = await (async (): Promise<PaymentMethodSetup|PaymentMethodCapture|null> => {
         switch (paymentMethodProvider) {
-            case 'PAYPAL' : return checkoutConfigServer.payment.processors.paypal.enabled ? paypalCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.paypalCustomerId, billingAddress }) : null;
-            case 'STRIPE' : return checkoutConfigServer.payment.processors.stripe.enabled ? stripeCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.stripeCustomerId, billingAddress, cardToken }) : null;
+            case 'PAYPAL' : return paypalPaymentMethodEnabledOfAnyMethod ? paypalCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.paypalCustomerId, billingAddress }) : null;
+            case 'STRIPE' : return stripePaymentMethodEnabledOfAnyMethod ? stripeCreatePaymentMethodSetup({ paymentMethodProviderCustomerId: paymentMethodProviderCustomerIds.stripeCustomerId, billingAddress, cardToken }) : null;
             default       : return null;
         } // switch
     })();

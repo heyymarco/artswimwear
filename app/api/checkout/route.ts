@@ -170,6 +170,10 @@ export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const maxDuration = 60; // this function can run for a maximum of 60 seconds for many & complex transactions
 
+const paypalPaymentEnabled   = checkoutConfigServer.payment.processors.paypal.enabled;
+const stripePaymentEnabled   = checkoutConfigServer.payment.processors.stripe.enabled;
+const midtransPaymentEnabled = checkoutConfigServer.payment.processors.midtrans.enabled;
+
 
 
 // routers:
@@ -247,17 +251,17 @@ router
     const useMidtransGateway = !simulateOrder && ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     const useSavedCard       = !simulateOrder && (paymentSource === 'savedCard');
     
-    if      (usePaypalGateway   && (!checkoutConfigServer.payment.processors.paypal.enabled   || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
+    if      (usePaypalGateway   && (!paypalPaymentEnabled   || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    else if (useStripeGateway   && (!checkoutConfigServer.payment.processors.stripe.enabled   || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
+    else if (useStripeGateway   && (!stripePaymentEnabled   || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    else if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
+    else if (useMidtransGateway && (!midtransPaymentEnabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -1085,9 +1089,9 @@ router
                                     id       : cardToken,
                                     parentId : customerId, // important: the signedIn customerId
                                     provider : { in: [
-                                        ...(checkoutConfigServer.payment.processors.paypal.enabled   ? (['PAYPAL'  ] satisfies PaymentMethodProvider[]) : []),
-                                        ...(checkoutConfigServer.payment.processors.stripe.enabled   ? (['STRIPE'  ] satisfies PaymentMethodProvider[]) : []),
-                                        ...(checkoutConfigServer.payment.processors.midtrans.enabled ? (['MIDTRANS'] satisfies PaymentMethodProvider[]) : []),
+                                        ...(paypalPaymentEnabled   ? (['PAYPAL'  ] satisfies PaymentMethodProvider[]) : []),
+                                        ...(stripePaymentEnabled   ? (['STRIPE'  ] satisfies PaymentMethodProvider[]) : []),
+                                        ...(midtransPaymentEnabled ? (['MIDTRANS'] satisfies PaymentMethodProvider[]) : []),
                                     ]},
                                 },
                                 select : {
