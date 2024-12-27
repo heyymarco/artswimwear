@@ -56,13 +56,6 @@ import {
     stripeListPaymentMethods,
 }                           from '@/libs/payments/processors/stripe'
 import {
-    // configs:
-    paypalPaymentMethodEnabledOfAnyMethod,
-    stripePaymentMethodEnabledOfAnyMethod,
-    
-    
-    
-    // utilities:
     limitMaxPaymentMethodList,
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
@@ -72,8 +65,9 @@ import {
 
 // configs:
 import {
-    checkoutConfigServer,
-}                           from '@/checkout.config.server'
+    paypalPaymentMethodEnabledOfAnyMethod,
+    stripePaymentMethodEnabledOfAnyMethod,
+}                           from '@/libs/payment-method-enabled'
 
 
 

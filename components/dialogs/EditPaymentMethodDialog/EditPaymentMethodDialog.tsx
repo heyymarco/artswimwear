@@ -23,6 +23,7 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useIsomorphicLayoutEffect,
     useSetTimeout,
     
     
@@ -35,6 +36,11 @@ import {
 import {
     // base-components:
     Generic,
+    
+    
+    
+    // notification-components:
+    Alert,
     
     
     
@@ -104,16 +110,17 @@ import {
 // internal components:
 import {
     // types:
-    UpdateHandler,
+    type UpdateHandler,
     
-    DeleteHandler,
+    type DeleteHandler,
     
-    ConfirmDeleteHandler,
+    type ConfirmDeleteHandler,
     
     
     
     // react components:
-    ImplementedComplexEditModelDialogProps,
+    type ComplexEditModelDialogProps,
+    type ImplementedComplexEditModelDialogProps,
     ComplexEditModelDialog,
 }                           from '@/components/dialogs/ComplexEditModelDialog'
 
@@ -154,6 +161,11 @@ import {
 import {
     checkoutConfigClient,
 }                           from '@/checkout.config.client'
+import {
+    paypalPaymentMethodEnabledOfCardMethod,
+    stripePaymentMethodEnabledOfCardMethod,
+    midtransPaymentMethodEnabledOfCardMethod,
+}                           from '@/libs/payment-method-enabled'
 
 
 
@@ -174,7 +186,7 @@ const EditPaymentMethodDialog = (props: EditPaymentMethodDialogProps): JSX.Eleme
 };
 const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): JSX.Element|null => {
     // styles:
-    const styleSheet = useEditPaymentMethodDialogStyleSheet();
+    const styles = useEditPaymentMethodDialogStyleSheet();
     
     
     
@@ -219,6 +231,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         // accessibilities:
         currency,
     } = useCartState();
+    const [savePaymentMethodEnabled, setSavePaymentMethodEnabled] = useState<boolean>(false);
     
     
     
@@ -422,6 +435,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 // behaviors:
                 saveCardMode={true}
             >
+                <UpdateSavePaymentMethodStatus setSavePaymentMethodEnabled={setSavePaymentMethodEnabled} />
                 <ValidationProvider
                     // validations:
                     enableValidation={enableValidation}
@@ -437,6 +451,11 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                         // refs:
                         imperativeClickRef={imperativeClickRef}
                         paymentPriorityProviderRef={paymentPriorityProviderRef}
+                        
+                        
+                        
+                        // states:
+                        savePaymentMethodEnabled={savePaymentMethodEnabled}
                     />
                 </ValidationProvider>
             </ConditionalPaypalCardComposerProvider>
@@ -444,10 +463,10 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     );
     const mainTab = (
         !model
-        ? <div className={styleSheet.creditCardTab}>
+        ? <div className={styles.creditCardTab}>
             {mainTabContent}
         </div>
-        : <TabPanel label={PAGE_PAYMENT_METHODS_TAB_DATA} panelComponent={<Generic className={styleSheet.creditCardTab} />}>
+        : <TabPanel label={PAGE_PAYMENT_METHODS_TAB_DATA} panelComponent={<Generic className={styles.creditCardTab} />}>
             {mainTabContent}
         </TabPanel>
     );
@@ -490,10 +509,10 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 
                 
                 // privileges:
-                privilegeAdd    = {true}
+                privilegeAdd    = {savePaymentMethodEnabled}
                 privilegeUpdate = {useMemo(() => ({
-                    any : true,
-                }), [])}
+                    any : savePaymentMethodEnabled,
+                }), [savePaymentMethodEnabled])}
                 privilegeDelete = {true}
                 
                 
@@ -520,7 +539,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 
                 
                 // components:
-                modalCardComponent={<ModalCard className={styleSheet.dialog} />}
+                modalCardComponent={<ModalCard className={styles.dialog} />}
                 
                 
                 
@@ -542,6 +561,45 @@ export {
 
 
 
+
+interface UpdateSavePaymentMethodStatusProps {
+    // refs:
+    setSavePaymentMethodEnabled: React.Dispatch<React.SetStateAction<boolean>>
+}
+const UpdateSavePaymentMethodStatus = (props: UpdateSavePaymentMethodStatusProps): JSX.Element|null => {
+    // props:
+    const {
+        // refs:
+        setSavePaymentMethodEnabled,
+    } = props;
+    
+    
+    
+    // states:
+    const {
+        isPaymentPriorityPaypal,
+        isPaymentPriorityStripe,
+        isPaymentPriorityMidtrans,
+    } = usePaymentProcessorPriority();
+    const savePaymentMethodEnabled = (
+        (isPaymentPriorityPaypal   && paypalPaymentMethodEnabledOfCardMethod)
+        ||
+        (isPaymentPriorityStripe   && stripePaymentMethodEnabledOfCardMethod)
+        ||
+        (isPaymentPriorityMidtrans && midtransPaymentMethodEnabledOfCardMethod)
+    );
+    useIsomorphicLayoutEffect(() => {
+        setSavePaymentMethodEnabled(savePaymentMethodEnabled);
+    }, [savePaymentMethodEnabled, setSavePaymentMethodEnabled]);
+    
+    
+    
+    // jsx:
+    return null;
+};
+
+
+
 interface CreditCardLayoutProps {
     // data:
     editorAddress              : EditorAddress|null
@@ -552,6 +610,11 @@ interface CreditCardLayoutProps {
     // refs:
     imperativeClickRef         : React.RefObject<ImperativeClick> // getter ref
     paymentPriorityProviderRef : React.MutableRefObject<PaymentMethodProvider|null> // setter ref
+    
+    
+    
+    // states:
+    savePaymentMethodEnabled   : boolean
 }
 const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
     // props:
@@ -565,12 +628,17 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
         // refs:
         imperativeClickRef,
         paymentPriorityProviderRef,
+        
+        
+        
+        // states:
+        savePaymentMethodEnabled,
     } = props;
     
     
     
     // styles:
-    const styleSheet = useEditPaymentMethodDialogStyleSheet();
+    const styles = useEditPaymentMethodDialogStyleSheet();
     
     
     
@@ -590,64 +658,76 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <form ref={paymentCardSectionRef} className={styleSheet.creditCardForm}>
+        <form ref={paymentCardSectionRef} className={styles.creditCardForm}>
             <section>
                 <p>
-                    Please select the currency you wish to use for your transactions:
+                    Please select the currency for your transactions:
                 </p>
                 <SelectCurrencyImplementation />
             </section>
             
             <hr />
             
-            <section>
+            {!savePaymentMethodEnabled && <Alert theme='warning' expanded={true} controlComponent={null}>
                 <p>
-                    Enter your card information:
+                    The selected currency is not supported for adding or editing a card.
+                    We apologize for any inconvenience this may cause.
                 </p>
-                <div className={styleSheet.creditCardLayout}>
-                    <ConditionalCreditCardNumberEditor />
-                    <ConditionalCreditCardNameEditor />
-                    <ConditionalCreditCardExpiryEditor />
-                    <ConditionalCreditCardCvvEditor />
-                    <ConditionalCreditCardButton clickRef={imperativeClickRef} />
-                </div>
-            </section>
-            
-            <hr />
-            
-            <section
-                // refs:
-                ref={billingAddressSectionRef}
-                
-                
-                
-                // classes:
-                className='billing'
-            >
                 <p>
-                    <em>Optionally</em>, enter your billing address as it appears on your credit card statement for successful processing:
+                    Please select another currency.
                 </p>
-                <AddressEditor
-                    // types:
-                    addressType       = 'billing'
+            </Alert>}
+            
+            {savePaymentMethodEnabled && <>
+                <section>
+                    <p>
+                        Enter your card information:
+                    </p>
+                    <div className={styles.creditCardLayout}>
+                        <ConditionalCreditCardNumberEditor />
+                        <ConditionalCreditCardNameEditor />
+                        <ConditionalCreditCardExpiryEditor />
+                        <ConditionalCreditCardCvvEditor />
+                        <ConditionalCreditCardButton clickRef={imperativeClickRef} />
+                    </div>
+                </section>
+                
+                <hr />
+                
+                <section
+                    // refs:
+                    ref={billingAddressSectionRef}
                     
                     
                     
-                    // values:
-                    value       = {editorAddress}
-                    onChange    = {onEditorAddressChange}
-                    
-                    
-                    
-                    // validations:
-                    required={!!editorAddress} // leave all the address field blank or fill all the address field
-                    
-                    
-                    
-                    // components:
-                    companyEditorComponent={null}
-                />
-            </section>
+                    // classes:
+                    className='billing'
+                >
+                    <p>
+                        <em>Optionally</em>, enter your billing address as it appears on your credit card statement for successful processing:
+                    </p>
+                    <AddressEditor
+                        // types:
+                        addressType       = 'billing'
+                        
+                        
+                        
+                        // values:
+                        value       = {editorAddress}
+                        onChange    = {onEditorAddressChange}
+                        
+                        
+                        
+                        // validations:
+                        required={!!editorAddress} // leave all the address field blank or fill all the address field
+                        
+                        
+                        
+                        // components:
+                        companyEditorComponent={null}
+                    />
+                </section>
+            </>}
         </form>
     );
 };
@@ -656,7 +736,7 @@ const CreditCardLayout = (props: CreditCardLayoutProps): JSX.Element|null => {
 
 const SelectCurrencyImplementation = (): JSX.Element|null => {
     // styles:
-    const styleSheet = useEditPaymentMethodDialogStyleSheet();
+    const styles = useEditPaymentMethodDialogStyleSheet();
     
     
     
@@ -677,7 +757,7 @@ const SelectCurrencyImplementation = (): JSX.Element|null => {
             
             
             // classes:
-            className={styleSheet.selectCurrency}
+            className={styles.selectCurrency}
             
             
             

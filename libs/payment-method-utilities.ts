@@ -32,52 +32,14 @@ import {
 
 // configs:
 import {
-    checkoutConfigServer,
-}                           from '@/checkout.config.server'
-import exp from 'constants'
+    paypalPaymentMethodEnabledOfAnyMethod,
+    stripePaymentMethodEnabledOfAnyMethod,
+}                           from '@/libs/payment-method-enabled'
 
 
 
 // configs:
 export const limitMaxPaymentMethodList = paymentMethodLimitMax * 2;
-
-export const paypalPaymentMethodEnabledOfAnyMethod    = (
-    checkoutConfigServer.payment.processors.paypal.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.paypal.savePaymentMethods
-    &&
-    Object.values(checkoutConfigServer.payment.processors.paypal.savePaymentMethods).some((value) => value)
-);
-export const stripePaymentMethodEnabledOfAnyMethod    = (
-    checkoutConfigServer.payment.processors.stripe.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.stripe.savePaymentMethods
-    &&
-    Object.values(checkoutConfigServer.payment.processors.stripe.savePaymentMethods).some((value) => value)
-);
-export const midtransPaymentMethodEnabledOfAnyMethod  = (
-    checkoutConfigServer.payment.processors.midtrans.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.midtrans.savePaymentMethods
-    &&
-    Object.values(checkoutConfigServer.payment.processors.midtrans.savePaymentMethods).some((value) => value)
-);
-
-export const paypalPaymentMethodEnabledOfCardMethod   = (
-    checkoutConfigServer.payment.processors.paypal.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.paypal.savePaymentMethods?.card
-);
-export const stripePaymentMethodEnabledOfCardMethod   = (
-    checkoutConfigServer.payment.processors.stripe.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.stripe.savePaymentMethods?.card
-);
-export const midtransPaymentMethodEnabledOfCardMethod = (
-    checkoutConfigServer.payment.processors.midtrans.enabled
-    &&
-    !!checkoutConfigServer.payment.processors.midtrans.savePaymentMethods?.card
-);
 
 
 

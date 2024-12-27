@@ -18,6 +18,11 @@ import {
     Check,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// payment components:
+import {
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
+
 // cart components:
 import {
     useCartState,
@@ -34,6 +39,13 @@ import {
     useGetPaymentMethodOfCurreny,
 }                           from '@/store/features/api/apiSlice'
 
+// configs:
+import {
+    paypalPaymentMethodEnabledOfCardMethod,
+    stripePaymentMethodEnabledOfCardMethod,
+    midtransPaymentMethodEnabledOfCardMethod,
+}                           from '@/libs/payment-method-enabled'
+
 
 
 // react components:
@@ -49,8 +61,25 @@ const ConditionalCreditCardSaveCheck = (props: ConditionalCreditCardSaveCheckPro
     
     
     
+    // states:
+    const {
+        isPaymentPriorityPaypal,
+        isPaymentPriorityStripe,
+        isPaymentPriorityMidtrans,
+    } = usePaymentProcessorPriority();
+    const isSavePaymentMethodEnabled = (
+        (isPaymentPriorityPaypal   && paypalPaymentMethodEnabledOfCardMethod)
+        ||
+        (isPaymentPriorityStripe   && stripePaymentMethodEnabledOfCardMethod)
+        ||
+        (isPaymentPriorityMidtrans && midtransPaymentMethodEnabledOfCardMethod)
+    );
+    
+    
+    
     // jsx:
     if (!session) return null;
+    if (!isSavePaymentMethodEnabled) return null;
     return (
         <ImplementedConditionalCreditCardSaveCheck {...props} />
     );

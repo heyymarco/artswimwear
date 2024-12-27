@@ -41,21 +41,15 @@ import {
     stripeCreatePaymentMethodSetup,
 }                           from '@/libs/payments/processors/stripe'
 import {
-    // configs:
-    paypalPaymentMethodEnabledOfAnyMethod,
-    stripePaymentMethodEnabledOfAnyMethod,
-    
-    
-    
-    // utilities:
     createOrUpdatePaymentMethod,
     deletePaymentMethodAccount,
 }                           from '@/libs/payment-method-utilities'
 
 // configs:
 import {
-    checkoutConfigServer,
-}                           from '@/checkout.config.server'
+    paypalPaymentMethodEnabledOfAnyMethod,
+    stripePaymentMethodEnabledOfAnyMethod,
+}                           from '@/libs/payment-method-enabled'
 
 
 
