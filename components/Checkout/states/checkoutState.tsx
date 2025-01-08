@@ -192,7 +192,7 @@ import {
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
 import {
-    invalidSelector,
+    getInvalidFields,
 }                           from '@/libs/css-selectors'
 
 
@@ -1375,7 +1375,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         (sessionStatus === 'unauthenticated')
                         
                         // sign in as guest:
-                        ? customerInfoSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                        ? getInvalidFields(customerInfoSectionRef?.current)
                         
                         // sign in as customer:
                         : undefined // nothing to validate
@@ -1386,7 +1386,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // shipping address fields:
                 ...(
-                    shippingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    getInvalidFields(shippingAddressSectionRef?.current)
                     ??
                     []
                 ),
@@ -1511,7 +1511,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // wait for a validation state applied:
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
-            const fieldErrors = shippingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            const fieldErrors = getInvalidFields(shippingAddressSectionRef?.current);
             if (fieldErrors?.length) { // there is an/some invalid field
                 showMessageFieldError(fieldErrors);
                 return false; // transaction aborted due to validation error

@@ -93,7 +93,7 @@ import {
     type ConfirmUnsavedHandler,
 }                           from './types'
 import {
-    invalidSelector,
+    getInvalidFields,
 }                           from '@/libs/css-selectors'
 
 
@@ -263,16 +263,16 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         const fieldErrors = (
             // for <Form>:
             (() => {
-                const matches = editorElm?.querySelectorAll?.(invalidSelector);
+                const matches = getInvalidFields(editorElm);
                 if (!matches?.length) return null;
                 return matches;
             })()
             ??
             // for <input>:
-            (editorElm?.matches?.(invalidSelector) ? [editorElm] : null)
+            getInvalidFields([editorElm])
             ??
             // for <Input>:
-            (editorElm?.parentElement?.matches?.(invalidSelector) ? [editorElm.parentElement] : null)
+            getInvalidFields([editorElm?.parentElement])
         );
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);

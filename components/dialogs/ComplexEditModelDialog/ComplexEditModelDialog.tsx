@@ -112,7 +112,7 @@ import {
     type ConfirmUnsavedHandler,
 }                           from './types'
 import {
-    invalidSelector,
+    getInvalidFields,
 }                           from '@/libs/css-selectors'
 
 
@@ -351,7 +351,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             }, 0);
         });
         const editorElm = editorRef.current;
-        const fieldErrors = editorElm?.querySelectorAll?.(invalidSelector);
+        const fieldErrors = getInvalidFields(editorElm);
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
             return;

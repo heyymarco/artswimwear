@@ -116,7 +116,7 @@ import {
 
 // internals:
 import {
-    invalidSelector,
+    getInvalidFields,
 }                           from '@/libs/css-selectors'
 
 // configs:
@@ -271,7 +271,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 }, 0);
             }, 0);
         });
-        const fieldErrors = tabPanelConfirmationRef?.current?.querySelectorAll?.(invalidSelector);
+        const fieldErrors = getInvalidFields(tabPanelConfirmationRef?.current);
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
             return; // transaction aborted due to validation error

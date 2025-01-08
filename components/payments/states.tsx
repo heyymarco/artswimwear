@@ -49,7 +49,7 @@ import {
 
 // internals:
 import {
-    invalidSelector,
+    getInvalidFields,
 }                           from '@/libs/css-selectors'
 
 
@@ -335,7 +335,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
             ...(
                 (
                     paymentValidation
-                    ? paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    ? getInvalidFields(paymentCardSectionRef?.current)
                     : undefined
                 )
                 ??
@@ -346,7 +346,7 @@ const TransactionStateProvider = (props: React.PropsWithChildren<TransactionStat
             ...(
                 (
                     billingValidation
-                    ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    ? getInvalidFields(billingAddressSectionRef?.current)
                     : undefined
                 )
                 ??
