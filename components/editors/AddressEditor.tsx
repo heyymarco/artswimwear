@@ -7,11 +7,24 @@ import {
     
     // hooks:
     useState,
-    useMemo,
     useEffect,
+    useRef,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useIsomorphicLayoutEffect,
+    useEvent,
+    useMergeEvents,
+    type TimerPromise,
+    useSetTimeout,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
 import {
     // react components:
     SelectCountryEditor,
@@ -34,6 +47,7 @@ import {
     PhoneEditor,
 }                           from '@heymarco/phone-editor'
 import {
+    type Address,
     // react components:
     AddressEditorProps as BaseAddressEditorProps,
     AddressEditor      as BaseAddressEditor,
@@ -45,21 +59,10 @@ export {
 // stores:
 import {
     // hooks:
-    // useGetCountryList,
-    // useGetStateList,
-    // useGetCityList,
-    
-    
-    
-    // apis:
-    getCountryList,
-    getStateList,
-    getCityList,
+    useGetCountryList,
+    useGetStateList,
+    useGetCityList,
 }                           from '@/store/features/api/apiSlice'
-import {
-    // hooks:
-    useAppDispatch,
-}                           from '@/store/hooks'
 
 
 
@@ -80,76 +83,181 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         
         
         
+        // handlers:
+        onChange,
+        
+        
+        
         // other props:
         ...restAddressEditorProps
     } = props;
+    
+    
+    
+    // RTK Query hooks:
+    const                { data: countryListData, error: countryListError }  = useGetCountryList();
+    const [getStateList, { data: stateListData  , error: stateListError   }] = useGetStateList();
+    const [getCityList , { data: cityListData   , error: cityListError    }] = useGetCityList();
+    
     
     
     // states:
     const [country, setCountry] = useState<string>(props.value?.country ?? '');
     const [state  , setState  ] = useState<string>(props.value?.state   ?? '');
     
-    
-    
-    // stores:
-    const dispatch = useAppDispatch();
-    
-    const [[mountedPromise, mountedSignal]] = useState<[Promise<boolean>, (value: boolean) => void]>(() => {
-        const { promise, resolve } = Promise.withResolvers<boolean>();
+    const [countryListPromise,                    ] = useState<[Promise<string[]>, (value: string[]) => void]>(() => {
+        // Initialize a new unresolved promise:
+        const { promise, resolve } = Promise.withResolvers<string[]>();
         return [promise, resolve];
     });
+    const [stateListPromise  , setStateListPromise] = useState<[Promise<string[]>, (value: string[]) => void]>(() => {
+        // Initialize a new unresolved promise:
+        const { promise, resolve } = Promise.withResolvers<string[]>();
+        return [promise, resolve];
+    });
+    const [cityListPromise   , setCityListPromise ] = useState<[Promise<string[]>, (value: string[]) => void]>(() => {
+        // Initialize a new unresolved promise:
+        const { promise, resolve } = Promise.withResolvers<string[]>();
+        return [promise, resolve];
+    });
+    
+    // Set stateListPromise when country changes:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        // Initialize a new unresolved promise:
+        const { promise, resolve } = Promise.withResolvers<string[]>();
+        setStateListPromise([promise, resolve]);
+        
+        
+        
+        if (!country) {
+            resolve([]); // no selected country => the states cannot be determined => empty result
+        }
+        else {
+            getStateList({ countryCode: country });
+        } // if
+    }, [country, getStateList]);
+    
+    // Set cityListPromise when country or state changes:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        // Initialize a new unresolved promise:
+        const { promise, resolve } = Promise.withResolvers<string[]>();
+        setCityListPromise([promise, resolve]);
+        
+        
+        
+        if (!country || !state) {
+            resolve([]); // no selected country or state => the cities cannot be determined => empty result
+        }
+        else {
+            getCityList({ countryCode: country, state: state });
+        } // if
+    }, [country, state, getCityList]);
+    
+    // Listen for countryListData and countryListError:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        const [, resolve] = countryListPromise;
+        if (countryListError) {
+            resolve([]); // the countries cannot be resolved => empty result
+        }
+        else if (countryListData) {
+            resolve(countryListData);
+        } // if
+    }, [countryListData, countryListError, countryListPromise]);
+    
+    // Listen for stateListData and stateListError:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        const [, resolve] = stateListPromise;
+        if (stateListError) {
+            resolve([]); // the states cannot be resolved => empty result
+        }
+        else if (stateListData) {
+            resolve(stateListData);
+        } // if
+    }, [stateListData, stateListError, stateListPromise]);
+    
+    // Listen for cityListData and cityListError:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        const [, resolve] = cityListPromise;
+        if (cityListError) {
+            resolve([]); // the cities cannot be resolved => empty result
+        }
+        else if (cityListData) {
+            resolve(cityListData);
+        } // if
+    }, [cityListData, cityListError, cityListPromise]);
+    
+    // Handle component unmount:
+    // We use `useEffect` instead of `useIsomorphicLayoutEffect` because it doesn't need to be done quickly since the component is already unmounted.
+    const setTimeoutAsync = useSetTimeout();
+    const delayedCleanup  = useRef<TimerPromise<boolean>|null>(null);
     useEffect(() => {
         // setups:
-        mountedSignal(true); // signal that the component is mounted
+        // abort the previous delayed cleanup (if any):
+        delayedCleanup.current?.abort();
         
         
         
         // cleanups:
         return () => {
-            mountedSignal(false); // signal that the component is never mounted
+            // prevents double cleanup when in dev mode with strictMode:
+            (delayedCleanup.current = setTimeoutAsync(100)).then((isDone) => {
+                // conditions:
+                if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                
+                
+                
+                // actions:
+                // if the promises are not resolved until the component unmounts, resolve them as an empty result:
+                const [, resolveCountry] = countryListPromise;
+                const [, resolveState  ] = stateListPromise;
+                const [, resolveCity   ] = cityListPromise;
+                resolveCountry([]);
+                resolveState([]);
+                resolveCity([]);
+            });
         };
-    }, [mountedSignal]);
+    }, [countryListPromise, stateListPromise, cityListPromise]);
     
-    const countryOptionsPromise = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
+    
+    
+    // handlers:
+    const handleChangeInternal = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, Address|null>>((value) => {
         // conditions:
-        const isMounted = await mountedPromise;
-        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        if (props.value !== undefined) return; // sync `country` and `state` for uncontrollable value only
         
         
         
         // actions:
-        return (
-            Array.from(
-                Object.values(
-                    (await dispatch(getCountryList()).unwrap())
-                    .entities
-                )
-            )
-            .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
-            .map(({name}) => name)
-        );
-    }, [mountedPromise]);
-    const stateOptionsPromise   = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
-        if (!country) return [];
-        const isMounted = await mountedPromise;
-        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        setCountry(value?.country ?? '');
+        setState(value?.state     ?? '');
+    });
+    const handleChange = useMergeEvents(
+        // preserves the original `onChange` from `props`:
+        onChange,
         
         
         
         // actions:
-        return dispatch(getStateList({ countryCode: country })).unwrap();
-    }, [mountedPromise, country]);
-    const cityOptionsPromise    = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
-        if (!country) return [];
-        if (!state  ) return [];
-        const isMounted = await mountedPromise;
-        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        handleChangeInternal,
+    );
+    
+    // effects:
+    // We use `useEffect` instead of `useIsomorphicLayoutEffect` because the subsequent updates happen after the component is fully mounted.
+    useEffect(() => {
+        // conditions:
+        if (props?.value === undefined) return; // sync `country` and `state` for controllable value only
         
         
         
         // actions:
-        return dispatch(getCityList({ countryCode: country, state: state })).unwrap();
-    }, [mountedPromise, country, state]);
+        setCountry(props.value?.country ?? '');
+        setState(props.value?.state     ?? '');
+    }, [props.value, props.value?.country, props.value?.state]);
     
     
     
@@ -157,13 +265,13 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     const {
         // components:
         countryEditorComponent=(
-            <SelectCountryEditor theme='primary' onChange={setCountry} valueOptions={countryOptionsPromise} />
+            <SelectCountryEditor theme='primary' valueOptions={countryListPromise?.[0]} />
         ),
         stateEditorComponent=(
-            <SelectStateEditor theme='primary' onChange={setState} valueOptions={stateOptionsPromise} minLength={3} maxLength={50} />
+            <SelectStateEditor theme='primary' valueOptions={stateListPromise?.[0]} minLength={3} maxLength={50} />
         ),
         cityEditorComponent=(
-            <SelectCityEditor theme='primary' valueOptions={cityOptionsPromise} minLength={3} maxLength={50} />
+            <SelectCityEditor theme='primary' valueOptions={cityListPromise?.[0]} minLength={3} maxLength={50} />
         ),
         zipEditorComponent=(
             <TextEditor aria-label='Zip (Postal) Code' minLength={2} maxLength={11} />
@@ -207,6 +315,11 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             firstNameEditorComponent={firstNameEditorComponent}
             lastNameEditorComponent={lastNameEditorComponent}
             phoneEditorComponent={phoneEditorComponent}
+            
+            
+            
+            // handlers:
+            onChange={handleChange}
         />
     );
 };

@@ -226,14 +226,11 @@ export const apiSlice = createApi({
             },
         }),
         
-        getCountryList              : builder.query<EntityState<CountryPreview>, void>({
+        getCountryList              : builder.query<string[], void>({
             query : () => ({
                 url    : 'shippings/countries',
                 method : 'GET',
             }),
-            transformResponse(response: CountryPreview[]) {
-                return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
-            },
         }),
         getStateList                : builder.query<string[], { countryCode: string }>({
             query : ({countryCode}) => ({
@@ -1073,9 +1070,9 @@ export const {
     
     useGetShippingListQuery                : useGetShippingList,
     
-    // useGetCountryListQuery                 : useGetCountryList,
-    // useLazyGetStateListQuery               : useGetStateList,
-    // useLazyGetCityListQuery                : useGetCityList,
+    useGetCountryListQuery                 : useGetCountryList,
+    useLazyGetStateListQuery               : useGetStateList,
+    useLazyGetCityListQuery                : useGetCityList,
     
     
     
@@ -1140,12 +1137,6 @@ export const {
 } = apiSlice;
 
 export const {
-    getCountryList    : { initiate : getCountryList    },
-    getStateList      : { initiate : getStateList      },
-    getCityList       : { initiate : getCityList       },
-    
-    
-    
     restoreCart       : { initiate : restoreCart       },
     backupCart        : { initiate : backupCart        },
     

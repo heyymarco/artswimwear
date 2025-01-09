@@ -35,7 +35,7 @@
     "@heymarco/section": "^6.5.0",
     "@heymarco/select-city-editor": "^6.13.0",
     "@heymarco/select-country-editor": "^6.13.0",
-    "@heymarco/select-dropdown-editor": "^6.13.0",
+    "@heymarco/select-dropdown-editor": "^6.13.2",
     "@heymarco/select-state-editor": "^6.13.0",
     "@heymarco/text-editor": "^6.13.0",
     "@lexical/headless": "^0.12.4",
