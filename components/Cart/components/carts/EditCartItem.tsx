@@ -44,8 +44,11 @@ import {
     Image,
 }                           from '@heymarco/image'
 import {
-    QuantityInput,
-}                           from '@heymarco/quantity-input'
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+import {
+    NumberUpDownEditor,
+}                           from '@heymarco/number-updown-editor'
 
 // internal components:
 import {
@@ -181,10 +184,10 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}): void => {
+    const handleQuantityChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, number>>((value): void => {
         // actions:
-        if (valueAsNumber > 0) {
-            onChange(productId, variantIds, valueAsNumber);
+        if (value > 0) {
+            onChange(productId, variantIds, value);
         }
         else {
             handleDelete();
@@ -304,7 +307,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                         // handlers:
                         onClick={handleDelete}
                     />
-                    <QuantityInput
+                    <NumberUpDownEditor
                         // accessibilities:
                         enabled={!isProductDeleted}
                         
@@ -312,7 +315,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                         
                         // values:
                         value={quantity}
-                        onChange={handleChange}
+                        onChange={handleQuantityChange}
                         
                         
                         

@@ -52,8 +52,11 @@ import {
     Image,
 }                           from '@heymarco/image'
 import {
-    QuantityInput,
-}                           from '@heymarco/quantity-input'
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+import {
+    NumberUpDownEditor,
+}                           from '@heymarco/number-updown-editor'
 
 // internal components:
 import {
@@ -249,11 +252,11 @@ export function ProductDetailPageContent({ productPath: productPath }: { product
     
     
     // handlers:
-    const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber: quantity}}) => {
+    const handleQuantityChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, number>>((value) => {
         if (existingItemInCart) {
-            changeProductFromCart(existingItemInCart.productId, existingItemInCart.variantIds, quantity);
+            changeProductFromCart(existingItemInCart.productId, existingItemInCart.variantIds, value);
         } else {
-            setProductQty(quantity);
+            setProductQty(value);
         } // if
     });
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
@@ -384,7 +387,7 @@ export function ProductDetailPageContent({ productPath: productPath }: { product
                 >
                     Quantity:
                 </p>
-                <QuantityInput
+                <NumberUpDownEditor
                     // variants:
                     theme='primary'
                     
