@@ -49,8 +49,6 @@ router
         select : {
             enabled : true,
             name    : true,
-            
-            code    : true,
         },
         // enabled: true
     });
@@ -62,17 +60,15 @@ router
         allCountries = defaultCountries.map((country) => ({
             enabled : country.enabled,
             name    : country.name,
-            
-            code    : country.code,
         }));
     } // if
     
     
     
-    const countryPreview : CountryPreview[] = (
+    const countryNames : string[] = (
         allCountries
         .filter((country) => country.enabled)
-        .map(({enabled: _enabled, ...restCountry}) => restCountry)
+        .map(({name}) => name)
     );
-    return Response.json(countryPreview); // handled with success
+    return Response.json(countryNames); // handled with success
 });
