@@ -95,9 +95,9 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     
     
     // RTK Query hooks:
-    const                { data: countryListData, error: countryListError }  = useGetCountryList();
-    const [getStateList, { data: stateListData  , error: stateListError   }] = useGetStateList();
-    const [getCityList , { data: cityListData   , error: cityListError    }] = useGetCityList();
+    const                { data: countryListData, isFetching: countryListFetching, isError: countryListError }  = useGetCountryList();
+    const [getStateList, { data: stateListData  , isFetching: stateListFetching  , isError: stateListError   }] = useGetStateList();
+    const [getCityList , { data: cityListData   , isFetching: cityListFetching   , isError: cityListError,    }] = useGetCityList();
     
     
     
@@ -126,16 +126,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     useIsomorphicLayoutEffect(() => {
         // Initialize a new unresolved promise:
         const { promise, resolve } = Promise.withResolvers<string[]>();
-        setStateListPromise((current) => {
-            // finishing the unresolved prev promise:
-            const [, resolve] = current;
-            resolve([]); // resolved as empty result
-            
-            
-            
-            // then set a new unresolved promise:
-            return [promise, resolve];
-        });
+        setStateListPromise([promise, resolve]);
         
         
         
@@ -153,16 +144,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     useIsomorphicLayoutEffect(() => {
         // Initialize a new unresolved promise:
         const { promise, resolve } = Promise.withResolvers<string[]>();
-        setCityListPromise((current) => {
-            // finishing the unresolved prev promise:
-            const [, resolve] = current;
-            resolve([]); // resolved as empty result
-            
-            
-            
-            // then set a new unresolved promise:
-            return [promise, resolve];
-        });
+        setCityListPromise([promise, resolve]);
         
         
         
@@ -182,10 +164,13 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         if (countryListError) {
             resolve([]); // the countries cannot be resolved => empty result
         }
+        else if (countryListFetching) {
+            // do nothing, just wait until the data is ready
+        }
         else if (countryListData) {
             resolve(countryListData);
         } // if
-    }, [countryListData, countryListError, countryListPromise]);
+    }, [countryListData, countryListError, countryListFetching, countryListPromise]);
     
     // Listen for stateListData and stateListError:
     // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
@@ -194,10 +179,13 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         if (stateListError) {
             resolve([]); // the states cannot be resolved => empty result
         }
+        else if (stateListFetching) {
+            // do nothing, just wait until the data is ready
+        }
         else if (stateListData) {
             resolve(stateListData);
         } // if
-    }, [stateListData, stateListError, stateListPromise]);
+    }, [stateListData, stateListError, stateListFetching, stateListPromise]);
     
     // Listen for cityListData and cityListError:
     // We use `useIsomorphicLayoutEffect` instead of `useEffect` to get the list as quickly as possible before the browser has a chance to repaint the page.
@@ -206,10 +194,13 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         if (cityListError) {
             resolve([]); // the cities cannot be resolved => empty result
         }
+        else if (cityListFetching) {
+            // do nothing, just wait until the data is ready
+        }
         else if (cityListData) {
             resolve(cityListData);
         } // if
-    }, [cityListData, cityListError, cityListPromise]);
+    }, [cityListData, cityListError, cityListFetching, cityListPromise]);
     
     // Handle component unmount:
     // We use `useEffect` instead of `useIsomorphicLayoutEffect` because it doesn't need to be done quickly since the component is already unmounted.
