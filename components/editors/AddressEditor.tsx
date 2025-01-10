@@ -97,7 +97,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     // RTK Query hooks:
     const                { data: countryListData, isFetching: countryListFetching, isError: countryListError }  = useGetCountryList();
     const [getStateList, { data: stateListData  , isFetching: stateListFetching  , isError: stateListError   }] = useGetStateList();
-    const [getCityList , { data: cityListData   , isFetching: cityListFetching   , isError: cityListError,    }] = useGetCityList();
+    const [getCityList , { data: cityListData   , isFetching: cityListFetching   , isError: cityListError    }] = useGetCityList();
     
     
     
