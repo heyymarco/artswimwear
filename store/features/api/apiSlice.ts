@@ -472,6 +472,7 @@ export const apiSlice = createApi({
                 url    : `customer/check-username?username=${encodeURIComponent(username)}`, // cloned from @heymarco/next-auth, because this api was disabled in auth.config.shared
                 method : 'GET',
             }),
+            keepUnusedDataFor: 0, // each request must be passed to server, never cached
         }),
         notProhibitedUsername       : builder.query<boolean, string>({
             query: (username) => ({
@@ -586,6 +587,7 @@ export const apiSlice = createApi({
                 url    : `customer/wishes/groups/check-name?name=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
+            keepUnusedDataFor: 0, // each request must be passed to server, never cached
         }),
         
         

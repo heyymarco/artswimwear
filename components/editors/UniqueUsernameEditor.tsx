@@ -6,6 +6,11 @@ import {
 
 // reusable-ui core:
 import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+    
+    
+    
     // react helper hooks:
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -19,8 +24,14 @@ import {
 
 // internals:
 import {
+    // types:
+    type CheckAvailableHandler,
+    type CheckNotProhibitedHandler,
+    
+    
+    
     // react components:
-    ImplementedUniqueEditorProps,
+    type UniqueEditorProps,
     UniqueEditor,
 }                           from '@/components/editors/UniqueEditor'
 
@@ -35,7 +46,7 @@ import {
 export interface UniqueUsernameEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
-        ImplementedUniqueEditorProps<TElement>
+        UniqueEditorProps<TElement>
 {
 }
 const UniqueUsernameEditor = <TElement extends Element = HTMLSpanElement>(props: UniqueUsernameEditorProps<TElement>): JSX.Element|null => {
@@ -46,12 +57,47 @@ const UniqueUsernameEditor = <TElement extends Element = HTMLSpanElement>(props:
     
     
     // handlers:
-    const handleCheckAvailable     = useEvent(async (value: string): Promise<boolean> => {
-        return await availableUsername(value).unwrap();
+    const handleDefaultCheckAvailable     = useEvent<CheckAvailableHandler>((value) => {
+        return availableUsername(value).unwrap();
     });
-    const handleCheckNotProhibited = useEvent(async (value: string): Promise<boolean> => {
-        return await notProhibitedUsername(value).unwrap();
+    const handleDefaultCheckNotProhibited = useEvent<CheckNotProhibitedHandler>((value) => {
+        return notProhibitedUsername(value).unwrap();
     });
+    
+    
+    
+    // default props:
+    const {
+        // accessibilities:
+        'aria-label' : ariaLabel = 'Username',
+        
+        
+        
+        // validations:
+        required                 = false, // allows account without username
+        
+        minLength                = credentialsConfigClient.username.minLength,
+        maxLength                = credentialsConfigClient.username.maxLength,
+        
+        pattern                  = credentialsConfigClient.username.format,
+        
+        onCheckAvailable         = handleDefaultCheckAvailable,
+        onCheckNotProhibited     = handleDefaultCheckNotProhibited,
+        
+        patternHint              = credentialsConfigClient.username.formatHint,
+        prohibitedHint           = credentialsConfigClient.username.prohibitedHint,
+        
+        
+        
+        // formats:
+        type                     = 'text',
+        autoComplete             = 'nope',
+        
+        
+        
+        // other props:
+        ...restUniqueEditorProps
+    } = props satisfies NoForeignProps<typeof props, UniqueEditorProps<TElement>>;
     
     
     
@@ -59,41 +105,38 @@ const UniqueUsernameEditor = <TElement extends Element = HTMLSpanElement>(props:
     return (
         <UniqueEditor<TElement>
             // other props:
-            {...props}
+            {...restUniqueEditorProps}
             
             
             
             // accessibilities:
-            aria-label={props['aria-label'] ?? 'Username'}
+            aria-label           = {ariaLabel}
             
             
             
             // validations:
-            required={props.required ?? false}
+            required             = {required}
+            
+            minLength            = {minLength}
+            maxLength            = {maxLength}
+            
+            pattern              = {pattern}
+            
+            onCheckAvailable     = {onCheckAvailable}
+            onCheckNotProhibited = {onCheckNotProhibited}
+            
+            patternHint          = {patternHint}
+            prohibitedHint       = {prohibitedHint}
             
             
             
             // formats:
-            type={props.type ?? 'text'}
-            autoComplete={props.autoComplete ?? 'nope'}
-            
-            
-            
-            // constraints:
-            minLength            = {credentialsConfigClient.username.minLength}
-            maxLength            = {credentialsConfigClient.username.maxLength}
-            
-            format               = {credentialsConfigClient.username.format}
-            formatHint           = {credentialsConfigClient.username.formatHint}
-            
-            onCheckAvailable     = {handleCheckAvailable}
-            
-            onCheckNotProhibited = {handleCheckNotProhibited}
-            prohibitedHint       = {credentialsConfigClient.username.prohibitedHint}
+            type                 = {type}
+            autoComplete         = {autoComplete}
         />
     );
 };
 export {
-    UniqueUsernameEditor,
-    UniqueUsernameEditor as default,
+    UniqueUsernameEditor,            // named export for readibility
+    UniqueUsernameEditor as default, // default export to support React.lazy
 }
