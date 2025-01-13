@@ -1,11 +1,9 @@
 [high prior] verify: AuthenticatedResult.PENDING && AuthenticatedResult.CAPTURED
 
 [high prior] protect payment confirmation page using captcha
-[high prior] verify 3DS implementation of paypal_card_payment
 [high prior] add list of country where the shop can operate. add check to enable/disable a country.
 
 [med prior ] refactor the generic template of any component that directly/indirectly inherit from @heymarco/number-editor
-[med prior ] replace @heymarco/quantity-editor with @heymarco/number-updown-editor
 
 [med prior ] remove useGetCountryList hook, replaced with a specific url get for a specific country
 [med prior ] the last created WishGroup -or- the last added WishGroup should be the first item in pagination
@@ -19,18 +17,7 @@
 
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid
-move checkoutState to local if guess mode
 [low  prior] make the Order sorting order matches to shopping cart sorting order
 [low  prior] update DateTimeEditor to have polyfill dropdown calendar
 [low  prior] prefer to use Request|Response instead of NextRequest|NextResponse
 [low  prior] standardize coding style of // compound_like relation // array_like relation => similar to (artswimwear) app/api/(protected)/cart/route.ts
-
-
------------------------------------------
-
-Add saved card:
-
-
-Add checkbox for payers to save card
-Add a checkbox element grouped with your card collection fields to give payers the option to save their card:
-[v] Save my card for future use
