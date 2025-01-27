@@ -4,6 +4,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // heymarco components:
 import {
     SelectDropdownEditorProps,
@@ -21,31 +27,33 @@ import {
 export interface SelectCurrencyEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
-        SelectDropdownEditorProps<TElement, string, React.MouseEvent<Element, MouseEvent>>
+        Omit<SelectDropdownEditorProps<TElement, string>,
+            // values:
+            |'valueOptions' // changed to optional
+        >,
+        Partial<Pick<SelectDropdownEditorProps<TElement, string>,
+            // values:
+            |'valueOptions' // changed to optional
+        >>
 {
 }
 const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(props: SelectCurrencyEditorProps<TElement>): JSX.Element|null => {
     // default props:
     const {
         // values:
-        valueOptions      = Object.keys(checkoutConfigShared.intl.currencies), // defaults to currencies in config
-        
-        
-        
-        // floatable:
-        floatingPlacement = 'bottom',
+        valueOptions = checkoutConfigShared.payment.currencyOptions, // defaults to currencies in config
         
         
         
         // other props:
         ...restSelectDropdownEditorProps
-    } = props;
+    } = props satisfies NoForeignProps<typeof props, Omit<SelectDropdownEditorProps<TElement, string>, 'valueOptions'> & Partial<Pick<SelectDropdownEditorProps<TElement, string>, 'valueOptions'>>>;
     
     
     
     // jsx:
     return (
-        <SelectDropdownEditor<TElement, string, React.MouseEvent<Element, MouseEvent>>
+        <SelectDropdownEditor<TElement, string>
             // other props:
             {...restSelectDropdownEditorProps}
             
@@ -53,11 +61,6 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
             
             // values:
             valueOptions={valueOptions}
-            
-            
-            
-            // floatable:
-            floatingPlacement={floatingPlacement}
         />
     );
 };

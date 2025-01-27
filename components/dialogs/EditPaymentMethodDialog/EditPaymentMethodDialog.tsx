@@ -762,7 +762,6 @@ const SelectCurrencyImplementation = (): JSX.Element|null => {
             
             
             // values:
-            valueOptions      = {checkoutConfigClient.payment.currencyOptions}
             value             = {currency}
             onChange          = {setCurrency}
             

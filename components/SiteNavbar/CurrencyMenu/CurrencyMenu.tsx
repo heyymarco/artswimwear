@@ -274,7 +274,6 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
             
             
             // values:
-            valueOptions      = {checkoutConfigClient.payment.currencyOptions}
             value             = {currency}
             onChange          = {onChange}
             
