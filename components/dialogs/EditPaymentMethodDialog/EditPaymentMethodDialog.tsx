@@ -311,7 +311,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         };
     });
     
-    const handleEditorAddressChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>>((newValue, event) => {
+    const handleEditorAddressChange = useEvent<EditorChangeEventHandler<EditorAddress|null, React.ChangeEvent<HTMLInputElement>>>((newValue, event) => {
         const address : BillingAddressDetail|null = (
             !newValue
             ? null
@@ -603,7 +603,7 @@ const UpdateSavePaymentMethodStatus = (props: UpdateSavePaymentMethodStatusProps
 interface CreditCardLayoutProps {
     // data:
     editorAddress              : EditorAddress|null
-    onEditorAddressChange      : EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>
+    onEditorAddressChange      : EditorChangeEventHandler<EditorAddress|null, React.ChangeEvent<HTMLInputElement>>
     
     
     

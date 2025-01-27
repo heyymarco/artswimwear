@@ -88,10 +88,10 @@ import {
 
 
 // react components:
-export interface UniqueEditorProps<out TElement extends Element = HTMLSpanElement, in TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.ChangeEvent<HTMLInputElement>>
+export interface UniqueEditorProps<out TElement extends Element = HTMLSpanElement, TValue extends string = string, in TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.ChangeEvent<HTMLInputElement>>
     extends
         // bases:
-        Omit<TextEditorProps<TElement, TChangeEvent>,
+        Omit<TextEditorProps<TElement, TValue, TChangeEvent>,
             // validations:
             |'pattern' // repladed with more specialized type
         >,
@@ -100,7 +100,7 @@ export interface UniqueEditorProps<out TElement extends Element = HTMLSpanElemen
         UniqueValidatorProps,
         
         // components:
-        TextEditorComponentProps<TElement, TChangeEvent>
+        TextEditorComponentProps<TElement, TValue, TChangeEvent>
 {
     // validations:
     lengthHint      ?: React.ReactNode
@@ -108,7 +108,7 @@ export interface UniqueEditorProps<out TElement extends Element = HTMLSpanElemen
     availableHint   ?: React.ReactNode
     prohibitedHint  ?: React.ReactNode
 }
-const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.ChangeEvent<HTMLInputElement>>(props: UniqueEditorProps<TElement, TChangeEvent>): JSX.Element|null => {
+const UniqueEditor = <TElement extends Element = HTMLSpanElement, TValue extends string = string, TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.ChangeEvent<HTMLInputElement>>(props: UniqueEditorProps<TElement, TValue, TChangeEvent>): JSX.Element|null => {
     // props:
     const {
         // refs:
@@ -117,7 +117,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
         
         
         // values:
-        defaultValue          : defaultUncontrollableValue = '',
+        defaultValue          : defaultUncontrollableValue = '' as TValue,
         value                 : controllableValue,
         onChange              : onValueChange,
         
@@ -146,7 +146,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
         
         
         // components:
-        textEditorComponent   = (<TextEditor<TElement, TChangeEvent> /> as React.ReactComponentElement<any, TextEditorProps<TElement, TChangeEvent>>),
+        textEditorComponent   = (<TextEditor<TElement, TValue, TChangeEvent> /> as React.ReactComponentElement<any, TextEditorProps<TElement, TValue, TChangeEvent>>),
         
         
         
@@ -193,7 +193,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
-    } = useControllableAndUncontrollable<string, TChangeEvent>({
+    } = useControllableAndUncontrollable<TValue, TChangeEvent>({
         defaultValue       : defaultUncontrollableValue,
         value              : controllableValue,
         onValueChange      : handleValueChange,
@@ -208,7 +208,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
     
     
     // handlers:
-    const handleInputChangeInternal = useEvent<EditorChangeEventHandler<TChangeEvent, string>>((newValue, event) => {
+    const handleInputChangeInternal = useEvent<EditorChangeEventHandler<TValue, TChangeEvent>>((newValue, event) => {
         triggerValueChange(newValue, { triggerAt: 'immediately', event: event });
     });
     const handleInputChange         = useMergeEvents(
@@ -360,7 +360,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
         
         // other props:
         ...restTextEditorProps
-    } = restUniqueEditorProps satisfies NoForeignProps<typeof restUniqueEditorProps, TextEditorProps<TElement, TChangeEvent>>;
+    } = restUniqueEditorProps satisfies NoForeignProps<typeof restUniqueEditorProps, TextEditorProps<TElement, TValue, TChangeEvent>>;
     
     const {
         // values:
@@ -392,7 +392,7 @@ const UniqueEditor = <TElement extends Element = HTMLSpanElement, TChangeEvent e
     return (
         <>
             {/* <TextEditor> */}
-            {React.cloneElement<TextEditorProps<TElement, TChangeEvent>>(textEditorComponent,
+            {React.cloneElement<TextEditorProps<TElement, TValue, TChangeEvent>>(textEditorComponent,
                 // props:
                 {
                     // other props:

@@ -184,7 +184,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleQuantityChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, number>>((value): void => {
+    const handleQuantityChange = useEvent<EditorChangeEventHandler<number, React.ChangeEvent<HTMLInputElement>>>((value): void => {
         // actions:
         if (value > 0) {
             onChange(productId, variantIds, value);

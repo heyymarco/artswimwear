@@ -225,7 +225,7 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>>((newValue, event) => {
+    const handleChange = useEvent<EditorChangeEventHandler<EditorAddress|null, React.ChangeEvent<HTMLInputElement>>>((newValue, event) => {
         const address : Address|null = (
             !newValue
             ? null

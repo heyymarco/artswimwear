@@ -252,7 +252,7 @@ export function ProductDetailPageContent({ productPath: productPath }: { product
     
     
     // handlers:
-    const handleQuantityChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, number>>((value) => {
+    const handleQuantityChange = useEvent<EditorChangeEventHandler<number, React.ChangeEvent<HTMLInputElement>>>((value) => {
         if (existingItemInCart) {
             changeProductFromCart(existingItemInCart.productId, existingItemInCart.variantIds, value);
         } else {

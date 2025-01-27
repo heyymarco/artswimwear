@@ -21,7 +21,7 @@ import {
 export interface SelectCurrencyEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
-        SelectDropdownEditorProps<TElement, React.MouseEvent<Element, MouseEvent>, string>
+        SelectDropdownEditorProps<TElement, string, React.MouseEvent<Element, MouseEvent>>
 {
 }
 const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(props: SelectCurrencyEditorProps<TElement>): JSX.Element|null => {
@@ -45,7 +45,7 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
     
     // jsx:
     return (
-        <SelectDropdownEditor<TElement, React.MouseEvent<Element, MouseEvent>, string>
+        <SelectDropdownEditor<TElement, string, React.MouseEvent<Element, MouseEvent>>
             // other props:
             {...restSelectDropdownEditorProps}
             

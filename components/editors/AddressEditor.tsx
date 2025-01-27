@@ -237,7 +237,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     
     
     // handlers:
-    const handleChangeInternal = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, Address|null>>((value) => {
+    const handleChangeInternal = useEvent<EditorChangeEventHandler<Address|null, React.ChangeEvent<HTMLInputElement>>>((value) => {
         // conditions:
         if (props.value !== undefined) return; // sync `country` and `state` for uncontrollable value only
         
