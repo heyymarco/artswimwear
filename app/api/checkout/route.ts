@@ -266,7 +266,7 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     }
-    else if (!usePaypalGateway && !useStripeGateway && !useMidtransGateway && !useSavedCard && !simulateOrder) {
+    else if (!usePaypalGateway && !useStripeGateway && !useMidtransGateway && !useSavedCard && !simulateOrder && (paymentSource !== 'manual')) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
