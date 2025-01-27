@@ -2,42 +2,22 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useState,
 }                           from 'react'
 
 // reusable-ui core:
 import {
-    // react helper hooks:
-    useEvent,
-    EventHandler,
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// heymarco:
+// heymarco components:
 import {
-    // utilities:
-    useControllableAndUncontrollable,
-}                           from '@heymarco/events'
+    // react components:
+    type SelectDropdownEditorProps,
+    SelectDropdownEditor,
+}                           from '@heymarco/select-dropdown-editor'
 
 // internals:
-import type {
-    // react components:
-    EditorProps,
-}                           from '@/components/editors/Editor'
-import {
-    // layout-components:
-    ListItem,
-    
-    
-    
-    // menu-components:
-    DropdownListExpandedChangeEvent,
-    DropdownListButtonProps,
-    DropdownListButton,
-}                           from '@reusable-ui/components'
 import {
     possibleTimezoneValues,
 }                           from './types'
@@ -52,107 +32,61 @@ import {
 
 
 
+// utilities:
+const defaultValueToUi = (value: number|null) => (value !== null) ? <>GMT{convertTimezoneToReadableClock(value)}</> : null;
+
+
+
 // react components:
 interface TimezoneEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
-        Pick<EditorProps<TElement, number>,
+        Omit<SelectDropdownEditorProps<TElement, number>,
             // values:
-            |'defaultValue'
-            |'value'
-            |'onChange'
-        >,
-        Omit<DropdownListButtonProps,
-            // states:
-            |'defaultExpandedTabIndex' // already taken over
-            |'expandedTabIndex'        // already taken over
-            |'onExpandedChange'        // already taken over
-            
-            // values:
-            |'defaultValue'
-            |'value'
-            |'onChange'
-            
-            // children:
-            |'children'                // already taken over
+            |'valueOptions'
         >
 {
 }
 const TimezoneEditor = <TElement extends Element = HTMLButtonElement>(props: TimezoneEditorProps<TElement>): JSX.Element|null => {
-    // rest props:
+    // default props:
     const {
+        // accessibilities:
+        'aria-label' : ariaLabel = 'Timezone',
+        
+        
+        
         // values:
-        defaultValue : defaultUncontrollableValue = checkoutConfigShared.intl.defaultTimezone,
-        value        : controllableValue,
-        onChange     : onControllableValueChange,
-    ...restTabProps} = props;
-    
-    
-    
-    // states:
-    const {
-        value              : value,
-        triggerValueChange : triggerValueChange,
-    } = useControllableAndUncontrollable<number>({
-        defaultValue       : defaultUncontrollableValue,
-        value              : controllableValue,
-        onValueChange      : onControllableValueChange,
-    });
-    
-    const [expanded, setExpanded] = useState<boolean>(false);
-    
-    
-    
-    // handlers:
-    const handleExpandedChange = useEvent<EventHandler<DropdownListExpandedChangeEvent>>(({expanded}) => {
-        setExpanded(expanded);
-    });
+        valueToUi    = defaultValueToUi,
+        
+        defaultValue = checkoutConfigShared.intl.defaultTimezone,
+        
+        
+        
+        // other props:
+        ...restSelectDropdownEditorProps
+    } = props satisfies NoForeignProps<typeof props, Omit<SelectDropdownEditorProps<TElement, number>, 'valueOptions'>>;
     
     
     
     // jsx:
     return (
-        <DropdownListButton
+        <SelectDropdownEditor
             // other props:
-            {...restTabProps}
+            {...restSelectDropdownEditorProps}
             
             
             
             // accessibilities:
-            aria-label={props['aria-label'] ?? 'Timezone'}
+            aria-label={ariaLabel}
             
             
             
-            // states:
-            expanded={expanded}
-            onExpandedChange={handleExpandedChange}
+            // values:
+            valueOptions={possibleTimezoneValues}
+            valueToUi={valueToUi}
             
-            
-            
-            // children:
-            buttonChildren={
-                <>
-                    GMT{convertTimezoneToReadableClock(value)}
-                </>
-            }
-        >
-            {possibleTimezoneValues.map((timezoneOption) =>
-                <ListItem
-                    // identifiers:
-                    key={timezoneOption}
-                    
-                    
-                    
-                    // states:
-                    active={value === timezoneOption}
-                    onClick={() => {
-                        triggerValueChange(timezoneOption, { triggerAt: 'immediately' });
-                    }}
-                >
-                    GMT{convertTimezoneToReadableClock(timezoneOption)}
-                </ListItem>
-            )}
-        </DropdownListButton>
+            defaultValue={defaultValue}
+        />
     );
 };
 export {
