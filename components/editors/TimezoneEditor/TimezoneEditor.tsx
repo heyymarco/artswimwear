@@ -38,7 +38,7 @@ const defaultValueToUi = (value: number|null) => (value !== null) ? <>GMT{conver
 
 
 // react components:
-interface TimezoneEditorProps<TElement extends Element = HTMLButtonElement>
+export interface TimezoneEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
         Omit<SelectDropdownEditorProps<TElement, number>,
