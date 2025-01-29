@@ -223,7 +223,7 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
         // values:
         defaultValue         : defaultUncontrollableValue    = (null as TValue),
         value                : controllableValue,
-        onChange,
+        onChange             : onValueChange,
         
         defaultTimezone      : defaultUncontrollableTimezone = checkoutConfigShared.intl.defaultTimezone,
         timezone             : controllableTimezone,
@@ -302,7 +302,7 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
     } = useControllableAndUncontrollable<TValue, TChangeEvent>({
         defaultValue       : defaultUncontrollableValue,
         value              : controllableValue,
-        onValueChange      : onChange,
+        onValueChange      : onValueChange,
     });
     
     const {
