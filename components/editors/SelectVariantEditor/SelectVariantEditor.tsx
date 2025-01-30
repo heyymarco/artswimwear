@@ -15,25 +15,22 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// heymarco:
+// heymarco core:
 import {
     // utilities:
     useControllable,
 }                           from '@heymarco/events'
+
+// heymarco components:
 import {
     RadioDecorator,
 }                           from '@heymarco/radio-decorator'
+import {
+    type EditorChangeEventHandler,
+    type EditorProps,
+}                           from '@heymarco/editor'
 
 // internals:
-import type {
-    // types:
-    EditorChangeEventHandler,
-    
-    
-    
-    // react components:
-    EditorProps,
-}                           from '@/components/editors/Editor'
 import {
     // layout-components:
     ListItem,
@@ -61,7 +58,7 @@ interface SelectVariantEditorProps<TElement extends Element = HTMLElement>
             // children:
             |'children'     // already taken over
         >,
-        Pick<EditorProps<TElement, VariantDetail['id']|null>,
+        Pick<EditorProps<TElement, VariantDetail['id']|null, React.MouseEvent<HTMLElement, MouseEvent>>,
             // values:
             |'value'
             |'onChange'
@@ -107,7 +104,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
-    } = useControllable<VariantDetail['id']|null>({
+    } = useControllable<VariantDetail['id']|null, React.MouseEvent<HTMLElement, MouseEvent>>({
         value              : controllableValue,
         onValueChange      : onControllableValueChange,
     });
@@ -115,8 +112,8 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
     
     
     // handlers:
-    const handleChange = useEvent<EditorChangeEventHandler<VariantDetail['id']|null>>((newValue) => {
-        triggerValueChange(newValue, { triggerAt: 'immediately' });
+    const handleChange = useEvent<EditorChangeEventHandler<VariantDetail['id']|null, React.MouseEvent<HTMLElement, MouseEvent>>>((newValue, event) => {
+        triggerValueChange(newValue, { triggerAt: 'immediately', event: event });
     });
     
     
@@ -167,7 +164,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
                 
                 
                 // handlers:
-                onClick={() => handleChange(null)}
+                onClick={(event) => handleChange(null, event)}
             >
                 <RadioDecorator className='indicator' />
                 <p className='name'>
@@ -193,7 +190,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
                     
                     
                     // handlers:
-                    onClick={() => handleChange(id)}
+                    onClick={(event) => handleChange(id, event)}
                 >
                     <RadioDecorator className='indicator' />
                     <p className='name'>
