@@ -21,6 +21,11 @@ import type {
     IndicatorProps,
 }                           from '@reusable-ui/indicator'       // a base component
 
+// heymarco components:
+import {
+    type EditorProps,
+}                           from '@heymarco/editor'
+
 // lexical functions:
 import {
     // types:
@@ -33,10 +38,6 @@ import {
 }                           from '@lexical/react/LexicalComposer'
 
 // internals:
-import type {
-    // react components:
-    EditorProps,
-}                           from '@/components/editors/Editor'
 import type {
     // types:
     WysiwygEditorState,
