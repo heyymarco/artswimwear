@@ -48,10 +48,12 @@ import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
-// internal components:
+// heymarco components:
 import {
     type EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
+}                           from '@heymarco/editor'
+
+// internal components:
 import {
     type ModelPreviewProps,
 }                           from '@/components/explorers/PaginationList'
@@ -100,7 +102,7 @@ const minImageWidth = 44;  // 44px === (50px + (2* paddingBlock)) * aspectRatio 
 export interface CategoryCardProps extends ModelPreviewProps<CategoryPreview> {
     // values:
     selectedModel  ?: CategoryPreview|null
-    onModelSelect  ?: EditorChangeEventHandler<CategoryPreview>
+    onModelSelect  ?: EditorChangeEventHandler<CategoryPreview, React.MouseEvent<HTMLElement, MouseEvent>>
 }
 const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     // styles:
@@ -177,7 +179,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
         
         // actions:
         if (hasSubcategories) {
-            onModelSelect?.(model);                 // navigate to subcategory
+            onModelSelect?.(model, event);          // navigate to subcategory
         }
         else {
             router.push(categoryUninterceptedPath); // goto unintercepted category page
