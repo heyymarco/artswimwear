@@ -223,7 +223,8 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
         // values:
         defaultValue         : defaultUncontrollableValue    = (null as TValue),
         value                : controllableValue,
-        onChange             : onValueChange,
+        onChange,
+        onChangeAsText,
         
         defaultTimezone      : defaultUncontrollableTimezone = checkoutConfigShared.intl.defaultTimezone,
         timezone             : controllableTimezone,
@@ -254,7 +255,6 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
         
         
         // handlers:
-        onChangeAsText,
         onFocus,
         onBlur,
         
@@ -294,15 +294,31 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
     
     
     // states:
-    const [isFocus , setIsFocus ] = useState<boolean>(false);
+    const [isFocus , setIsFocus ]    = useState<boolean>(false);
     
+    const handleChangeAsTextInternal = useEvent<EditorChangeEventHandler<TValue, TChangeEvent>>((newValue, event) => {
+        if (onChangeAsText) {
+            // normalize: null => empty string, any TValue => toString:
+            const newValueStr = (newValue !== null) ? `${newValue}` : '' /* null => empty string */;
+            onChangeAsText(newValueStr, event);
+        } // if
+    });
+    const handleValueChange          = useMergeEvents(
+        // preserves the original `onChange` from `props`:
+        onChange,
+        
+        
+        
+        // preserves the original `onChangeAsText` from `props`:
+        handleChangeAsTextInternal,
+    );
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
     } = useControllableAndUncontrollable<TValue, TChangeEvent>({
         defaultValue       : defaultUncontrollableValue,
         value              : controllableValue,
-        onValueChange      : onValueChange,
+        onValueChange      : handleValueChange,
     });
     
     const {
@@ -330,33 +346,28 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
     
     
     // handlers:
-    const handleChangeAsTextInternal = useEvent<EditorChangeEventHandler<string, TChangeEvent>>((valueAsString, event) => {
+    const handleInputChangeInternal = useEvent<EditorChangeEventHandler<string, TChangeEvent>>((valueAsString, event) => {
         const newDate = localToDate(valueAsString, timezone) as TValue;
         triggerValueChange(newDate, { triggerAt: 'immediately', event: event });
     });
-    const handleChangeAsText         = useMergeEvents(
-        // preserves the original `onChangeAsText` from `inputEditorComponent`:
-        inputEditorComponent.props.onChangeAsText,
-        
-        
-        
-        // preserves the original `onChangeAsText` from `props`:
-        onChangeAsText,
+    const handleInputChange         = useMergeEvents(
+        // preserves the original `onChange` from `inputEditorComponent`:
+        inputEditorComponent.props.onChange,
         
         
         
         // actions:
-        handleChangeAsTextInternal,
+        handleInputChangeInternal,
     );
     
-    const handleTimezoneChange       = useEvent<EditorChangeEventHandler<number, React.MouseEvent<Element, MouseEvent>>>((newTimezone, event) => {
+    const handleTimezoneChange      = useEvent<EditorChangeEventHandler<number, React.MouseEvent<Element, MouseEvent>>>((newTimezone, event) => {
         triggerTimezoneChange(newTimezone, { triggerAt: 'immediately', event: event });
     });
     
-    const handleFocusInternal        = useEvent<React.FocusEventHandler<Element>>(() => {
+    const handleFocusInternal       = useEvent<React.FocusEventHandler<Element>>(() => {
         setIsFocus(true);
     });
-    const handleFocus                = useMergeEvents(
+    const handleFocus               = useMergeEvents(
         // preserves the original `onFocus` from `inputEditorComponent`:
         inputEditorComponent.props.onFocus,
         
@@ -371,10 +382,10 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
         handleFocusInternal,
     );
     
-    const handleBlurInternal         = useEvent<React.FocusEventHandler<Element>>(() => {
+    const handleBlurInternal        = useEvent<React.FocusEventHandler<Element>>(() => {
         setIsFocus(false);
     });
-    const handleBlur                 = useMergeEvents(
+    const handleBlur                = useMergeEvents(
         // preserves the original `onBlur` from `inputEditorComponent`:
         inputEditorComponent.props.onBlur,
         
@@ -499,7 +510,7 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
                         
                         // values:
                         value             : inputEditorComponentValue, // internally controllable
-                        onChangeAsText    : handleChangeAsText,        // internally controllable
+                        onChange          : handleInputChange,         // internally controllable
                         
                         notifyValueChange : inputEditorComponentNotifyValueChange,
                         
