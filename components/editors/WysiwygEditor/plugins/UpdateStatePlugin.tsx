@@ -17,6 +17,16 @@ import {
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// heymarco core:
+import {
+    createSyntheticEvent,
+}                           from '@heymarco/events'
+
+// heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
 // lexical functions:
 import {
     // hooks:
@@ -28,10 +38,6 @@ import {
 }                           from '@lexical/react/LexicalOnChangePlugin'
 
 // internals:
-import type {
-    // types:
-    EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
 import type {
     // types:
     WysiwygEditorState,
@@ -85,7 +91,7 @@ export const normalizeWysiwygEditorState = (value: WysiwygEditorState|null): Wys
 export interface UpdateStatePluginProps {
     value        ?: WysiwygEditorState|null
     defaultValue ?: WysiwygEditorState|null
-    onChange     ?: EditorChangeEventHandler<WysiwygEditorState|null>
+    onChange     ?: EditorChangeEventHandler<WysiwygEditorState|null, React.SyntheticEvent<unknown, Event>>
 }
 const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginProps): JSX.Element|null => {
     // contexts:
@@ -161,7 +167,10 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
             
             
             // actions:
-            onChange(newValue);
+            const changeEvent = createSyntheticEvent({
+                nativeEvent : new Event('change'),
+            });
+            onChange(newValue, changeEvent);
         });
     });
     
