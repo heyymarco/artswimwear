@@ -18,11 +18,12 @@ import {
     useMergeEvents,
 }                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 
+// heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
 // internal components:
-import type {
-    // types:
-    EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
 import {
     MaskedEditorProps,
     MaskedEditor,
@@ -56,7 +57,7 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
     
     
     // handlers:
-    const handleChangeInternal = useEvent<EditorChangeEventHandler<string>>((cardNumber) => {
+    const handleChangeInternal = useEvent<EditorChangeEventHandler<string, React.ChangeEvent<HTMLInputElement>>>((cardNumber) => {
         // conditions:
         if (restCreditCardNumberInputProps.maskPattern !== undefined) return;
         
