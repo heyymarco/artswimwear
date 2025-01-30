@@ -60,11 +60,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
+// heymarco components:
 import {
     type EditorChangeEventHandler,
     type EditorProps,
-}                           from '@/components/editors/Editor'
+}                           from '@heymarco/editor'
 
 // models:
 import {
@@ -123,7 +123,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // components:
-    editorComponent        : React.ReactComponentElement<any, EditorProps<Element, ValueOfModel<TModel>>>
+    editorComponent        : React.ReactElement<EditorProps<Element, ValueOfModel<TModel>>>
     
     
     
