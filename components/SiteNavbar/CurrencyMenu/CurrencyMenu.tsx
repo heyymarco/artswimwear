@@ -41,10 +41,12 @@ import {
     useNavbarState,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
 // internal components:
-import type {
-    EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
 import {
     SelectCurrencyEditorProps,
     SelectCurrencyEditor,
@@ -69,7 +71,7 @@ import {
 
 
 // react components:
-interface CurrencyMenuProps<TElement extends Element = HTMLElement>
+interface CurrencyMenuProps<TElement extends Element = HTMLDivElement>
     extends
         // bases:
         Omit<SelectCurrencyEditorProps<TElement>,
@@ -79,7 +81,7 @@ interface CurrencyMenuProps<TElement extends Element = HTMLElement>
         >
 {
 }
-const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMenuProps<TElement>): JSX.Element|null => {
+const CurrencyMenu = <TElement extends Element = HTMLDivElement>(props: CurrencyMenuProps<TElement>): JSX.Element|null => {
     // props:
     const {
         // other props:
@@ -167,7 +169,7 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
         handleCollapseEndInternal,
     );
     
-    const handleChangeInternal      = useEvent<EditorChangeEventHandler<string>>((newValue) => {
+    const handleChangeInternal      = useEvent<EditorChangeEventHandler<string, React.MouseEvent<Element, MouseEvent>>>((newValue) => {
         setCurrency(newValue);
     });
     const handleChange              = useMergeEvents(
