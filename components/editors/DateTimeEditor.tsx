@@ -79,7 +79,7 @@ import {
 
 
 // utilities:
-const localToDate = (local: string, timezone: number): Date|null => {
+const localToDate = (local: string|null|undefined, timezone: number): Date|null => {
     // conditions:
     if (!local) return null;
     
@@ -335,7 +335,7 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
     // props:
     const {
         // values:
-        notifyValueChange    = value,                        // take, to be handled by `<NumberEditor>`
+        notifyValueChange    = value,                        // take, to be handled by `<InputEditor>`
         
         
         
@@ -404,6 +404,11 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
     
     // default props:
     const {
+        // classes:
+        className         : inputEditorComponentClassName         = 'fluid',
+        
+        
+        
         // values:
         value             : inputEditorComponentValue             = (dateToLocal(value, timezone) ?? ''), // internally controllable
         
@@ -505,6 +510,11 @@ const DateTimeEditor = <TElement extends Element = HTMLSpanElement, TValue exten
                         // other props:
                         ...restInputEditorProps satisfies NoForeignProps<typeof restInputEditorProps, InputEditorProps<Element, string, TChangeEvent>>,
                         ...restInputEditorComponentProps, // overwrites restInputEditorProps (if any conflics)
+                        
+                        
+                        
+                        // classes:
+                        className         : inputEditorComponentClassName,
                         
                         
                         
