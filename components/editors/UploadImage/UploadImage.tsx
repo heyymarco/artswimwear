@@ -36,10 +36,15 @@ import {
     useDisableable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// heymarco:
+// heymarco core:
 import {
     // hooks:
     useScheduleTriggerEvent,
+    
+    
+    
+    // events:
+    createSyntheticEvent,
     
     
     
@@ -80,16 +85,17 @@ import {
     getFetchErrorMessage,
 }                           from '@reusable-ui/components'
 
+// heymarco components:
+import {
+    type EditorProps,
+}                           from '@heymarco/editor'
+
 // other libs:
 import {
     default as MimeMatcher,
 }                           from 'mime-matcher'
 
 // internals:
-import type {
-    // react components:
-    EditorProps,
-}                           from '@/components/editors/Editor'
 import {
     // configs:
     uploadImages,
@@ -137,10 +143,10 @@ type UploadingImageData = {
 
 
 // react components:
-export interface UploadImageProps<TElement extends Element = HTMLElement, TValue extends ImageData = ImageData>
+export interface UploadImageProps<TElement extends Element = HTMLElement, TValue extends ImageData = ImageData, TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.SyntheticEvent<unknown, Event>>
     extends
         // bases:
-        Pick<EditorProps<TElement, TValue|null>,
+        Pick<EditorProps<TElement, TValue|null, TChangeEvent>,
             // accessibilities:
             |'readOnly'
             
@@ -215,7 +221,7 @@ export interface UploadImageProps<TElement extends Element = HTMLElement, TValue
     // handlers:
     onResolveImageUrl                 ?: (imageData: TValue) => URL|string
 }
-const UploadImage = <TElement extends Element = HTMLElement, TValue extends ImageData = ImageData>(props: UploadImageProps<TElement, TValue>): JSX.Element|null => {
+const UploadImage = <TElement extends Element = HTMLElement, TValue extends ImageData = ImageData, TChangeEvent extends React.SyntheticEvent<unknown, Event> = React.SyntheticEvent<unknown, Event>>(props: UploadImageProps<TElement, TValue, TChangeEvent>): JSX.Element|null => {
     // styles:
     const styleSheet = useUploadImageStyleSheet();
     
@@ -302,7 +308,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
-    } = useControllableAndUncontrollable<TValue|null>({
+    } = useControllableAndUncontrollable<TValue|null, TChangeEvent>({
         defaultValue       : defaultUncontrollableValue,
         value              : controllableValue,
         onValueChange      : onControllableValueChange,
@@ -407,7 +413,10 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
         
         
         // notify the image changed:
-        triggerValueChange(null, { triggerAt: 'macrotask' }); // then at the *next re-render*, the *controllable* `image` will change
+        const changeEvent = createSyntheticEvent({
+            nativeEvent : new Event('change'),
+        }) as TChangeEvent;
+        triggerValueChange(null, { triggerAt: 'macrotask', event: changeEvent }); // then at the *next re-render*, the *controllable* `image` will change
     });
     
     const inputFileHandleChange           = useEvent<React.ChangeEventHandler<HTMLInputElement>>(async () => {
@@ -581,7 +590,10 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
             // successfully uploaded:
             if (imageData) {
                 // notify the image changed:
-                triggerValueChange(imageData, { triggerAt: 'macrotask' }); // then at the *next re-render*, the *controllable* `image` will change
+                const changeEvent = createSyntheticEvent({
+                    nativeEvent : new Event('change'),
+                }) as TChangeEvent;
+                triggerValueChange(imageData, { triggerAt: 'macrotask', event: changeEvent }); // then at the *next re-render*, the *controllable* `image` will change
             } // if
             
             
