@@ -28,10 +28,12 @@ import {
     List,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
+// heymarco components:
 import {
     type EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
+}                           from '@heymarco/editor'
+
+// internal components:
 import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
@@ -129,7 +131,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
+    const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview, React.MouseEvent<HTMLElement, MouseEvent>>>((model) => {
         setParentCategories([{ category: model, index: 0 }]); // set the selected root category
         setRestoreIndex(0); // reset the pagination index of child categories
     });

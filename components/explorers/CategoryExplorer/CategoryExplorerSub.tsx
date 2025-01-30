@@ -29,10 +29,12 @@ import {
     CloseButton,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
+// heymarco components:
 import {
     type EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
+}                           from '@heymarco/editor'
+
+// internal components:
 import {
     type PaginationStateProps,
     PaginationStateProvider,
@@ -281,7 +283,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
             setRestoreIndex(prevCategoryInfo?.index ?? 0); // restore the pagination index of child categories
         });
     });
-    const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
+    const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview, React.MouseEvent<HTMLElement, MouseEvent>>>((model) => {
         setParentCategories((draft): void => {
             // conditions:
             if (draft.length < minDepth) return; // ABORT the operation if the_parents_deep DOESNT_SATISFY minDepth
