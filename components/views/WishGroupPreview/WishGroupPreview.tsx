@@ -43,13 +43,15 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// heymarco components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
 // internal components:
 import {
     type ModelPreviewProps,
 }                           from '@/components/explorers/PaginationList'
-import {
-    type EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
 import {
     EditButton,
 }                           from '@/components/EditButton'
@@ -87,7 +89,7 @@ export interface WishGroupPreviewProps
     
     // values:
     selectedModel ?: WishGroupDetail|null
-    onModelSelect ?: EditorChangeEventHandler<WishGroupDetail>
+    onModelSelect ?: EditorChangeEventHandler<WishGroupDetail, React.MouseEvent<HTMLElement, MouseEvent>>
 }
 const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
     // styles:
@@ -139,7 +141,7 @@ const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
         
         
         // actions:
-        onModelSelect?.(model);
+        onModelSelect?.(model, event);
     });
     
     type EditMode = 'full'
