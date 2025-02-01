@@ -34,4 +34,3 @@ export type UpdateSideHandler                           = () => void|Promise<voi
 export type DeleteSideHandler                           = () => void|Promise<void>
 
 export type ConfirmDeleteHandler<TModel extends Model>  = (args: { model: TModel      }) => { title?: React.ReactNode, message: React.ReactNode }
-export type ConfirmUnsavedHandler<TModel extends Model> = (args: { model: TModel|null }) => { title?: React.ReactNode, message: React.ReactNode }

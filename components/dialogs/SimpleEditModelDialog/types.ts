@@ -50,5 +50,3 @@ export type AfterUpdateHandler                          = () => void|Promise<voi
 
 export type UpdateSideHandler                           = () => void|Promise<void>
 export type DeleteSideHandler                           = () => void|Promise<void>
-
-export type ConfirmUnsavedHandler<TModel extends Model> = (args: { model: TModel|null }) => { title?: React.ReactNode, message: React.ReactNode }

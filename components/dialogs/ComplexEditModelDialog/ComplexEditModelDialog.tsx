@@ -92,6 +92,22 @@ import {
 // models:
 import {
     type Model,
+    
+    type ModelConfirmMessage,
+    type ModelConfirmUnsavedEventHandler,
+    type ModelConfirmDeleteEventHandler,
+    
+    type ModelCreatingOrUpdatingOptions,
+    type ModelDeletingOptions,
+    type ModelCreatingOrUpdatingEventHandler,
+    type ModelCreatingOrUpdatingOfDraftEventHandler,
+    type ModelDeletingEventHandler,
+    
+    type SideModelCreatingOrUpdatingEventHandler,
+    type SideModelDeletingEventHandler,
+    
+    type ModelCreatedOrUpdatedEventHandler,
+    type ModelDeletedEventHandler,
 }                           from '@/models'
 
 // internals:
@@ -109,7 +125,6 @@ import {
     type DeleteSideHandler,
     
     type ConfirmDeleteHandler,
-    type ConfirmUnsavedHandler,
 }                           from './types'
 import {
     getInvalidFields,
@@ -182,7 +197,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onSideDelete          ?: DeleteSideHandler
     
     onConfirmDelete       ?: ConfirmDeleteHandler<TModel>
-    onConfirmUnsaved      ?: ConfirmUnsavedHandler<TModel>
+    onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
     
     
     
@@ -451,7 +466,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         } // if
     });
     
-    const handleCloseDialog    = useEvent(async () => {
+    const handleCloseDialog    = useEvent<React.MouseEventHandler<HTMLButtonElement>>(async (event) => {
         if (whenWrite && isModified) {
             // conditions:
             let answer : 'save'|'dontSave'|'continue'|undefined = 'save';
@@ -461,7 +476,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                     message = <p>
                         Do you want to save the changes?
                     </p>,
-                } = onConfirmUnsaved?.({model}) ?? {};
+                } = onConfirmUnsaved?.({ draft: model, event: event }) ?? {};
                 answer = await showMessage<'save'|'dontSave'|'continue'>({
                     theme         : 'warning',
                     title         : title,

@@ -70,6 +70,22 @@ import {
 import {
     type Model,
     type MutationArgs,
+    
+    type ModelConfirmMessage,
+    type ModelConfirmUnsavedEventHandler,
+    type ModelConfirmDeleteEventHandler,
+    
+    type ModelCreatingOrUpdatingOptions,
+    type ModelDeletingOptions,
+    type ModelCreatingOrUpdatingEventHandler,
+    type ModelCreatingOrUpdatingOfDraftEventHandler,
+    type ModelDeletingEventHandler,
+    
+    type SideModelCreatingOrUpdatingEventHandler,
+    type SideModelDeletingEventHandler,
+    
+    type ModelCreatedOrUpdatedEventHandler,
+    type ModelDeletedEventHandler,
 }                           from '@/models'
 
 // internals:
@@ -89,8 +105,6 @@ import {
     
     type UpdateSideHandler,
     type DeleteSideHandler,
-    
-    type ConfirmUnsavedHandler,
 }                           from './types'
 import {
     getInvalidFields,
@@ -140,7 +154,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     onSideUpdate          ?: UpdateSideHandler
     onSideDelete          ?: DeleteSideHandler
     
-    onConfirmUnsaved      ?: ConfirmUnsavedHandler<TModel>
+    onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
 }
 export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = Omit<SimpleEditModelDialogProps<TModel, TEdit>,
     // data:
@@ -315,7 +329,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         } // if
     });
     
-    const handleCloseDialog    = useEvent(async () => {
+    const handleCloseDialog    = useEvent<React.MouseEventHandler<HTMLButtonElement>>(async (event) => {
         if (isModified) {
             // conditions:
             let answer : 'save'|'dontSave'|'continue'|undefined = 'save';
@@ -325,7 +339,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                     message = <p>
                         Do you want to save the changes?
                     </p>,
-                } = onConfirmUnsaved?.({model}) ?? {};
+                } = onConfirmUnsaved?.({ draft: model, event: event }) ?? {};
                 answer = await showMessage<'save'|'dontSave'|'continue'>({
                     theme         : 'warning',
                     title         : title,
