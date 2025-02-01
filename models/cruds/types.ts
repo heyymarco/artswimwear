@@ -28,7 +28,7 @@ export interface ModelConfirmMessage {
  * @param param.event - The event triggered by clicking the save button.
  * @returns A confirmation message.
  */
-export type ModelConfirmUnsavedEventHandler            <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                          }) => ModelConfirmMessage
+export type ModelConfirmUnsavedEventHandler            <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                           }) => ModelConfirmMessage
 
 /**
  * Handler for confirming deletion of a model.
@@ -38,7 +38,7 @@ export type ModelConfirmUnsavedEventHandler            <in     TModel extends Mo
  * @param param.options - Options for deleting the model.
  * @returns A confirmation message.
  */
-export type ModelConfirmDeleteEventHandler             <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options: ModelDeletingOptions|undefined }) => ModelConfirmMessage
+export type ModelConfirmDeleteEventHandler             <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => ModelConfirmMessage
 
 
 
@@ -75,7 +75,7 @@ export interface ModelDeletingOptions {
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model.
  */
-export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for creating or updating a draft model.
@@ -85,7 +85,7 @@ export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Mo
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model.
  */
-export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for deleting a model.
@@ -95,7 +95,7 @@ export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Mo
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelDeletingEventHandler                  <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options: ModelDeletingOptions|undefined }) => void|Promise<void>
+export type ModelDeletingEventHandler                  <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
 
 
 
@@ -108,7 +108,7 @@ export type ModelDeletingEventHandler                  <in     TModel extends Mo
  * @param param.options - Options for creating or updating the model.
  * @returns A void or a promise that resolves to void.
  */
-export type SideModelCreatingOrUpdatingEventHandler    <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => void|Promise<void>
+export type SideModelCreatingOrUpdatingEventHandler    <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => void|Promise<void>
 
 /**
  * Handler for deleting a related external model.
@@ -118,7 +118,7 @@ export type SideModelCreatingOrUpdatingEventHandler    <in     TModel extends Mo
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
  */
-export type SideModelDeletingEventHandler              <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model:              TModel , event: TCrudEvent, options: ModelDeletingOptions|undefined }) => void|Promise<void>
+export type SideModelDeletingEventHandler              <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model:              TModel , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
 
 
 
@@ -131,7 +131,7 @@ export type SideModelDeletingEventHandler              <in     TModel extends Mo
  * @param param.options - Options for creating or updating the model.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => void|Promise<void>
+export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => void|Promise<void>
 
 /**
  * Handler for actions after a model has been deleted.
@@ -141,4 +141,4 @@ export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Mo
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelDeletedEventHandler                   <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model:              TModel , event: TCrudEvent, options: ModelDeletingOptions|undefined }) => void|Promise<void>
+export type ModelDeletedEventHandler                   <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model:              TModel , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
