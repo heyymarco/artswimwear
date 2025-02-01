@@ -28,7 +28,7 @@ export interface ModelConfirmMessage {
  * @param param.event - The event triggered by clicking the save button.
  * @returns A confirmation message.
  */
-export type ModelConfirmUnsavedEventHandler            <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|undefined    , event: TCrudEvent                                          }) => ModelConfirmMessage
+export type ModelConfirmUnsavedEventHandler            <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                          }) => ModelConfirmMessage
 
 /**
  * Handler for confirming deletion of a model.
@@ -74,7 +74,7 @@ export interface ModelDeletingOptions {
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model.
  */
-export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|undefined    , event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options: ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for creating or updating a draft model.
