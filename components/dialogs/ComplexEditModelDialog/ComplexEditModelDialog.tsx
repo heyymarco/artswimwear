@@ -118,7 +118,6 @@ import {
     type UpdateHandler,
     type AfterUpdateHandler,
     
-    type DeleteHandler,
     type AfterDeleteHandler,
     
     type UpdateSideHandler,
@@ -188,7 +187,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onUpdate              ?: UpdateHandler<TModel>
     onAfterUpdate         ?: AfterUpdateHandler
     
-    onDelete              ?: DeleteHandler<TModel>
+    onDelete              ?: ModelDeletingEventHandler<TModel>
     onAfterDelete         ?: AfterDeleteHandler
     
     onSideUpdate          ?: UpdateSideHandler
@@ -433,7 +432,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // actions:
         try {
-            const deletingModelTask = onDelete?.(model, options);
+            const deletingModelTask = onDelete?.({ draft: model, event: event, options: options});
             
             const deletingModelAndOthersTask = (
                 deletingModelTask

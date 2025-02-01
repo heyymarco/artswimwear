@@ -54,8 +54,6 @@ import {
     // types:
     UpdateHandler,
     
-    DeleteHandler,
-    
     
     
     // react components:
@@ -66,6 +64,7 @@ import {
 // models:
 import {
     type ModelConfirmDeleteEventHandler,
+    type ModelDeletingEventHandler,
     
     type WishGroupDetail,
 }                           from '@/models'
@@ -125,8 +124,8 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
         }).unwrap();
     });
     
-    const handleDelete         = useEvent<DeleteHandler<WishGroupDetail>>(async ({id}, arg) => {
-        const deleteBoth = (arg === true);
+    const handleDelete         = useEvent<ModelDeletingEventHandler<WishGroupDetail>>(async ({ draft: { id }, options }) => {
+        const deleteBoth = (options?.deleteBoth as boolean|undefined) ?? false;
         await deleteWishGroup({
             id         : id,
             deleteBoth : deleteBoth,

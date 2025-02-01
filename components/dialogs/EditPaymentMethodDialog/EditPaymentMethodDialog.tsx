@@ -112,8 +112,6 @@ import {
     // types:
     type UpdateHandler,
     
-    type DeleteHandler,
-    
     
     
     // react components:
@@ -126,6 +124,7 @@ import {
 import {
     // types:
     type ModelConfirmDeleteEventHandler,
+    type ModelDeletingEventHandler,
     
     type BillingAddressDetail,
     
@@ -294,7 +293,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         } satisfies Omit<PaymentMethodDetail, 'priority'>;
     });
     
-    const handleDelete              = useEvent<DeleteHandler<PaymentMethodDetail>>(async ({id}) => {
+    const handleDelete              = useEvent<ModelDeletingEventHandler<PaymentMethodDetail>>(async ({ draft: { id } }) => {
         await deletePaymentMethod({
             id : id,
         }).unwrap();
