@@ -21,7 +21,5 @@ export type UpdateDraftHandler<TModel extends Model>    = (args: { draftModel: T
 export type UpdatedHandler<TModel extends Model>        = (updatedModel: PartialModel<TModel>) => void|Promise<void>
 export type AfterUpdateHandler                          = () => void|Promise<void>
 
-export type AfterDeleteHandler                          = () => void|Promise<void>
-
 export type UpdateSideHandler                           = () => void|Promise<void>
 export type DeleteSideHandler                           = () => void|Promise<void>

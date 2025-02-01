@@ -118,8 +118,6 @@ import {
     type UpdateHandler,
     type AfterUpdateHandler,
     
-    type AfterDeleteHandler,
-    
     type UpdateSideHandler,
     type DeleteSideHandler,
 }                           from './types'
@@ -188,7 +186,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onAfterUpdate         ?: AfterUpdateHandler
     
     onDelete              ?: ModelDeletingEventHandler<TModel>
-    onAfterDelete         ?: AfterDeleteHandler
+    onDeleted             ?: ModelDeletedEventHandler<TModel>
     
     onSideUpdate          ?: UpdateSideHandler
     onSideDelete          ?: DeleteSideHandler
@@ -224,7 +222,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'onUpdate'         // already taken over
     |'onAfterUpdate'    // already taken over
     |'onDelete'         // already taken over
-    |'onAfterDelete'    // already taken over
+    |'onDeleted'        // already taken over
     |'onSideUpdate'     // already taken over
     |'onSideDelete'     // already taken over
     |'onConfirmDelete'  // already taken over
@@ -290,7 +288,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onAfterUpdate,
         
         onDelete,
-        onAfterDelete,
+        onDeleted,
         
         onSideUpdate,
         onSideDelete,
@@ -437,11 +435,15 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             const deletingModelAndOthersTask = (
                 deletingModelTask
                 ? (
-                    onAfterDelete
-                    ? deletingModelTask.then(onAfterDelete)
+                    onDeleted
+                    ? deletingModelTask.then(async () => {
+                        await onDeleted({ model: model, event: event, options: options });
+                    })
                     : deletingModelTask
                 )
-                : Promise.resolve(onAfterDelete)
+                : Promise.resolve(async () => {
+                    await onDeleted?.({ model: model, event: event, options: options });
+                })
             );
             
             await handleFinalizing(false, /*commitSides = */false, [deletingModelAndOthersTask]); // result: deleted
