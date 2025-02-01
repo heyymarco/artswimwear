@@ -56,8 +56,6 @@ import {
     
     DeleteHandler,
     
-    ConfirmDeleteHandler,
-    
     
     
     // react components:
@@ -67,6 +65,8 @@ import {
 
 // models:
 import {
+    type ModelConfirmDeleteEventHandler,
+    
     type WishGroupDetail,
 }                           from '@/models'
 
@@ -133,12 +133,12 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
         }).unwrap();
     });
     
-    const handleConfirmDelete  = useEvent<ConfirmDeleteHandler<WishGroupDetail>>(({model}) => {
+    const handleConfirmDelete  = useEvent<ModelConfirmDeleteEventHandler<WishGroupDetail>>(({ draft }) => {
         return {
             title   : <h1>Delete Confirmation</h1>,
             message : <>
                 <p>
-                    Are you sure to delete <strong>{model.name}</strong> collection?
+                    Are you sure to delete <strong>{draft.name}</strong> collection?
                 </p>
             </>,
         };
@@ -210,13 +210,13 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             tabDelete     = 'Delete'
             contentDelete = {({ handleDelete }) =>
                 <div className={styleSheet.deleteTab}>
-                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={() => handleDelete(false)}>
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleDelete(event, { deleteBoth: false })}>
                         Delete Only <strong>{model?.name}</strong> Collection
                     </ButtonIcon>
                     
                     <AlternateSeparator />
                     
-                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={() => handleDelete(true)}>
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleDelete(event, { deleteBoth: true })}>
                         Delete Both <strong>{model?.name}</strong> Collection and Related Items on Wishlist
                     </ButtonIcon>
                 </div>

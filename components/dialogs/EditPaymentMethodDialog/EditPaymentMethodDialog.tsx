@@ -114,8 +114,6 @@ import {
     
     type DeleteHandler,
     
-    type ConfirmDeleteHandler,
-    
     
     
     // react components:
@@ -127,6 +125,8 @@ import {
 // models:
 import {
     // types:
+    type ModelConfirmDeleteEventHandler,
+    
     type BillingAddressDetail,
     
     type PaymentDetail,
@@ -300,7 +300,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         }).unwrap();
     });
     
-    const handleConfirmDelete       = useEvent<ConfirmDeleteHandler<PaymentMethodDetail>>(({model}) => {
+    const handleConfirmDelete       = useEvent<ModelConfirmDeleteEventHandler<PaymentMethodDetail>>(({ draft }) => {
         return {
             title   : <h1>Delete Confirmation</h1>,
             message : <>

@@ -123,8 +123,6 @@ import {
     
     type UpdateSideHandler,
     type DeleteSideHandler,
-    
-    type ConfirmDeleteHandler,
 }                           from './types'
 import {
     getInvalidFields,
@@ -175,7 +173,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     // tabs:
     tabDelete             ?: React.ReactNode
-    contentDelete         ?: React.ReactNode | ((props: { handleDelete: (arg?: unknown|undefined) => Promise<false|undefined> }) => React.ReactNode),
+    contentDelete         ?: React.ReactNode | ((props: { handleDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions) => Promise<false|undefined> }) => React.ReactNode),
     
     
     
@@ -196,7 +194,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onSideUpdate          ?: UpdateSideHandler
     onSideDelete          ?: DeleteSideHandler
     
-    onConfirmDelete       ?: ConfirmDeleteHandler<TModel>
+    onConfirmDelete       ?: ModelConfirmDeleteEventHandler<TModel>
     onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
     
     
@@ -399,9 +397,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             if ((fetchError !== null) && (fetchError !== undefined)) showMessageFetchError(fetchError);
         } // try
     });
-    const handleDelete         = useEvent(async (arg?: unknown|undefined) => {
+    const handleDelete         = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions): Promise<false|undefined> => {
         // conditions:
-        if (!model) return; // no model to delete => ignore
+        if (!model) return undefined; // no model to delete => ignore
         {
             const {
                 title   = <h1>Delete Confirmation</h1>,
@@ -414,7 +412,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                         modelName
                     }</strong>
                 </p>,
-            } = onConfirmDelete?.({model}) ?? {};
+            } = onConfirmDelete?.({ draft: model, event: event, options: options }) ?? {};
             if (
                 (await showMessage<'yes'|'no'>({
                     theme    : 'warning',
@@ -435,7 +433,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // actions:
         try {
-            const deletingModelTask = onDelete?.(model, arg);
+            const deletingModelTask = onDelete?.(model, options);
             
             const deletingModelAndOthersTask = (
                 deletingModelTask
@@ -452,6 +450,10 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
         } // try
+        
+        
+        
+        return undefined;
     });
     const handleSideSave       = useEvent(async (commitSides : boolean) => {
         if (!whenWrite) return;

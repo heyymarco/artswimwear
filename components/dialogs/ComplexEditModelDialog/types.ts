@@ -1,9 +1,3 @@
-// react:
-import {
-    // react:
-    type default as React,
-}                           from 'react'
-
 // reusable-ui components:
 import {
     // dialog-components:
@@ -32,5 +26,3 @@ export type AfterDeleteHandler                          = () => void|Promise<voi
 
 export type UpdateSideHandler                           = () => void|Promise<void>
 export type DeleteSideHandler                           = () => void|Promise<void>
-
-export type ConfirmDeleteHandler<TModel extends Model>  = (args: { model: TModel      }) => { title?: React.ReactNode, message: React.ReactNode }
