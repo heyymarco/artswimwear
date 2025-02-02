@@ -128,10 +128,9 @@ export type SideModelDeletingEventHandler              <in     TModel extends Mo
  * @param param - The parameters for the handler.
  * @param param.model - The partial model that was created or updated.
  * @param param.event - The event triggered by clicking the save or update button.
- * @param param.options - Options for creating or updating the model.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => void|Promise<void>
+export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: PartialModel<TModel>, event: TCrudEvent                                           }) => void|Promise<void>
 
 /**
  * Handler for actions after a model has been deleted.
