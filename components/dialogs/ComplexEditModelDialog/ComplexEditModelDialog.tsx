@@ -115,7 +115,6 @@ import {
     type ComplexEditModelDialogResult,
     type ComplexEditModelDialogExpandedChangeEvent,
     
-    type UpdateHandler,
     type AfterUpdateHandler,
     
     type UpdateSideHandler,
@@ -182,7 +181,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // handlers:
-    onUpdate              ?: UpdateHandler<TModel>
+    onUpdate              ?: ModelCreatingOrUpdatingEventHandler<TModel>
     onAfterUpdate         ?: AfterUpdateHandler
     
     onDelete              ?: ModelDeletingEventHandler<TModel>
@@ -347,7 +346,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     
     
     // handlers:
-    const handleSave           = useEvent(async () => {
+    const handleSave           = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         if (!whenWrite) return;
         
         
@@ -371,10 +370,14 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         try {
             const updatingModelRaw = onUpdate?.({
-                id : model?.id || null,
+                id      : model?.id || null,
                 
-                whenAdd,
-                whenUpdate,
+                event   : event,
+                
+                options : {
+                    addPermission     : whenAdd,
+                    updatePermissions : whenUpdate,
+                },
             });
             const updatingModelTask = (updatingModelRaw instanceof Promise) ? updatingModelRaw : Promise.resolve(updatingModelRaw);
             
@@ -502,7 +505,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             switch (answer) {
                 case 'save':
                     // then do a save (it will automatically close the editor after successfully saving):
-                    handleSave();
+                    handleSave(event);
                     break;
                 case 'dontSave':
                     // then close the editor (without saving):

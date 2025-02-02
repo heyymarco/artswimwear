@@ -51,11 +51,6 @@ import {
     UniqueWishGroupNameEditor,
 }                           from '@/components/editors/UniqueWishGroupNameEditor'
 import {
-    // types:
-    UpdateHandler,
-    
-    
-    
     // react components:
     ImplementedComplexEditModelDialogProps,
     ComplexEditModelDialog,
@@ -64,6 +59,7 @@ import {
 // models:
 import {
     type ModelConfirmDeleteEventHandler,
+    type ModelCreatingOrUpdatingEventHandler,
     type ModelDeletingEventHandler,
     
     type WishGroupDetail,
@@ -116,7 +112,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
     
     
     // handlers:
-    const handleUpdate         = useEvent<UpdateHandler<WishGroupDetail>>(async ({id}) => {
+    const handleUpdate         = useEvent<ModelCreatingOrUpdatingEventHandler<WishGroupDetail>>(async ({ id }) => {
         return await updateWishGroup({
             id : id ?? '',
             

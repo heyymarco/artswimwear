@@ -109,11 +109,6 @@ import {
 
 // internal components:
 import {
-    // types:
-    type UpdateHandler,
-    
-    
-    
     // react components:
     type ComplexEditModelDialogProps,
     type ImplementedComplexEditModelDialogProps,
@@ -124,6 +119,7 @@ import {
 import {
     // types:
     type ModelConfirmDeleteEventHandler,
+    type ModelCreatingOrUpdatingEventHandler,
     type ModelDeletingEventHandler,
     
     type BillingAddressDetail,
@@ -249,7 +245,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // handlers:
-    const handleUpdate              = useEvent<UpdateHandler<PaymentMethodDetail>>(async ({id}) => {
+    const handleUpdate              = useEvent<ModelCreatingOrUpdatingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
         const paymentDetail = await imperativeClickRef.current?.click();
         if (!paymentDetail) throw undefined;
         
