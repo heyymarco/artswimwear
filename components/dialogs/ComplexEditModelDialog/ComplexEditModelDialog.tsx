@@ -369,7 +369,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         try {
             // First: run the update handler (if provided):
-            const updatingModelPromise : Promise<PartialModel<TModel>>|undefined = (
+            const updatingPromise : Promise<PartialModel<TModel>>|undefined = (
                 onUpdate
                 ? Promise.resolve<PartialModel<TModel>>( // Convert the result to a promise, to make it easier to handle
                     onUpdate({
@@ -386,10 +386,10 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 : undefined // The update handler is not provided
             );
             
-            const updatingModelAndOtherTasksPromise : Promise<void>|undefined = (
-                updatingModelPromise
+            const updatedPromise : Promise<void>|undefined = (
+                updatingPromise
                 // After the update handler is done, run the updated handler until it's done:
-                ? updatingModelPromise.then(async (updatedModel): Promise<void> => {
+                ? updatingPromise.then(async (updatedModel): Promise<void> => {
                     // Wait for the updated handler to be done:
                     await onUpdated?.({
                         model   : updatedModel,
@@ -400,7 +400,11 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 : undefined
             );
             
-            await handleFinalizing(updatingModelPromise, /*commitSides = */true, (updatingModelAndOtherTasksPromise ? [updatingModelAndOtherTasksPromise] : undefined)); // result: created|mutated
+            await handleFinalizing({
+                result          : updatingPromise, // result: created|mutated
+                commitSideModel : true,
+                donePromise     : updatedPromise,
+            });
         }
         catch (fetchError: any) {
             if ((fetchError !== null) && (fetchError !== undefined)) showMessageFetchError(fetchError);
@@ -443,7 +447,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         // actions:
         try {
             // First: run the delete handler (if provided):
-            const deletingModelPromise : Promise<void>|undefined = (
+            const deletingPromise : Promise<void>|undefined = (
                 onDelete
                 ? Promise.resolve<void>( // Convert the result to a promise, to make it easier to handle
                     onDelete({
@@ -457,10 +461,10 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 : undefined // The delete handler is not provided
             );
             
-            const deletingModelAndOtherTasksPromise : Promise<void>|undefined = (
-                deletingModelPromise
+            const deletedPromise : Promise<void>|undefined = (
+                deletingPromise
                 // After the delete handler is done, run the deleted handler until it's done:
-                ? deletingModelPromise.then(async (): Promise<void> => {
+                ? deletingPromise.then(async (): Promise<void> => {
                     // Wait for the deleted handler to be done:
                     await onDeleted?.({
                         model   : model,
@@ -472,7 +476,11 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 : undefined
             );
             
-            await handleFinalizing(false, /*commitSides = */false, (deletingModelAndOtherTasksPromise ? [deletingModelAndOtherTasksPromise] : undefined)); // result: deleted
+            await handleFinalizing({
+                result          : false, // result: deleted
+                commitSideModel : false,
+                donePromise     : deletedPromise,
+            });
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
@@ -482,12 +490,12 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         return undefined;
     });
-    const handleSideSave       = useEvent(async (commitSides : boolean) => {
+    const handleSideSave       = useEvent(async (commitSideModel : boolean) => {
         if (!whenWrite) return;
         
         
         
-        if (commitSides) {
+        if (commitSideModel) {
             await onSideUpdate?.();
         }
         else {
@@ -532,7 +540,10 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                     break;
                 case 'dontSave':
                     // then close the editor (without saving):
-                    await handleFinalizing(undefined, /*commitSides = */false); // result: discard changes
+                    await handleFinalizing({
+                        result          : undefined, // result: discard changes
+                        commitSideModel : false,
+                    });
                     break;
                 default:
                     // do nothing (continue editing)
@@ -540,13 +551,31 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             } // switch
         }
         else {
-            await handleFinalizing(undefined, /*commitSides = */false); // result: no changes
+            await handleFinalizing({
+                result          : undefined, // result: no changes
+                commitSideModel : false,
+            });
         } // if
     });
-    const handleFinalizing     = useEvent(async (result: ComplexEditModelDialogResult<TModel>|Promise<ComplexEditModelDialogResult<TModel>>, commitSides : boolean, processingTasks : Promise<any>[] = []) => {
+    interface HandleFinalizingParam {
+        result           : ComplexEditModelDialogResult<TModel>|Promise<ComplexEditModelDialogResult<TModel>>
+        commitSideModel  : boolean
+        donePromise     ?: Promise<void>
+    }
+    const handleFinalizing     = useEvent(async (param: HandleFinalizingParam): Promise<void> => {
+        // params:
+        const {
+            result : resultPromise,
+            commitSideModel,
+            donePromise,
+        } = param;
+        
+        
+        
+        const result = await resultPromise;
         await Promise.all([
-            handleSideSave(commitSides),
-            ...processingTasks,
+            handleSideSave(commitSideModel),
+            donePromise,
         ]);
         
         
@@ -554,7 +583,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : await result,
+            data       : result,
         });
     });
     

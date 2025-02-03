@@ -295,7 +295,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         try {
             // First: run the update handler (if provided):
-            const updatingModelPromise : Promise<TModel>|undefined = (
+            const updatingPromise : Promise<TModel>|undefined = (
                 updateModel
                 ? updateModel(
                     transformValue(editorValue, edit, model)
@@ -303,10 +303,10 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                 : undefined // The update handler is not provided
             );
             
-            const updatingModelAndOtherTasksPromise : Promise<void>|undefined = (
-                updatingModelPromise
+            const updatedPromise : Promise<void>|undefined = (
+                updatingPromise
                 // After the update handler is done, run the updated handler until it's done:
-                ? updatingModelPromise.then(async (updatedModel): Promise<void> => {
+                ? updatingPromise.then(async (updatedModel): Promise<void> => {
                     // Wait for the updated handler to be done:
                     await onUpdated?.({
                         model   : updatedModel,
@@ -317,14 +317,18 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                 : undefined
             );
             
-            await handleFinalizing((updatingModelPromise ? (await updatingModelPromise)[edit] : undefined), /*commitSides = */true, (updatingModelAndOtherTasksPromise ? [updatingModelAndOtherTasksPromise] : undefined)); // result: created|mutated
+            await handleFinalizing({
+                result          : (updatingPromise ? (await updatingPromise)[edit] : undefined), // result: created|mutated
+                commitSideModel : true,
+                donePromise     : updatedPromise,
+            });
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
         } // try
     });
-    const handleSideSave       = useEvent(async (commitSides : boolean) => {
-        if (commitSides) {
+    const handleSideSave       = useEvent(async (commitSideModel : boolean) => {
+        if (commitSideModel) {
             await onSideUpdate?.();
         }
         else {
@@ -369,7 +373,10 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                     break;
                 case 'dontSave':
                     // then close the editor (without saving):
-                    await handleFinalizing(undefined, /*commitSides = */false); // result: discard changes
+                    await handleFinalizing({
+                        result          : undefined, // result: discard changes
+                        commitSideModel : false,
+                    });
                     break;
                 default:
                     // do nothing (continue editing)
@@ -377,13 +384,31 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             } // switch
         }
         else {
-            await handleFinalizing(undefined, /*commitSides = */false); // result: no changes
+            await handleFinalizing({
+                result          : undefined, // result: no changes
+                commitSideModel : false,
+            });
         } // if
     });
-    const handleFinalizing     = useEvent(async (result: SimpleEditModelDialogResult<TModel>|Promise<SimpleEditModelDialogResult<TModel>>, commitSides : boolean, processingTasks : Promise<any>[] = []) => {
+    interface HandleFinalizingParam {
+        result           : SimpleEditModelDialogResult<TModel>|Promise<SimpleEditModelDialogResult<TModel>>
+        commitSideModel  : boolean
+        donePromise     ?: Promise<void>
+    }
+    const handleFinalizing     = useEvent(async (param: HandleFinalizingParam): Promise<void> => {
+        // params:
+        const {
+            result : resultPromise,
+            commitSideModel,
+            donePromise,
+        } = param;
+        
+        
+        
+        const result = await resultPromise;
         await Promise.all([
-            handleSideSave(commitSides),
-            ...processingTasks,
+            handleSideSave(commitSideModel),
+            donePromise,
         ]);
         
         
@@ -391,7 +416,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : await result,
+            data       : result,
         });
     });
     
