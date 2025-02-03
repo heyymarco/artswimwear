@@ -6,6 +6,27 @@ import {
 
 
 
+// Handlers for entering and quitting edit mode:
+/**
+ * Handler for entering edit mode.
+ * @param param - The parameters for the handler.
+ * @param param.model - The model to be edited.
+ * @param param.event - The event triggered by clicking the edit button.
+ * @returns A void or a promise that resolves to void.
+ */
+export type ModelEditEventHandler                      <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
+
+/**
+ * Handler for quitting edit mode.
+ * @param param - The parameters for the handler.
+ * @param param.draft - The draft model with unsaved changes that was canceled to save.
+ * @param param.event - The event triggered by clicking the close button.
+ * @returns A void or a promise that resolves to void.
+ */
+export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                           }) => void|Promise<void>
+
+
+
 // Handlers for displaying confirmation dialogs:
 /**
  * Represents a confirmation message for model-related actions.
@@ -139,24 +160,3 @@ export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Mo
  * @returns A void or a promise that resolves to void.
  */
 export type ModelDeletedEventHandler                   <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
-
-
-
-// Handlers for entering and quitting edit mode:
-/**
- * Handler for entering edit mode.
- * @param param - The parameters for the handler.
- * @param param.model - The model to be edited.
- * @param param.event - The event triggered by clicking the edit button.
- * @returns A void or a promise that resolves to void.
- */
-export type ModelEditEventHandler                      <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
-
-/**
- * Handler for quitting edit mode.
- * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes that was canceled to save.
- * @param param.event - The event triggered by clicking the close button.
- * @returns A void or a promise that resolves to void.
- */
-export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                           }) => void|Promise<void>
