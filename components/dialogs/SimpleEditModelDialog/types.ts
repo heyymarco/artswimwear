@@ -1,11 +1,3 @@
-'use client'
-
-// react:
-import {
-    // react:
-    type default as React,
-}                           from 'react'
-
 // react-redux:
 import {
     type MutationDefinition,
@@ -45,6 +37,3 @@ export type UpdateModelApi<TModel extends Model> = readonly [
         isLoading : boolean
     }
 ]
-
-export type UpdateSideHandler                           = () => void|Promise<void>
-export type DeleteSideHandler                           = () => void|Promise<void>

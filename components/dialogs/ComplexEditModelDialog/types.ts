@@ -15,6 +15,3 @@ import {
 // types:
 export type ComplexEditModelDialogResult<TModel extends Model> = PartialModel<TModel>|false|undefined // TModel: created|updated; false: deleted; undefined: not created|modified
 export interface ComplexEditModelDialogExpandedChangeEvent<TModel extends Model> extends ModalExpandedChangeEvent<ComplexEditModelDialogResult<TModel>> {}
-
-export type UpdateSideHandler                           = () => void|Promise<void>
-export type DeleteSideHandler                           = () => void|Promise<void>

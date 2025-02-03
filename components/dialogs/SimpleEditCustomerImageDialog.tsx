@@ -87,13 +87,13 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     
     
     // handlers:
-    const handleSideUpdate = useEvent(async (): Promise<void> => {
-        await handleSideSave(/*commitImages = */true);
+    const handleSideModelCommitting = useEvent(async (): Promise<void> => {
+        await handleSideModelSave(/*commitImages = */true);
     });
-    const handleSideDelete = useEvent(async (): Promise<void> => {
-        await handleSideSave(/*commitImages = */false);
+    const handleSideModelDiscarding = useEvent(async (): Promise<void> => {
+        await handleSideModelSave(/*commitImages = */false);
     });
-    const handleSideSave   = useEvent(async (commitImages : boolean) => {
+    const handleSideModelSave       = useEvent(async (commitImages : boolean): Promise<void> => {
         // initial_image have been replaced with new image:
         if (commitImages && initialImage && (initialImage !== image)) {
             // register to actual_delete the initial_image when committed:
@@ -177,7 +177,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
                     }).unwrap();
                     
                     // replace => delete prev drafts:
-                    await handleSideDelete();
+                    await handleSideModelDiscarding();
                     
                     // register to actual_delete the new_image when reverted:
                     draftDeletedImages.set(imageId, false /* false: delete when reverted, noop when committed */);
@@ -231,8 +231,8 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             
             // handlers:
-            onSideUpdate={handleSideUpdate}
-            onSideDelete={handleSideDelete}
+            onSideModelCommitting={handleSideModelCommitting}
+            onSideModelDiscarding={handleSideModelDiscarding}
         />
     );
 };

@@ -104,8 +104,8 @@ import {
     type ModelCreatingOrUpdatingOfDraftEventHandler,
     type ModelDeletingEventHandler,
     
-    type SideModelCreatingOrUpdatingEventHandler,
-    type SideModelDeletingEventHandler,
+    type SideModelCommittingEventHandler,
+    type SideModelDiscardingEventHandler,
     
     type ModelCreatedOrUpdatedEventHandler,
     type ModelDeletedEventHandler,
@@ -115,9 +115,6 @@ import {
 import {
     type ComplexEditModelDialogResult,
     type ComplexEditModelDialogExpandedChangeEvent,
-    
-    type UpdateSideHandler,
-    type DeleteSideHandler,
 }                           from './types'
 import {
     getInvalidFields,
@@ -186,8 +183,8 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onDelete              ?: ModelDeletingEventHandler<TModel>
     onDeleted             ?: ModelDeletedEventHandler<TModel>
     
-    onSideUpdate          ?: UpdateSideHandler
-    onSideDelete          ?: DeleteSideHandler
+    onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
+    onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
     
     onConfirmDelete       ?: ModelConfirmDeleteEventHandler<TModel>
     onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
@@ -199,35 +196,35 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
 }
 export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<ComplexEditModelDialogProps<TModel>,
     // data:
-    |'modelName'        // already taken over
-    |'modelEntryName'   // already taken over
+    |'modelName'             // already taken over
+    |'modelEntryName'        // already taken over
     
     // privileges:
-    |'privilegeAdd'     // already taken over
-    |'privilegeUpdate'  // already taken over
-    |'privilegeDelete'  // already taken over
+    |'privilegeAdd'          // already taken over
+    |'privilegeUpdate'       // already taken over
+    |'privilegeDelete'       // already taken over
     
     // stores:
-    |'isModified'       // already taken over
-    |'isCommiting'      // already taken over
-    |'isReverting'      // already taken over
-    |'isDeleting'       // already taken over
+    |'isModified'            // already taken over
+    |'isCommiting'           // already taken over
+    |'isReverting'           // already taken over
+    |'isDeleting'            // already taken over
     
     // tabs:
-    |'tabDelete'        // already taken over
+    |'tabDelete'             // already taken over
     
     // handlers:
-    |'onUpdate'         // already taken over
-    |'onUpdated'        // already taken over
-    |'onDelete'         // already taken over
-    |'onDeleted'        // already taken over
-    |'onSideUpdate'     // already taken over
-    |'onSideDelete'     // already taken over
-    |'onConfirmDelete'  // already taken over
-    |'onConfirmUnsaved' // already taken over
+    |'onUpdate'              // already taken over
+    |'onUpdated'             // already taken over
+    |'onDelete'              // already taken over
+    |'onDeleted'             // already taken over
+    |'onSideModelCommitting' // already taken over
+    |'onSideModelDiscarding' // already taken over
+    |'onConfirmDelete'       // already taken over
+    |'onConfirmUnsaved'      // already taken over
     
     // children:
-    |'children'         // already taken over
+    |'children'              // already taken over
 >
 const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDialogProps<TModel>): JSX.Element|null => {
     // styles:
@@ -288,8 +285,8 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onDelete,
         onDeleted,
         
-        onSideUpdate,
-        onSideDelete,
+        onSideModelCommitting,
+        onSideModelDiscarding,
         
         onConfirmDelete,
         onConfirmUnsaved,
@@ -401,9 +398,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             );
             
             await handleFinalizing({
-                result          : updatingPromise, // result: created|mutated
-                commitSideModel : true,
-                donePromise     : updatedPromise,
+                event         : event,
+                resultPromise : updatingPromise, // result: created|mutated
+                donePromise   : updatedPromise,
             });
         }
         catch (fetchError: any) {
@@ -467,7 +464,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 ? deletingPromise.then(async (): Promise<void> => {
                     // Wait for the deleted handler to be done:
                     await onDeleted?.({
-                        model   : model,
+                        draft   : model,
                         event   : event,
                         options : options,
                     });
@@ -477,9 +474,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             );
             
             await handleFinalizing({
-                result          : false, // result: deleted
-                commitSideModel : false,
-                donePromise     : deletedPromise,
+                event         : event,
+                resultPromise : false, // result: deleted
+                donePromise   : deletedPromise,
             });
         }
         catch (fetchError: any) {
@@ -490,16 +487,22 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         return undefined;
     });
-    const handleSideSave       = useEvent(async (commitSideModel : boolean) => {
+    const handleSideSave       = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, resultPromise: Promise<PartialModel<TModel>>|false|undefined) => {
         if (!whenWrite) return;
         
         
         
-        if (commitSideModel) {
-            await onSideUpdate?.();
+        if (resultPromise) { // result: created|mutated
+            await onSideModelCommitting?.({
+                model : await resultPromise,
+                event : event,
+            });
         }
-        else {
-            await onSideDelete?.();
+        else { // result: deleted|discard changes|no changes
+            await onSideModelDiscarding?.({
+                draft : model,
+                event : event,
+            });
         } // if
     });
     
@@ -541,8 +544,8 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 case 'dontSave':
                     // then close the editor (without saving):
                     await handleFinalizing({
-                        result          : undefined, // result: discard changes
-                        commitSideModel : false,
+                        event         : event,
+                        resultPromise : undefined, // result: discard changes
                     });
                     break;
                 default:
@@ -552,29 +555,29 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         }
         else {
             await handleFinalizing({
-                result          : undefined, // result: no changes
-                commitSideModel : false,
+                event         : event,
+                resultPromise : undefined, // result: no changes
             });
         } // if
     });
     interface HandleFinalizingParam {
-        result           : ComplexEditModelDialogResult<TModel>|Promise<ComplexEditModelDialogResult<TModel>>
-        commitSideModel  : boolean
-        donePromise     ?: Promise<void>
+        event          : React.MouseEvent<HTMLButtonElement, MouseEvent>
+        resultPromise  : Promise<PartialModel<TModel>> |false|undefined
+        donePromise   ?: Promise<void>
     }
     const handleFinalizing     = useEvent(async (param: HandleFinalizingParam): Promise<void> => {
         // params:
         const {
-            result : resultPromise,
-            commitSideModel,
+            event,
+            resultPromise,
             donePromise,
         } = param;
         
         
         
-        const result = await resultPromise;
-        await Promise.all([
-            handleSideSave(commitSideModel),
+        const [resultResolved] = await Promise.all([
+            resultPromise,
+            handleSideSave(event, resultPromise),
             donePromise,
         ]);
         
@@ -583,7 +586,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : result,
+            data       : resultResolved,
         });
     });
     

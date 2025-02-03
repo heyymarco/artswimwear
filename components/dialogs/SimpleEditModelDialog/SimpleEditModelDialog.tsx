@@ -81,8 +81,8 @@ import {
     type ModelCreatingOrUpdatingOfDraftEventHandler,
     type ModelDeletingEventHandler,
     
-    type SideModelCreatingOrUpdatingEventHandler,
-    type SideModelDeletingEventHandler,
+    type SideModelCommittingEventHandler,
+    type SideModelDiscardingEventHandler,
     
     type ModelCreatedOrUpdatedEventHandler,
     type ModelDeletedEventHandler,
@@ -100,9 +100,6 @@ import {
     
     type UseUpdateModel,
     type UpdateModelApi,
-    
-    type UpdateSideHandler,
-    type DeleteSideHandler,
 }                           from './types'
 import {
     getInvalidFields,
@@ -149,8 +146,8 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     // handlers:
     onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
     
-    onSideUpdate          ?: UpdateSideHandler
-    onSideDelete          ?: DeleteSideHandler
+    onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
+    onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
     
     onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
 }
@@ -161,13 +158,13 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     |'useUpdateModel'
     
     // stores:
-    |'isCommiting'      // already taken over
-    |'isReverting'      // already taken over
+    |'isCommiting'           // already taken over
+    |'isReverting'           // already taken over
     
     // handlers:
-    |'onUpdated'        // already taken over
-    |'onSideUpdate'     // already taken over
-    |'onSideDelete'     // already taken over
+    |'onUpdated'             // already taken over
+    |'onSideModelCommitting' // already taken over
+    |'onSideModelDiscarding' // already taken over
 >
 const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialogProps<TModel>): JSX.Element|null => {
     // styles:
@@ -211,8 +208,8 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         // handlers:
         onUpdated,
         
-        onSideUpdate,
-        onSideDelete,
+        onSideModelCommitting,
+        onSideModelDiscarding,
         
         onConfirmUnsaved,
         
@@ -318,21 +315,27 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             );
             
             await handleFinalizing({
-                result          : (updatingPromise ? (await updatingPromise)[edit] : undefined), // result: created|mutated
-                commitSideModel : true,
-                donePromise     : updatedPromise,
+                event         : event,
+                resultPromise : updatingPromise, // result: created|mutated
+                donePromise   : updatedPromise,
             });
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
         } // try
     });
-    const handleSideSave       = useEvent(async (commitSideModel : boolean) => {
-        if (commitSideModel) {
-            await onSideUpdate?.();
+    const handleSideSave       = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, resultPromise: Promise<TModel>|undefined) => {
+        if (resultPromise) { // result: created|mutated
+            await onSideModelCommitting?.({
+                model : await resultPromise,
+                event : event,
+            });
         }
-        else {
-            await onSideDelete?.();
+        else { // result: discard changes|no changes
+            await onSideModelDiscarding?.({
+                draft : model,
+                event : event,
+            });
         } // if
     });
     
@@ -374,8 +377,8 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                 case 'dontSave':
                     // then close the editor (without saving):
                     await handleFinalizing({
-                        result          : undefined, // result: discard changes
-                        commitSideModel : false,
+                        event         : event,
+                        resultPromise : undefined, // result: discard changes
                     });
                     break;
                 default:
@@ -385,29 +388,29 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         }
         else {
             await handleFinalizing({
-                result          : undefined, // result: no changes
-                commitSideModel : false,
+                event         : event,
+                resultPromise : undefined, // result: no changes
             });
         } // if
     });
     interface HandleFinalizingParam {
-        result           : SimpleEditModelDialogResult<TModel>|Promise<SimpleEditModelDialogResult<TModel>>
-        commitSideModel  : boolean
-        donePromise     ?: Promise<void>
+        event          : React.MouseEvent<HTMLButtonElement, MouseEvent>
+        resultPromise  : Promise<TModel> |undefined
+        donePromise   ?: Promise<void>
     }
     const handleFinalizing     = useEvent(async (param: HandleFinalizingParam): Promise<void> => {
         // params:
         const {
-            result : resultPromise,
-            commitSideModel,
+            event,
+            resultPromise,
             donePromise,
         } = param;
         
         
         
-        const result = await resultPromise;
-        await Promise.all([
-            handleSideSave(commitSideModel),
+        const [resultResolved] = await Promise.all([
+            resultPromise,
+            handleSideSave(event, resultPromise),
             donePromise,
         ]);
         
@@ -416,7 +419,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : result,
+            data       : (resultResolved ? resultResolved[edit] : resultResolved),
         });
     });
     
