@@ -24,7 +24,7 @@ export interface ModelConfirmMessage {
 /**
  * Handler for confirming unsaved changes of a model.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes.
+ * @param param.draft - The draft model with unsaved changes to be saved or canceled to save.
  * @param param.event - The event triggered by clicking the close button.
  * @returns A confirmation message.
  */
@@ -155,8 +155,8 @@ export type ModelEditEventHandler                      <in     TModel extends Mo
 /**
  * Handler for quitting edit mode.
  * @param param - The parameters for the handler.
- * @param param.model - The model being edited.
+ * @param param.draft - The draft model with unsaved changes that was canceled to save.
  * @param param.event - The event triggered by clicking the close button.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
+export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                           }) => void|Promise<void>
