@@ -46,7 +46,5 @@ export type UpdateModelApi<TModel extends Model> = readonly [
     }
 ]
 
-export type AfterUpdateHandler                          = () => void|Promise<void>
-
 export type UpdateSideHandler                           = () => void|Promise<void>
 export type DeleteSideHandler                           = () => void|Promise<void>

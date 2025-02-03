@@ -92,6 +92,7 @@ import {
 // models:
 import {
     type Model,
+    type PartialModel,
     
     type ModelConfirmMessage,
     type ModelConfirmUnsavedEventHandler,
@@ -114,8 +115,6 @@ import {
 import {
     type ComplexEditModelDialogResult,
     type ComplexEditModelDialogExpandedChangeEvent,
-    
-    type AfterUpdateHandler,
     
     type UpdateSideHandler,
     type DeleteSideHandler,
@@ -182,7 +181,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     // handlers:
     onUpdate              ?: ModelCreatingOrUpdatingEventHandler<TModel>
-    onAfterUpdate         ?: AfterUpdateHandler
+    onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
     
     onDelete              ?: ModelDeletingEventHandler<TModel>
     onDeleted             ?: ModelDeletedEventHandler<TModel>
@@ -219,7 +218,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     
     // handlers:
     |'onUpdate'         // already taken over
-    |'onAfterUpdate'    // already taken over
+    |'onUpdated'        // already taken over
     |'onDelete'         // already taken over
     |'onDeleted'        // already taken over
     |'onSideUpdate'     // already taken over
@@ -284,7 +283,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // handlers:
         onUpdate,
-        onAfterUpdate,
+        onUpdated,
         
         onDelete,
         onDeleted,
@@ -369,29 +368,39 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         try {
-            const updatingModelRaw = onUpdate?.({
-                id      : model?.id || null,
-                
-                event   : event,
-                
-                options : {
-                    addPermission     : whenAdd,
-                    updatePermissions : whenUpdate,
-                },
-            });
-            const updatingModelTask = (updatingModelRaw instanceof Promise) ? updatingModelRaw : Promise.resolve(updatingModelRaw);
-            
-            const updatingModelAndOthersTask = (
-                updatingModelTask
-                ? (
-                    onAfterUpdate
-                    ? updatingModelTask.then(onAfterUpdate)
-                    : updatingModelTask
+            // First: run the update handler (if provided):
+            const updatingModelPromise : Promise<PartialModel<TModel>>|undefined = (
+                onUpdate
+                ? Promise.resolve<PartialModel<TModel>>( // Convert the result to a promise, to make it easier to handle
+                    onUpdate({
+                        id      : model?.id || null,
+                        
+                        event   : event,
+                        
+                        options : {
+                            addPermission     : whenAdd,
+                            updatePermissions : whenUpdate,
+                        },
+                    })
                 )
-                : Promise.resolve(onAfterUpdate)
+                : undefined // The update handler is not provided
             );
             
-            await handleFinalizing(updatingModelTask, /*commitSides = */true, [updatingModelAndOthersTask]); // result: created|mutated
+            const updatingModelAndOtherTasksPromise : Promise<void>|undefined = (
+                updatingModelPromise
+                // After the update handler is done, run the updated handler until it's done:
+                ? updatingModelPromise.then(async (updatedModel): Promise<void> => {
+                    // Wait for the updated handler to be done:
+                    await onUpdated?.({
+                        model   : updatedModel,
+                        event   : event,
+                    });
+                })
+                // The update handler is not provided, no need to run the updated handler:
+                : undefined
+            );
+            
+            await handleFinalizing(updatingModelPromise, /*commitSides = */true, (updatingModelAndOtherTasksPromise ? [updatingModelAndOtherTasksPromise] : undefined)); // result: created|mutated
         }
         catch (fetchError: any) {
             if ((fetchError !== null) && (fetchError !== undefined)) showMessageFetchError(fetchError);
@@ -433,23 +442,37 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // actions:
         try {
-            const deletingModelTask = onDelete?.({ draft: model, event: event, options: options});
-            
-            const deletingModelAndOthersTask = (
-                deletingModelTask
-                ? (
-                    onDeleted
-                    ? deletingModelTask.then(async () => {
-                        await onDeleted({ model: model, event: event, options: options });
+            // First: run the delete handler (if provided):
+            const deletingModelPromise : Promise<void>|undefined = (
+                onDelete
+                ? Promise.resolve<void>( // Convert the result to a promise, to make it easier to handle
+                    onDelete({
+                        draft   : model,
+                        
+                        event   : event,
+                        
+                        options : options,
                     })
-                    : deletingModelTask
                 )
-                : Promise.resolve(async () => {
-                    await onDeleted?.({ model: model, event: event, options: options });
-                })
+                : undefined // The delete handler is not provided
             );
             
-            await handleFinalizing(false, /*commitSides = */false, [deletingModelAndOthersTask]); // result: deleted
+            const deletingModelAndOtherTasksPromise : Promise<void>|undefined = (
+                deletingModelPromise
+                // After the delete handler is done, run the deleted handler until it's done:
+                ? deletingModelPromise.then(async (): Promise<void> => {
+                    // Wait for the deleted handler to be done:
+                    await onDeleted?.({
+                        model   : model,
+                        event   : event,
+                        options : options,
+                    });
+                })
+                // The delete handler is not provided, no need to run the deleted handler:
+                : undefined
+            );
+            
+            await handleFinalizing(false, /*commitSides = */false, (deletingModelAndOtherTasksPromise ? [deletingModelAndOtherTasksPromise] : undefined)); // result: deleted
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);

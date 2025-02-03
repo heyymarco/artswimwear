@@ -101,8 +101,6 @@ import {
     type UseUpdateModel,
     type UpdateModelApi,
     
-    type AfterUpdateHandler,
-    
     type UpdateSideHandler,
     type DeleteSideHandler,
 }                           from './types'
@@ -149,7 +147,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // handlers:
-    onAfterUpdate         ?: AfterUpdateHandler
+    onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
     
     onSideUpdate          ?: UpdateSideHandler
     onSideDelete          ?: DeleteSideHandler
@@ -167,7 +165,7 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     |'isReverting'      // already taken over
     
     // handlers:
-    |'onAfterUpdate'    // already taken over
+    |'onUpdated'        // already taken over
     |'onSideUpdate'     // already taken over
     |'onSideDelete'     // already taken over
 >
@@ -211,7 +209,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         // handlers:
-        onAfterUpdate,
+        onUpdated,
         
         onSideUpdate,
         onSideDelete,
@@ -264,7 +262,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     
     // handlers:
-    const handleSave           = useEvent(async () => {
+    const handleSave           = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setEnableValidation(true);
         await new Promise<void>((resolve) => { // wait for a validation state applied
             setTimeout(() => {
@@ -296,25 +294,30 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         try {
-            const updatingModelTask : Promise<TModel> = (
+            // First: run the update handler (if provided):
+            const updatingModelPromise : Promise<TModel>|undefined = (
                 updateModel
                 ? updateModel(
                     transformValue(editorValue, edit, model)
                 ).unwrap()
-                : Promise.resolve<TModel>(model)
+                : undefined // The update handler is not provided
             );
             
-            const updatingModelAndOthersTask = (
-                updatingModelTask
-                ? (
-                    onAfterUpdate
-                    ? updatingModelTask.then(onAfterUpdate)
-                    : updatingModelTask
-                )
-                : Promise.resolve(onAfterUpdate)
+            const updatingModelAndOtherTasksPromise : Promise<void>|undefined = (
+                updatingModelPromise
+                // After the update handler is done, run the updated handler until it's done:
+                ? updatingModelPromise.then(async (updatedModel): Promise<void> => {
+                    // Wait for the updated handler to be done:
+                    await onUpdated?.({
+                        model   : updatedModel,
+                        event   : event,
+                    });
+                })
+                // The update handler is not provided, no need to run the updated handler:
+                : undefined
             );
             
-            await handleFinalizing((await updatingModelTask)[edit], /*commitSides = */true, [updatingModelAndOthersTask]); // result: created|mutated
+            await handleFinalizing((updatingModelPromise ? (await updatingModelPromise)[edit] : undefined), /*commitSides = */true, (updatingModelAndOtherTasksPromise ? [updatingModelAndOtherTasksPromise] : undefined)); // result: created|mutated
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
@@ -362,7 +365,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             switch (answer) {
                 case 'save':
                     // then do a save (it will automatically close the editor after successfully saving):
-                    handleSave();
+                    handleSave(event);
                     break;
                 case 'dontSave':
                     // then close the editor (without saving):
