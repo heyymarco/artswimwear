@@ -107,7 +107,7 @@ import {
     type SideModelCommittingEventHandler,
     type SideModelDiscardingEventHandler,
     
-    type ModelCreatedOrUpdatedEventHandler,
+    type ModelCreateOrUpdateEventHandler,
     type ModelDeletedEventHandler,
 }                           from '@/models'
 
@@ -178,7 +178,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     // handlers:
     onUpdating            ?: ModelCreatingOrUpdatingEventHandler<TModel>
-    onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
+    onUpdate              ?: ModelCreateOrUpdateEventHandler<TModel>
     
     onDeleting            ?: ModelDeletingEventHandler<TModel>
     onDeleted             ?: ModelDeletedEventHandler<TModel>
@@ -215,7 +215,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     
     // handlers:
     |'onUpdating'            // already taken over
-    |'onUpdated'             // already taken over
+    |'onUpdate'              // already taken over
     |'onDeleting'            // already taken over
     |'onDeleted'             // already taken over
     |'onSideModelCommitting' // already taken over
@@ -280,7 +280,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // handlers:
         onUpdating,
-        onUpdated,
+        onUpdate,
         
         onDeleting,
         onDeleted,
@@ -388,7 +388,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 // After the update handler is done, run the updated handler until it's done:
                 ? updatingPromise.then(async (updatedModel): Promise<void> => {
                     // Wait for the updated handler to be done:
-                    await onUpdated?.({
+                    await onUpdate?.({
                         model   : updatedModel,
                         event   : event,
                     });
