@@ -245,7 +245,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // handlers:
-    const handleUpdate              = useEvent<ModelCreatingOrUpdatingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
+    const handleUpdating            = useEvent<ModelCreatingOrUpdatingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
         const paymentDetail = await imperativeClickRef.current?.click();
         if (!paymentDetail) throw undefined;
         
@@ -539,7 +539,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 
                 
                 // handlers:
-                onUpdate={handleUpdate}
+                onUpdating={handleUpdating}
                 onDelete={handleDelete}
                 
                 onConfirmDelete={handleConfirmDelete}

@@ -177,7 +177,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // handlers:
-    onUpdate              ?: ModelCreatingOrUpdatingEventHandler<TModel>
+    onUpdating            ?: ModelCreatingOrUpdatingEventHandler<TModel>
     onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
     
     onDelete              ?: ModelDeletingEventHandler<TModel>
@@ -214,7 +214,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'tabDelete'             // already taken over
     
     // handlers:
-    |'onUpdate'              // already taken over
+    |'onUpdating'            // already taken over
     |'onUpdated'             // already taken over
     |'onDelete'              // already taken over
     |'onDeleted'             // already taken over
@@ -279,7 +279,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // handlers:
-        onUpdate,
+        onUpdating,
         onUpdated,
         
         onDelete,
@@ -367,9 +367,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         try {
             // First: run the update handler (if provided):
             const updatingPromise : Promise<PartialModel<TModel>>|undefined = (
-                onUpdate
+                onUpdating
                 ? Promise.resolve<PartialModel<TModel>>( // Convert the result to a promise, to make it easier to handle
-                    onUpdate({
+                    onUpdating({
                         id      : model?.id || null,
                         
                         event   : event,
