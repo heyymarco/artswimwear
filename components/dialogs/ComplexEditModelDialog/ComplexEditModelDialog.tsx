@@ -180,7 +180,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onUpdating            ?: ModelCreatingOrUpdatingEventHandler<TModel>
     onUpdated             ?: ModelCreatedOrUpdatedEventHandler<TModel>
     
-    onDelete              ?: ModelDeletingEventHandler<TModel>
+    onDeleting            ?: ModelDeletingEventHandler<TModel>
     onDeleted             ?: ModelDeletedEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
@@ -216,7 +216,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     // handlers:
     |'onUpdating'            // already taken over
     |'onUpdated'             // already taken over
-    |'onDelete'              // already taken over
+    |'onDeleting'            // already taken over
     |'onDeleted'             // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
@@ -282,7 +282,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onUpdating,
         onUpdated,
         
-        onDelete,
+        onDeleting,
         onDeleted,
         
         onSideModelCommitting,
@@ -445,9 +445,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         try {
             // First: run the delete handler (if provided):
             const deletingPromise : Promise<void>|undefined = (
-                onDelete
+                onDeleting
                 ? Promise.resolve<void>( // Convert the result to a promise, to make it easier to handle
-                    onDelete({
+                    onDeleting({
                         draft   : model,
                         
                         event   : event,

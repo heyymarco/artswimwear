@@ -289,7 +289,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         } satisfies Omit<PaymentMethodDetail, 'priority'>;
     });
     
-    const handleDelete              = useEvent<ModelDeletingEventHandler<PaymentMethodDetail>>(async ({ draft: { id } }) => {
+    const handleDeleting            = useEvent<ModelDeletingEventHandler<PaymentMethodDetail>>(async ({ draft: { id } }) => {
         await deletePaymentMethod({
             id : id,
         }).unwrap();
@@ -540,7 +540,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 
                 // handlers:
                 onUpdating={handleUpdating}
-                onDelete={handleDelete}
+                onDeleting={handleDeleting}
                 
                 onConfirmDelete={handleConfirmDelete}
             >
