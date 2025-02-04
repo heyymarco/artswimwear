@@ -6,6 +6,18 @@ import {
 
 
 
+// Handlers for viewing and selecting models:
+/**
+ * Handler for selecting a model.
+ * @param param - The parameters for the handler.
+ * @param param.model - The model to be selected. It's a model because it is coming from view mode.
+ * @param param.event - The event triggered by clicking the select button.
+ * @returns A void or a promise that resolves to void.
+ */
+export type ModelSelectEventHandler                    <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
+
+
+
 // Handlers for entering and quitting edit mode:
 /**
  * Handler for entering edit mode from view mode.
