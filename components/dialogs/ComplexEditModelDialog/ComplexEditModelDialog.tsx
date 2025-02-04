@@ -94,26 +94,22 @@ import {
     type Model,
     type PartialModel,
     
-    type ModelConfirmMessage,
     type ModelConfirmUnsavedEventHandler,
     type ModelConfirmDeleteEventHandler,
     
-    type ModelCreatingOrUpdatingOptions,
     type ModelDeletingOptions,
     type ModelCreatingOrUpdatingEventHandler,
-    type ModelCreatingOrUpdatingOfDraftEventHandler,
     type ModelDeletingEventHandler,
     
     type SideModelCommittingEventHandler,
     type SideModelDiscardingEventHandler,
     
     type ModelCreateOrUpdateEventHandler,
-    type ModelDeletedEventHandler,
+    type ModelDeleteEventHandler,
 }                           from '@/models'
 
 // internals:
 import {
-    type ComplexEditModelDialogResult,
     type ComplexEditModelDialogExpandedChangeEvent,
 }                           from './types'
 import {
@@ -181,7 +177,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onUpdate              ?: ModelCreateOrUpdateEventHandler<TModel>
     
     onDeleting            ?: ModelDeletingEventHandler<TModel>
-    onDeleted             ?: ModelDeletedEventHandler<TModel>
+    onDelete              ?: ModelDeleteEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
@@ -217,7 +213,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'onUpdating'            // already taken over
     |'onUpdate'              // already taken over
     |'onDeleting'            // already taken over
-    |'onDeleted'             // already taken over
+    |'onDelete'              // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
     |'onConfirmDelete'       // already taken over
@@ -283,7 +279,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onUpdate,
         
         onDeleting,
-        onDeleted,
+        onDelete,
         
         onSideModelCommitting,
         onSideModelDiscarding,
@@ -463,7 +459,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 // After the delete handler is done, run the deleted handler until it's done:
                 ? deletingPromise.then(async (): Promise<void> => {
                     // Wait for the deleted handler to be done:
-                    await onDeleted?.({
+                    await onDelete?.({
                         draft   : model,
                         event   : event,
                         options : options,

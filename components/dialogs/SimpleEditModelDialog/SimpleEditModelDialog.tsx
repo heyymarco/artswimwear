@@ -71,28 +71,18 @@ import {
     type Model,
     type MutationArgs,
     
-    type ModelConfirmMessage,
     type ModelConfirmUnsavedEventHandler,
-    type ModelConfirmDeleteEventHandler,
-    
-    type ModelCreatingOrUpdatingOptions,
-    type ModelDeletingOptions,
-    type ModelCreatingOrUpdatingEventHandler,
-    type ModelCreatingOrUpdatingOfDraftEventHandler,
-    type ModelDeletingEventHandler,
     
     type SideModelCommittingEventHandler,
     type SideModelDiscardingEventHandler,
     
     type ModelCreateOrUpdateEventHandler,
-    type ModelDeletedEventHandler,
 }                           from '@/models'
 
 // internals:
 import {
     type KeyOfModel,
     type ValueOfModel,
-    type SimpleEditModelDialogResult,
     type SimpleEditModelDialogExpandedChangeEvent,
     
     type InitialValueHandler,

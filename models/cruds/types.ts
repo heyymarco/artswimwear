@@ -159,4 +159,4 @@ export type ModelCreateOrUpdateEventHandler            <in     TModel extends Mo
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelDeletedEventHandler                   <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
+export type ModelDeleteEventHandler                    <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options?: ModelDeletingOptions|undefined }) => void|Promise<void>
