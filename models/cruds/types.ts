@@ -8,22 +8,22 @@ import {
 
 // Handlers for entering and quitting edit mode:
 /**
- * Handler for entering edit mode.
+ * Handler for entering edit mode from view mode.
  * @param param - The parameters for the handler.
- * @param param.model - The model to be edited.
+ * @param param.model - The model to be edited. It's a model because it is coming from view mode.
  * @param param.event - The event triggered by clicking the edit button.
  * @returns A void or a promise that resolves to void.
  */
 export type ModelEditEventHandler                      <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
 
 /**
- * Handler for quitting edit mode.
+ * Handler for quitting edit mode and returning to view mode.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes that was canceled to save.
+ * @param param.draft - The draft model with unsaved changes that was canceled to save. It's a draft because it is coming from edit mode and may be modified by the user.
  * @param param.event - The event triggered by clicking the close button.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel|null         , event: TCrudEvent                                           }) => void|Promise<void>
+export type ModelCancelEditEventHandler                <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
 
 
 
@@ -45,7 +45,7 @@ export interface ModelConfirmMessage {
 /**
  * Handler for confirming unsaved changes of a model.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes to be saved or canceled to save.
+ * @param param.draft - The draft model with unsaved changes to be saved or canceled to save, or null if no draft exists. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the close button.
  * @returns A confirmation message.
  */
@@ -54,7 +54,7 @@ export type ModelConfirmUnsavedEventHandler            <in     TModel extends Mo
 /**
  * Handler for confirming deletion of a model.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes to be deleted.
+ * @param param.draft - The draft model with unsaved changes to be deleted. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the delete button.
  * @param param.options - Options for deleting the model.
  * @returns A confirmation message.
@@ -94,24 +94,24 @@ export interface ModelDeletingOptions {
  * @param param.id - The ID of the model to be created or updated.
  * @param param.event - The event triggered by clicking the save or update button.
  * @param param.options - Options for creating or updating the model.
- * @returns A partial model or a promise that resolves to a partial model.
+ * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
 export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for creating or updating a draft model.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model to be created or updated.
+ * @param param.draft - The draft model to be created or updated. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the save or update button.
  * @param param.options - Options for creating or updating the model.
- * @returns A partial model or a promise that resolves to a partial model.
+ * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
 export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for deleting a model.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes to be deleted.
+ * @param param.draft - The draft model with unsaved changes to be deleted. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the delete button.
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
@@ -124,7 +124,7 @@ export type ModelDeletingEventHandler                  <in     TModel extends Mo
 /**
  * Handler for committing changes of related external models, such as linked image URLs on external storage.
  * @param param - The parameters for the handler.
- * @param param.model - The partial model that was created or updated.
+ * @param param.model - The partial model that was created or updated. It's a partial model because it represents a partial update of a related model.
  * @param param.event - The event triggered by clicking the save or update button.
  * @returns A void or a promise that resolves to void.
  */
@@ -133,7 +133,7 @@ export type SideModelCommittingEventHandler            <in     TModel extends Mo
 /**
  * Handler for discarding changes of related external models, such as linked image URLs on external storage.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes that was deleted or canceled to save.
+ * @param param.draft - The draft model with unsaved changes that was deleted or canceled to save, or null if no draft exists. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the delete button.
  * @returns A void or a promise that resolves to void.
  */
@@ -145,7 +145,7 @@ export type SideModelDiscardingEventHandler            <in     TModel extends Mo
 /**
  * Handler for actions after a model has been created or updated.
  * @param param - The parameters for the handler.
- * @param param.model - The partial model that was created or updated.
+ * @param param.model - The partial model that was created or updated. It's a partial model because it represents a partial update.
  * @param param.event - The event triggered by clicking the save or update button.
  * @returns A void or a promise that resolves to void.
  */
@@ -154,7 +154,7 @@ export type ModelCreatedOrUpdatedEventHandler          <in     TModel extends Mo
 /**
  * Handler for actions after a model has been deleted.
  * @param param - The parameters for the handler.
- * @param param.draft - The draft model with unsaved changes that was deleted.
+ * @param param.draft - The draft model with unsaved changes that was deleted. It's a draft because it may be modified by the user.
  * @param param.event - The event triggered by clicking the delete button.
  * @param param.options - Options for deleting the model.
  * @returns A void or a promise that resolves to void.
