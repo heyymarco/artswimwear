@@ -43,11 +43,6 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// heymarco components:
-import {
-    type EditorChangeEventHandler,
-}                           from '@heymarco/editor'
-
 // internal components:
 import {
     type ModelPreviewProps,
@@ -69,6 +64,8 @@ import {
 
 // models:
 import {
+    type ModelSelectEventHandler,
+    
     type WishGroupDetail,
 }                           from '@/models'
 
@@ -77,10 +74,7 @@ import {
 // react components:
 export interface WishGroupPreviewProps
     extends
-        Omit<ModelPreviewProps<WishGroupDetail>,
-            // values:
-            |'onModelSelect'
-        >
+        ModelPreviewProps<WishGroupDetail>
 {
     // data:
     currentModelId  ?: string
@@ -89,7 +83,7 @@ export interface WishGroupPreviewProps
     
     // values:
     selectedModel ?: WishGroupDetail|null
-    onModelSelect ?: EditorChangeEventHandler<WishGroupDetail, React.MouseEvent<HTMLElement, MouseEvent>>
+    onModelSelect ?: ModelSelectEventHandler<WishGroupDetail>
 }
 const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
     // styles:
@@ -141,7 +135,10 @@ const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
         
         
         // actions:
-        onModelSelect?.(model, event);
+        onModelSelect?.({
+            model : model,
+            event : event,
+        });
     });
     
     type EditMode = 'full'

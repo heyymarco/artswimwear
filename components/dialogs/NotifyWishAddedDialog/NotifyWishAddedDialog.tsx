@@ -63,6 +63,8 @@ import {
 
 // models:
 import {
+    type ModelSelectEventHandler,
+    
     type WishGroupDetail,
 }                           from '@/models'
 
@@ -109,7 +111,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
     
     
     // handlers:
-    const handleGroupSelected      = useEvent((wishGroup: WishGroupDetail): void => {
+    const handleGroupSelected      = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup);
         props.onExpandedChange?.({
             expanded   : false,
@@ -117,7 +119,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
             data       : wishGroup,
         } as TModalExpandedChangeEvent);
     });
-    const handleGroupCreated      = useEvent<CreateHandler<WishGroupDetail>>((wishGroup) => {
+    const handleGroupCreated       = useEvent<CreateHandler<WishGroupDetail>>((wishGroup) => {
         setSelectedCollection(wishGroup as WishGroupDetail);
         props.onExpandedChange?.({
             expanded   : false,
