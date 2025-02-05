@@ -113,7 +113,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
     
     
     // handlers:
-    const handleGroupSelected      = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
+    const handleGroupSelect        = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup);
         props.onExpandedChange?.({
             expanded   : false,
@@ -204,7 +204,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                                 
                                 // values:
                                 selectedModel={selectedCollection}
-                                onModelSelect={handleGroupSelected}
+                                onModelSelect={handleGroupSelect}
                             />
                         }
                         modelCreateComponent={

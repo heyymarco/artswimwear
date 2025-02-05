@@ -111,7 +111,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
     
     
     // handlers:
-    const handleGroupSelected      = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
+    const handleGroupSelect        = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup);
         props.onExpandedChange?.({
             expanded   : false,
@@ -207,7 +207,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
                                 
                                 // values:
                                 selectedModel={selectedCollection}
-                                onModelSelect={handleGroupSelected}
+                                onModelSelect={handleGroupSelect}
                             />
                         }
                         modelCreateComponent={
