@@ -16,6 +16,16 @@ import {
  */
 export type ModelSelectEventHandler                    <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent                                           }) => void|Promise<void>
 
+/**
+ * Handler for toggling the selection of a model.
+ * @param param - The parameters for the handler.
+ * @param param.model - The model to be toggled. It's a model because it is coming from view mode.
+ * @param param.event - The event triggered by clicking the select button.
+ * @param param.selected - A boolean indicating whether the model is selected or not.
+ * @returns A void or a promise that resolves to void.
+ */
+export type ModelToggleSelectEventHandler              <in     TModel extends Model, in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { model: TModel              , event: TCrudEvent, selected: boolean                        }) => void|Promise<void>
+
 
 
 // Handlers for entering and quitting edit mode:
