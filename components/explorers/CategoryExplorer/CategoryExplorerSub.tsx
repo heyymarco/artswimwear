@@ -264,7 +264,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
     
     
     // handlers:
-    const handleNavigateBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+    const handleNavigateBack   = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         setParentCategories((draft): void => {
             // conditions:
             if ((draft.length - 1 /* back to one_step */) < minDepth) return; // PREVENTS the_parents_deep BELOW the minDepth
@@ -280,7 +280,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
             setRestoreIndex(prevCategoryInfo?.index ?? 0); // restore the pagination index of child categories
         });
     });
-    const handleModelSelect  = useEvent<ModelSelectEventHandler<CategoryPreview>>(({ model }) => {
+    const handleCategorySelect = useEvent<ModelSelectEventHandler<CategoryPreview>>(({ model }) => {
         setParentCategories((draft): void => {
             // conditions:
             if (draft.length < minDepth) return; // ABORT the operation if the_parents_deep DOESNT_SATISFY minDepth
@@ -371,7 +371,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                         
                         
                         // handlers:
-                        onModelSelect={handleModelSelect}
+                        onModelSelect={handleCategorySelect}
                     />
                 }
             />

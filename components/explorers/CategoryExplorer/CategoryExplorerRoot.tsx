@@ -128,7 +128,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleModelSelect = useEvent<ModelSelectEventHandler<CategoryPreview>>(({ model }) => {
+    const handleCategorySelect = useEvent<ModelSelectEventHandler<CategoryPreview>>(({ model }) => {
         setParentCategories([{ category: model, index: 0 }]); // set the selected root category
         setRestoreIndex(0); // reset the pagination index of child categories
     });
@@ -158,7 +158,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
                         
                         // handlers:
                         selectedModel={selectedRootOrDefault?.category ?? null}
-                        onModelSelect={handleModelSelect}
+                        onModelSelect={handleCategorySelect}
                     />
                 }
             />
