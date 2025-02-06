@@ -134,7 +134,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // handlers:
-    onUpdate              ?: ModelUpsertEventHandler<TModel>
+    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
@@ -152,7 +152,7 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     |'isReverting'           // already taken over
     
     // handlers:
-    |'onUpdate'              // already taken over
+    |'onModelUpsert'         // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
 >
@@ -196,7 +196,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         // handlers:
-        onUpdate,
+        onModelUpsert,
         
         onSideModelCommitting,
         onSideModelDiscarding,
@@ -295,7 +295,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                 // After the update handler is done, run the updated handler until it's done:
                 ? updatingPromise.then(async (updatedModel): Promise<void> => {
                     // Wait for the updated handler to be done:
-                    await onUpdate?.({
+                    await onModelUpsert?.({
                         model   : updatedModel,
                         event   : event,
                     });

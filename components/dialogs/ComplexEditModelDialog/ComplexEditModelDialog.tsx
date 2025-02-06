@@ -177,7 +177,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onModelRetry          ?: ModelRetryErrorEventHandler<void>
     
     onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
-    onUpdate              ?: ModelUpsertEventHandler<TModel>
+    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
     
     onDeleting            ?: ModelDeletingEventHandler<TModel>
     onDelete              ?: ModelDeleteEventHandler<TModel>
@@ -215,7 +215,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     // handlers:
     |'onModelRetry'          // already taken over
     |'onModelUpserting'      // already taken over
-    |'onUpdate'              // already taken over
+    |'onModelUpsert'         // already taken over
     |'onDeleting'            // already taken over
     |'onDelete'              // already taken over
     |'onSideModelCommitting' // already taken over
@@ -280,7 +280,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // handlers:
         onModelUpserting,
-        onUpdate,
+        onModelUpsert,
         
         onDeleting,
         onDelete,
@@ -388,7 +388,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 // After the update handler is done, run the updated handler until it's done:
                 ? updatingPromise.then(async (updatedModel): Promise<void> => {
                     // Wait for the updated handler to be done:
-                    await onUpdate?.({
+                    await onModelUpsert?.({
                         model   : updatedModel,
                         event   : event,
                     });
