@@ -119,7 +119,7 @@ import {
 import {
     // types:
     type ModelConfirmDeleteEventHandler,
-    type ModelCreatingOrUpdatingEventHandler,
+    type ModelUpsertingEventHandler,
     type ModelDeletingEventHandler,
     
     type BillingAddressDetail,
@@ -245,7 +245,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // handlers:
-    const handleUpdating            = useEvent<ModelCreatingOrUpdatingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
+    const handleUpdating            = useEvent<ModelUpsertingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
         const paymentDetail = await imperativeClickRef.current?.click();
         if (!paymentDetail) throw undefined;
         

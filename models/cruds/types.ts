@@ -99,7 +99,7 @@ export type ModelConfirmDeleteEventHandler             <in     TModel extends Mo
 
 // Handlers for creating, updating, or deleting models:
 /**
- * Options for upserting a model.
+ * Options for creating or updating a model.
  */
 export interface ModelUpsertingOptions {
     /**
@@ -130,7 +130,7 @@ export interface ModelDeletingOptions {
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
-export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelUpsertingEventHandler                 <   out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for creating or updating a draft model.

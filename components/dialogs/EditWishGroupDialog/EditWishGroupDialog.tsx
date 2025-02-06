@@ -59,7 +59,7 @@ import {
 // models:
 import {
     type ModelConfirmDeleteEventHandler,
-    type ModelCreatingOrUpdatingEventHandler,
+    type ModelUpsertingEventHandler,
     type ModelDeletingEventHandler,
     
     type WishGroupDetail,
@@ -112,7 +112,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
     
     
     // handlers:
-    const handleUpdating       = useEvent<ModelCreatingOrUpdatingEventHandler<WishGroupDetail>>(async ({ id }) => {
+    const handleUpdating       = useEvent<ModelUpsertingEventHandler<WishGroupDetail>>(async ({ id }) => {
         return await updateWishGroup({
             id : id ?? '',
             

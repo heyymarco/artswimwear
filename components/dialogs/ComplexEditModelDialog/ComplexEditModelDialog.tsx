@@ -100,7 +100,7 @@ import {
     type ModelConfirmDeleteEventHandler,
     
     type ModelDeletingOptions,
-    type ModelCreatingOrUpdatingEventHandler,
+    type ModelUpsertingEventHandler,
     type ModelDeletingEventHandler,
     
     type SideModelCommittingEventHandler,
@@ -176,7 +176,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     // handlers:
     onModelRetry          ?: ModelRetryErrorEventHandler<void>
     
-    onUpdating            ?: ModelCreatingOrUpdatingEventHandler<TModel>
+    onUpdating            ?: ModelUpsertingEventHandler<TModel>
     onUpdate              ?: ModelCreateOrUpdateEventHandler<TModel>
     
     onDeleting            ?: ModelDeletingEventHandler<TModel>
