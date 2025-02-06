@@ -6,6 +6,18 @@ import {
 
 
 
+// Handlers for retrying errors:
+/**
+ * Handler for retrying an error.
+ * @param param - The parameters for the handler.
+ * @param param.error - The error that occurred.
+ * @param param.event - The event triggered by clicking the retry button.
+ * @returns A void or a promise that resolves to void.
+ */
+export type ModelRetryErrorEventHandler                <in     TError extends unknown   , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { error: TError              , event: TCrudEvent                                           }) => void|Promise<void>
+
+
+
 // Handlers for viewing and selecting models:
 /**
  * Handler for selecting a model.
