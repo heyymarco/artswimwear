@@ -7,12 +7,6 @@ import {
     type ControllableCollapsibleProps,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// models:
-import {
-    type Model,
-    type PartialModel,
-}                           from '@/models'
-
 
 
 export interface ModelCreateProps
@@ -22,5 +16,3 @@ export interface ModelCreateProps
         ControllableCollapsibleProps<ExpandedChangeEvent>
 {
 }
-
-export type CreateHandler<TModel extends Model> = (createdModel: PartialModel<TModel>) => void|Promise<void>
