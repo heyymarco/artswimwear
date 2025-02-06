@@ -72,7 +72,7 @@ import {
     type Model,
     type Pagination,
     
-    type ModelCreateOrUpdateEventHandler,
+    type ModelUpsertEventHandler,
 }                           from '@/models'
 
 // internals:
@@ -108,7 +108,7 @@ export interface ModelAddProps<TModel extends Model, TElement extends Element = 
     
     
     // handlers:
-    onModelCreate        ?: ModelCreateOrUpdateEventHandler<TModel>
+    onModelCreate        ?: ModelUpsertEventHandler<TModel>
 }
 
 /* <ModelCreateOuter> */

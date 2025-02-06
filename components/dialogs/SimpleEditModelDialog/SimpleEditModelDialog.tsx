@@ -76,7 +76,7 @@ import {
     type SideModelCommittingEventHandler,
     type SideModelDiscardingEventHandler,
     
-    type ModelCreateOrUpdateEventHandler,
+    type ModelUpsertEventHandler,
 }                           from '@/models'
 
 // internals:
@@ -134,7 +134,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // handlers:
-    onUpdate              ?: ModelCreateOrUpdateEventHandler<TModel>
+    onUpdate              ?: ModelUpsertEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
