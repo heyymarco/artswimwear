@@ -152,7 +152,6 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     // stores:
     isModelLoading        ?: boolean
     isModelError          ?: boolean
-    onModelRetry          ?: ModelRetryErrorEventHandler<void>
     
     isModified            ?: boolean
     isCommiting           ?: boolean
@@ -175,6 +174,8 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // handlers:
+    onModelRetry          ?: ModelRetryErrorEventHandler<void>
+    
     onUpdating            ?: ModelCreatingOrUpdatingEventHandler<TModel>
     onUpdate              ?: ModelCreateOrUpdateEventHandler<TModel>
     
@@ -212,6 +213,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'tabDelete'             // already taken over
     
     // handlers:
+    |'onModelRetry'          // already taken over
     |'onUpdating'            // already taken over
     |'onUpdate'              // already taken over
     |'onDeleting'            // already taken over
