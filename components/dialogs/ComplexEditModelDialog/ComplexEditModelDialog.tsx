@@ -94,6 +94,8 @@ import {
     type Model,
     type PartialModel,
     
+    type ModelRetryErrorEventHandler,
+    
     type ModelConfirmUnsavedEventHandler,
     type ModelConfirmDeleteEventHandler,
     
@@ -150,7 +152,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     // stores:
     isModelLoading        ?: boolean
     isModelError          ?: boolean
-    onModelRetry          ?: MessageErrorProps['onRetry']
+    onModelRetry          ?: ModelRetryErrorEventHandler<void>
     
     isModified            ?: boolean
     isCommiting           ?: boolean
@@ -595,6 +597,12 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         // actions:
         onExpandedChange?.(event);
     });
+    const handleRetry          = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        onModelRetry?.({
+            error : undefined,
+            event : event,
+        });
+    });
     
     
     
@@ -764,7 +772,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 className={`${styleSheet.cardBody} body noData`}
             >
                 {!isModelError && <MessageLoading />}
-                {isModelError  && <MessageError onRetry={onModelRetry} />}
+                {isModelError  && <MessageError onRetry={handleRetry} />}
             </Content>}
             
             {!isModelNoData && <ValidationProvider

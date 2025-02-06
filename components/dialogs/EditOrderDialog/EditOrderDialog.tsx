@@ -105,6 +105,8 @@ import {
 
 // models:
 import {
+    type ModelRetryErrorEventHandler,
+    
     type PublicOrderDetail,
 }                           from '@/models'
 
@@ -273,7 +275,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
         );
     });
     
-    const refetchModel               = useEvent((): void => {
+    const handleModelRetry           = useEvent<ModelRetryErrorEventHandler<void>>((): void => {
         if (isErrorShipping   && !isLoadingShipping  ) refetchShipping();
         if (isErrorPreference && !isLoadingPreference) refetchPreference();
     });
@@ -457,7 +459,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
             // stores:
             isModelLoading = {isLoading}
             isModelError   = {isError}
-            onModelRetry   = {refetchModel}
+            onModelRetry   = {handleModelRetry}
         >
             <TabPanel label={PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING} panelComponent={<Generic className={styleSheet.orderShippingTab} />}>
                 <OrderAndShipping />

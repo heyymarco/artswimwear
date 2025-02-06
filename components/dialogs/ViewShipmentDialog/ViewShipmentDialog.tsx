@@ -61,6 +61,8 @@ import {
 
 // models:
 import {
+    type ModelRetryErrorEventHandler,
+    
     type ShipmentDetail,
 }                           from '@/models'
 
@@ -128,6 +130,13 @@ export const ViewShipmentDialog = (props: ViewShipmentDialogProps) => {
     
     
     
+    // handlers:
+    const handleModelRetry = useEvent<ModelRetryErrorEventHandler<void>>((): void => {
+        refetchModel();
+    });
+    
+    
+    
     // states:
     const [preferredTimezone, setPreferredTimezone] = useState<number>(model?.preferredTimezone ?? checkoutConfigShared.intl.defaultTimezone);
     // TODO: auto save setPreferredTimezone to the database
@@ -157,7 +166,7 @@ export const ViewShipmentDialog = (props: ViewShipmentDialogProps) => {
             // stores:
             isModelLoading = {isLoadingAndNoData}
             isModelError   = {isErrorAndNoData}
-            onModelRetry   = {refetchModel}
+            onModelRetry   = {handleModelRetry}
         >
             <div className={styleSheet.page}>
                 <DataTable breakpoint='sm' className={styleSheet.tableInfo}>

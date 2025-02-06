@@ -26,7 +26,7 @@ export interface MessageErrorProps {
     
     
     // handlers:
-    onRetry        ?: () => void
+    onRetry        ?: React.MouseEventHandler<HTMLButtonElement>
 }
 export const MessageError = (props: MessageErrorProps): JSX.Element|null => {
     // props:
