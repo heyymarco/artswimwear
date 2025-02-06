@@ -97,7 +97,7 @@ const AddWishGroupImage = <TModel extends Model>(props: AddWishGroupImageProps<T
     
     
     // handlers:
-    const handleShowDialog = useEvent(async (): Promise<void> => {
+    const handleShowDialog = useEvent<React.MouseEventHandler<HTMLButtonElement>>(async (event): Promise<void> => {
         // conditions:
         if (!modelCreateComponent) return;
         
@@ -116,7 +116,10 @@ const AddWishGroupImage = <TModel extends Model>(props: AddWishGroupImageProps<T
         
         
         if (createdModel) { // if closed of created Model (ignores of canceled or deleted Model)
-            onModelCreate?.(createdModel);
+            onModelCreate?.({
+                model : createdModel,
+                event : event,
+            });
         } // if
     });
     

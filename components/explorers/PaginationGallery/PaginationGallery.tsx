@@ -60,7 +60,6 @@ import {
 // internal components:
 import {
     type ModelCreateProps,
-    type CreateHandler,
     
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
@@ -72,6 +71,8 @@ import {
 import {
     type Model,
     type Pagination,
+    
+    type ModelCreateOrUpdateEventHandler,
 }                           from '@/models'
 
 // internals:
@@ -107,7 +108,7 @@ export interface ModelAddProps<TModel extends Model, TElement extends Element = 
     
     
     // handlers:
-    onModelCreate        ?: CreateHandler<TModel>
+    onModelCreate        ?: ModelCreateOrUpdateEventHandler<TModel>
 }
 
 /* <ModelCreateOuter> */
@@ -164,7 +165,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     
     
     // handlers:
-    const handleShowDialog = useEvent(async (): Promise<void> => {
+    const handleShowDialog = useEvent<React.MouseEventHandler<HTMLButtonElement>>(async (event): Promise<void> => {
         // conditions:
         if (!modelCreateComponent) return;
         
@@ -183,7 +184,10 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
         
         
         if (createdModel) { // if closed of created Model (ignores of canceled or deleted Model)
-            onModelCreate?.(createdModel);
+            onModelCreate?.({
+                model : createdModel,
+                event : event,
+            });
         } // if
     });
     
