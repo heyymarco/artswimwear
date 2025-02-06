@@ -176,7 +176,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     // handlers:
     onModelRetry          ?: ModelRetryErrorEventHandler<void>
     
-    onUpdating            ?: ModelUpsertingEventHandler<TModel>
+    onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
     onUpdate              ?: ModelUpsertEventHandler<TModel>
     
     onDeleting            ?: ModelDeletingEventHandler<TModel>
@@ -214,7 +214,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     
     // handlers:
     |'onModelRetry'          // already taken over
-    |'onUpdating'            // already taken over
+    |'onModelUpserting'      // already taken over
     |'onUpdate'              // already taken over
     |'onDeleting'            // already taken over
     |'onDelete'              // already taken over
@@ -279,7 +279,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // handlers:
-        onUpdating,
+        onModelUpserting,
         onUpdate,
         
         onDeleting,
@@ -367,9 +367,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         try {
             // First: run the update handler (if provided):
             const updatingPromise : Promise<PartialModel<TModel>>|undefined = (
-                onUpdating
+                onModelUpserting
                 ? Promise.resolve<PartialModel<TModel>>( // Convert the result to a promise, to make it easier to handle
-                    onUpdating({
+                    onModelUpserting({
                         id      : model?.id || null,
                         
                         event   : event,

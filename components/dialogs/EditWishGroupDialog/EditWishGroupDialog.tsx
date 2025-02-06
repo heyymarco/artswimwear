@@ -112,7 +112,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
     
     
     // handlers:
-    const handleUpdating       = useEvent<ModelUpsertingEventHandler<WishGroupDetail>>(async ({ id }) => {
+    const handleModelUpserting = useEvent<ModelUpsertingEventHandler<WishGroupDetail>>(async ({ id }) => {
         return await updateWishGroup({
             id : id ?? '',
             
@@ -225,7 +225,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             
             
             // handlers:
-            onUpdating={handleUpdating}
+            onModelUpserting={handleModelUpserting}
             onDeleting={handleDeleting}
             
             onConfirmDelete={handleConfirmDelete}
