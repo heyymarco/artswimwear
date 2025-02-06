@@ -45,10 +45,6 @@ import {
 
 // internal components:
 import {
-    type CreateHandler,
-    
-    
-    
     PaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
 import {
@@ -64,6 +60,7 @@ import {
 // models:
 import {
     type ModelSelectEventHandler,
+    type ModelCreateOrUpdateEventHandler,
     
     type WishGroupDetail,
 }                           from '@/models'
@@ -119,7 +116,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
             data       : wishGroup,
         } as TModalExpandedChangeEvent);
     });
-    const handleGroupCreated       = useEvent<CreateHandler<WishGroupDetail>>((wishGroup) => {
+    const handleGroupCreate        = useEvent<ModelCreateOrUpdateEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup as WishGroupDetail);
         props.onExpandedChange?.({
             expanded   : false,
@@ -220,7 +217,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
                         
                         
                         // handlers:
-                        onModelCreate={handleGroupCreated}
+                        onModelCreate={handleGroupCreate}
                     />
                 </PaginationStateProvider>
             </CardBody>
