@@ -179,7 +179,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
     onModelUpsert         ?: ModelUpsertEventHandler<TModel>
     
-    onDeleting            ?: ModelDeletingEventHandler<TModel>
+    onModelDeleting       ?: ModelDeletingEventHandler<TModel>
     onDelete              ?: ModelDeleteEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
@@ -216,7 +216,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'onModelRetry'          // already taken over
     |'onModelUpserting'      // already taken over
     |'onModelUpsert'         // already taken over
-    |'onDeleting'            // already taken over
+    |'onModelDeleting'       // already taken over
     |'onDelete'              // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
@@ -282,7 +282,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onModelUpserting,
         onModelUpsert,
         
-        onDeleting,
+        onModelDeleting,
         onDelete,
         
         onSideModelCommitting,
@@ -445,9 +445,9 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         try {
             // First: run the delete handler (if provided):
             const deletingPromise : Promise<void>|undefined = (
-                onDeleting
+                onModelDeleting
                 ? Promise.resolve<void>( // Convert the result to a promise, to make it easier to handle
-                    onDeleting({
+                    onModelDeleting({
                         draft   : model,
                         
                         event   : event,

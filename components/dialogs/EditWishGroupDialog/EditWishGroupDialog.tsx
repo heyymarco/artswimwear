@@ -120,7 +120,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
         }).unwrap();
     });
     
-    const handleDeleting       = useEvent<ModelDeletingEventHandler<WishGroupDetail>>(async ({ draft: { id }, options }) => {
+    const handleModelDeleting  = useEvent<ModelDeletingEventHandler<WishGroupDetail>>(async ({ draft: { id }, options }) => {
         const deleteBoth = (options?.deleteBoth as boolean|undefined) ?? false;
         await deleteWishGroup({
             id         : id,
@@ -226,7 +226,7 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             
             // handlers:
             onModelUpserting={handleModelUpserting}
-            onDeleting={handleDeleting}
+            onModelDeleting={handleModelDeleting}
             
             onConfirmDelete={handleConfirmDelete}
         >
