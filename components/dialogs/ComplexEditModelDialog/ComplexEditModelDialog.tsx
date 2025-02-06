@@ -162,7 +162,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     // tabs:
     tabDelete             ?: React.ReactNode
-    contentDelete         ?: React.ReactNode | ((props: { handleDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions) => Promise<false|undefined> }) => React.ReactNode),
+    contentDelete         ?: React.ReactNode | ((props: { handleModelDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions) => Promise<false|undefined> }) => React.ReactNode),
     
     
     
@@ -180,7 +180,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onModelUpsert         ?: ModelUpsertEventHandler<TModel>
     
     onModelDeleting       ?: ModelDeletingEventHandler<TModel>
-    onDelete              ?: ModelDeleteEventHandler<TModel>
+    onModelDelete         ?: ModelDeleteEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
@@ -217,7 +217,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'onModelUpserting'      // already taken over
     |'onModelUpsert'         // already taken over
     |'onModelDeleting'       // already taken over
-    |'onDelete'              // already taken over
+    |'onModelDelete'         // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
     |'onConfirmDelete'       // already taken over
@@ -283,7 +283,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onModelUpsert,
         
         onModelDeleting,
-        onDelete,
+        onModelDelete,
         
         onSideModelCommitting,
         onSideModelDiscarding,
@@ -407,7 +407,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             if ((fetchError !== null) && (fetchError !== undefined)) showMessageFetchError(fetchError);
         } // try
     });
-    const handleDelete         = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions): Promise<false|undefined> => {
+    const handleModelDelete    = useEvent(async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, options?: ModelDeletingOptions): Promise<false|undefined> => {
         // conditions:
         if (!model) return undefined; // no model to delete => ignore
         {
@@ -463,7 +463,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 // After the delete handler is done, run the deleted handler until it's done:
                 ? deletingPromise.then(async (): Promise<void> => {
                     // Wait for the deleted handler to be done:
-                    await onDelete?.({
+                    await onModelDelete?.({
                         draft   : model,
                         event   : event,
                         options : options,
@@ -625,7 +625,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
     
     const {
         contentDelete = !whenDelete ? undefined : <>
-            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
+            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleModelDelete}>
                 Delete {!modelEntryName ? 'this ' : ''}<strong>{
                     // the model name is entered:
                     modelEntryName
@@ -830,7 +830,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                 >
                     {children}
                     {whenDelete && <TabPanel label={tabDelete} panelComponent={<Content theme='warning' className={styleSheet.tabDelete} />}>
-                        {(typeof(contentDelete) === 'function') ? contentDelete({ handleDelete }) : contentDelete}
+                        {(typeof(contentDelete) === 'function') ? contentDelete({ handleModelDelete }) : contentDelete}
                     </TabPanel>}
                 </Tab>}
             </ValidationProvider>}

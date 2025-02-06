@@ -203,15 +203,15 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             
             // tabs:
             tabDelete     = 'Delete'
-            contentDelete = {({ handleDelete }) =>
+            contentDelete = {({ handleModelDelete }) =>
                 <div className={styleSheet.deleteTab}>
-                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleDelete(event, { deleteBoth: false })}>
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleModelDelete(event, { deleteBoth: false })}>
                         Delete Only <strong>{model?.name}</strong> Collection
                     </ButtonIcon>
                     
                     <AlternateSeparator />
                     
-                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleDelete(event, { deleteBoth: true })}>
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={(event) => handleModelDelete(event, { deleteBoth: true })}>
                         Delete Both <strong>{model?.name}</strong> Collection and Related Items on Wishlist
                     </ButtonIcon>
                 </div>
