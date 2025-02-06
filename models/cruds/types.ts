@@ -99,9 +99,9 @@ export type ModelConfirmDeleteEventHandler             <in     TModel extends Mo
 
 // Handlers for creating, updating, or deleting models:
 /**
- * Options for creating or updating a model.
+ * Options for upserting a model.
  */
-export interface ModelCreatingOrUpdatingOptions {
+export interface ModelUpsertingOptions {
     /**
      * Indicates if the current user has permission to add a new entry.
      */
@@ -130,7 +130,7 @@ export interface ModelDeletingOptions {
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
-export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { id   : string|null         , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for creating or updating a draft model.
@@ -140,7 +140,7 @@ export type ModelCreatingOrUpdatingEventHandler        <   out TModel extends Mo
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
-export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelCreatingOrUpdatingOptions }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for deleting a model.
