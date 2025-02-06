@@ -140,7 +140,7 @@ export type ModelUpsertingEventHandler                 <   out TModel extends Mo
  * @param param.options - Options for creating or updating the model.
  * @returns A partial model or a promise that resolves to a partial model. It returns a partial model because it represents a partial update.
  */
-export type ModelCreatingOrUpdatingOfDraftEventHandler <in out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
+export type ModelUpsertingOfDraftEventHandler          <in out TModel extends Model     , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { draft: TModel              , event: TCrudEvent, options : ModelUpsertingOptions          }) => PartialModel<TModel>|Promise<PartialModel<TModel>>
 
 /**
  * Handler for deleting a model.
