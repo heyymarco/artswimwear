@@ -245,6 +245,17 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
     
     
     // handlers:
+    const handleModelConfirmDelete  = useEvent<ModelConfirmDeleteEventHandler<PaymentMethodDetail>>(({ draft }) => {
+        return {
+            title   : <h1>Delete Confirmation</h1>,
+            message : <>
+                <p>
+                    Are you sure to delete {modelType ? `${modelType} ` : ''}<strong>{modelAliasName}</strong>?
+                </p>
+            </>,
+        };
+    });
+    
     const handleModelUpserting      = useEvent<ModelUpsertingEventHandler<PaymentMethodDetail>>(async ({ id }) => {
         const paymentDetail = await imperativeClickRef.current?.click();
         if (!paymentDetail) throw undefined;
@@ -293,17 +304,6 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         await deletePaymentMethod({
             id : id,
         }).unwrap();
-    });
-    
-    const handleModelConfirmDelete  = useEvent<ModelConfirmDeleteEventHandler<PaymentMethodDetail>>(({ draft }) => {
-        return {
-            title   : <h1>Delete Confirmation</h1>,
-            message : <>
-                <p>
-                    Are you sure to delete {modelType ? `${modelType} ` : ''}<strong>{modelAliasName}</strong>?
-                </p>
-            </>,
-        };
     });
     
     const handleEditorAddressChange = useEvent<EditorChangeEventHandler<EditorAddress|null, React.ChangeEvent<HTMLInputElement>>>((newValue, event) => {
@@ -539,10 +539,10 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 
                 
                 // handlers:
+                onModelConfirmDelete={handleModelConfirmDelete}
+                
                 onModelUpserting={handleModelUpserting}
                 onModelDeleting={handleModelDeleting}
-                
-                onModelConfirmDelete={handleModelConfirmDelete}
             >
                 {mainTab}
             </ComplexEditModelDialog>

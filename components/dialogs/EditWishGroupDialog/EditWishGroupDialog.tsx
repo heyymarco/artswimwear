@@ -112,6 +112,17 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
     
     
     // handlers:
+    const handleModelConfirmDelete = useEvent<ModelConfirmDeleteEventHandler<WishGroupDetail>>(({ draft }) => {
+        return {
+            title   : <h1>Delete Confirmation</h1>,
+            message : <>
+                <p>
+                    Are you sure to delete <strong>{draft.name}</strong> collection?
+                </p>
+            </>,
+        };
+    });
+    
     const handleModelUpserting     = useEvent<ModelUpsertingEventHandler<WishGroupDetail>>(async ({ id }) => {
         return await updateWishGroup({
             id : id ?? '',
@@ -126,17 +137,6 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             id         : id,
             deleteBoth : deleteBoth,
         }).unwrap();
-    });
-    
-    const handleModelConfirmDelete = useEvent<ModelConfirmDeleteEventHandler<WishGroupDetail>>(({ draft }) => {
-        return {
-            title   : <h1>Delete Confirmation</h1>,
-            message : <>
-                <p>
-                    Are you sure to delete <strong>{draft.name}</strong> collection?
-                </p>
-            </>,
-        };
     });
     
     
@@ -225,10 +225,10 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             
             
             // handlers:
+            onModelConfirmDelete={handleModelConfirmDelete}
+            
             onModelUpserting={handleModelUpserting}
             onModelDeleting={handleModelDeleting}
-            
-            onModelConfirmDelete={handleModelConfirmDelete}
         >
             {mainTab}
         </ComplexEditModelDialog>
