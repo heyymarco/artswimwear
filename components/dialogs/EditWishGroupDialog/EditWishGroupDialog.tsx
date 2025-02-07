@@ -130,7 +130,6 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             name,
         }).unwrap();
     });
-    
     const handleModelDeleting      = useEvent<ModelDeletingEventHandler<WishGroupDetail>>(async ({ draft: { id }, options }) => {
         const deleteBoth = (options?.deleteBoth as boolean|undefined) ?? false;
         await deleteWishGroup({

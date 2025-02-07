@@ -299,7 +299,6 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
             billingAddress : billingAddress ?? null,
         } satisfies Omit<PaymentMethodDetail, 'priority'>;
     });
-    
     const handleModelDeleting       = useEvent<ModelDeletingEventHandler<PaymentMethodDetail>>(async ({ draft: { id } }) => {
         await deletePaymentMethod({
             id : id,
