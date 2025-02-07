@@ -176,17 +176,17 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     // handlers:
     onModelRetry          ?: ModelRetryEventHandler<void>
     
-    onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
-    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
+    onModelConfirmUnsaved ?: ModelConfirmUnsavedEventHandler<TModel>
+    onModelConfirmDelete  ?: ModelConfirmDeleteEventHandler<TModel>
     
+    onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
     onModelDeleting       ?: ModelDeletingEventHandler<TModel>
-    onModelDelete         ?: ModelDeleteEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
     
-    onModelConfirmDelete  ?: ModelConfirmDeleteEventHandler<TModel>
-    onModelConfirmUnsaved ?: ModelConfirmUnsavedEventHandler<TModel>
+    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
+    onModelDelete         ?: ModelDeleteEventHandler<TModel>
     
     
     
@@ -214,14 +214,14 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     
     // handlers:
     |'onModelRetry'          // already taken over
+    |'onModelConfirmUnsaved' // already taken over
+    |'onModelConfirmDelete'  // already taken over
     |'onModelUpserting'      // already taken over
-    |'onModelUpsert'         // already taken over
     |'onModelDeleting'       // already taken over
-    |'onModelDelete'         // already taken over
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
-    |'onModelConfirmDelete'  // already taken over
-    |'onModelConfirmUnsaved' // already taken over
+    |'onModelUpsert'         // already taken over
+    |'onModelDelete'         // already taken over
     
     // children:
     |'children'              // already taken over
@@ -251,7 +251,6 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         // stores:
         isModelLoading = false,
         isModelError   = false,
-        onModelRetry,
         
         isModified     = false,
         isCommiting    = false,
@@ -279,19 +278,21 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         
         // handlers:
-        onModelUpserting,
-        onModelUpsert,
+        onExpandedChange,
         
+        onModelRetry,
+        
+        onModelConfirmUnsaved,
+        onModelConfirmDelete,
+        
+        onModelUpserting,
         onModelDeleting,
-        onModelDelete,
         
         onSideModelCommitting,
         onSideModelDiscarding,
         
-        onModelConfirmDelete,
-        onModelConfirmUnsaved,
-        
-        onExpandedChange,
+        onModelUpsert,
+        onModelDelete,
         
         
         
