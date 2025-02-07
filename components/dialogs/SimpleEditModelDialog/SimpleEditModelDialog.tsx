@@ -134,12 +134,12 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // handlers:
+    onModelConfirmUnsaved ?: ModelConfirmUnsavedEventHandler<TModel>
+    
     onModelUpsert         ?: ModelUpsertEventHandler<TModel>
     
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
-    
-    onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
 }
 export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = Omit<SimpleEditModelDialogProps<TModel, TEdit>,
     // data:
@@ -196,14 +196,14 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         // handlers:
+        onExpandedChange,
+        
+        onModelConfirmUnsaved,
+        
         onModelUpsert,
         
         onSideModelCommitting,
         onSideModelDiscarding,
-        
-        onConfirmUnsaved,
-        
-        onExpandedChange,
         
         
         
@@ -339,7 +339,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                     message = <p>
                         Do you want to save the changes?
                     </p>,
-                } = onConfirmUnsaved?.({ draft: model, event: event }) ?? {};
+                } = onModelConfirmUnsaved?.({ draft: model, event: event }) ?? {};
                 answer = await showMessage<'save'|'dontSave'|'continue'>({
                     theme         : 'warning',
                     title         : title,
