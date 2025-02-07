@@ -186,7 +186,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
     
     onModelConfirmDelete  ?: ModelConfirmDeleteEventHandler<TModel>
-    onConfirmUnsaved      ?: ModelConfirmUnsavedEventHandler<TModel>
+    onModelConfirmUnsaved ?: ModelConfirmUnsavedEventHandler<TModel>
     
     
     
@@ -221,7 +221,7 @@ export type ImplementedComplexEditModelDialogProps<TModel extends Model> = Omit<
     |'onSideModelCommitting' // already taken over
     |'onSideModelDiscarding' // already taken over
     |'onModelConfirmDelete'  // already taken over
-    |'onConfirmUnsaved'      // already taken over
+    |'onModelConfirmUnsaved' // already taken over
     
     // children:
     |'children'              // already taken over
@@ -289,7 +289,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         onSideModelDiscarding,
         
         onModelConfirmDelete,
-        onConfirmUnsaved,
+        onModelConfirmUnsaved,
         
         onExpandedChange,
         
@@ -516,7 +516,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                     message = <p>
                         Do you want to save the changes?
                     </p>,
-                } = onConfirmUnsaved?.({ draft: model, event: event }) ?? {};
+                } = onModelConfirmUnsaved?.({ draft: model, event: event }) ?? {};
                 answer = await showMessage<'save'|'dontSave'|'continue'>({
                     theme         : 'warning',
                     title         : title,
