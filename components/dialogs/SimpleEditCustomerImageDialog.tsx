@@ -87,12 +87,6 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     
     
     // handlers:
-    const handleSideModelCommitting = useEvent(async (): Promise<void> => {
-        await handleSideModelSave(/*commitImages = */true);
-    });
-    const handleSideModelDiscarding = useEvent(async (): Promise<void> => {
-        await handleSideModelSave(/*commitImages = */false);
-    });
     const handleSideModelSave       = useEvent(async (commitImages : boolean): Promise<void> => {
         // initial_image have been replaced with new image:
         if (commitImages && initialImage && (initialImage !== image)) {
@@ -131,6 +125,12 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
         
         // substract the drafts:
         for (const unusedImageId of unusedImageIds) draftDeletedImages.delete(unusedImageId);
+    });
+    const handleSideModelCommitting = useEvent(async (): Promise<void> => {
+        await handleSideModelSave(/*commitImages = */true);
+    });
+    const handleSideModelDiscarding = useEvent(async (): Promise<void> => {
+        await handleSideModelSave(/*commitImages = */false);
     });
     
     
