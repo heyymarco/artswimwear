@@ -166,7 +166,11 @@ export const ViewShipmentDialog = (props: ViewShipmentDialogProps) => {
             // stores:
             isModelLoading = {isLoadingAndNoData}
             isModelError   = {isErrorAndNoData}
-            onModelRetry   = {handleModelRetry}
+            
+            
+            
+            // handlers:
+            onModelRetry={handleModelRetry}
         >
             <div className={styleSheet.page}>
                 <DataTable breakpoint='sm' className={styleSheet.tableInfo}>

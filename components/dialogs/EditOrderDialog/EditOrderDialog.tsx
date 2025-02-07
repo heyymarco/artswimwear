@@ -459,7 +459,11 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
             // stores:
             isModelLoading = {isLoading}
             isModelError   = {isError}
-            onModelRetry   = {handleModelRetry}
+            
+            
+            
+            // handlers:
+            onModelRetry={handleModelRetry}
         >
             <TabPanel label={PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING} panelComponent={<Generic className={styleSheet.orderShippingTab} />}>
                 <OrderAndShipping />
