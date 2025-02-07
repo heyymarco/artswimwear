@@ -295,7 +295,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
         }).unwrap();
     });
     
-    const handleConfirmDelete       = useEvent<ModelConfirmDeleteEventHandler<PaymentMethodDetail>>(({ draft }) => {
+    const handleModelConfirmDelete  = useEvent<ModelConfirmDeleteEventHandler<PaymentMethodDetail>>(({ draft }) => {
         return {
             title   : <h1>Delete Confirmation</h1>,
             message : <>
@@ -542,7 +542,7 @@ const EditPaymentMethodDialogInternal = (props: EditPaymentMethodDialogProps): J
                 onModelUpserting={handleModelUpserting}
                 onModelDeleting={handleModelDeleting}
                 
-                onConfirmDelete={handleConfirmDelete}
+                onModelConfirmDelete={handleModelConfirmDelete}
             >
                 {mainTab}
             </ComplexEditModelDialog>
