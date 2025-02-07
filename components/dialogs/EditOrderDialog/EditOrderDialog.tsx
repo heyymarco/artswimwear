@@ -105,7 +105,7 @@ import {
 
 // models:
 import {
-    type ModelRetryErrorEventHandler,
+    type ModelRetryEventHandler,
     
     type PublicOrderDetail,
 }                           from '@/models'
@@ -275,7 +275,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
         );
     });
     
-    const handleModelRetry           = useEvent<ModelRetryErrorEventHandler<void>>((): void => {
+    const handleModelRetry           = useEvent<ModelRetryEventHandler<void>>((): void => {
         if (isErrorShipping   && !isLoadingShipping  ) refetchShipping();
         if (isErrorPreference && !isLoadingPreference) refetchPreference();
     });

@@ -61,7 +61,7 @@ import {
 
 // models:
 import {
-    type ModelRetryErrorEventHandler,
+    type ModelRetryEventHandler,
     
     type ShipmentDetail,
 }                           from '@/models'
@@ -131,7 +131,7 @@ export const ViewShipmentDialog = (props: ViewShipmentDialogProps) => {
     
     
     // handlers:
-    const handleModelRetry = useEvent<ModelRetryErrorEventHandler<void>>((): void => {
+    const handleModelRetry = useEvent<ModelRetryEventHandler<void>>((): void => {
         refetchModel();
     });
     

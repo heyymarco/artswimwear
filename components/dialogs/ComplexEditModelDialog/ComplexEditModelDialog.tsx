@@ -94,7 +94,7 @@ import {
     type Model,
     type PartialModel,
     
-    type ModelRetryErrorEventHandler,
+    type ModelRetryEventHandler,
     
     type ModelConfirmUnsavedEventHandler,
     type ModelConfirmDeleteEventHandler,
@@ -174,7 +174,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     
     // handlers:
-    onModelRetry          ?: ModelRetryErrorEventHandler<void>
+    onModelRetry          ?: ModelRetryEventHandler<void>
     
     onModelUpserting      ?: ModelUpsertingEventHandler<TModel>
     onModelUpsert         ?: ModelUpsertEventHandler<TModel>

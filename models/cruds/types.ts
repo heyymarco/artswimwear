@@ -14,7 +14,7 @@ import {
  * @param param.event - The event triggered by clicking the retry button.
  * @returns A void or a promise that resolves to void.
  */
-export type ModelRetryErrorEventHandler       <in     TError extends unknown   , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { error: TError              , event: TCrudEvent                                           }) => void|Promise<void>
+export type ModelRetryEventHandler            <in     TError extends unknown   , in TCrudEvent extends React.SyntheticEvent<unknown, Event> = React.MouseEvent<Element, MouseEvent>> = (param: { error: TError              , event: TCrudEvent                                           }) => void|Promise<void>
 
 
 
