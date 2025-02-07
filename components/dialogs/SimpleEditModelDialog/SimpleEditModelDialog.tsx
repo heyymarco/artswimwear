@@ -136,10 +136,10 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     // handlers:
     onModelConfirmUnsaved ?: ModelConfirmUnsavedEventHandler<TModel>
     
-    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
-    
     onSideModelCommitting ?: SideModelCommittingEventHandler<TModel>
     onSideModelDiscarding ?: SideModelDiscardingEventHandler<TModel>
+    
+    onModelUpsert         ?: ModelUpsertEventHandler<TModel>
 }
 export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = Omit<SimpleEditModelDialogProps<TModel, TEdit>,
     // data:
@@ -200,10 +200,10 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         onModelConfirmUnsaved,
         
-        onModelUpsert,
-        
         onSideModelCommitting,
         onSideModelDiscarding,
+        
+        onModelUpsert,
         
         
         
