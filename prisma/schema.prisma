@@ -35,6 +35,8 @@ model Product {
     
     excerpt                         String?
     description                     Json?
+    autoKeywords                    String[]
+    keywords                        String[]
     
     images                          String[]
     
