@@ -110,7 +110,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
     
     
     // handlers:
-    const handleGroupSelect        = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
+    const handleModelSelect        = useEvent<ModelSelectEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup);
         props.onExpandedChange?.({
             expanded   : false,
@@ -118,7 +118,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
             data       : wishGroup,
         } as TModalExpandedChangeEvent);
     });
-    const handleGroupCreate        = useEvent<ModelUpsertEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
+    const handleModelCreate        = useEvent<ModelUpsertEventHandler<WishGroupDetail>>(({ model: wishGroup }) => {
         setSelectedCollection(wishGroup as WishGroupDetail);
         props.onExpandedChange?.({
             expanded   : false,
@@ -201,7 +201,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                                 
                                 // values:
                                 selectedModel={selectedCollection}
-                                onModelSelect={handleGroupSelect}
+                                onModelSelect={handleModelSelect}
                             />
                         }
                         modelCreateComponent={
@@ -214,7 +214,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                         
                         
                         // handlers:
-                        onModelCreate={handleGroupCreate}
+                        onModelCreate={handleModelCreate}
                     />
                 </PaginationStateProvider>
             </CardBody>
