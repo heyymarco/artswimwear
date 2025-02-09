@@ -174,7 +174,7 @@ router
             keywords : [
                 ...keywords,
                 ...autoKeywords,
-            ],
+            ].slice(0, 20), // Limit to max 20 keywords
         } satisfies ProductDetail); // handled with success
     } // if
     //#endregion query result
