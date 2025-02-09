@@ -49,6 +49,7 @@ export async function generateMetadata(props: MetadataProps, parent: ResolvingMe
         return {
             title       : PAGE_PRODUCT_TITLE.replace('{{TheProductName}}', product?.name ?? ''),
             description : PAGE_PRODUCT_DESCRIPTION.replace('{{TheProductExcerpt}}', product?.excerpt ?? ''),
+            keywords    : product.keywords,
         };
     }
     catch (error: any) {

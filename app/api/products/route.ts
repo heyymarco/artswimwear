@@ -148,7 +148,7 @@ router
         return Response.json(convertProductPreviewDataToProductPreview(productPreviewData) satisfies ProductPreview); // handled with success
     }
     else if (path) {
-        const productDetail : ProductDetail|null = (
+        const productDetailData = (
             await prisma.product.findUnique({
                 where  : {
                     path       : path, // find by url path
@@ -158,13 +158,24 @@ router
             })
         );
         
-        if (!productDetail) {
+        if (!productDetailData) {
             return Response.json({
                 error: `The product with specified path "${path}" is not found.`,
             }, { status: 404 }); // handled with error
         } // if
         
-        return Response.json(productDetail); // handled with success
+        const {
+            autoKeywords,
+            keywords,
+            ...productDetail
+        } = productDetailData;
+        return Response.json({
+            ...productDetail,
+            keywords : [
+                ...keywords,
+                ...autoKeywords,
+            ],
+        } satisfies ProductDetail); // handled with success
     } // if
     //#endregion query result
     

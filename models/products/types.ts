@@ -85,6 +85,7 @@ export interface ProductDetail
             |'path'
             |'excerpt'
             |'description'
+            |'keywords'
             |'images'
         >
 {

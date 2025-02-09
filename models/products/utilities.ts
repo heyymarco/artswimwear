@@ -91,18 +91,20 @@ export const convertProductPreviewDataToProductPreview = (productPreviewData: Aw
 };
 
 export const productDetailSelect = {
-    id          : true,
+    id           : true,
     
-    name        : true,
+    name         : true,
     
-    price       : true,
+    price        : true,
     
-    path        : true,
+    path         : true,
     
-    excerpt     : true,
-    description : true,
+    excerpt      : true,
+    description  : true,
+    autoKeywords : true,
+    keywords     : true,
     
-    images      : true,
+    images       : true,
     
     variantGroups : {
         select : {
