@@ -13,6 +13,11 @@ import {
 
 // reusable-ui core:
 import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+    
+    
+    
     // react helper hooks:
     useEvent,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
@@ -49,7 +54,7 @@ export interface CategoryExplorerDropdownProps<TElement extends Element = HTMLEl
         >
 {
 }
-const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Element|null => {
+const CategoryExplorerDropdown = <TElement extends Element = HTMLElement>(props: CategoryExplorerDropdownProps<TElement>): JSX.Element|null => {
     // props:
     const {
         // appearances:
@@ -58,7 +63,7 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
         
         
         // other props:
-        ...restCategoryExplorerDropdownProps
+        ...restDropdownProps
     } = props;
     
     
@@ -88,19 +93,11 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
     
     
     
-    // default props:
-    const {
-        // other props:
-        ...restDropdownProps
-    } = restCategoryExplorerDropdownProps;
-    
-    
-    
     // jsx:
     return (
-        <Dropdown
+        <Dropdown<TElement, DropdownExpandedChangeEvent<boolean>>
             // other props:
-            {...restDropdownProps}
+            {...restDropdownProps satisfies NoForeignProps<typeof restDropdownProps, Omit<DropdownProps<TElement, DropdownExpandedChangeEvent<boolean>>, 'children'>>}
             
             
             
@@ -121,6 +118,6 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
     );
 };
 export {
-    CategoryExplorerDropdown,
-    CategoryExplorerDropdown as default,
+    CategoryExplorerDropdown,            // named export for readibility
+    CategoryExplorerDropdown as default, // default export to support React.lazy
 }
