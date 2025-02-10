@@ -62,7 +62,7 @@ export interface CategoryExplorerState {
 
 const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     // appearances:
-    mobileLayout        : false,
+    mobileLayout        : true,
     showRootSection     : true,
     
     

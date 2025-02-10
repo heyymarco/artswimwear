@@ -58,7 +58,7 @@ const CategoryExplorerDropdown = <TElement extends Element = HTMLElement>(props:
     // props:
     const {
         // appearances:
-        mobileLayout = false,
+        mobileLayout = true,
         
         
         
