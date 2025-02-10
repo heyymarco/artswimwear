@@ -24,6 +24,12 @@ import {
     useCategoryExplorerStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui core:
+import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // base-components:
@@ -111,9 +117,9 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
         >,
         
         // <div>:
-        Omit<React.HTMLAttributes<TElement>,
-            // semantics:
-            |'role' // we redefined [role] in <Generic>
+        Pick<React.HTMLAttributes<TElement>,
+            // accessibilities:
+            |'tabIndex'
         >,
         
         // states:
@@ -151,7 +157,7 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
         return (
             <CategoryExplorerInternal<TElement>
                 // other props:
-                {...props}
+                {...props satisfies NoForeignProps<typeof props, CategoryExplorerInternalProps<TElement>>}
             />
         );
     } // if
@@ -160,7 +166,7 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
     return (
         <CategoryExplorerConditional<TElement>
             // other props:
-            {...props}
+            {...props satisfies NoForeignProps<typeof props, Omit<CategoryExplorerConditionalProps<TElement>, 'initialCategories'>>}
             
             
             
@@ -346,7 +352,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
             >
                 <CategoryExplorerInternal2
                     // other props:
-                    {...restCategoryExplorerInternal2Props}
+                    {...restCategoryExplorerInternal2Props satisfies NoForeignProps<typeof restCategoryExplorerInternal2Props, CategoryExplorerInternal2Props<TElement>>}
                 />
             </PaginationStateProvider>
         </CategoryExplorerStateProvider>
@@ -393,6 +399,11 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     
     // props:
     const {
+        // accessibilities:
+        tabIndex  = 0,
+        
+        
+        
         // other props:
         ...restCategoryExplorerInternal2Props
     } = props;
@@ -406,11 +417,6 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     
     // default props:
     const {
-        // accessibilities:
-        tabIndex  = 0,
-        
-        
-        
         // classes:
         mainClass = `${styleSheet.main} ${mobileLayout ? 'mobile' : ''}`,
         
@@ -418,7 +424,7 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
         
         // other props:
         ...restGenericProps
-    } = restCategoryExplorerInternal2Props;
+    } = restCategoryExplorerInternal2Props satisfies NoForeignProps<typeof restCategoryExplorerInternal2Props, GenericProps<TElement>>;
     
     
     
