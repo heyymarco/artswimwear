@@ -15,6 +15,11 @@ import {
 
 // reusable-ui core:
 import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+    
+    
+    
     // react helper hooks:
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -237,7 +242,17 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 Products
             </Link>
         ),
-    } = props;
+        
+        
+        
+        // states:
+        active   = (shownDropdown ? true : undefined), // force as active if the menu is shown
+        
+        
+        
+        // other props:
+        ...restNavItemProps
+    } = props satisfies NoForeignProps<typeof props, NavItemProps>;
     
     
     
@@ -246,7 +261,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         <>
             <NavItem
                 // other props:
-                {...props}
+                {...restNavItemProps}
                 
                 
                 
@@ -256,7 +271,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 
                 // states:
-                active={shownDropdown ? true : undefined} // force as active if the menu is shown
+                active={active}
                 
                 
                 
