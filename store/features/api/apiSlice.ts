@@ -15,9 +15,6 @@ import {
     type BaseEndpointDefinition,
     type MutationLifecycleApi,
 }                           from '@reduxjs/toolkit/dist/query/endpointDefinitions'
-import {
-    type PrefetchOptions,
-}                           from '@reduxjs/toolkit/dist/query/core/module'
 
 // types:
 import {
@@ -104,9 +101,6 @@ import {
 
 
 
-const countryListAdapter          = createEntityAdapter<CountryPreview>({
-    selectId : (country) => country.code,
-});
 const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
     selectId : (shippingPreview) => shippingPreview.id,
 });
