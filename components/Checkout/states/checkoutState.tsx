@@ -278,7 +278,7 @@ export interface CheckoutStateBase
     
     
     // relation data:
-    shippingList                 : EntityState<MatchingShipping> | undefined
+    shippingList                 : EntityState<MatchingShipping, string> | undefined
     
     
     

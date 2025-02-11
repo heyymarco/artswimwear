@@ -744,7 +744,7 @@ router
                             
                             stocks : Pick<Stock, 'id'|'variantIds'|'value'>[],
                         }
-                    >({
+                    , string>({
                         selectId : (productData) => productData.id,
                     });
                     const productList = productListAdapter.addMany(
@@ -2037,7 +2037,7 @@ router
                     
                     product : {
                         select : {
-                            // for EntityState<ProductPreview>:
+                            // for EntityState<ProductPreview, string>:
                             id             : true,
                             
                             name           : true,

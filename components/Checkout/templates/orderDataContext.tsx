@@ -114,7 +114,7 @@ export interface OrderDataContextProviderProps {
     
     
     // relation data:
-    countryList          : EntityState<CountryPreview>|undefined
+    countryList          : EntityState<CountryPreview, string>|undefined
 }
 export const OrderDataContextProvider = (props: React.PropsWithChildren<OrderDataContextProviderProps>): JSX.Element|null => {
     // jsx:

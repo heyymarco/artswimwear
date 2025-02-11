@@ -1,4 +1,4 @@
-import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
+import { Action, configureStore, Middleware, ThunkAction } from '@reduxjs/toolkit'
 import { apiSlice } from './features/api/apiSlice'
 import cartReducer from './features/cart/cartSlice'
 import checkoutReducer from './features/checkout/checkoutSlice'
@@ -50,7 +50,7 @@ export const store = configureStore({
                         // console.log('predicate: ', actionType);
                         return false;
                     },
-                })
+                }) as Middleware
             )
         );
     },

@@ -64,7 +64,7 @@ import {
 
 
 
-const getCountryList = async (): Promise<EntityState<CountryPreview>> => {
+const getCountryList = async (): Promise<EntityState<CountryPreview, string>> => {
     const allCountries = await prisma.country.findMany({
         select : {
             name    : true,
@@ -73,7 +73,7 @@ const getCountryList = async (): Promise<EntityState<CountryPreview>> => {
         },
         // enabled: true
     });
-    const countryListAdapter = createEntityAdapter<CountryPreview>({
+    const countryListAdapter = createEntityAdapter<CountryPreview, string>({
         selectId : (countryEntry) => countryEntry.code,
     });
     const countryList = countryListAdapter.addMany(

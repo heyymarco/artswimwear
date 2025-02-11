@@ -7,14 +7,11 @@ import {
 import {
     type QuerySubState,
     type BaseQueryFn,
+    type BaseEndpointDefinition,
     QueryStatus,
     
     createApi,
 }                           from '@reduxjs/toolkit/query/react'
-import {
-    type BaseEndpointDefinition,
-    type MutationLifecycleApi,
-}                           from '@reduxjs/toolkit/dist/query/endpointDefinitions'
 
 // types:
 import {
@@ -101,10 +98,10 @@ import {
 
 
 
-const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
+const shippingListAdapter         = createEntityAdapter<ShippingPreview, string>({
     selectId : (shippingPreview) => shippingPreview.id,
 });
-const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
+const matchingShippingListAdapter = createEntityAdapter<MatchingShipping, string>({
     selectId : (shipping) => `${shipping.id}`,
 });
 
@@ -210,7 +207,7 @@ export const apiSlice = createApi({
         
         
         
-        getShippingList             : builder.query<EntityState<ShippingPreview>, void>({
+        getShippingList             : builder.query<EntityState<ShippingPreview, string>, void>({
             query : () => ({
                 url    : 'shippings',
                 method : 'GET',
@@ -241,7 +238,7 @@ export const apiSlice = createApi({
         
         
         
-        getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
+        getMatchingShippingList     : builder.query<EntityState<MatchingShipping, string>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : (shippingAddressDetail) => ({
                 url    : 'matching-shippings',
                 method : 'POST',
@@ -251,7 +248,7 @@ export const apiSlice = createApi({
                 return matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), response);
             },
         }),
-        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
+        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping, string>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : (shippingAddressDetail) => ({
                 url    : 'matching-shippings',
                 method : 'PATCH',
@@ -277,7 +274,7 @@ export const apiSlice = createApi({
                 
                 // find related TModel data(s):
                 const endpointName                 = 'getMatchingShippingList';
-                const updatedCollectionQueryCaches = getQueryCaches<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>(api, endpointName, {
+                const updatedCollectionQueryCaches = getQueryCaches<EntityState<MatchingShipping, string>, ShippingAddressDetail & { totalProductWeight: number }>(api, endpointName, {
                     predicate : (originalArgs: unknown): boolean =>
                         (originalArgs !== undefined)
                         &&
@@ -933,7 +930,7 @@ export const apiSlice = createApi({
 
 
 // utilities:
-const setPaymentMethodPriorities   = (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, set: number }): void => {
+const setPaymentMethodPriorities   = (api: Api, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, set: number }): void => {
     // options:
     const {
         predicate,
@@ -961,7 +958,7 @@ const setPaymentMethodPriorities   = (api: MutationLifecycleApi<unknown, BaseQue
         );
     } // for
 }
-const shiftPaymentMethodPriorities = (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, delta: number }): void => {
+const shiftPaymentMethodPriorities = (api: Api, options: { predicate: (paymentMethodDetail: PaymentMethodDetail) => boolean, delta: number }): void => {
     // options:
     const {
         predicate,
@@ -989,7 +986,7 @@ const shiftPaymentMethodPriorities = (api: MutationLifecycleApi<unknown, BaseQue
         );
     } // for
 }
-const updateAffectedPaymentMethods = (api: MutationLifecycleApi<unknown, BaseQueryFn, unknown, 'api'>, addedPaymentMethodId: string|null, affectedPaymentMethods: AffectedPaymentMethods): void => {
+const updateAffectedPaymentMethods = (api: Api, addedPaymentMethodId: string|null, affectedPaymentMethods: AffectedPaymentMethods): void => {
     const {
         deleted : deletedPaymentMethods,
         shifted : shiftedPaymentMethods,
@@ -1152,15 +1149,15 @@ export const {
 // utilities:
 const selectTotalFromData   = (data: unknown): number => {
     return (
-        ('ids' in (data as EntityState<unknown>|Pagination<unknown>))
-        ? (data as EntityState<unknown>).ids.length
+        ('ids' in (data as EntityState<unknown, string|number>|Pagination<unknown>))
+        ? (data as EntityState<unknown, string|number>).ids.length
         : (data as Pagination<unknown>).total
     );
 };
 const selectModelsFromData  = <TModel extends Model|string>(data: unknown): TModel[] => {
     const items = (
-        ('ids' in (data as EntityState<TModel>|Pagination<TModel>))
-        ? Object.values((data as EntityState<TModel>).entities).filter((entity) : entity is Exclude<typeof entity, undefined> => (entity !== undefined))
+        ('ids' in (data as EntityState<TModel, string|number>|Pagination<TModel>))
+        ? Object.values((data as EntityState<TModel, string|number>).entities).filter((entity) : entity is Exclude<typeof entity, undefined> => (entity !== undefined))
         : (data as Pagination<TModel>).entities
     );
     return items;
@@ -1170,9 +1167,9 @@ const selectIdFromModel     = <TModel extends Model|string>(model: TModel): stri
 };
 const selectIndexOfId       = <TModel extends Model|string>(data: unknown, id: string): number => {
     return (
-        ('ids' in (data as EntityState<TModel>|Pagination<TModel>))
+        ('ids' in (data as EntityState<TModel, string|number>|Pagination<TModel>))
         ? (
-            (data as EntityState<TModel>).ids
+            (data as EntityState<TModel, string|number>).ids
             .findIndex((searchId) =>
                 (searchId === id)
             )
@@ -1215,7 +1212,8 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
 interface GetQueryCachesOptions<TModel> {
     predicate ?: (originalArgs: unknown, data: TModel) => boolean
 }
-const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = BaseQueryFn>(api: MutationLifecycleApi<unknown, TBaseQuery, unknown, 'api'>, endpointName: keyof (typeof apiSlice)['endpoints'], options?: GetQueryCachesOptions<TModel>) => {
+export type Api = Parameters<Exclude<Parameters<Parameters<Parameters<typeof createApi>[0]['endpoints']>[0]['mutation']>[0]['onQueryStarted'], undefined>>[1]
+const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = BaseQueryFn>(api: Api, endpointName: keyof (typeof apiSlice)['endpoints'], options?: GetQueryCachesOptions<TModel>) => {
     // options
     const {
         predicate,
@@ -1254,13 +1252,13 @@ interface PaginationUpdateOptions<TModel extends Model|string>
         GetQueryCachesOptions<Pagination<TModel>>
 {
     providedMutatedModel ?: TModel
-    invalidatePageTag    ?: (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => string|number
+    invalidatePageTag    ?: (tag: Exclude<Parameters<typeof apiSlice.util.invalidateTags>[0][number], null|undefined>, page: number) => string|number
 }
-const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TModel, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'|'getPaymentMethodPage'>, updateType: PaginationUpdateType, invalidateTag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], options?: PaginationUpdateOptions<TModel>) => {
+const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: Api, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'|'getPaymentMethodPage'>, updateType: PaginationUpdateType, invalidateTag: Exclude<Parameters<typeof apiSlice.util.invalidateTags>[0][number], null|undefined>, options?: PaginationUpdateOptions<TModel>) => {
     // options
     const {
         providedMutatedModel,
-        invalidatePageTag = (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => {
+        invalidatePageTag = ((tag, page) => {
             if (typeof(tag) === 'string') {
                 return page; // the tag doesn't have id => just use page number
             }
@@ -1268,7 +1266,7 @@ const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQue
                 const { id } = tag;
                 return `${id}:${page}`; // merges tag's id and page number
             } // if
-        },
+        }) satisfies PaginationUpdateOptions<TModel>['invalidatePageTag'],
     } = options ?? {};
     
     
@@ -1277,7 +1275,7 @@ const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQue
     const mutatedModel : TModel|undefined = (providedMutatedModel !== undefined) ? providedMutatedModel : await (async (): Promise<TModel|undefined> => {
         try {
             const { data: mutatedModel } = await api.queryFulfilled;
-            return mutatedModel;
+            return mutatedModel as TModel|undefined;
         }
         catch {
             return undefined;
