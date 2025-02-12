@@ -67,13 +67,23 @@ const usesGalleryBodyWrapperLayout = () => {
         ...style({
             // layouts:
             display            : 'grid',
-            gridAutoFlow       : 'row',
+            gridAutoFlow       : 'row',// scrolls:
+            
+            
+            
+            // scrolls:
+            ...rule('.scrollable', {
+                overflowY : 'hidden',
+            }),
             
             
             
             // spacings:
             // [paddingVars.paddingInline] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
             // [paddingVars.paddingBlock ] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
+            ...rule('.scrollable', {
+                padding: '0px', // kills the padding while still preserving the `paddingVars.paddingInline` and `paddingVars.paddingBlock`, so we can read them at <GalleryGrid>
+            }),
             
             
             
@@ -111,6 +121,9 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
         
         // scrolls:
         overflow     : 'visible', // do not clip <item>'s boxShadow
+        ...rule('.scrollable>&', { // if the <GalleryBodyWrapper> has `.scrollable`
+            overflowY : 'auto',
+        }),
         
         
         
@@ -143,11 +156,26 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     });
 };
 const usesGalleryGridLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {paddingVars} = usesPadding();
+    
+    
+    
     return style({
         // layouts:
         display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
         gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
         gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
+        
+        
+        
+        // scrolls:
+        ...rule('.scrollable>*>&', { // if the <GalleryBodyWrapper> has `.scrollable`
+            paddingInline : paddingVars.paddingInline,
+            paddingBlock  : paddingVars.paddingBlock,
+        }),
         
         
         

@@ -25,8 +25,8 @@ import {
     
     
     // react helper hooks:
-    useIsomorphicLayoutEffect,
     useEvent,
+    useMergeRefs,
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -382,6 +382,11 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     
     
     
+    // accessibilities:
+    scrollable            ?: boolean
+    
+    
+    
     // components:
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
@@ -412,6 +417,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         // accessibilities:
         createItemText,
         textEmpty,
+        scrollable             = false,
         
         
         
@@ -480,7 +486,15 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
     
     
     // refs:
-    const dataListRef  = useRef<HTMLElement|null>(null);
+    const bodyComponentRefInternal = useRef<HTMLElement|null>(null);
+    const bodyComponentRef         = useMergeRefs(
+        // preserves the original `elmRef` from `bodyComponent`:
+        bodyComponent.props.elmRef,
+        
+        
+        
+        bodyComponentRefInternal,
+    );
     
     
     
@@ -673,8 +687,8 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         
         
         // children:
-        children  : galleryComponentChildren = <>
-            {React.cloneElement<GenericProps<Element>>(galleryGridComponent,
+        children  : galleryComponentChildren = (
+            React.cloneElement<GenericProps<Element>>(galleryGridComponent,
                 // props:
                 {
                     // other props:
@@ -696,14 +710,72 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 
                 // children:
                 galleryGridComponentChildren,
-            )}
-        </>,
+            )
+        ),
         
         
         
         // other props:
         ...restGalleryComponentProps
     } = galleryComponent.props;
+    
+    const {
+        // variants:
+        mild      : bodyComponentMild      = true,
+        
+        
+        
+        // classes:
+        className : bodyComponentClassName = '',
+        
+        
+        
+        // children:
+        children  : bodyComponentChildren  = <>
+            <ModalLoadingError
+                // data:
+                isFetching={isFetching}
+                isError={isError}
+                refetch={refetch}
+                
+                
+                
+                // global stackable:
+                viewport={bodyComponentRefInternal}
+            />
+            
+            {/* <GalleryBody> - the "visual" gallery, may have vertical scrollbar */}
+            {/* we use <Generic> for the gallery body because the <GalleryBodyWrapper> is ALREADY has nice styling */}
+            {React.cloneElement<GenericProps<Element>>(galleryComponent,
+                // props:
+                {
+                    // other props:
+                    ...restGalleryComponentProps,
+                    
+                    
+                    
+                    // semantics:
+                    tag       : galleryComponentTag,
+                    role      : galleryComponentRole,
+                    
+                    
+                    
+                    // classes:
+                    className : `${styleSheets.galleryBody} ${galleryComponentClassName ?? ''}`,
+                },
+                
+                
+                
+                // children:
+                galleryComponentChildren,
+            )}
+        </>,
+        
+        
+        
+        // other props:
+        ...restBodyComponentProps
+    } = bodyComponent.props;
     
     
     
@@ -741,64 +813,33 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 className={`nav-top ${styleSheets.paginTop}`}
             />}
             
-            {/* <GalleryBodyWrapper> */}
+            {/* <GalleryBodyWrapper> - contains the loading modal and the "visual" gallery */}
             {React.cloneElement<BasicProps<Element>>(bodyComponent,
                 // props:
                 {
+                    // other props:
+                    ...restBodyComponentProps,
+                    
+                    
+                    
                     // refs:
-                    elmRef    : dataListRef,
+                    elmRef    : bodyComponentRef,
                     
                     
                     
                     // variants:
-                    mild      : true,
+                    mild      : bodyComponentMild,
                     
                     
                     
                     // classes:
-                    className : `body ${styleSheets.galleryBodyWrapper}`,
+                    className : `body ${scrollable ? 'scrollable' : ''} ${styleSheets.galleryBodyWrapper} ${bodyComponentClassName}`,
                 },
                 
                 
                 
                 // children:
-                <ModalLoadingError
-                    // data:
-                    isFetching={isFetching}
-                    isError={isError}
-                    refetch={refetch}
-                    
-                    
-                    
-                    // global stackable:
-                    viewport={dataListRef}
-                />,
-                
-                /* <GalleryBody> */
-                /* we use <Generic> for the gallery body because the <GalleryBodyWrapper> is ALREADY has nice styling */
-                React.cloneElement<GenericProps<Element>>(galleryComponent,
-                    // props:
-                    {
-                        // other props:
-                        ...restGalleryComponentProps,
-                        
-                        
-                        
-                        // semantics:
-                        tag       : galleryComponentTag,
-                        role      : galleryComponentRole,
-                        
-                        
-                        
-                        // classes:
-                        className : `${styleSheets.galleryBody} ${galleryComponentClassName ?? ''}`,
-                    },
-                    
-                    
-                    
-                    // children:
-                    galleryComponentChildren,
-                ),
+                bodyComponentChildren,
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
