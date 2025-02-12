@@ -94,6 +94,7 @@ const usesProductCardLayout = () => {
             ...rule(':hover:not(.empty)', {
                 ...children('.prodImg', {
                     ...children(['img', '.status'], {
+                        // WARNING: causes weird scrolling in Chrome:
                         scale: '105%',
                     }),
                 }),
@@ -101,6 +102,7 @@ const usesProductCardLayout = () => {
                     ...children(['.name', '.price'], { // handles long text
                         ...children('.longText', {
                             // scrolls:
+                            // WARNING: causes weird scrolling in Chrome:
                             overflow: 'visible',
                             
                             
@@ -113,6 +115,7 @@ const usesProductCardLayout = () => {
                 
                 
                 
+                // WARNING: causes weird scrolling in Chrome:
                 zIndex: globalStacks.tooltip, // handles long text to be top_most when hovered
             }),
             

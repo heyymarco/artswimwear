@@ -108,12 +108,14 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 ...children('.images', {
                     ...rule('.noImage', {
                         ...children('*', {
+                            // WARNING: causes weird scrolling in Chrome:
                             scale: '105%',
                         }),
                     }),
                     ...rule(':not(.noImage)', {
                         ...children('*', {
                             ...children(['img', '.status'], {
+                                // WARNING: causes weird scrolling in Chrome:
                                 scale: '105%',
                             }),
                         }),
@@ -123,6 +125,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     ...children('.name', { // handles long text
                         ...children('.longText', {
                             // scrolls:
+                            // WARNING: causes weird scrolling in Chrome:
                             overflow: 'visible',
                             
                             
@@ -135,6 +138,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 
+                // WARNING: causes weird scrolling in Chrome:
                 zIndex: globalStacks.tooltip, // handles long text to be top_most when hovered
             }),
             
