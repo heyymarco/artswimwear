@@ -13,6 +13,11 @@ import {
     useRef,
 }                           from 'react'
 
+// styles:
+import {
+    useSearchExplorerStyleSheet,
+}                           from './styles/loader'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -185,6 +190,11 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
     
     
     
+    // styles:
+    const styles = useSearchExplorerStyleSheet();
+    
+    
+    
     // stores:
     const {
         query,
@@ -255,7 +265,7 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
                 <PaginationGallery<ProductPreview>
                     // appearances:
                     autoHidePagination={true}
-                    showPaginationBottom={false}
+                    showPaginationTop={false}
                     
                     
                     
@@ -266,12 +276,13 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
                     
                     // accessibilities:
                     textEmpty='No results found.'
+                    scrollable={true}
                     
                     
                     
                     // components:
                     bodyComponent={
-                        <Basic nude={true} />
+                        <Basic className={styles.gallery} />
                     }
                     modelEmptyComponent={
                         <EmptyProductCard

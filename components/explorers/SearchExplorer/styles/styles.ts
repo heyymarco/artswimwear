@@ -77,13 +77,13 @@ const usesMainLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            `"..... ....... ....... ....... ....." ${spacers.md}`,
-            '"..... ....... search  ....... close" 1lh',
-            '"..... ....... search  ....... ....." max-content',
-            `"..... ....... ....... ....... ....." ${spacers.md}`,
-            '"..... results results results ....." 1fr',
+            `"..... ....... ....... ....... ....... ....." ${spacers.md}`,
+            '"..... ....... search  .......   close close" 1lh',
+            '"..... ....... search  ....... ....... ....." max-content',
+            `"..... ....... ....... ....... ....... ....." ${spacers.md}`,
+            '"..... results results results results ....." 1fr',
             '/',
-            `calc(${containers.paddingInline} - ${spacers.md}) ${spacers.md} 1fr ${spacers.md} ${containers.paddingInline}`,
+            `calc(${containers.paddingInline} - ${spacers.md}) ${spacers.md} 1fr ${spacers.md} ${spacers.md} calc(${containers.paddingInline} - ${spacers.md})`,
         ]],
         ...rule('.mobile', {
             gridTemplate: [[
@@ -169,6 +169,37 @@ const usesMainLayout = () => {
     });
 };
 
+const usesGalleryLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {borderVars } = usesBorder();
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return style({
+        // borders:
+        // discard border stroke:
+        [borderVars.borderWidth           ] : '0px',
+        
+        // discard borderRadius:
+        // remove rounded corners on top:
+        [borderVars.borderStartStartRadius] : '0px',
+        [borderVars.borderStartEndRadius  ] : '0px',
+        // remove rounded corners on bottom:
+        [borderVars.borderEndStartRadius  ] : '0px',
+        [borderVars.borderEndEndRadius    ] : '0px',
+        
+        
+        
+        // spacings:
+        padding: 0,                               // remove the actual padding, but:
+        [paddingVars.paddingInline] : spacers.md, // simulate having a wider padding, so the <GalleryLayout> copies the padding
+        [paddingVars.paddingBlock ] : spacers.md, // simulate having a wider padding, so the <GalleryLayout> copies the padding
+    });
+};
+
 
 
 export default () => [
@@ -181,4 +212,8 @@ export default () => [
         // layouts:
         ...usesMainLayout(),
     }),
+    scope('gallery', {
+        // layouts:
+        ...usesGalleryLayout(),
+    }, { specificityWeight: 3 }),
 ];

@@ -110,7 +110,7 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
     
     
     // styles:
-    const styleSheet = useSearchExplorerStyleSheet();
+    const styles = useSearchExplorerStyleSheet();
     
     
     
@@ -122,7 +122,7 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
         
         
         // classes:
-        className = `${styleSheet.main} ${mobileLayout ? 'mobile' : ''}`,
+        className = `${styles.main} ${mobileLayout ? 'mobile' : ''}`,
         
         
         
