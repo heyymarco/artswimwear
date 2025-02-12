@@ -71,11 +71,6 @@ const usesGalleryBodyWrapperLayout = () => {
             
             
             
-            // scrolls:
-            overflowY: 'auto',
-            
-            
-            
             // spacings:
             // [paddingVars.paddingInline] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
             // [paddingVars.paddingBlock ] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
