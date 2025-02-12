@@ -10,6 +10,7 @@ import {
 import {
     type GetProductPageRequest,
     type CategoryPageRequest,
+    type SearchProductsPageRequest,
 }                           from './types'
 import {
     ModelIdSchema,
@@ -34,3 +35,11 @@ export const CategoryPageRequestSchema   = PaginationArgSchema.merge(
         parent : ModelIdSchema.nullable(),
     }) satisfies z.Schema<{ parent : Category['parentId'] }>
 ) satisfies z.Schema<CategoryPageRequest>;
+
+
+
+export const SearchProductsPageRequestSchema = PaginationArgSchema.merge(
+    z.object({
+        query : z.string().trim().min(2).max(200).toLowerCase(),
+    }) satisfies z.Schema<{ query : string }>
+) satisfies z.Schema<SearchProductsPageRequest>;

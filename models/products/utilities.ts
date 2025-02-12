@@ -19,7 +19,7 @@ import {
 
 
 // utilities:
-export const productPreviewSelect = (customerId: string|undefined) => ({
+export const productPreviewSelect = (customerId?: string|undefined) => ({
     id             : true,
     
     name           : true,
@@ -315,3 +315,24 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
         index                 : parentSiblings.findIndex(({id: searchId}) => (searchId === restCategory.id)),
     };
 };
+
+
+
+export const extractKeywords = (text: string|null|undefined): string[] => {
+    // conditions:
+    if (!text) return [];
+    
+    
+    
+    // Simple keyword extraction logic (you can use more advanced techniques)
+    return (
+        (
+            text
+            .toLowerCase()
+            .match(/\b\w+\b/g)
+            ??
+            []
+        )
+        .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
+    );
+}

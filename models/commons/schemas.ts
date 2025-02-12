@@ -109,6 +109,6 @@ export const MutationArgsSchema = <TModel extends Model, TModelSchema extends z.
 ) satisfies z.Schema<MutationArgs<TModel>> as z.Schema<MutationArgs<TModel>>;
 
 export const PaginationArgSchema = z.object({
-    page    : z.number().int().finite().gte(0),
-    perPage : z.number().int().finite().gte(4).lte(50), // minimum 4 for displaying preview of four images
+    page    : z.coerce.number().int().finite().gte(0),
+    perPage : z.coerce.number().int().finite().gte(4).lte(50), // minimum 4 for displaying preview of four images
 }) satisfies z.Schema<PaginationArgs>;

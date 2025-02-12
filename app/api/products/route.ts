@@ -29,7 +29,6 @@ import {
     // schemas:
     ModelIdSchema,
     SlugSchema,
-    PaginationArgSchema,
     GetProductPageRequestSchema,
     
     

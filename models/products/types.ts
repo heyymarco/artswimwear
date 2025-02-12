@@ -110,6 +110,15 @@ export interface ProductPricePart {
 
 
 
+export interface SearchProductsPageRequest
+    extends
+        PaginationArgs
+{
+    query : string
+}
+
+
+
 export interface CategoryPreview
     extends
         Pick<Category,

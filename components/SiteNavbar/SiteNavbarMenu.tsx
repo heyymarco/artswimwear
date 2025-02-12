@@ -55,6 +55,9 @@ import {
 import {
     ProductMenu,
 }                           from './ProductMenu'
+import {
+    SearchMenu,
+}                           from './SearchMenu'
 
 // contexts:
 import {
@@ -186,6 +189,7 @@ const SiteNavbarMenu = () => {
                     <NavItem><Link href='/about'>About</Link></NavItem>
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/art_ethnicswim/'><Icon icon='instagram' size='lg' /></NavItem>
+                    <SearchMenu />
                     
                     <CurrencyMenu theme='primary' buttonComponent={<Button />} />
                     {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>

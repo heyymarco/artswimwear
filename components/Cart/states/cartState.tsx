@@ -339,7 +339,7 @@ export interface CartStateProps {
     mockProductPreviews ?: CartState['productPreviews']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
-    // rest props:
+    // props:
     const {
         // mocks:
         mockCartState,
@@ -1096,6 +1096,32 @@ export {
     CartStateProvider,
     CartStateProvider as default,
 }
+
+export interface ForwardCartStateProviderProps {
+    // states:
+    cartState: CartState
+}
+export const ForwardCartStateProvider = (props:React.PropsWithChildren<ForwardCartStateProviderProps>) => {
+    // props:
+    const {
+        // states:
+        cartState,
+        
+        
+        
+        // children:
+        children,
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <CartStateContext.Provider value={cartState}>
+            {children}
+        </CartStateContext.Provider>
+    )
+};
 
 
 

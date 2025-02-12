@@ -69,6 +69,11 @@ export interface ProductCardProps {
     // components:
     buttonWishComponent         ?: React.ReactElement<ButtonWishProps>|null
     dropdownListButtonComponent ?: React.ReactElement<DropdownListButtonProps>|((arg: { model: ProductPreview }) => React.ReactElement<DropdownListButtonProps>)|null
+    
+    
+    
+    // handlers:
+    onClick                     ?: React.MouseEventHandler<HTMLAnchorElement>
 }
 const ProductCard = (props: ProductCardProps): JSX.Element|null => {
     // props:
@@ -81,6 +86,11 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
         // components:
         buttonWishComponent         = (<ButtonWish model={model} /> as React.ReactElement<ButtonWishProps>),
         dropdownListButtonComponent : dropdownListButtonComponentFn = null,
+        
+        
+        
+        // handlers:
+        onClick,
     } = props;
     const dropdownListButtonComponent = (typeof(dropdownListButtonComponentFn) === 'function') ? dropdownListButtonComponentFn({ model }) : dropdownListButtonComponentFn;
     const {
@@ -132,6 +142,11 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
                 
                 // behaviors:
                 prefetch={true} // force to DEEP prefetch of product PAGE
+                
+                
+                
+                // handlers:
+                onClick={onClick}
             />
             <Image
                 // appearances:

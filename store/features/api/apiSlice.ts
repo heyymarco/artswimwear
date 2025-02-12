@@ -30,6 +30,7 @@ import {
     type ProductPreview,
     type ProductDetail,
     type GetProductPageRequest,
+    type SearchProductsPageRequest,
     
     type CategoryDetail,
     type CategoryPageRequest,
@@ -183,6 +184,12 @@ export const apiSlice = createApi({
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
                 url    : `products?path=${encodeURIComponent(arg)}`,
+                method : 'GET',
+            }),
+        }),
+        searchProducts              : builder.query<Pagination<ProductPreview>, SearchProductsPageRequest>({
+            query : (arg) => ({
+                url    : `search?${new URLSearchParams(Object.entries(arg))}`,
                 method : 'GET',
             }),
         }),
@@ -1050,6 +1057,7 @@ export const {
     useGetProductPreviewQuery              : useGetProductPreview,
     useLazyGetProductDetailQuery           : useLazyGetProductDetail,
     useGetProductDetailQuery               : useGetProductDetail,
+    useLazySearchProductsQuery             : useSearchProducts,
     
     
     
