@@ -660,7 +660,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             
             {showPagination && showPaginationTop && <PaginationNav<TModel>
                 // classes:
-                className={styleSheets.paginTop}
+                className={`nav-top ${styleSheets.paginTop}`}
             />}
             
             {/* <GalleryBodyWrapper> */}
@@ -678,7 +678,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     
                     
                     // classes:
-                    className : styleSheets.galleryBodyWrapper,
+                    className : `body ${styleSheets.galleryBodyWrapper}`,
                 },
                 
                 
@@ -731,7 +731,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
                 // classes:
-                className={styleSheets.paginBtm}
+                className={`nav-bottom ${styleSheets.paginBtm}`}
             />}
         </Generic>
     );
