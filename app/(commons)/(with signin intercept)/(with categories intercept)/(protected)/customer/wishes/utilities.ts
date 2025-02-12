@@ -18,7 +18,7 @@ interface InterceptPaginationCache {
 let interceptedPaginationCacheRef : WeakRef<InterceptPaginationCache>|undefined = undefined;
 export const handleWishGroupPageIntercept : InterceptEventHandler<WishGroupDetail> = (state) => {
     // conditions:
-    if (state.page !== 0) return; // nothing to modify
+    if (state.pageNum !== 0) return; // nothing to modify
     const data = state.data;
     if (data === undefined) return; // no data => nothing to modify
     

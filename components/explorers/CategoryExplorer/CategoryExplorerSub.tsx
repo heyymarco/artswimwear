@@ -252,7 +252,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
     
     const {
         // states:
-        page,
+        pageNum,
         perPage,
         
         
@@ -290,7 +290,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
             // actions:
             draft.push({
                 category : model,
-                index    : (page * perPage) + ((): number => {
+                index    : (pageNum * perPage) + ((): number => {
                     if (!data) return 0;
                     const itemIndex = data.entities.findIndex(({id: searchId}) => (searchId === model.id));
                     if (itemIndex < 0) return 0;

@@ -63,8 +63,8 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
     // states:
     const {
         // states:
-        page,
-        setPage,
+        pageNum,
+        setPageNum,
         
         perPage,
         
@@ -82,10 +82,10 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
     
     // handlers:
     const handleNavigatePrev = useEvent((): void => {
-        setPage(0); // goto first page (zero based index)
+        setPageNum(0);         // goto first page (zero based index)
     });
     const handleNavigateNext = useEvent((): void => {
-        setPage(pages - 1); // goto last page (zero based index)
+        setPageNum(pages - 1); // goto last page (zero based index)
     });
     
     
@@ -131,8 +131,8 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
                 <ListItem
                     key={index}
                     
-                    active={index === page}
-                    onClick={() => setPage(index)}
+                    active={index === pageNum}
+                    onClick={() => setPageNum(index)}
                 >
                     {index + 1}
                 </ListItem>

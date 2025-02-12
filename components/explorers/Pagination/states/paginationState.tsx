@@ -59,8 +59,8 @@ export interface PaginationState<TModel extends Model>
         UseGetModelPageApi<TModel>
 {
     // states:
-    page       : number
-    setPage    : EventHandler<number>
+    pageNum    : number
+    setPageNum : EventHandler<number>
     
     perPage    : number
     setPerPage : EventHandler<number>
@@ -69,8 +69,8 @@ export interface PaginationState<TModel extends Model>
 const noopSetter : EventHandler<unknown> = () => {};
 const PaginationStateContext = createContext<PaginationState<any>>({
     // states:
-    page       : 0,
-    setPage    : noopSetter,
+    pageNum    : 0,
+    setPageNum : noopSetter,
     
     perPage    : 20,
     setPerPage : noopSetter,
@@ -97,6 +97,10 @@ export interface PaginationStateProps<TModel extends Model> {
     // states:
     initialPageNum  ?: number
     initialPerPage  ?: number
+    pageNum         ?: number
+    setPageNum      ?: React.Dispatch<React.SetStateAction<number>>
+    perPage         ?: number
+    setPerPage      ?: React.Dispatch<React.SetStateAction<number>>
     
     
     
@@ -124,8 +128,21 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
     
     
     // states:
-    const [page   , setPage   ] = useState<number>(initialPageNum);
-    const [perPage, setPerPage] = useState<number>(initialPerPage);
+    const [pageNumInternal, setPageNumInternal] = useState<number>(initialPageNum);
+    const [perPageInternal, setPerPageInternal] = useState<number>(initialPerPage);
+    
+    
+    
+    // props:
+    const {
+        // states:
+        pageNum    = pageNumInternal,
+        setPageNum = setPageNumInternal,
+        perPage    = perPageInternal,
+        setPerPage = setPerPageInternal,
+    } = props;
+    
+    
     
     const {
         data,
@@ -135,11 +152,11 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
         isError,
         
         refetch,
-    } = useGetModelPage({ page, perPage });
+    } = useGetModelPage({ page: pageNum, perPage });
     const paginationState = useMemo<PaginationState<TModel>>(() => ({
         // states:
-        page,
-        setPage,                  // stable ref
+        pageNum,
+        setPageNum,               // stable ref
         
         perPage,
         setPerPage,               // stable ref
@@ -156,8 +173,8 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
         refetch,
     }), [
         // states:
-        page,
-        // setPage,               // stable ref
+        pageNum,
+        // setPageNum,            // stable ref
         
         perPage,
         // setPerPage,            // stable ref
@@ -212,8 +229,8 @@ export const InterceptPaginationStateProvider = <TModel extends Model>(props: Re
     const paginationState = usePaginationState<TModel>();
     const {
         // states:
-        page,
-        setPage,                  // stable ref
+        pageNum,
+        setPageNum,               // stable ref
         
         perPage,
         setPerPage,               // stable ref
@@ -231,8 +248,8 @@ export const InterceptPaginationStateProvider = <TModel extends Model>(props: Re
     } = produce(paginationState, onIntercept);
     const interceptedPaginationState = useMemo<PaginationState<TModel>>(() => ({
         // states:
-        page,
-        setPage,                  // stable ref
+        pageNum,
+        setPageNum,               // stable ref
         
         perPage,
         setPerPage,               // stable ref
@@ -249,8 +266,8 @@ export const InterceptPaginationStateProvider = <TModel extends Model>(props: Re
         refetch,
     }), [
         // states:
-        page,
-        // setPage,               // stable ref
+        pageNum,
+        // setPageNum,            // stable ref
         
         perPage,
         // setPerPage,            // stable ref
