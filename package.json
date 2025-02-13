@@ -23,7 +23,7 @@
     "@heymarco/editor": "^7.0.0",
     "@heymarco/email-editor": "^7.0.0",
     "@heymarco/events": "^6.7.1",
-    "@heymarco/image": "^7.0.0",
+    "@heymarco/image": "^7.1.0",
     "@heymarco/input-dropdown-editor": "^7.1.0",
     "@heymarco/input-editor": "^7.0.1",
     "@heymarco/loading-bar": "^6.5.0",
