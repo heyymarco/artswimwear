@@ -8,12 +8,6 @@ import {
 }                           from '@cssfn/core'          // writes css in javascript
 
 import {
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
@@ -134,6 +128,7 @@ const usesCategoryCardLayout = () => { // the <ListItem> of category list
                 
                 
                 // borders:
+                //#region The vertical line between preview and name
                 // follows <parent>'s borderRadius
                 [borderVars.borderStartStartRadius] : groupableVars.borderStartStartRadius,
                 [borderVars.borderStartEndRadius  ] : '0px',
@@ -142,13 +137,16 @@ const usesCategoryCardLayout = () => { // the <ListItem> of category list
                 
                 [borderVars.borderWidth           ] : '0px', // only setup borderRadius, no borderStroke
                 borderInlineEndWidth                : basics.borderWidth,
+                
+                //#region Hide the vertical line when the <GalleryBodyWrapper> is `.flat`|`.joined`
                 /*
                     :is(.flat, .joined) >   *  > .wh287.wh287 > .preview
-                        <ul>     <li>   &&&&&&&&&&&&&&&&&&&&&&&
+                            <ul>          <li>   &&&&&&&&&&&&&&&&&&&&&&&
                 */
-                ...rule([':is(.flat, .joined)>:is(li, [role="listitem"])>&', ':is(.flat, .joined)>[role="presentation"]>:is(li, [role="listitem"])>&'], {
+                ...rule([':is(.flat, .joined)>:is(li, [role="listitem"], div)>&', ':is(.flat, .joined)>[role="presentation"]>:is(li, [role="listitem"], div)>&'], {
                     borderInlineEndWidth: '0px',
                 }),
+                //#endregion The vertical line between preview and name
                 
                 
                 
@@ -200,6 +198,9 @@ const usesCategoryCardLayout = () => { // the <ListItem> of category list
                     
                     
                     // borders:
+                    [groupableVars.borderStartStartRadius] : ['inherit', '!important'], // kills the groupable's variables on <Image>, so we can read the <ancestor>'s groupable's variables
+                    [groupableVars.borderEndStartRadius  ] : ['inherit', '!important'], // kills the groupable's variables on <Image>, so we can read the <ancestor>'s groupable's variables
+                    
                     // follows the <ListItem>'s borderRadius, otherwise keeps the 4 edges has borderRadius(es)
                     [borderVars.borderWidth           ] : '0px',
                     

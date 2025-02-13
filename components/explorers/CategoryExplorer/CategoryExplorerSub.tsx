@@ -19,14 +19,14 @@ import {
 
 // reusable-ui components:
 import {
-    // base-components:
-    Generic,
-    
-    
-    
     // simple-components:
     ButtonIcon,
     CloseButton,
+    
+    
+    
+    // composite-components:
+    Group,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
@@ -360,7 +360,8 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                 
                 
                 // components:
-                galleryComponent={<Generic className='flat' />}
+                // galleryComponent={<Generic className='flat' />}
+                galleryItemComponent={<Group theme='primaryAlt' mild={true} listStyle='flat' />}
                 // modelVoidComponent={<VoidCategoryCard />}
                 modelEmptyComponent={<EmptyCategoryCard />}
                 modelPreviewComponent={
