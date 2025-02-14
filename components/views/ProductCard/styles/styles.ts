@@ -167,8 +167,8 @@ const usesProductCardLayout = () => {
                 
                 
                 // borders:
-                borderStartStartRadius : borderVars.borderStartStartRadius,
-                borderStartEndRadius   : borderVars.borderStartEndRadius,
+                [borderVars.borderStartStartRadius] : ['inherit', '!important'],
+                [borderVars.borderStartEndRadius  ] : ['inherit', '!important'],
                 
                 
                 
