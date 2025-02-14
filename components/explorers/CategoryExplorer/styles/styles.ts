@@ -72,6 +72,11 @@ const usesDropdownLayout = () => {
             // insetBlockEnd          : 0,      // fill the entire screen height, excluding the <Navbar>'s height (do not use logical mode)
             bottom                    : 0,      // fill the entire screen height, excluding the <Navbar>'s height (instead, use physical mode, since the `top` prop is already handled by `useFloatable()`)
         }),
+        
+        
+        
+        // animations:
+        filter: 'none', // makes the frost effect work
     });
 };
 

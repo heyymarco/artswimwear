@@ -102,7 +102,7 @@ const CategoryExplorerDropdown = <TElement extends Element = HTMLElement>(props:
             
             
             // classes:
-            className={`${styleSheet.dropdown} ${mobileLayout ? 'mobile' : ''} ${props.className}`}
+            className={`${styleSheet.dropdown} ${mobileLayout ? 'mobile' : ''} ${props.className ?? ''}`}
         >
             <CategoryExplorer
                 // appearances:

@@ -61,6 +61,11 @@ const usesDropdownLayout = () => {
         ...rule(':not(.mobile)', {
             [collapseVars.blockSize ] : 'calc(100dvh - var(--site-header, 0px))',
         }),
+        
+        
+        
+        // animations:
+        filter: 'none', // makes the frost effect work
     });
 };
 

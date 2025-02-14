@@ -124,7 +124,7 @@ const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: S
             
             
             // classes:
-            className={`${styleSheet.dropdown} ${mobileLayout ? 'mobile' : ''} ${props.className}`}
+            className={`${styleSheet.dropdown} ${mobileLayout ? 'mobile' : ''} ${props.className ?? ''}`}
             
             
             
