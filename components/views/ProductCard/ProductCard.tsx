@@ -18,6 +18,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
     // simple-components:
     ButtonIcon,
     
@@ -120,14 +125,24 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
     
     // jsx:
     return (<>
-        <article
+        <Basic
             // identifiers:
             key={id}
             
             
             
             // refs:
-            ref={viewRef}
+            elmRef={viewRef}
+            
+            
+            
+            // semantics:
+            tag='article'
+            
+            
+            
+            // variants:
+            mild={true}
             
             
             
@@ -220,7 +235,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
                     },
                 )}
             </header>
-        </article>
+        </Basic>
         
         {/* PREFETCH for displaying product PAGE: */}
         <PrefetchProductDetail

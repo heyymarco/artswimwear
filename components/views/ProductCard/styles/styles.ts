@@ -14,18 +14,23 @@ import {
     
     
     
-    // a typography management system:
-    typos,
-    
-    
-    
     // a border (stroke) management system:
     borderRadiuses,
     
     
     
+    // background stuff of UI:
+    usesBackground,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
     
     
     
@@ -45,9 +50,12 @@ const usesProductCardLayout = () => {
     // dependencies:
     
     // features:
+    const {backgroundVars} = usesBackground();
     const {borderRule, borderVars} = usesBorder({
+        borderWidth  : '0px',
         borderRadius : borderRadiuses.md,
     });
+    const {paddingVars} = usesPadding();
     
     
     
@@ -70,8 +78,13 @@ const usesProductCardLayout = () => {
             
             
             
-            // spacings:
-            padding: 0,
+            // borders:
+            border                 : borderVars.border,
+         // borderRadius           : borderVars.borderRadius,
+            borderStartStartRadius : borderVars.borderStartStartRadius,
+            borderStartEndRadius   : borderVars.borderStartEndRadius,
+            borderEndStartRadius   : borderVars.borderEndStartRadius,
+            borderEndEndRadius     : borderVars.borderEndEndRadius,
             
             
             
@@ -108,7 +121,7 @@ const usesProductCardLayout = () => {
                             
                             
                             // backgrounds:
-                            background: typos.backg,
+                            background: backgroundVars.backg,
                         }),
                     }),
                 }),
@@ -127,13 +140,9 @@ const usesProductCardLayout = () => {
             
             
             
-            // borders:
-            border                 : borderVars.border,
-         // borderRadius           : borderVars.borderRadius,
-            borderStartStartRadius : borderVars.borderStartStartRadius,
-            borderStartEndRadius   : borderVars.borderStartEndRadius,
-            borderEndStartRadius   : borderVars.borderEndStartRadius,
-            borderEndEndRadius     : borderVars.borderEndEndRadius,
+            // spacings:
+            [paddingVars.paddingInline]: '0px',
+            [paddingVars.paddingBlock ]: '0px',
             
             
             
