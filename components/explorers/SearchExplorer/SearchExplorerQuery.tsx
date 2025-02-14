@@ -13,26 +13,17 @@ import {
     useRef,
 }                           from 'react'
 
-// styles:
-import {
-    useSearchExplorerStyleSheet,
-}                           from './styles/loader'
-
 // reusable-ui core:
 import {
     // react helper hooks:
     useEvent,
+    useMergeRefs,
     type TimerPromise,
     useSetTimeout,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
-    // base-components:
-    Basic,
-    
-    
-    
     // simple-components:
     ButtonIcon,
     
@@ -55,13 +46,11 @@ import {
     type PaginationStateProps,
     PaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
+
+// private components:
 import {
-    PaginationGallery,
-}                           from '@/components/explorers/PaginationGallery'
-import {
-    ProductCard,
-    EmptyProductCard,
-}                           from '@/components/views/ProductCard'
+    SearchResultGallery,
+}                           from './SearchResultGallery'
 
 // stores:
 import {
@@ -119,17 +108,6 @@ const useUseSearchProducts = () => {
     
     
     // effects:
-    
-    // Resets the search result everytime the isQueryValid changes:
-    // useEffect(() => {
-    //     // conditions:
-    //     if (isQueryValid) return; // the query is valid => no need to reset
-    //     
-    //     
-    //     
-    //     // actions:
-    //     modelApi.reset();
-    // }, [isQueryValid]);
     
     // Runs the search everytime the pageNum or perPage changes:
     useEffect(() => {
@@ -190,8 +168,16 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
     
     
     
-    // styles:
-    const styles = useSearchExplorerStyleSheet();
+    // refs:
+    const searchInputRefInternal = useRef<HTMLInputElement|null>(null);
+    const mergedSearchInputRef   = useMergeRefs(
+        // preserves the original `searchInputRef` from `props`:
+        searchInputRef,
+        
+        
+        
+        searchInputRefInternal,
+    );
     
     
     
@@ -235,8 +221,8 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
             search();
         });
     });
-    const handleItemClick = useEvent<React.MouseEventHandler<HTMLAnchorElement>>((event) => {
-        onNavigate?.(event.currentTarget.href);
+    const handleSubmitButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        searchInputRefInternal.current?.focus();
     });
     
     
@@ -246,8 +232,8 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
         <>
             <form className='search' action={search}>
                 <Group theme='primary'>
-                    <TextEditor type='search' className='fluid' name='query' elmRef={searchInputRef} value={query} onChange={handleSearchChange} />
-                    <ButtonIcon className='solid' icon='search' type='submit' />
+                    <TextEditor type='search' placeholder='Search' className='fluid' name='query' elmRef={mergedSearchInputRef} value={query} onChange={handleSearchChange} />
+                    <ButtonIcon className='solid' icon='search' type='submit' onClick={handleSubmitButtonClick} />
                 </Group>
             </form>
             <PaginationStateProvider<ProductPreview>
@@ -262,45 +248,9 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
                 perPage={perPage}
                 setPerPage={setPerPage}
             >
-                <PaginationGallery<ProductPreview>
-                    // appearances:
-                    autoHidePagination={true}
-                    showPaginationTop={false}
-                    
-                    
-                    
-                    // classes:
-                    className='results'
-                    
-                    
-                    
-                    // accessibilities:
-                    textEmpty='No results found.'
-                    scrollable={true}
-                    
-                    
-                    
-                    // components:
-                    bodyComponent={
-                        <Basic className={styles.gallery} />
-                    }
-                    modelEmptyComponent={
-                        <EmptyProductCard
-                            // accessibilities:
-                            emptyText='No results found.'
-                        />
-                    }
-                    modelPreviewComponent={
-                        <ProductCard
-                            // data:
-                            model={undefined as any}
-                            
-                            
-                            
-                            // handlers:
-                            onClick={handleItemClick}
-                        />
-                    }
+                <SearchResultGallery
+                    // handlers:
+                    onNavigate={onNavigate}
                 />
             </PaginationStateProvider>
         </>

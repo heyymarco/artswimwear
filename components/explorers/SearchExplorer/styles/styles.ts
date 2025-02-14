@@ -50,6 +50,11 @@ import {
     
     
     
+    // simple components:
+    usesIcon,
+    
+    
+    
     // menu-components:
     usesCollapse,
     dropdowns,
@@ -97,6 +102,7 @@ const usesMainLayout = () => {
     // features:
     const {borderVars} = usesBorder({ borderWidth: '0px' });
     const {paddingVars} = usesPadding();
+    const {iconVars} = usesIcon();
     
     
     
@@ -104,11 +110,15 @@ const usesMainLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
+            /*   a small gap between search and close    */
+            /*                         v                 */
+            /*                         v                 */
+            /*   padding   | rest  |  spc  |   padding   */
             `"..... ....... ....... ....... ....... ....." ${spacers.md}`,
             '"..... ....... search  .......   close close" 1lh',
             '"..... ....... search  ....... ....... ....." max-content',
             `"..... ....... ....... ....... ....... ....." ${spacers.md}`,
-            '"..... results results results results ....." 1fr',
+            '"..... results results results ....... ....." 1fr',
             '/',
             `calc(${containers.paddingInline} - ${spacers.md}) ${spacers.md} 1fr ${spacers.md} ${spacers.md} calc(${containers.paddingInline} - ${spacers.md})`,
         ]],
@@ -203,6 +213,37 @@ const usesMainLayout = () => {
             // children:
             ...children('.body', {
                 padding : spacers.md,
+                
+                
+                
+                // children:
+                ...children('[role="list"]', {
+                    scrollbarWidth  : 'thin',
+                    scrollbarGutter : 'stable both-edges',
+                }),
+            }),
+            ...rule('.empty', {
+                ...children('.body', {
+                    ...children('[role="list"]', {
+                        justifyContent : 'center',
+                        alignContent   : 'center',
+                    }),
+                }),
+            }),
+            ...rule('.initial', {
+                // positions:
+                justifySelf : 'center',
+                alignSelf   : 'center',
+                
+                
+                
+                // appearances:
+                opacity: 0.25,
+                
+                
+                
+                // sizes:
+                [iconVars.size]: `min((100svw - (2 * ${containers.paddingInline})) * 0.5, (100svh - (2 * ${containers.paddingBlock})) * 0.5)`,
             }),
         }),
     });
@@ -280,6 +321,7 @@ export default () => [
         ...usesMainLayout(),
         ...usesSemiTransparentBackground(),
     }),
+    
     scope('gallery', {
         // layouts:
         ...usesGalleryLayout(),
