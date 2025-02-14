@@ -67,13 +67,6 @@ const usesDropdownLayout = () => {
     
     
     return style({
-        // positions:
-        ...rule('.overlay', {
-            zIndex : 998, // one degree below <header>
-        }),
-        
-        
-        
         // sizes:
         // width (both desktop and mobile):
         [collapseVars.inlineSize]     : '100%', // overwrites <Dropdown>'s `inlineSize: 'fit-content'`
