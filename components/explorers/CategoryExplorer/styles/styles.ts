@@ -5,6 +5,11 @@ import {
     children,
     style,
     scope,
+    
+    
+    
+    // strongly typed of css variables:
+    switchOf,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 // reusable-ui core:
@@ -19,6 +24,11 @@ import {
     
     
     
+    // background stuff of UI:
+    usesBackground,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -26,6 +36,16 @@ import {
     
     // padding (inner spacing) stuff of UI:
     usesPadding,
+    
+    
+    
+    // outlined (background-less) variant of UI:
+    usesOutlineable,
+    
+    
+    
+    // mild (soft color) variant of UI:
+    usesMildable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -97,6 +117,13 @@ const usesMainLayout = () => {
             overflowY      : 'scroll',   // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height (stable width)
             scrollbarWidth : 'none',     // no scrollbar if possible
         }),
+        
+        
+        
+        // backgrounds:
+        backdropFilter: [
+            ['blur(10px)'],
+        ],
     });
 };
 
@@ -229,6 +256,29 @@ const usesRootMergeSubLayout = () => { // no <CategoryExplorerRoot>, just a <Cat
         }),
     });
 };
+const usesSemiTransparentBackground = () => {
+    // dependencies:
+    
+    // features:
+    const {backgroundVars } = usesBackground();
+    
+    // variants:
+    const {outlineableVars} = usesOutlineable();
+    const {mildableVars   } = usesMildable();
+    
+    
+    
+    return style({
+        // backgrounds:
+        // final color functions:
+        [backgroundVars.backgColor] : `color(from ${switchOf(
+            outlineableVars.backgTg,        // toggle outlined (if `usesOutlineable()` applied)
+            mildableVars.backgTg,           // toggle mild     (if `usesMildable()` applied)
+            
+            backgroundVars.backgColorFn,    // default => uses our `backgColorFn`
+        )} srgb r g b / calc(alpha * 0.8))`,
+    });
+};
 
 const usesNavLayout = () => {
     return style({
@@ -350,10 +400,12 @@ export default () => [
     scope('root', {
         // layouts:
         ...usesRootLayout(),
+        ...usesSemiTransparentBackground(),
     }),
     scope('sub', {
         // layouts:
         ...usesSubLayout(),
+        ...usesSemiTransparentBackground(),
     }),
     scope('rootMergeSub', {
         // layouts:
