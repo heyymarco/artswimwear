@@ -62,6 +62,7 @@ import {
     
     // menu-components:
     usesCollapse,
+    dropdowns,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
@@ -81,6 +82,14 @@ const usesDropdownLayout = () => {
     
     
     return style({
+        // positions:
+        ...rule('.overlay', {
+            zIndex : 998, // one degree below <header>
+        }),
+        
+        
+        
+        // sizes:
         // width (both desktop and mobile):
         [collapseVars.inlineSize]     : '100%', // overwrites <Dropdown>'s `inlineSize: 'fit-content'`
         // insetInlineEnd             : 0,      // fill the entire screen width (do not use logical mode)
@@ -96,7 +105,7 @@ const usesDropdownLayout = () => {
         
         
         // animations:
-        filter: 'none', // makes the frost effect work
+        filter: 'none', // move the filter to <CategoryExplorer>, makes the frost effect work
     });
 };
 
@@ -124,6 +133,11 @@ const usesMainLayout = () => {
         backdropFilter: [
             ['blur(10px)'],
         ],
+        
+        
+        
+        // animations:
+        filter : dropdowns.filter, // move the filter to <CategoryExplorer>, makes the frost effect work
     });
 };
 
