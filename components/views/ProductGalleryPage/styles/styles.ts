@@ -19,9 +19,20 @@ export default () => [
     }, { specificityWeight: 2 }),
     
     scope('gallery', {
+        // layouts:
+        display: 'grid',
+        
+        
+        
         // spacings:
         paddingBlockStart : '2rem',
         ...children('article', {
+            // layouts:
+            display: 'grid',
+            
+            
+            
+            // spacings:
             marginBlockStart: '-2rem', // kill parent padding
             paddingBlockStart : '1rem',
         }),
