@@ -13,13 +13,13 @@ import {
 
 
 // react components:
-export default function LostParallelSlot(): JSX.Element|null {
+export default function DefaultLostDialogIntercept(): JSX.Element|null {
     /*
         This page will be shown if one/more active_parallel_slots lost its active state.
         Example:
         First, when accessed `/signin/***` via interceptor, the route `(commons)/(with signin intercept)/@signin_dialog/(...)signin` activates the `signin_dialog` slot.
         Then,  when accessed `/signin/***` OUTSIDE `(commons)/(with signin intercept)/***`, the route `(commons)/(with signin intercept)/@signin_dialog/(...)signin` is no longer active (lost).
-        Thus the `LostParallelSlot` will automatically be called by next-js.
+        Thus the `DefaultLostDialogIntercept` will automatically be called by next-js.
     */
     
     
