@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import {
-    useWishAllPageStyleSheet,
-}                           from './styles/loader'
-
 // reusable-ui components:
 import {
     // base-components:
@@ -20,21 +15,12 @@ import {
     
     // composite-components:
     NavItem,
-    Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
-// heymarco components:
-import {
-    Section,
-}                           from '@heymarco/section'
-
 // internal components:
-import {
-    WideGalleryPage,
-}                           from '@/components/pages/WideGalleryPage'
 import {
     PaginationStateProvider,
     usePaginationState,
@@ -46,6 +32,9 @@ import {
     ProductCard,
     EmptyProductCard,
 }                           from '@/components/views/ProductCard'
+import {
+    ProductGalleryPage,
+}                           from '@/components/views/ProductGalleryPage'
 
 // private components:
 import {
@@ -101,11 +90,6 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     );
 }
 function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
-    // styles:
-    const styleSheet = useWishAllPageStyleSheet();
-    
-    
-    
     // stores:
     const isGroupedWishes = (!!wishGroupId && (wishGroupId !== 'all')); // empty_string|'all' => ungrouped wishes
     
@@ -143,16 +127,10 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     // jsx:
     return (
-        <WideGalleryPage theme='primary'>
-            <Section
-                // classes:
-                className={styleSheet.nav}
-            >
-                <Nav
-                    // variants:
-                    listStyle='breadcrumb'
-                    orientation='inline'
-                >
+        <ProductGalleryPage
+            // children:
+            navItems={
+                <>
                     <NavItem active={false}>
                         <Link href='/customer/wishes' prefetch={true}>
                             Wishlist
@@ -164,58 +142,53 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                             {wishGroupName}
                         </Link>
                     </NavItem>
-                </Nav>
-            </Section>
-            
-            <Section
-                // classes:
-                className={styleSheet.gallery}
-            >
-                <PaginationGallery<ProductPreview>
-                    // appearances:
-                    showPaginationTop={false}
-                    autoHidePagination={true}
-                    
-                    
-                    
-                    // accessibilities:
-                    textEmpty='The collection is empty'
-                    
-                    
-                    
-                    // components:
-                    bodyComponent={
-                        <Basic nude={true} />
-                    }
-                    modelEmptyComponent={
-                        <EmptyProductCard
-                            // accessibilities:
-                            emptyText='There are no products on this collection.'
-                        />
-                    }
-                    modelPreviewComponent={
-                        <ProductCard
-                            // data:
-                            model={undefined as any}
-                            
-                            
-                            
-                            // components:
-                            buttonWishComponent={null}
-                            dropdownListButtonComponent={
-                                (wishGroup || (wishGroup === undefined))
-                                ? ({ model }) => // `WishGroupDetail`|`undefined` => wish pagination of a specific wishGroup -or- wish pagination of all wishes (grouped wishes + ungrouped wishes) => shows action menu
-                                    <WishActionMenu
-                                        // data:
-                                        model={model}
-                                        wishGroup={wishGroup}
-                                    />
-                                : null // `false` => still loading -or- load error => no action menu needed
-                            }
-                        />
-                    }
-                />
-            </Section>
-        </WideGalleryPage>
+                </>
+            }
+        >
+            <PaginationGallery<ProductPreview>
+                // appearances:
+                showPaginationTop={false}
+                autoHidePagination={true}
+                
+                
+                
+                // accessibilities:
+                textEmpty='The collection is empty'
+                
+                
+                
+                // components:
+                bodyComponent={
+                    <Basic nude={true} />
+                }
+                modelEmptyComponent={
+                    <EmptyProductCard
+                        // accessibilities:
+                        emptyText='There are no products on this collection.'
+                    />
+                }
+                modelPreviewComponent={
+                    <ProductCard
+                        // data:
+                        model={undefined as any}
+                        
+                        
+                        
+                        // components:
+                        buttonWishComponent={null}
+                        dropdownListButtonComponent={
+                            (wishGroup || (wishGroup === undefined))
+                            ? ({ model }) => // `WishGroupDetail`|`undefined` => wish pagination of a specific wishGroup -or- wish pagination of all wishes (grouped wishes + ungrouped wishes) => shows action menu
+                                <WishActionMenu
+                                    // data:
+                                    model={model}
+                                    wishGroup={wishGroup}
+                                />
+                            : null // `false` => still loading -or- load error => no action menu needed
+                        }
+                    />
+                }
+            />
+        </ProductGalleryPage>
     );
 }

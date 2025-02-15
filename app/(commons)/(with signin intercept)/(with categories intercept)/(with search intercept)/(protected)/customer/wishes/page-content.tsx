@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import {
-    useWishesPageStyleSheet,
-}                           from './styles/loader'
-
 // reusable-ui components:
 import {
     // base-components:
@@ -20,21 +15,12 @@ import {
     
     // composite-components:
     NavItem,
-    Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
-// heymarco components:
-import {
-    Section,
-}                           from '@heymarco/section'
-
 // internal components:
-import {
-    WideGalleryPage,
-}                           from '@/components/pages/WideGalleryPage'
 import {
     PaginationStateProvider,
     InterceptPaginationStateProvider,
@@ -49,6 +35,9 @@ import {
 import {
     EditWishGroupDialog,
 }                           from '@/components/dialogs/EditWishGroupDialog'
+import {
+    ProductGalleryPage,
+}                           from '@/components/views/ProductGalleryPage'
 
 // models:
 import {
@@ -86,68 +75,52 @@ export function WishPageContent(): JSX.Element|null {
     );
 }
 function WishPageContentInternal(): JSX.Element|null {
-    // styles:
-    const styleSheet = useWishesPageStyleSheet();
-    
-    
-    
     // jsx:
     return (
-        <WideGalleryPage theme='primary'>
-            <Section
-                // classes:
-                className={styleSheet.nav}
-            >
-                <Nav
-                    // variants:
-                    listStyle='breadcrumb'
-                    orientation='inline'
-                >
+        <ProductGalleryPage
+            // children:
+            navItems={
+                <>
                     <NavItem active={true}>
                         <Link href='/customer/wishes' prefetch={true}>
                             Wishlist
                         </Link>
                     </NavItem>
-                </Nav>
-            </Section>
-            
-            <Section
-                // classes:
-                className={styleSheet.gallery}
-            >
-                <PaginationGallery<WishGroupDetail>
-                    // appearances:
-                    showPaginationTop={false}
-                    autoHidePagination={true}
-                    
-                    
-                    
-                    // accessibilities:
-                    textEmpty='The collection is empty'
-                    
-                    
-                    
-                    // components:
-                    bodyComponent={
-                        <Basic nude={true} />
-                    }
-                    modelAddComponent={
-                        <AddWishGroupImage />
-                    }
-                    modelPreviewComponent={
-                        <WishGroupImage
-                            // data:
-                            model={undefined as any}
-                        />
-                    }
-                    modelCreateComponent={
-                        <EditWishGroupDialog
-                            // data:
-                            model={null} // create a new model
-                        />
-                    }
-                />
-            </Section>
-        </WideGalleryPage>
+                </>
+            }
+        >
+            <PaginationGallery<WishGroupDetail>
+                // appearances:
+                showPaginationTop={false}
+                autoHidePagination={true}
+                
+                
+                
+                // accessibilities:
+                textEmpty='The collection is empty'
+                
+                
+                
+                // components:
+                bodyComponent={
+                    <Basic nude={true} />
+                }
+                modelAddComponent={
+                    <AddWishGroupImage />
+                }
+                modelPreviewComponent={
+                    <WishGroupImage
+                        // data:
+                        model={undefined as any}
+                    />
+                }
+                modelCreateComponent={
+                    <EditWishGroupDialog
+                        // data:
+                        model={null} // create a new model
+                    />
+                }
+            />
+        </ProductGalleryPage>
     );
 }
