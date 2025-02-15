@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import {
-    useCategoryListPageStyleSheet,
-}                           from './styles/loader'
-
 // reusable-ui components:
 import {
     // base-components:
@@ -20,18 +15,12 @@ import {
     
     // composite-components:
     NavItem,
-    Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-
-// heymarco components:
 import {
-    Section,
-}                           from '@heymarco/section'
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
-import {
-    WideGalleryPage,
-}                           from '@/components/pages/WideGalleryPage'
 import {
     PageLoading,
 }                           from '@/components/PageLoading'
@@ -49,6 +38,9 @@ import {
     ProductCard,
     EmptyProductCard,
 }                           from '@/components/views/ProductCard'
+import {
+    ProductGalleryPage,
+}                           from '@/components/views/ProductGalleryPage'
 
 // private components:
 import {
@@ -153,11 +145,6 @@ function CategoryPageContentSub({ categories }: { categories: string[] }): JSX.E
     );
 }
 function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?: Omit<CategoryPreview, 'image'|'hasSubcategories'>[] }): JSX.Element|null {
-    // styles:
-    const styleSheet = useCategoryListPageStyleSheet();
-    
-    
-    
     // stores:
     const {
         data,
@@ -173,19 +160,19 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <WideGalleryPage theme='primary'>
-            <Section
-                // classes:
-                className={styleSheet.nav}
-            >
-                <Nav
-                    // variants:
-                    listStyle='breadcrumb'
-                    orientation='inline'
-                >
+        <ProductGalleryPage
+            // children:
+            navItems={
+                <>
+                    <NavItem active={false}>
+                        <Link href='/' prefetch={true}>
+                            Home
+                        </Link>
+                    </NavItem>
+                    
                     <NavItemWithPrefetch categoryPath={null} active={!parentsAndSelf.length}>
                         <UninterceptedLink href='/categories' uninterceptedHref='/_/categories' prefetch={true}>
-                            All products
+                            All Products
                         </UninterceptedLink>
                     </NavItemWithPrefetch>
                     
@@ -212,42 +199,37 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                             </NavItemWithPrefetch>
                         );
                     })}
-                </Nav>
-            </Section>
-            
-            <Section
-                // classes:
-                className={styleSheet.gallery}
-            >
-                <PaginationGallery<ProductPreview>
-                    // appearances:
-                    autoHidePagination={true}
-                    
-                    
-                    
-                    // accessibilities:
-                    textEmpty='The product collection is empty'
-                    
-                    
-                    
-                    // components:
-                    bodyComponent={
-                        <Basic nude={true} />
-                    }
-                    modelEmptyComponent={
-                        <EmptyProductCard
-                            // accessibilities:
-                            emptyText='There are no products on this category.'
-                        />
-                    }
-                    modelPreviewComponent={
-                        <ProductCard
-                            // data:
-                            model={undefined as any}
-                        />
-                    }
-                />
-            </Section>
-        </WideGalleryPage>
+                </>
+            }
+        >
+            <PaginationGallery<ProductPreview>
+                // appearances:
+                autoHidePagination={true}
+                
+                
+                
+                // accessibilities:
+                textEmpty='The product collection is empty'
+                
+                
+                
+                // components:
+                bodyComponent={
+                    <Basic nude={true} />
+                }
+                modelEmptyComponent={
+                    <EmptyProductCard
+                        // accessibilities:
+                        emptyText='There are no products on this category.'
+                    />
+                }
+                modelPreviewComponent={
+                    <ProductCard
+                        // data:
+                        model={undefined as any}
+                    />
+                }
+            />
+        </ProductGalleryPage>
     );
 }

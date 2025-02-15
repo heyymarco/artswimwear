@@ -7,7 +7,6 @@ import {
 
 
 // styles:
-import './styles'
-export const useProductListPageStyleSheet = dynamicStyleSheets(
+export const useProductGalleryPageStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./styles')
-, { id: 'mfvzha989y' });
+, { id: 'sfrw8fp38l' });
