@@ -9,7 +9,7 @@ import {
 
 
 // react components:
-export default function CommonLayout({
+export default function InterceptLayout({
     children,
     signin_dialog,
 }: {
