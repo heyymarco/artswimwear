@@ -29,7 +29,10 @@ import {
     CloseButton,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
+// private components:
+import {
+    RouterUpdater,
+}                           from './RouterUpdater'
 import {
     SearchExplorerQuery,
 }                           from './SearchExplorerQuery'
@@ -140,6 +143,10 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
             // classes:
             className={className}
         >
+            <RouterUpdater />
+            
+            
+            
             {!mobileLayout && <CloseButton
                 // variants:
                 theme='primary'

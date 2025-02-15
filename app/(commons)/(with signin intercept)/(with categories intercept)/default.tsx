@@ -8,7 +8,7 @@ import {
 // pages:
 import {
     CategoryPageContent,
-}                           from '@/app/(commons)/(with signin intercept)/(with categories intercept)/categories/[[...categories]]/page-content'
+}                           from '@/app/(commons)/(with signin intercept)/(with categories intercept)/(with search intercept)/categories/[[...categories]]/page-content'
 
 
 
