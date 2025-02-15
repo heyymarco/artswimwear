@@ -33,10 +33,6 @@ import {
 import {
     SearchExplorerQuery,
 }                           from './SearchExplorerQuery'
-import {
-    type CartState,
-    ForwardCartStateProvider,
-}                           from '@/components/Cart'
 
 
 
@@ -65,11 +61,6 @@ export interface SearchExplorerProps<TElement extends Element = HTMLElement>
     
     
     
-    // states:
-    cartState       : CartState
-    
-    
-    
     // handlers:
     onNavigate     ?: ((url: string) => void) | null|undefined
     onClose        ?: (() => void)   
@@ -89,11 +80,6 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
         
         // accessibilities:
         tabIndex     = 0,
-        
-        
-        
-        // states:
-        cartState,
         
         
         
@@ -170,17 +156,15 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
                 onClick={onClose ?? undefined}
             />}
             
-            <ForwardCartStateProvider cartState={cartState}>
-                <SearchExplorerQuery
-                    // refs:
-                    searchInputRef={searchInputRef}
-                    
-                    
-                    
-                    // handlers:
-                    onNavigate={onNavigate}
-                />
-            </ForwardCartStateProvider>
+            <SearchExplorerQuery
+                // refs:
+                searchInputRef={searchInputRef}
+                
+                
+                
+                // handlers:
+                onNavigate={onNavigate}
+            />
         </Container>
     );
 };

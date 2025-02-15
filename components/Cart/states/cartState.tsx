@@ -1097,32 +1097,6 @@ export {
     CartStateProvider as default,
 }
 
-export interface ForwardCartStateProviderProps {
-    // states:
-    cartState: CartState
-}
-export const ForwardCartStateProvider = (props:React.PropsWithChildren<ForwardCartStateProviderProps>) => {
-    // props:
-    const {
-        // states:
-        cartState,
-        
-        
-        
-        // children:
-        children,
-    } = props;
-    
-    
-    
-    // jsx:
-    return (
-        <CartStateContext.Provider value={cartState}>
-            {children}
-        </CartStateContext.Provider>
-    )
-};
-
 
 
 const enum ProductWatchdogFail {

@@ -27,12 +27,6 @@ import {
     NavbarMenuDropdown,
 }                           from '@/components/SiteNavbar/NavbarMenuDropdown'
 
-// states:
-import {
-    // hooks:
-    useCartState,
-}                           from '@/components/Cart'
-
 
 
 // react components:
@@ -56,11 +50,6 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     
     
     
-    // states:
-    const cartState = useCartState();
-    
-    
-    
     // jsx:
     return (
         <NavbarMenuDropdown
@@ -71,10 +60,7 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
             
             // components:
             dropdownUiComponent={
-                <SearchExplorerDropdown
-                    // states:
-                    cartState={cartState}
-                />
+                <SearchExplorerDropdown />
             }
         >
             {children}

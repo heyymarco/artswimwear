@@ -63,19 +63,12 @@ export interface SearchExplorerDropdownProps<TElement extends Element = HTMLElem
             |'mobileLayout'
         >
 {
-    // states:
-    cartState : CartState
 }
 const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: SearchExplorerDropdownProps<TElement>): JSX.Element|null => {
     // props:
     const {
         // appearances:
         mobileLayout = true,
-        
-        
-        
-        // states:
-        cartState,
         
         
         
@@ -139,11 +132,6 @@ const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: S
                 
                 // appearances:
                 mobileLayout={mobileLayout}
-                
-                
-                
-                // states:
-                cartState={cartState}
                 
                 
                 
