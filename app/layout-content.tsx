@@ -57,6 +57,9 @@ import {
     CartDialog,
 }                           from '@/components/Cart'
 import {
+    SearchExplorerStateProvider,
+}                           from '@/components/explorers/SearchExplorer'
+import {
     Header,
 }                           from './Header'
 import {
@@ -191,9 +194,11 @@ export function RootLayoutContent({
                             >
                                 <PageInterceptStateProvider>
                                     <CartStateProvider>
-                                        <RootLayoutContentInternal>
-                                            {children}
-                                        </RootLayoutContentInternal>
+                                        <SearchExplorerStateProvider>
+                                                <RootLayoutContentInternal>
+                                                    {children}
+                                                </RootLayoutContentInternal>
+                                        </SearchExplorerStateProvider>
                                     </CartStateProvider>
                                 </PageInterceptStateProvider>
                             </DialogMessageProvider>

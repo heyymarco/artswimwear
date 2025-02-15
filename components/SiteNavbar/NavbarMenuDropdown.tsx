@@ -22,6 +22,7 @@ import {
     
     // react helper hooks:
     useEvent,
+    type EventHandler,
     useMergeEvents,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -37,18 +38,29 @@ import {
     // menu-components:
     type DropdownExpandedChangeEvent,
     type DropdownProps,
-    
-    
-    
-    // utility-components:
-    PromiseDialog,
-    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internal components:
+import {
+    DropdownWithDelay,
+}                           from './DropdownWithDelay'
 
 // states:
 import {
     usePageInterceptState,
 }                           from '@/states/pageInterceptState'
+
+
+
+// types:
+interface DropdownState {
+    expanded       : boolean
+    
+    closingPromise : Promise<void>
+    signalClosing  : () => void
+    
+    data           : boolean|undefined
+}
 
 
 
@@ -105,6 +117,8 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
         toggleList,
     } = useNavbarState();
     
+    const [dropdownState, setDropdownState] = useState<DropdownState|null>(null); // initially no <DropdownUi> was shown
+    
     
     
     // refs:
@@ -112,15 +126,63 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
     
     
     
-    // dialogs:
-    const {
-        showDialog,
-    } = useDialogMessage();
-    const [shownDropdown, setShownDropdown] = useState<PromiseDialog<any>|null>(null);
-    
-    
-    
     // handlers:
+    const showDropdownAndWaitUntilClosing = useEvent(async (): Promise<boolean|undefined> => {
+        // conditions:
+        if (dropdownState) {
+            // The <DropdownUi> is already opened => wait until the <DropdownUi> start to close:
+            await dropdownState.closingPromise;
+            return dropdownState.data;
+        } // if
+        
+        
+        
+        // actions:
+        // The <DropdownUi> is not opened => open a new one:
+        const { promise: closingPromise, resolve: signalClosing } = Promise.withResolvers<void>();
+        const newDropdownState : DropdownState = {
+            expanded: true, // initially expanded
+            
+            closingPromise,
+            signalClosing,
+            
+            data: undefined, // initially no data
+        };
+        setDropdownState(newDropdownState);
+        await closingPromise; // wait until the <DropdownUi> start to close
+        return newDropdownState.data;
+    });
+    const hideDropdown                 = useEvent((): void => {
+        // mutate to collapsed state:
+        setDropdownState((current) => {
+            if (!current) return null; // no state => noting to mutate
+            if (!current.expanded) return current; // already collapsed => nothing to mutate
+            
+            return {
+                ...current,
+                expanded : false, // set to collapsed
+            };
+        });
+    });
+    const handleExpandedChange         = useEvent<EventHandler<DropdownExpandedChangeEvent<boolean>>>(({ expanded, data }) => {
+        if (dropdownState) dropdownState.data = data; // update to the latest data
+        if (!expanded) hideDropdown(); // the <DropdownUi> request to hide => hide the <DropdownUi>
+    });
+    const handleCollapseStart          = useEvent<EventHandler<void>>(() => {
+        dropdownState?.signalClosing(); // notify that the <DropdownUi> start to close
+    });
+    const handleCollapseEnd            = useEvent<EventHandler<void>>(() => {
+        dropdownState?.signalClosing(); // notify that the <DropdownUi> start to close (a redundant procedure in case of the `handleCollapseStart` was not invoked)
+        setDropdownState(null); // remove the <DropdownUi>'s state and force not to render the <DropdownUi>
+        
+        
+        
+        // In mobile mode => after the <DropdownUi> is fully closed => close the <Navbar>'s list too:
+        if (!isDesktopLayout) {
+            toggleList(false); // collapse the <Navbar> manually
+        } // if
+    });
+    
     const {
         startIntercept,
     } = usePageInterceptState();
@@ -131,18 +193,105 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
         
         
         
-        if (shownDropdown) {
-            shownDropdown.closeDialog(undefined);
+        if (dropdownState) {
+            // The <DropdownUi> is already opened => hide the <DropdownUi>
+            hideDropdown();
         }
         else {
             //#region a fix for categories page interceptor
             // intercepts all_pages/** => show <DropdownUi>:
             startIntercept(async (backPathname): Promise<boolean> => {
-                if (!listExpanded) toggleList(false); // collapse the <Navbar> manually
+                const data = await showDropdownAndWaitUntilClosing();
                 
                 
                 
-                const shownDropdownPromise = showDialog<boolean>(
+                // when the dropdown begin to close without the user clicking the menu item => restore the url, otherwise keeps the changed url
+                return (data !== true);
+            });
+            //#endregion a fix for categories page interceptor
+        } // if
+    });
+    const handleClick = useMergeEvents(
+        // preserves the original `onClick` from `props`:
+        onClick,
+        
+        
+        
+        // actions:
+        handleClickInternal,
+    );
+    
+    
+    
+    // effects:
+    // closes the shown <DropdownUi> when on transition between desktop <==> mobile:
+    const prevIsDesktopLayoutRef = useRef<boolean>(isDesktopLayout);
+    useEffect(() => {
+        // conditions:
+        if (prevIsDesktopLayoutRef.current === isDesktopLayout) return; // no diff => ignore
+        prevIsDesktopLayoutRef.current = isDesktopLayout; // sync
+        
+        
+        
+        // actions:
+        hideDropdown();
+    }, [isDesktopLayout]);
+    
+    // closes the shown <DropdownUi> when <Navbar>'s list collapsed:
+    const prevListExpandedRef = useRef<boolean>(listExpanded);
+    useEffect(() => {
+        // conditions:
+        if (prevListExpandedRef.current === listExpanded) return; // no diff => ignore
+        prevListExpandedRef.current = listExpanded; // sync
+        if (listExpanded) return; // only interested on collapsed event
+        
+        
+        
+        // actions:
+        hideDropdown();
+    }, [listExpanded]);
+    
+    
+    
+    // default props:
+    const {
+        // states:
+        active = (dropdownState ? true : undefined), // force as active if the menu is shown
+        
+        
+        
+        // other props:
+        ...restNavItemProps
+    } = restNavbarMenuDropdownProps satisfies NoForeignProps<typeof restNavbarMenuDropdownProps, NavItemProps>;
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <NavItem
+                // other props:
+                {...restNavItemProps}
+                
+                
+                
+                // refs:
+                elmRef={menuRef}
+                
+                
+                
+                // states:
+                active={active}
+                
+                
+                
+                // handlers:
+                onClick={handleClick}
+            />
+            
+            {!!dropdownState && <DropdownWithDelay
+                // components:
+                dropdownUiComponent={
                     React.cloneElement<NavbarMenuDropdownUiProps>(dropdownUiComponent,
                         // props:
                         {
@@ -153,6 +302,14 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
                             
                             // variants:
                             // theme          : 'primary'
+                            
+                            
+                            
+                            // states:
+                            expanded          : dropdownState.expanded,
+                            onExpandedChange  : handleExpandedChange,
+                            onCollapseStart   : handleCollapseStart,
+                            onCollapseEnd     : handleCollapseEnd,
                             
                             
                             
@@ -184,103 +341,9 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
                             ),
                         },
                     )
-                );
-                setShownDropdown(shownDropdownPromise);
-                
-                // on collapsed (has been closed):
-                if (!isDesktopLayout) {
-                    shownDropdownPromise.collapseEndEvent().then(() => {
-                        toggleList(false); // collapse the <Navbar> manually
-                    });
-                } // if
-                
-                
-                
-                // on collapsing (start to close):
-                const { data } = await shownDropdownPromise.collapseStartEvent();
-                setShownDropdown(null);
-                // when the dropdown closed without the user clicking the menu item => restore the url, otherwise keeps the changed url
-                return (data !== true);
-            });
-            //#endregion a fix for categories page interceptor
-        } // if
-    });
-    const handleClick = useMergeEvents(
-        // preserves the original `onClick` from `props`:
-        onClick,
-        
-        
-        
-        // actions:
-        handleClickInternal,
-    );
-    
-    
-    
-    // effects:
-    // closes the shown <DropdownUi> when on transition between desktop <==> mobile:
-    const prevIsDesktopLayoutRef = useRef<boolean>(isDesktopLayout);
-    useEffect(() => {
-        // conditions:
-        if (prevIsDesktopLayoutRef.current === isDesktopLayout) return; // no diff => ignore
-        prevIsDesktopLayoutRef.current = isDesktopLayout; // sync
-        
-        
-        
-        // actions:
-        shownDropdown?.closeDialog(undefined);
-    }, [isDesktopLayout]);
-    
-    // closes the shown <DropdownUi> when <Navbar>'s list collapsed:
-    const prevListExpandedRef = useRef<boolean>(listExpanded);
-    useEffect(() => {
-        // conditions:
-        if (prevListExpandedRef.current === listExpanded) return; // no diff => ignore
-        prevListExpandedRef.current = listExpanded; // sync
-        if (listExpanded) return; // only interested on collapsed event
-        
-        
-        
-        // actions:
-        shownDropdown?.closeDialog(undefined);
-    }, [listExpanded]);
-    
-    
-    
-    // default props:
-    const {
-        // states:
-        active   = (shownDropdown ? true : undefined), // force as active if the menu is shown
-        
-        
-        
-        // other props:
-        ...restNavItemProps
-    } = restNavbarMenuDropdownProps satisfies NoForeignProps<typeof restNavbarMenuDropdownProps, NavItemProps>;
-    
-    
-    
-    // jsx:
-    return (
-        <NavItem
-            // other props:
-            {...restNavItemProps}
-            
-            
-            
-            // refs:
-            elmRef={menuRef}
-            
-            
-            
-            // states:
-            active={active}
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
-        />
+                }
+            />}
+        </>
     );
 };
 export {

@@ -71,7 +71,10 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
             
             // components:
             dropdownUiComponent={
-                <SearchExplorerDropdown cartState={cartState} />
+                <SearchExplorerDropdown
+                    // states:
+                    cartState={cartState}
+                />
             }
         >
             {children}
