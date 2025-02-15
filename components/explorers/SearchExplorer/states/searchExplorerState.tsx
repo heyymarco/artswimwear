@@ -274,30 +274,4 @@ export {
     SearchExplorerStateProvider,
     SearchExplorerStateProvider as default,
 }
-
-export interface ForwardSearchExplorerStateProviderProps {
-    // states:
-    searchExplorerState: SearchExplorerState
-}
-export const ForwardSearchExplorerStateProvider = (props:React.PropsWithChildren<ForwardSearchExplorerStateProviderProps>) => {
-    // props:
-    const {
-        // states:
-        searchExplorerState,
-        
-        
-        
-        // children:
-        children,
-    } = props;
-    
-    
-    
-    // jsx:
-    return (
-        <SearchExplorerStateContext.Provider value={searchExplorerState}>
-            {children}
-        </SearchExplorerStateContext.Provider>
-    )
-};
 //#endregion searchExplorerState
