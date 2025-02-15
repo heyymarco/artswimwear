@@ -19,7 +19,7 @@ export default function DefaultLostDropdownIntercept(): JSX.Element|null {
         Example:
         First, when accessed `/categories/***` via interceptor, the route `(commons)/(with categories intercept)/@category_dropdown/(...)categories` activates the `category_dropdown` slot.
         Then,  when accessed `/categories/***` OUTSIDE `(commons)/(with categories intercept)/***`, the route `(commons)/(with categories intercept)/@category_dropdown/(...)categories` is no longer active (lost).
-        Thus the `DefaultLostDialogIntercept` will automatically be called by next-js.
+        Thus the `DefaultLostDropdownIntercept` will automatically be called by next-js.
     */
     
     
