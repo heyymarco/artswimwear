@@ -33,6 +33,7 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
+    type PaginationGalleryProps,
     PaginationGallery,
 }                           from '@/components/explorers/PaginationGallery'
 import {
@@ -50,6 +51,17 @@ import {
 
 // react components:
 export interface SearchResultGalleryProps
+    extends
+        // appearances:
+        Pick<PaginationGalleryProps<ProductPreview>,
+            // appearances:
+            |'showPaginationTop'
+            |'showPaginationBottom'
+            |'autoHidePagination'
+            
+            // accessibilities:
+            |'scrollable'
+        >
 {
     // handlers:
     onNavigate ?: ((url: string) => void) | null|undefined
@@ -57,6 +69,18 @@ export interface SearchResultGalleryProps
 const SearchResultGallery = (props: SearchResultGalleryProps): JSX.Element|null => {
     // props:
     const {
+        // appearances:
+        showPaginationTop    = true,
+        showPaginationBottom = true,
+        autoHidePagination   = true,
+        
+        
+        
+        // accessibilities:
+        scrollable           = false,
+        
+        
+        
         // handlers:
         onNavigate,
     } = props;
@@ -93,8 +117,9 @@ const SearchResultGallery = (props: SearchResultGalleryProps): JSX.Element|null 
     return (
         <PaginationGallery<ProductPreview>
             // appearances:
-            autoHidePagination={true}
-            showPaginationTop={false}
+            showPaginationTop={showPaginationTop}
+            showPaginationBottom={showPaginationBottom}
+            autoHidePagination={autoHidePagination}
             
             
             
@@ -105,7 +130,7 @@ const SearchResultGallery = (props: SearchResultGalleryProps): JSX.Element|null 
             
             // accessibilities:
             textEmpty='No results found.'
-            scrollable={true}
+            scrollable={scrollable}
             
             
             

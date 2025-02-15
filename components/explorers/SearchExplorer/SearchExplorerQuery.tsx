@@ -43,6 +43,9 @@ import {
 import {
     PaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
+import {
+    type PaginationGalleryProps,
+}                           from '@/components/explorers/PaginationGallery'
 
 // private components:
 import {
@@ -64,6 +67,17 @@ import {
 
 // react components:
 export interface SearchExplorerQueryProps
+    extends
+        // appearances:
+        Pick<PaginationGalleryProps<ProductPreview>,
+            // appearances:
+            |'showPaginationTop'
+            |'showPaginationBottom'
+            |'autoHidePagination'
+            
+            // accessibilities:
+            |'scrollable'
+        >
 {
     // refs:
     searchInputRef ?: React.Ref<HTMLInputElement> // setter ref
@@ -78,6 +92,18 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
     const {
         // refs:
         searchInputRef,
+        
+        
+        
+        // appearances:
+        showPaginationTop    = false,
+        showPaginationBottom = true,
+        autoHidePagination   = true,
+        
+        
+        
+        // accessibilities:
+        scrollable = true,
         
         
         
@@ -168,6 +194,18 @@ const SearchExplorerQuery = (props: SearchExplorerQueryProps): JSX.Element|null 
                 setPerPage={setPerPage}
             >
                 <SearchResultGallery
+                    // appearances:
+                    showPaginationTop={showPaginationTop}
+                    showPaginationBottom={showPaginationBottom}
+                    autoHidePagination={autoHidePagination}
+                    
+                    
+                    
+                    // accessibilities:
+                    scrollable={scrollable}
+                    
+                    
+                    
                     // handlers:
                     onNavigate={onNavigate}
                 />
