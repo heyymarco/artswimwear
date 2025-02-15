@@ -3,7 +3,7 @@
 
 
 // react components:
-export default function IndexIntercept(): JSX.Element|null {
+export default function DefaultDropdownIntercept(): JSX.Element|null {
     /*
         handles:
         * HARD|SOFT navigation of `/`         => NOTHING to do, just preventing a 404 error from happening.

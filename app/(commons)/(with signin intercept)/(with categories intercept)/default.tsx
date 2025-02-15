@@ -13,13 +13,13 @@ import {
 
 
 // react components:
-export default function LostParallelSlot(): JSX.Element|null {
+export default function DefaultLostDropdownIntercept(): JSX.Element|null {
     /*
         This page will be shown if one/more active_parallel_slots lost its active state.
         Example:
         First, when accessed `/categories/***` via interceptor, the route `(commons)/(with categories intercept)/@category_dropdown/(...)categories` activates the `category_dropdown` slot.
         Then,  when accessed `/categories/***` OUTSIDE `(commons)/(with categories intercept)/***`, the route `(commons)/(with categories intercept)/@category_dropdown/(...)categories` is no longer active (lost).
-        Thus the `LostParallelSlot` will automatically be called by next-js.
+        Thus the `DefaultLostDialogIntercept` will automatically be called by next-js.
     */
     
     
