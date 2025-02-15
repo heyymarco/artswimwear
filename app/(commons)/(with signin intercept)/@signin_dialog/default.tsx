@@ -3,11 +3,11 @@
 
 
 // react components:
-export default function CheckoutIntercept(): JSX.Element|null {
+export default function IndexIntercept(): JSX.Element|null {
     /*
         handles:
-        * HARD|SOFT navigation of `/checkout`          => NOTHING to do, just preventing a 404 error from happening.
-        * HARD      navigation of `/checkout/any_path` => NOTHING to do, just preventing a 404 error from happening.
+        * HARD|SOFT navigation of `/`         => NOTHING to do, just preventing a 404 error from happening.
+        * HARD      navigation of `/any_path` => NOTHING to do, just preventing a 404 error from happening.
     */
     
     

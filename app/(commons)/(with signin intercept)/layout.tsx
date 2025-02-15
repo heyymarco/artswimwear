@@ -9,7 +9,7 @@ import {
 
 
 // react components:
-export default function CheckoutLayout({
+export default function CommonLayout({
     children,
     signin_dialog,
 }: {
