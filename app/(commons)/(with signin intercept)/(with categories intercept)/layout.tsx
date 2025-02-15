@@ -9,7 +9,7 @@ import {
 
 
 // react components:
-export default function InterceptLayout({
+export default function DialogInterceptLayout({
     children,
     category_dropdown,
 }: {
