@@ -92,7 +92,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
             />
         )
         .then(() => { // on fully closed:
-            router.push(backPathname, { scroll: false });
+            router.push(backPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
         });
     });
     
