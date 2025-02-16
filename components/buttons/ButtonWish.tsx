@@ -119,7 +119,7 @@ const ButtonWish = (props: ButtonWishProps) => {
         // conditions:
         if (!model) return;
         if (!isSignedIn) {
-            router.push('/signin', { scroll: false });
+            router.push('/signin', { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
             
             
             
@@ -137,7 +137,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                 />
             )
             .then(() => { // on fully closed:
-                router.push(backPathname, { scroll: false });
+                router.push(backPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
             });
             
             
