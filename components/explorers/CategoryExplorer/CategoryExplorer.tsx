@@ -431,7 +431,8 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     // jsx:
     return (
         <>
-            {parentCategories.slice(showRootSection ? 1 : 0).map(({ category: subcategory, index: restoreIndex }, index) =>
+            {/* PREFETCH for displaying the ANCESTOR(S) AND PARENT categories (except the root category): */}
+            {parentCategories.slice(showRootSection ? 1 /* skip the root parent category */ : 0 /* select all parent categories */).map(({ category: subcategory, index: restoreIndex }, index) =>
                 // PREFETCH for preserving the sub category CACHES:
                 <PrefetchCategoryPage
                     // identifiers:
