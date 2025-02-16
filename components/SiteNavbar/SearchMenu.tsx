@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-js:
+import {
+    usePathname,
+}                           from 'next/navigation'
+
 // reusable-ui core:
 import {
     // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
@@ -55,15 +60,22 @@ export interface SearchMenuProps
 }
 const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     // states:
+    const pathname = usePathname();
     const {
         originPathname,
     } = usePageInterceptState();
+    const nonInterceptingPathname = (originPathname ?? pathname);
     
     
     
     // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (originPathname === '/search')event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        console.log({
+            pathname,
+            originPathname,
+            nonInterceptingPathname,
+        });
+        if (nonInterceptingPathname === '/search') event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
     });
     
     
