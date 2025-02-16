@@ -99,7 +99,7 @@ const CartDialog = () => {
     });
     const handleClick          = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         hideCart();
-        router.push('/checkout');
+        router.push('/checkout', { scroll: true }); // goto checkout page // may scroll the page because it navigates to checkout page
     });
     
     
