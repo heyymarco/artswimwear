@@ -44,7 +44,7 @@ import {
 // models:
 import {
     // defaults:
-    defaultRootCategoryPerPage,
+    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 
@@ -140,7 +140,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 // states:
                 initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
-                initialPerPage={defaultRootCategoryPerPage}
+                initialPerPage={defaultSubCategoryPerPage}
             />}
         </>
     );
