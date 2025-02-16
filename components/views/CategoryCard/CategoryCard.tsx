@@ -167,7 +167,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleNavigate = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleUninterceptedNavigate = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         // conditions:
         if (event.defaultPrevented) return; // already handled => ignore
         event.preventDefault(); // prevents the actual `href` to havigate
@@ -176,13 +176,13 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
         
         // actions:
         if (hasSubcategories) {
-            onModelSelect?.({                       // navigate to subcategory
+            onModelSelect?.({                                         // navigate to subcategory
                 model : model,
                 event : event,
             });
         }
         else {
-            router.push(categoryUninterceptedPath); // goto unintercepted category page
+            router.push(categoryUninterceptedPath, { scroll: true }); // goto unintercepted category page, so we can actually navigate to the actual category page instead of being intercepted as <CategoryExplorerDropdown> // may scroll the page because it navigates to actual category page
             onNavigate?.(categoryUninterceptedPath);
         } // if
     });
@@ -231,12 +231,12 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             
             // handlers:
-            // href    = {categoryInterceptedPath} // shows the physical_link as (normal) intercepted category path for presentation reason
-            onClick = {handleNavigate}          // but when clicked => navigate to subcategory -or- goto unintercepted category page
+            // href    = {categoryInterceptedPath}  // shows the physical_link as (normal) intercepted category path for presentation reason
+            onClick = {handleUninterceptedNavigate} // but when clicked => navigate to subcategory -or- goto unintercepted category page
         >
             <Link
                 // data:
-                href={categoryInterceptedPath}  // shows the physical_link as (normal) intercepted category path for presentation reason
+                href={categoryInterceptedPath}      // shows the physical_link as (normal) intercepted category path for presentation reason
                 
                 
                 
