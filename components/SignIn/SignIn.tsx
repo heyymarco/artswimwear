@@ -90,16 +90,16 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     
     // handlers:
     const handleNavigateSignIn  = useEvent((): void => {
-        router.push(pathNavigateSignIn,  { scroll: false });
+        router.push(pathNavigateSignIn,  { scroll: false }); // do not scroll the page because it triggers the signIn_tab interceptor
     });
     const handleNavigateSignUp  = useEvent((): void => {
-        router.push(pathNavigateSignUp,  { scroll: false });
+        router.push(pathNavigateSignUp,  { scroll: false }); // do not scroll the page because it triggers the signUp_tab interceptor
     });
     const handleNavigateRecover = useEvent((): void => {
-        router.push(pathNavigateRecover, { scroll: false });
+        router.push(pathNavigateRecover, { scroll: false }); // do not scroll the page because it triggers the recover_tab interceptor
     });
     const handleNavigateHome    = useEvent((): void => {
-        router.push(pathNavigateHome,    { scroll: false });
+        router.push(pathNavigateHome,    { scroll: false }); // may scroll the page because it navigates to home page
     });
     
     
