@@ -184,7 +184,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(pathname)) {
                 startIntercept(async (backPathname): Promise<boolean> => {
                     toggleList(false); // collapse the <Navbar> manually
-                    router.push(signInPath, { scroll: false }); // goto signIn page, do not scroll the page because it's an interceptor signIn dialog
+                    router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
                     
                     
                     
@@ -244,7 +244,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 newShownMenu.collapseEndEvent().then((event) => {
                     switch (event.data) {
                         case 'editProfile':
-                            router.push('/customer'); // goto customer's profile page
+                            router.push('/customer'); // goto customer's profile page // may scroll the page because it navigates to customer's profile page
                             break;
                         
                         case 'signOut':
