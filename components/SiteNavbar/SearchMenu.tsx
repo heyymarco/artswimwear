@@ -10,6 +10,11 @@ import {
 import {
     // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
     type NoForeignProps,
+    
+    
+    
+    // react helper hooks:
+    useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -17,6 +22,10 @@ import {
     // simple-components:
     Icon,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+// reusable-ui components:
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -26,6 +35,11 @@ import {
     type NavbarMenuDropdownProps,
     NavbarMenuDropdown,
 }                           from '@/components/SiteNavbar/NavbarMenuDropdown'
+
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
 
 
 
@@ -40,12 +54,38 @@ export interface SearchMenuProps
 {
 }
 const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
+    // states:
+    const {
+        originPathname,
+    } = usePageInterceptState();
+    
+    
+    
+    // handlers:
+    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        if (originPathname === '/search')event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+    });
+    
+    
+    
     // default props:
     const {
         // children:
-        children   = <span>
-            <Icon icon='search' size='lg' /> Search
-        </span>,
+        children   = (
+            <Link
+                // data:
+                href='/search'
+                
+                
+                
+                // behaviors:
+                prefetch={false} // NEVER prefetch because the search page is NEVER reached (by soft navigation)
+            >
+                <span>
+                    <Icon icon='search' size='lg' /> Search
+                </span>
+            </Link>
+        ),
     } = props satisfies NoForeignProps<typeof props, Omit<NavbarMenuDropdownProps, 'dropdownUiComponent'>>;
     
     
@@ -62,6 +102,11 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
             dropdownUiComponent={
                 <SearchExplorerDropdown />
             }
+            
+            
+            
+            // handlers:
+            onClick={handleClick}
         >
             {children}
         </NavbarMenuDropdown>

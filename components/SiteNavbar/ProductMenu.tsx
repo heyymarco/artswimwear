@@ -83,7 +83,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 
                 // behaviors:
-                prefetch={!hasCategories} // if not_having_categories => force to DEEP prefetch of product PAGE, otherwise NEVER prefetch because the product page is NEVER reached
+                prefetch={!hasCategories} // if not_having_categories => force to DEEP prefetch of product PAGE, otherwise NEVER prefetch because the product page is NEVER reached (by soft navigation)
             >
                 Products
             </Link>
