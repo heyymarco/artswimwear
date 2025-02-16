@@ -41,7 +41,7 @@ export const useUseGetSubCategoryPage = (parentCategory: string|null) => {
 export const useGetHasCategories = (): [boolean|undefined, CategoryPreview|null|undefined] => {
     const { data: categoryPreviewPagination } = useGetRootCategoryPage({
         page    : 0,
-        perPage : defaultRootCategoryPerPage,
+        perPage : defaultRootCategoryPerPage, // for testing the existance of the first root_category, we use `defaultRootCategoryPerPage` instead of `defaultSubCategoryPerPage` to increase the cache reusability for <CategoryExplorerRoot>
     });
     if (!categoryPreviewPagination) return [undefined, undefined];
     return [
