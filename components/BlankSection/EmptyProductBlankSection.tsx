@@ -73,7 +73,7 @@ const EmptyProductBlankSection = (props: EmptyProductBlankSectionProps) => {
         
         
         // actions:
-        router.push('/products');
+        router.push('/products', { scroll: true }); // goto product gallery page // may scroll the page because it navigates to product gallery page
     });
     const handleNavigate         = useMergeEvents(
         // actions:
