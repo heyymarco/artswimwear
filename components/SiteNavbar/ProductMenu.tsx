@@ -44,6 +44,7 @@ import {
 // models:
 import {
     // defaults:
+    defaultRootCategoryPerPage,
     defaultSubCategoryPerPage,
 }                           from '@/models'
 
@@ -126,22 +127,64 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 prefetchKind={PrefetchKind.FULL}
             />}
             
-            {/* PREFETCH for displaying the sub categories of the (default selected) FIRST root category: */}
-            { !!firstRootcategory && <PrefetchCategoryPage
-                // refs:
-                subjectRef={null} // always prefetch
+            {(firstRootcategory !== undefined) && <>
+                {/* single level categories */}
+                {(firstRootcategory === null) && <>
+                    {/* PREFETCH for displaying the root_as_sub categories: */}
+                    <PrefetchCategoryPage
+                        // refs:
+                        subjectRef={null} // always prefetch
+                        
+                        
+                        
+                        // data:
+                        model={null} // no parent category
+                        
+                        
+                        
+                        // states:
+                        initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+                        initialPerPage={defaultSubCategoryPerPage}
+                    />
+                </>}
                 
-                
-                
-                // data:
-                model={firstRootcategory} // the parent category
-                
-                
-                
-                // states:
-                initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
-                initialPerPage={defaultSubCategoryPerPage}
-            />}
+                {/* multi level categories */}
+                {(firstRootcategory !== null) && <>
+                    {/* PREFETCH for displaying the root categories: */}
+                    <PrefetchCategoryPage
+                        // refs:
+                        subjectRef={null} // always prefetch
+                        
+                        
+                        
+                        // data:
+                        model={null} // no parent category
+                        
+                        
+                        
+                        // states:
+                        initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+                        initialPerPage={defaultRootCategoryPerPage}
+                    />
+                    
+                    {/* PREFETCH for displaying the sub categories of the (default selected) FIRST root category: */}
+                    <PrefetchCategoryPage
+                        // refs:
+                        subjectRef={null} // always prefetch
+                        
+                        
+                        
+                        // data:
+                        model={firstRootcategory} // the parent category
+                        
+                        
+                        
+                        // states:
+                        initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+                        initialPerPage={defaultSubCategoryPerPage}
+                    />
+                </>}
+            </>}
         </>
     );
 };
