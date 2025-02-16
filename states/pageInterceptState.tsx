@@ -116,7 +116,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         const { promise: routerUpdatedPromise, resolve: routerUpdatedSignal } = Promise.withResolvers<void>();
         signalPathnameUpdated.current = routerUpdatedSignal;
         
-        router.push(originPathname, { scroll: false });
+        router.push(originPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
         
         await Promise.race([
             routerUpdatedPromise,
