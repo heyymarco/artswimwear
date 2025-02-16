@@ -244,7 +244,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 newShownMenu.collapseEndEvent().then((event) => {
                     switch (event.data) {
                         case 'editProfile':
-                            router.push('/customer'); // goto customer's profile page // may scroll the page because it navigates to customer's profile page
+                            router.push('/customer', { scroll: true }); // goto customer's profile page // may scroll the page because it navigates to customer's profile page
                             break;
                         
                         case 'signOut':
