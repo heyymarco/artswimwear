@@ -127,9 +127,9 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 prefetchKind={PrefetchKind.FULL}
             />}
             
-            {(firstRootcategory !== undefined) && <>
+            {!!firstRootcategory && <>
                 {/* single level categories */}
-                {(firstRootcategory === null) && <>
+                {!firstRootcategory.hasSubcategories && <>
                     {/* PREFETCH for displaying the root_as_sub categories: */}
                     <PrefetchCategoryPage
                         // refs:
@@ -149,7 +149,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 </>}
                 
                 {/* multi level categories */}
-                {(firstRootcategory !== null) && <>
+                { firstRootcategory.hasSubcategories && <>
                     {/* PREFETCH for displaying the root categories: */}
                     <PrefetchCategoryPage
                         // refs:
