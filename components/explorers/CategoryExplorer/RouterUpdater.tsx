@@ -77,7 +77,7 @@ const RouterUpdater = (): JSX.Element|null => {
                 setHistoryUrls((historyUrls) => {
                     historyUrls.push(newPathname);
                 });
-                router.push(newPathname, { scroll: false }); // intercept the url
+                router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
             } // if
         } // if
     }, [parentCategories, pathname]);

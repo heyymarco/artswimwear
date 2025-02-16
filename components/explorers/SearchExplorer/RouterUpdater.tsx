@@ -42,7 +42,7 @@ const RouterUpdater = (): JSX.Element|null => {
         // actions:
         const newPathname = searchPath;
         if (newPathname.toLowerCase() !== pathname.toLowerCase()) {
-            router.push(newPathname, { scroll: false }); // intercept the url
+            router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
         } // if
     }, [pathname]);
     
