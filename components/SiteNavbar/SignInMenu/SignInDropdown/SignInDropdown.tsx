@@ -97,7 +97,7 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
         event.preventDefault();
     });
     const handleNavigate = useEvent((href: string): void => {
-        router.push(href);
+        router.push(href, { scroll: true }); // may scroll the page because it navigates to customer's specific page
     });
     
     
