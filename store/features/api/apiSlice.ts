@@ -186,6 +186,7 @@ export const apiSlice = createApi({
                 url    : `products?path=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
+            keepUnusedDataFor: 3600, // 1 hour in seconds
         }),
         searchProducts              : builder.query<Pagination<ProductPreview>, SearchProductsPageRequest>({
             query : (arg) => ({
@@ -210,6 +211,7 @@ export const apiSlice = createApi({
                 url    : `products/categories?pathname=${encodeURIComponent(arg.join('/'))}`,
                 method : 'GET',
             }),
+            keepUnusedDataFor: 86400, // 1 day in seconds
         }),
         
         
