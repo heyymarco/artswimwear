@@ -184,7 +184,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(pathname)) {
                 startIntercept(async (backPathname): Promise<boolean> => {
                     toggleList(false); // collapse the <Navbar> manually
-                    router.push(signInPath); // goto signIn page
+                    router.push(signInPath, { scroll: false }); // goto signIn page, do not scroll the page because it's an interceptor signIn dialog
                     
                     
                     
