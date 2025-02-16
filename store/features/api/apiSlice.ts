@@ -1147,11 +1147,6 @@ export const {
     makePayment       : { initiate : makePayment       },
 } = apiSlice.endpoints;
 
-// export const usePrefetchProductDetail  = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail' , options); // use `useLazyGetProductDetail`  instead
-// export const usePrefetchCategoryDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryDetail', options); // use `useLazyGetCategoryDetail` instead
-// export const usePrefetchProductPage    = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductPage'   , options); // use `useLazyGetProductPage`    instead
-// export const usePrefetchCategoryPage   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryPage'  , options); // use `useLazyGetCategoryPage`   instead
-
 
 
 // utilities:
