@@ -358,7 +358,7 @@ export function ProductDetailPageContent({ productPath: productPath }: { product
                             src={resolveMediaUrl(image)}
                             sizes='266px' // ((25*16) - (1*2)) * (2/3) = 266
                             
-                            priority={true}
+                            priority={false}
                         />
                     )}
                 </Carousel>

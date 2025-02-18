@@ -100,7 +100,7 @@ export function HomePageContent(): JSX.Element|null {
                             
                             
                             // behaviors:
-                            priority={true}
+                            priority={false}
                         />
                     )}
                 </Carousel>

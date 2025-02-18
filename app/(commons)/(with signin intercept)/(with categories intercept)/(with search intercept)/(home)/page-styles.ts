@@ -54,22 +54,38 @@ export default () => [
                 
                 
                 // children:
-                ...children('ul>li>figure', {
+                ...children('ul>li>[role="img"]', {
+                    // positions:
+                    position      : 'relative', // Supports for <img>'s `position: absolute`
+                    
+                    
+                    
                     // sizes:
-                    inlineSize : '100%',
-                    blockSize  : '100%',
+                    inlineSize    : '100%',
+                    blockSize     : '100%',
                     
                     
                     
                     // backgrounds:
-                    background: 'white',
+                    background    : 'white',
                     
                     
                     
                     // children:
-                    ...children(['&', 'img'], {
+                    ...children('img', {
+                        // positions:
+                        position  : ['absolute', '!important'], // Disable for taking space, so Chrome won't confuse with width & height, always follows the <container>'s width & height.
+                        
+                        
+                        
                         // appearances:
-                        objectFit: 'contain',
+                        objectFit : 'contain',
+                        
+                        
+                        
+                        // sizes:
+                        width  : ['100%', '!important'], // Fills the entire <container>
+                        height : ['100%', '!important'], // Fills the entire <container>
                     }),
                 }),
             }),
