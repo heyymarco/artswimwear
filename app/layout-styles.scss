@@ -19,10 +19,18 @@
 .siteFooter:nth-child(n) {
     box-sizing: border-box;
     block-size: var(--site-footer);
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 0; // no padding, because we need to manipulate the `block-size`
+    display: grid;
+    justify-content: stretch;
+    align-content: stretch;
+    transition: none; // we change the `block-size` dynamically, so we need to turn off the transition to get the effect immediately
+    overflow: hidden; // hide the rest content if the `block-size` is too low
+    &>.content {
+        display: grid;
+        block-size: var(--site-footer);
+        justify-content: center;
+        align-content: center;
+    }
 }
 
 body {
@@ -45,3 +53,12 @@ main {
 // :where(img[data-nimg="fill"]) {
 //     visibility: hidden;
 // }
+
+html, body {
+    overflow: hidden;
+    height: 100%;
+}
+.main-scroller {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
