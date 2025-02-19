@@ -149,16 +149,30 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
     
     // effects:
     
-    // Calculate <Footer> size once at startup:
+    /* 
+     * Calculate <Footer> size once at startup:
+     * We use `useIsomorphicLayoutEffect` to call `measureScrollingBehaviors()` as quickly as possible *before* the browser has a chance to repaint the page.
+     * This ensures that the initial measurements are taken synchronously to prevent any potential flicker or layout shifts.
+     */
     // We use `useIsomorphicLayoutEffect` instead of `useEffect` to `measureScrollingBehaviors()` as quickly as possible before the browser has a chance to repaint the page.
     useIsomorphicLayoutEffect(() => {
         // setups:
         measureScrollingBehaviors();
     }, []);
     
-    // Monitor content size changes with ResizeObserver:
-    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to `measureScrollingBehaviors()` as quickly as possible before the browser has a chance to repaint the page.
-    useIsomorphicLayoutEffect(() => {
+    /* 
+     * Monitor content size changes with ResizeObserver:
+     * The ResizeObserver is used to monitor changes in the size of the .scrolling-content element.
+     * This observer will trigger the measureScrollingBehaviors() function whenever the content size changes,
+     * including when new content is loaded, or existing content is resized. This ensures that the footer height
+     * is recalculated to accommodate the new content size. The observer is set to use the 'border-box' option,
+     * which means it observes changes to the entire element's size, including content, padding, and border.
+     * The initial invocation of the observer will also call the measureScrollingBehaviors() function to set up
+     * the initial measurements. However, note that the initial invocation may be called *after* the browser has
+     * already painted the page.
+     */
+    // We use `useEffect` instead of `useIsomorphicLayoutEffect` to setup `ResizeObserver` to set up `ResizeObserver` because the initial invocation of the observer may occur after the browser has already painted the page. Using `useEffect` allows the setup to run asynchronously after the initial render, which is sufficient for observing subsequent content size changes.
+    useEffect(() => {
         // conditions:
         const scrollingContentElm = scrollingContentRef.current;
         if (!scrollingContentElm) return;
