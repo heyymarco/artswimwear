@@ -104,7 +104,7 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
         
         // conditions:
         const footerIntrinsicHeight      = footerIntrinsicHeightRef.current;
-        const hasScrollbar               = (footerIntrinsicHeight != null);
+        const hasScrollbar               = (footerIntrinsicHeight !== null);
         if (!hasScrollbar) {
             // diffings:
             if (prevFooterHeightRef.current === -1) return; // dynamic <Footer> is already disabled => ingore
