@@ -12,14 +12,10 @@ import {
     useEffect,
 }                           from 'react'
 
-// next-js:
-import {
-    usePathname,
-}                           from 'next/navigation'
-
 // reusable-ui core:
 import {
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -42,131 +38,164 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
     
     
     // refs:
-    const scrollerRef = useRef<HTMLDivElement|null>(null);
-    const footerRef   = useRef<HTMLElement|null>(null);
-    const shifterBottomRef  = useRef<HTMLDivElement|null>(null);
-    const shifterTopRef  = useRef<HTMLDivElement|null>(null);
+    const scrollerRef         = useRef<HTMLDivElement|null>(null);
+    const shifterTopRef       = useRef<HTMLDivElement|null>(null);
+    const shifterBottomRef    = useRef<HTMLDivElement|null>(null);
+    const scrollingContentRef = useRef<HTMLDivElement|null>(null);
+    const footerRef           = useRef<HTMLElement|null>(null);
     
     
     
-    // effects:
-    const maxFooterHeightRef = useRef<number>(0);
-    const calculateFooterHeight = useEvent((forceRefresh: boolean = false): void => {
+    // handlers:
+    const footerIntrinsicHeightRef  = useRef<null|number>(null); // `null`: no auto_size <Footer>, `number`: has auto_size <Footer> with known <Footer>'s intrinsic height
+    const measureScrollingBehaviors = useEvent((): void => {
         // conditions:
         const scrollerElm      = scrollerRef.current;
-        const footerElm        = footerRef.current;
         const shifterTopElm    = shifterTopRef.current;
         const shifterBottomElm = shifterBottomRef.current;
-        if (!scrollerElm || !footerElm || !shifterTopElm || !shifterBottomElm) return;
+        const footerElm        = footerRef.current;
+        if (!scrollerElm || !shifterTopElm || !shifterBottomElm || !footerElm) return;
+        
+        
+        
+        // backups:
+        const prevShifterTopSize    = shifterTopElm.style.blockSize;
+        const prevShifterBottomSize = shifterBottomElm.style.blockSize;
+        const prevBlockSize         = footerElm.style.blockSize;
+        
+        
+        
+        // re-conditions:
+        shifterTopElm.style.blockSize    = '';
+        shifterBottomElm.style.blockSize = '';
+        footerElm.style.blockSize        = '';
         
         
         
         // calcuations:
-        const prevBlockSize         = forceRefresh ? '' : footerElm.style.blockSize;
-        const prevShifterTopSize    = shifterTopElm.style.blockSize;
-        const prevShifterBottomSize = shifterBottomElm.style.blockSize;
-        
-        footerElm.style.blockSize        = '';
-        shifterTopElm.style.blockSize    = '';
-        shifterBottomElm.style.blockSize = '';
-        
-        const maxFooterHeight = footerElm.getBoundingClientRect().height;
-        maxFooterHeightRef.current = maxFooterHeight;
-        
-        
-        
-        // updates:
         const scrollingDistance          = scrollerElm.scrollHeight - scrollerElm.clientHeight;
         const hasScrollbar               = (scrollingDistance > 0.5);
-        const footerHeightStr = prevBlockSize || (() => {
-            if (scrollingDistance <= maxFooterHeight) return `${maxFooterHeight}px`;
-            return '0px';
-        })();
-        footerElm.style.blockSize        = footerHeightStr;
-        shifterTopElm.style.blockSize    = hasScrollbar ? (forceRefresh ? '0px'                  : prevShifterTopSize   ) : '';
-        shifterBottomElm.style.blockSize = hasScrollbar ? (forceRefresh ? `${maxFooterHeight}px` : prevShifterBottomSize) : '';
+        if (hasScrollbar) {
+            const footerIntrinsicHeight = footerElm.getBoundingClientRect().height;
+            footerIntrinsicHeightRef.current = footerIntrinsicHeight;
+        }
+        else {
+            footerIntrinsicHeightRef.current = null;
+        } // if
+        
+        
+        
+        // restores:
+        shifterTopElm.style.blockSize    = prevShifterTopSize;
+        shifterBottomElm.style.blockSize = prevShifterBottomSize;
+        footerElm.style.blockSize        = prevBlockSize;
     });
     
-    useEffect(() => {
+    const prevFooterHeightRef       = useRef<number>(-1);
+    const updateFooterHeight        = useEvent((): void => {
         // conditions:
         const scrollerElm      = scrollerRef.current;
-        const footerElm        = footerRef.current;
         const shifterTopElm    = shifterTopRef.current;
         const shifterBottomElm = shifterBottomRef.current;
-        if (!scrollerElm || !footerElm || !shifterTopElm || !shifterBottomElm) return;
+        const footerElm        = footerRef.current;
+        if (!scrollerElm || !shifterTopElm || !shifterBottomElm || !footerElm) return;
         
         
         
-        // states:
-        let prevFooterHeight : number|undefined = undefined;
-        
-        
-        
-        // handlers:
-        const handleScroll = () => {
-            // calcuations:
-            const scrollingDistance          = scrollerElm.scrollHeight - scrollerElm.clientHeight;
-            const hasScrollbar               = (scrollingDistance > 0.5);
-            if (!hasScrollbar) {
-                // footerElm.style.blockSize        = ''; // no need to update for performance reason, should already done in `calculateFooterHeight()`
-                // shifterTopElm.style.blockSize    = ''; // no need to update for performance reason, should already done in `calculateFooterHeight()`
-                // shifterBottomElm.style.blockSize = ''; // no need to update for performance reason, should already done in `calculateFooterHeight()`
-                return;
-            } // if
-            const scrollTop                  = scrollerElm.scrollTop;
-            const restScrollingDistance      = scrollingDistance - scrollTop;
-            const maxFooterHeight            = maxFooterHeightRef.current;
-            const footerHeight               = maxFooterHeight - Math.min(maxFooterHeight, restScrollingDistance);
-            
-            
-            
+        // calculations:
+        const footerIntrinsicHeight      = footerIntrinsicHeightRef.current;
+        const hasScrollbar               = (footerIntrinsicHeight != null);
+        if (!hasScrollbar) {
             // diffings:
-            if (prevFooterHeight === footerHeight) return; // already the same to prev => ignore
-            const diffScrolling              = footerHeight - (prevFooterHeight ?? footerHeight);
-            prevFooterHeight                 = footerHeight;
+            if (prevFooterHeightRef.current === -1) return; // dynamic <Footer> is already disabled => ingore
+            prevFooterHeightRef.current = -1; // mark the <Footer> is already disabled
             
             
             
             // updates:
-            const shifterBottomHeight        = maxFooterHeight - footerHeight;
-            footerElm.style.blockSize        = `${footerHeight}px`;
-            shifterTopElm.style.blockSize    = `${footerHeight}px`;
-            shifterBottomElm.style.blockSize = `${shifterBottomHeight}px`;
-            scrollerElm.scrollTop            = scrollTop + diffScrolling;
-        }
+            shifterTopElm.style.blockSize    = '';
+            shifterBottomElm.style.blockSize = '';
+            footerElm.style.blockSize        = '';
+            return;
+        } // if
+        
+        const scrollingDistance          = scrollerElm.scrollHeight - scrollerElm.clientHeight;
+        const scrollTop                  = scrollerElm.scrollTop;
+        const restScrollingDistance      = scrollingDistance - scrollTop;
+        const footerHeight               = footerIntrinsicHeight - Math.min(footerIntrinsicHeight, restScrollingDistance);
+        
+        
+        
+        // diffings:
+        if (prevFooterHeightRef.current === footerHeight) return; // already the same to prev => ignore
+        const diffScrolling              = footerHeight - (prevFooterHeightRef.current ?? footerHeight);
+        prevFooterHeightRef.current      = footerHeight;
+        
+        
+        
+        // updates:
+        const shifterBottomHeight        = footerIntrinsicHeight - footerHeight;
+        
+        scrollerElm.scrollTop            = scrollTop + diffScrolling;
+        shifterTopElm.style.blockSize    = `${footerHeight}px`;
+        shifterBottomElm.style.blockSize = `${shifterBottomHeight}px`;
+        footerElm.style.blockSize        = `${footerHeight}px`;
+    });
+    
+    
+    
+    // effects:
+    
+    // Calculate <Footer> size once at startup:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to `measureScrollingBehaviors()` as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        // setups:
+        measureScrollingBehaviors();
+    }, []);
+    
+    // Monitor content size changes with ResizeObserver:
+    // We use `useIsomorphicLayoutEffect` instead of `useEffect` to `measureScrollingBehaviors()` as quickly as possible before the browser has a chance to repaint the page.
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        const scrollingContentElm = scrollingContentRef.current;
+        if (!scrollingContentElm) return;
         
         
         
         // setups:
-        scrollerElm.addEventListener('scroll', handleScroll);
+        const observer = new ResizeObserver(() => {
+            measureScrollingBehaviors();
+            updateFooterHeight(); // update the <Footer>'s height based on <Scroller>'s scroll position
+        });
+        observer.observe(scrollingContentElm, { box: 'border-box' });
         
         
         
         // cleanups:
         return () => {
-            scrollerElm.removeEventListener('scroll', handleScroll);
+            observer.disconnect();
         };
     }, []);
     
-    const pathName = usePathname();
+    // Monitor scrollbar position changes with `scroll` event:
+    // We use `useEffect` instead of `useIsomorphicLayoutEffect` to `updateFooterHeight()` because the user won't be scrolling the page immediately, so an asynchronous update is sufficient.
     useEffect(() => {
+        // conditions:
+        const scrollerElm = scrollerRef.current;
+        if (!scrollerElm) return;
+        
+        
+        
         // setups:
-        calculateFooterHeight(true);
-    }, [pathName]); // non-delayed refresh after soft navigation
-    
-    useEffect(() => {
-        // setups:
-        const delayedCalculation = setTimeout(() => {
-            calculateFooterHeight(true);
-        }, 1000);
+        scrollerElm.addEventListener('scroll', updateFooterHeight);
         
         
         
         // cleanups:
         return () => {
-            clearTimeout(delayedCalculation);
+            scrollerElm.removeEventListener('scroll', updateFooterHeight);
         };
-    }, []); // delayed refresh after hard navigation
+    }, []);
     
     
     
@@ -175,7 +204,9 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
         <>
             <div ref={scrollerRef} className='main-scroller'>
                 <div ref={shifterTopRef} />
-                {children}
+                <div ref={scrollingContentRef} className='scrolling-content'>
+                    {children}
+                </div>
                 <div ref={shifterBottomRef} />
             </div>
             <Footer elmRef={footerRef} />

@@ -62,3 +62,6 @@ html, body {
     overflow-y: auto;
     scrollbar-gutter: stable;
 }
+.scrolling-content {
+    display: grid;
+}
