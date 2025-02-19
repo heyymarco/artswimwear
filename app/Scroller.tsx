@@ -102,7 +102,7 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
         
         
         
-        // calculations:
+        // conditions:
         const footerIntrinsicHeight      = footerIntrinsicHeightRef.current;
         const hasScrollbar               = (footerIntrinsicHeight != null);
         if (!hasScrollbar) {
@@ -119,6 +119,9 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
             return;
         } // if
         
+        
+        
+        // calculations:
         const scrollingDistance          = scrollerElm.scrollHeight - scrollerElm.clientHeight;
         const scrollTop                  = scrollerElm.scrollTop;
         const restScrollingDistance      = scrollingDistance - scrollTop;
