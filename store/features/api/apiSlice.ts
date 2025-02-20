@@ -627,6 +627,7 @@ export const apiSlice = createApi({
                     wished : desiredGroupId, // set to grouped wishes -or- ungroup (but still wished)
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: wishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'ProductPage', { providedMutatedModel: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
@@ -691,6 +692,7 @@ export const apiSlice = createApi({
                     wished : undefined, // set to unwished
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: unwishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'ProductPage', { providedMutatedModel: unwishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
