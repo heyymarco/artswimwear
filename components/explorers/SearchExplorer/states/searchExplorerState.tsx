@@ -39,7 +39,7 @@ import {
 // stores:
 import {
     // hooks:
-    useSearchProducts,
+    useSearchProductPage,
 }                           from '@/store/features/api/apiSlice'
 
 // models:
@@ -66,7 +66,7 @@ const useUseSearchProducts = () => {
     const [pageNum, setPageNum] = useState<number>(0);
     const [perPage, setPerPage] = useState<number>(defaultSearchProductPerPage);
     
-    const [doSearch, modelApi]  = useSearchProducts();
+    const [doSearch, modelApi]  = useSearchProductPage();
     const data = modelApi.data;
     
     

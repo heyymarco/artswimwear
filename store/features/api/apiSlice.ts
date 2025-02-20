@@ -188,7 +188,7 @@ export const apiSlice = createApi({
             }),
             keepUnusedDataFor: 3600, // 1 hour in seconds
         }),
-        searchProducts              : builder.query<Pagination<ProductPreview>, SearchProductsPageRequest>({
+        searchProductPage           : builder.query<Pagination<ProductPreview>, SearchProductsPageRequest>({
             query : (arg) => ({
                 url    : `search?${new URLSearchParams(Object.entries(arg))}`,
                 method : 'GET',
@@ -1059,7 +1059,7 @@ export const {
     useGetProductPreviewQuery              : useGetProductPreview,
     useLazyGetProductDetailQuery           : useLazyGetProductDetail,
     useGetProductDetailQuery               : useGetProductDetail,
-    useLazySearchProductsQuery             : useSearchProducts,
+    useLazySearchProductPageQuery          : useSearchProductPage,
     
     
     
@@ -1259,7 +1259,7 @@ interface PaginationUpdateOptions<TModel extends Model|string>
     providedMutatedModel ?: TModel
     invalidatePageTag    ?: (tag: Exclude<Parameters<typeof apiSlice.util.invalidateTags>[0][number], null|undefined>, page: number) => string|number
 }
-const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: Api, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'|'getPaymentMethodPage'>, updateType: PaginationUpdateType, invalidateTag: Exclude<Parameters<typeof apiSlice.util.invalidateTags>[0][number], null|undefined>, options?: PaginationUpdateOptions<TModel>) => {
+const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: Api, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'searchProductPage'|'getWishGroupPage'|'getWishPage'|'getPaymentMethodPage'>, updateType: PaginationUpdateType, invalidateTag: Exclude<Parameters<typeof apiSlice.util.invalidateTags>[0][number], null|undefined>, options?: PaginationUpdateOptions<TModel>) => {
     // options:
     const {
         providedMutatedModel,
