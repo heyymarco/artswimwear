@@ -74,7 +74,7 @@ const usesProductCardLayout = () => {
             
             
             // sizes:
-            contain: 'layout', // prevents the <Gallery> having scrollbar when the <ProductCard> having overflowed children
+            contain       : 'inline-size', // prevents the <Gallery> having scrollbar when the <ProductCard> having overflowed children
             
             
             

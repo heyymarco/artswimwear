@@ -14,13 +14,13 @@ import {
     
     
     
-    // a typography management system:
-    typos,
-    
-    
-    
     // a border (stroke) management system:
     borderRadiuses,
+    
+    
+    
+    // background stuff of UI:
+    usesBackground,
     
     
     
@@ -45,6 +45,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
     // dependencies:
     
     // features:
+    const {backgroundVars} = usesBackground();
     const {borderRule, borderVars} = usesBorder({
         borderRadius : borderRadiuses.md,
     });
@@ -66,7 +67,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
             
             
             // sizes:
-            contain: 'layout', // prevents the <Gallery> having scrollbar when the <WishGroupImage> having overflowed children
+            contain       : 'inline-size', // prevents the <Gallery> having scrollbar when the <ProductCard> having overflowed children
             
             
             
@@ -131,7 +132,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                             
                             
                             // backgrounds:
-                            background: typos.backg,
+                            background: backgroundVars.backg,
                         }),
                     }),
                 }),
