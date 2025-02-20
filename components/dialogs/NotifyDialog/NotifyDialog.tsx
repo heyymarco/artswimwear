@@ -7,11 +7,15 @@ import {
     
     // hooks:
     useEffect,
-    useRef,
 }                           from 'react'
 
 // reusable-ui core:
 import {
+    // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
+    type NoForeignProps,
+    
+    
+    
     // react helper hooks:
     useEvent,
     useSetTimeout,
@@ -83,11 +87,6 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     
-    // refs:
-    const buttonRef = useRef<HTMLButtonElement|null>(null);
-    
-    
-    
     // utilities:
     const setTimeoutAsync = useSetTimeout();
     
@@ -155,7 +154,8 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         
         
         // auto focusable:
-        autoFocusOn    = buttonRef,
+        autoFocusOn    = null, // no need to change focus, avoids distracting user's current focus (if any)
+        restoreFocusOn = null, // no need to change focus, avoids distracting user's current focus (if any)
         
         
         
@@ -171,7 +171,16 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         
         // other props:
         ...restModalSideProps
-    } = restNotifyDialogProps;
+    } = restNotifyDialogProps satisfies NoForeignProps<typeof restNotifyDialogProps,
+        & Omit<ModalSideProps<TElement, TModalExpandedChangeEvent>,
+            // variants:
+            |'modalSideStyle' // makes partial
+        >
+        & Partial<Pick<ModalSideProps<TElement, TModalExpandedChangeEvent>,
+            // variants:
+            |'modalSideStyle' // makes partial
+        >>
+    >;
     
     
     
@@ -192,6 +201,7 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             
             // auto focusable:
             autoFocusOn={autoFocusOn}
+            restoreFocusOn={restoreFocusOn}
             
             
             
@@ -216,7 +226,7 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 
                 // components:
                 controlComponent={
-                    <CloseButton elmRef={buttonRef} className='action' onClick={handleCloseDialog} />
+                    <CloseButton className='action' onClick={handleCloseDialog} />
                 }
             >
                 {children}
