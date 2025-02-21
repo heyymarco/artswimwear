@@ -102,7 +102,9 @@ const usesDropdownLayout = () => {
         
         
         // global stackable:
-        zIndex : globalStacks.modalBackdrop, // there's a probability a dialog shown on the top of this dropdown, such as <NotifyWishAddedDialog>, so we need to lower this dropdown's zIndex to dialog's level zIndex
+        ...rule('.overlay', {
+            zIndex : globalStacks.modalBackdrop, // there's a probability a dialog shown on the top of this dropdown, such as <NotifyWishAddedDialog>, so we need to lower this dropdown's zIndex to dialog's level zIndex
+        }),
     });
 };
 
