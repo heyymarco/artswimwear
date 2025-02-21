@@ -39,6 +39,11 @@ import {
     
     
     
+    // a capability of UI to stack on top-most of another UI(s) regardless of DOM's stacking context:
+    globalStacks,
+    
+    
+    
     // outlined (background-less) variant of UI:
     usesOutlineable,
     
@@ -99,6 +104,11 @@ const usesDropdownLayout = () => {
         
         // animations:
         filter: 'none', // move the filter to <CategoryExplorer>, makes the frost effect work
+        
+        
+        
+        // global stackable:
+        zIndex : globalStacks.modalDialog, // there's a probability a dialog shown on the top of this dropdown, such as <NotifyWishAddedDialog>, so we need to lower this dropdown's zIndex to dialog's level zIndex
     });
 };
 
