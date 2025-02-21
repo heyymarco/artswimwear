@@ -7,6 +7,7 @@ import {
     
     // hooks:
     useEffect,
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -87,6 +88,11 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     
+    // refs:
+    const closeButtonRef = useRef<HTMLButtonElement|null>(null);
+    
+    
+    
     // utilities:
     const setTimeoutAsync = useSetTimeout();
     
@@ -154,10 +160,9 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         
         
         // auto focusable:
-        autoFocus      = false, // no need to change focus, avoids distracting user's current focus (if any)
-        autoFocusOn    = null,  // no need to change focus, avoids distracting user's current focus (if any)
-        restoreFocus   = false, // no need to change focus, avoids distracting user's current focus (if any)
-        restoreFocusOn = null,  // no need to change focus, avoids distracting user's current focus (if any)
+        autoFocusOn    = closeButtonRef.current,  // the default focus element (if `autoFocus=true`)
+        autoFocus      = false,                   // no need to change focus, avoids distracting user's current focus (if any)
+        restoreFocus   = false,                   // no need to change focus, avoids distracting user's current focus (if any)
         
         
         
@@ -202,10 +207,9 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             
             
             // auto focusable:
-            autoFocus={autoFocus}
             autoFocusOn={autoFocusOn}
+            autoFocus={autoFocus}
             restoreFocus={restoreFocus}
-            restoreFocusOn={restoreFocusOn}
             
             
             
@@ -230,7 +234,7 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 
                 // components:
                 controlComponent={
-                    <CloseButton className='action' onClick={handleCloseDialog} />
+                    <CloseButton elmRef={closeButtonRef} className='action' onClick={handleCloseDialog} />
                 }
             >
                 {children}
