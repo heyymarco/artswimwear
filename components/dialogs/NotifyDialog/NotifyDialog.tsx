@@ -154,8 +154,10 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         
         
         // auto focusable:
-        autoFocusOn    = null, // no need to change focus, avoids distracting user's current focus (if any)
-        restoreFocusOn = null, // no need to change focus, avoids distracting user's current focus (if any)
+        autoFocus      = false, // no need to change focus, avoids distracting user's current focus (if any)
+        autoFocusOn    = null,  // no need to change focus, avoids distracting user's current focus (if any)
+        restoreFocus   = false, // no need to change focus, avoids distracting user's current focus (if any)
+        restoreFocusOn = null,  // no need to change focus, avoids distracting user's current focus (if any)
         
         
         
@@ -200,7 +202,9 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             
             
             // auto focusable:
+            autoFocus={autoFocus}
             autoFocusOn={autoFocusOn}
+            restoreFocus={restoreFocus}
             restoreFocusOn={restoreFocusOn}
             
             
