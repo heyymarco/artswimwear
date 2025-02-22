@@ -164,7 +164,26 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
             };
         });
     });
-    const handleExpandedChange         = useEvent<EventHandler<DropdownExpandedChangeEvent<boolean>>>(({ expanded, data }) => {
+    const handleExpandedChange         = useEvent<EventHandler<DropdownExpandedChangeEvent<boolean>>>(async ({ expanded, data, actionType }) => {
+        // conditions:
+        if (actionType === 'blur') {
+            await new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        resolve();
+                    }); // wait until the `auto-focusable` restores to the `restoreFocusOn` element
+                }, 0);  // wait until the `auto-focusable` restores to the `restoreFocusOn` element
+            });
+            
+            
+            
+            const focusedElm = document.activeElement;
+            if (focusedElm?.closest(':is(dialog, [role="dialog"])')) return; // do not close the dropdown if lost focus due to focused to dialog
+        } // if
+        
+        
+        
+        // actions:
         if (dropdownState) dropdownState.data = data; // update to the latest data
         if (!expanded) hideDropdown(); // the <DropdownUi> request to hide => hide the <DropdownUi>
     });
