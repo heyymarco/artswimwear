@@ -89,7 +89,7 @@ const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: S
     
     
     // handlers:
-    const handleNavigate = useEvent(() => {
+    const handleNavigate = useEvent((): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
@@ -97,12 +97,12 @@ const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: S
             data       : true,
         });
     });
-    const handleClose = useEvent(() => {
+    const handleClose = useEvent((navigated: boolean): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : false,
+            data       : navigated,
         });
     });
     

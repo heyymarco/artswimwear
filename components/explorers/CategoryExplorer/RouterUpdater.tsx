@@ -51,6 +51,7 @@ const RouterUpdater = (): JSX.Element|null => {
     
     
     // effects:
+    
     // sync the pathname to the path of selected category:
     const pathname                      = usePathname();
     const router                        = useRouter();
