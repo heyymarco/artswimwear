@@ -20,6 +20,8 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
+    Icon,
+    Button,
     ButtonIcon,
     CloseButton,
     
@@ -42,7 +44,9 @@ import {
     ModalCardProps,
     ModalCard,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 // internal components:
 import {
     PaginationStateProvider,
@@ -160,7 +164,14 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
         >
             <CardHeader className={styleSheets.cardHeader}>
                 <h1>Saved to Wishlist!</h1>
-                <ButtonIcon icon='menu' buttonStyle='link'>View Wishlist</ButtonIcon>
+                <Button buttonStyle='link' onClick={handleCloseDialog}>
+                    <Link href='/customer/wishes'>
+                        <Icon icon='favorite' size='md' theme='danger' />
+                        <span>
+                            View my wishlist
+                        </span>
+                    </Link>
+                </Button>
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheets.cardBody}>
