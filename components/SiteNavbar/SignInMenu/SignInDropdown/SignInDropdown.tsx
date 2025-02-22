@@ -97,6 +97,10 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
         event.preventDefault();
     });
     const handleNavigate = useEvent((href: string): void => {
+        /*
+            We need to use `handleNavigate` to navigate the page, instead of by using `<Link href='...'>`
+            because the `<DropdownList>` do `preventDefault()` that causing the `<Link href='...'>` doesn't work.
+        */
         router.push(href, { scroll: true }); // may scroll the page because it navigates to customer's specific page
     });
     
