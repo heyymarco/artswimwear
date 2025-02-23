@@ -8,6 +8,7 @@
 [med prior ] remove useGetCountryList hook, replaced with a specific url get for a specific country
 [med prior ] the last created WishGroup -or- the last added WishGroup should be the first item in pagination
 
+[low  prior] optimize the /public/(icons|fonts)/** to be cached
 [low  prior] replace `@/components/editors/Editor` with `@heymarco/editor`
 
 [low  prior] fix @heymarco/image (no error detected again in new Chrome)
