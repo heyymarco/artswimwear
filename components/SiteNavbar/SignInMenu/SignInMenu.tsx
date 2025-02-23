@@ -375,6 +375,20 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 href='/signin'
                 prefetchKind={PrefetchKind.FULL}
             />
+            
+            {/* PREFETCH for displaying the signup PAGE */}
+            <PrefetchRouter
+                // data:
+                href='/signin/signup'
+                prefetchKind={PrefetchKind.FULL}
+            />
+            
+            {/* PREFETCH for displaying the recover PAGE */}
+            <PrefetchRouter
+                // data:
+                href='/signin/recover'
+                prefetchKind={PrefetchKind.FULL}
+            />
         </>
     );
 };
