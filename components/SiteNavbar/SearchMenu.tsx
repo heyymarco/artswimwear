@@ -40,6 +40,10 @@ import {
     type NavbarMenuDropdownProps,
     NavbarMenuDropdown,
 }                           from '@/components/SiteNavbar/NavbarMenuDropdown'
+import {
+    PrefetchKind,
+    PrefetchRouter,
+}                           from '@/components/prefetches/PrefetchRouter'
 
 // states:
 import {
@@ -99,24 +103,33 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <NavbarMenuDropdown
-            // other props:
-            {...props}
+        <>
+            <NavbarMenuDropdown
+                // other props:
+                {...props}
+                
+                
+                
+                // components:
+                dropdownUiComponent={
+                    <SearchExplorerDropdown />
+                }
+                
+                
+                
+                // handlers:
+                onClick={handleClick}
+            >
+                {children}
+            </NavbarMenuDropdown>
             
-            
-            
-            // components:
-            dropdownUiComponent={
-                <SearchExplorerDropdown />
-            }
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
-        >
-            {children}
-        </NavbarMenuDropdown>
+            {/* PREFETCH for displaying the search PAGE: */}
+            <PrefetchRouter
+                // data:
+                href='/search'
+                prefetchKind={PrefetchKind.FULL}
+            />
+        </>
     );
 };
 export {
