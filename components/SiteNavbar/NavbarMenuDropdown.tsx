@@ -59,6 +59,7 @@ interface DropdownState {
     closingPromise : Promise<void>
     signalClosing  : () => void
     
+    hasData        : boolean
     data           : boolean|undefined
 }
 
@@ -146,6 +147,7 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
             closingPromise,
             signalClosing,
             
+            hasData: false,  // initially no data
             data: undefined, // initially no data
         };
         setDropdownState(newDropdownState);
@@ -184,7 +186,10 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
         
         
         // actions:
-        if (dropdownState) dropdownState.data = data; // update to the latest data
+        if (dropdownState && !dropdownState.hasData) {
+            dropdownState.hasData = true; // mark has data to avoid re-update twice
+            dropdownState.data = data;    // update to the latest data
+        } // if
         if (!expanded) hideDropdown(); // the <DropdownUi> request to hide => hide the <DropdownUi>
     });
     const handleCollapseStart          = useEvent<EventHandler<void>>(() => {
