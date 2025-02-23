@@ -168,6 +168,7 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
     });
     const handleExpandedChange         = useEvent<EventHandler<DropdownExpandedChangeEvent<boolean>>>(async ({ expanded, data, actionType }) => {
         // conditions:
+        if (expanded) return; // only interested of collapsed event, ignores expanded event
         if (actionType === 'blur') {
             await new Promise<void>((resolve) => {
                 setTimeout(() => {
@@ -190,7 +191,7 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
             dropdownState.hasData = true; // mark has data to avoid re-update twice
             dropdownState.data = data;    // update to the latest data
         } // if
-        if (!expanded) hideDropdown(); // the <DropdownUi> request to hide => hide the <DropdownUi>
+        hideDropdown(); // the <DropdownUi> request to hide => hide the <DropdownUi>
     });
     const handleCollapseStart          = useEvent<EventHandler<void>>(() => {
         dropdownState?.signalClosing(); // notify that the <DropdownUi> start to close
