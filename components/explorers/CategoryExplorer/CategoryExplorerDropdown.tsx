@@ -74,7 +74,7 @@ const CategoryExplorerDropdown = <TElement extends Element = HTMLElement>(props:
     
     
     // handlers:
-    const handleNavigate = useEvent(() => {
+    const handleNavigate = useEvent((): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
@@ -82,12 +82,12 @@ const CategoryExplorerDropdown = <TElement extends Element = HTMLElement>(props:
             data       : true,
         });
     });
-    const handleClose = useEvent(() => {
+    const handleClose = useEvent((navigated: boolean): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : false,
+            data       : navigated,
         });
     });
     

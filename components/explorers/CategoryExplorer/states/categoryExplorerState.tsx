@@ -56,8 +56,8 @@ export interface CategoryExplorerState {
     
     
     // handlers:
-    onNavigate          : ((url: string) => void) | null|undefined
-    onClose             : (() => void)            | null|undefined
+    onNavigate          : ((url: string) => void)        | null|undefined
+    onClose             : ((navigated: boolean) => void) | null|undefined
 }
 
 const defaultCategoryExplorerStateContext : CategoryExplorerState = {

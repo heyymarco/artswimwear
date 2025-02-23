@@ -41,7 +41,19 @@ import {
 
 
 // react components:
-const RouterUpdater = (): JSX.Element|null => {
+export interface RouterUpdaterProps {
+    // handlers:
+    onClose ?: ((navigated: boolean) => void)   
+}
+const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
+    // props:
+    const {
+        // handlers:
+        onClose,
+    } = props;
+    
+    
+    
     // states:
     const {
         // states:
@@ -52,7 +64,7 @@ const RouterUpdater = (): JSX.Element|null => {
     
     // effects:
     
-    // sync the pathname to the path of selected category:
+    // sync the pathname to '/categories/**':
     const pathname                      = usePathname();
     const router                        = useRouter();
     const prevParentCategoriesRef       = useRef<CategoryParentInfo[]|undefined>(undefined /* initially unsynced */);
@@ -82,6 +94,24 @@ const RouterUpdater = (): JSX.Element|null => {
             } // if
         } // if
     }, [parentCategories, pathname]);
+    
+    // Closes the dropdown if the `pathname` exits from '/categories/**':
+    const hasOpenedRef = useRef<boolean>(false);
+    useEffect(() => {
+        // conditions:
+        const isInDropdown = pathname.startsWith(categoriesPath) && ['', '/'].includes(pathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `pathname` is exact '/categories' or sub '/categories/**'
+        if (!hasOpenedRef.current) { // only interested if the pathname is never entered to '/categories/**'
+            if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/categories/**'
+            return; // returns earlier
+        } // if
+        
+        
+        
+        // actions:
+        if (!isInDropdown) { // the `pathname` exits from '/categories/**'
+            onClose?.(true);
+        } // if
+    }, [pathname]);
     
     
     

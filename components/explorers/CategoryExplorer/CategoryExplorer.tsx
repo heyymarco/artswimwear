@@ -386,6 +386,11 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
         
         // states:
         parentCategories,
+        
+        
+        
+        // handlers:
+        onClose,
     } = useCategoryExplorerState();
     
     const { data: categoryPreviewPaginationRaw } = usePaginationState<CategoryPreview>();
@@ -478,7 +483,10 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
                     // classes:
                     mainClass={mainClass}
                 >
-                    <RouterUpdater />
+                    <RouterUpdater
+                        // handlers:
+                        onClose={onClose ?? undefined}
+                    />
                     
                     
                     

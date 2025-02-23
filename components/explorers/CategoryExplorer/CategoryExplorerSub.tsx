@@ -305,6 +305,18 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
         });
     });
     
+    const handleClose        = useEvent(() => {
+        onClose?.(false);
+    });
+    const handleBack         = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        if (canBack) {
+            handleNavigateBack(event);
+        }
+        else {
+            handleClose();
+        } // if
+    });
+    
     
     
     // jsx:
@@ -331,7 +343,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                     
                     
                     // handlers:
-                    onClick={canBack ? handleNavigateBack : (onClose ?? undefined)}
+                    onClick={handleBack}
                 >
                     Back
                 </ButtonIcon>}
@@ -349,7 +361,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                     
                     
                     // handlers:
-                    onClick={onClose ?? undefined}
+                    onClick={handleClose}
                 />}
             </div>
             
