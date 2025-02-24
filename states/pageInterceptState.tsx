@@ -76,10 +76,10 @@ export interface PageInterceptStateProps {
 }
 const PageInterceptStateProvider = (props: React.PropsWithChildren<PageInterceptStateProps>): JSX.Element|null => {
     // states:
-    const pathname = usePathname();
+    const mayInterceptedPathname = usePathname();
     const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
     const originPathname: string|null = originPathnameStack?.[0] ?? null;
-    const nonInterceptingPathname = (originPathname ?? pathname);
+    const nonInterceptingPathname = (originPathname ?? mayInterceptedPathname);
     
     
     
@@ -93,7 +93,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     const signalPathnameUpdated = useRef<(() => void)|undefined>(undefined);
     const restorePathnameAsync = useEvent(async (originPathname: string): Promise<void> => {
-        if (originPathname.toLowerCase() === pathname.toLowerCase()) return; // already the same => ignore
+        if (originPathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return; // already the same => ignore
         
         
         
@@ -111,14 +111,14 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     useIsomorphicLayoutEffect(() => {
         signalPathnameUpdated.current?.(); // signal updated
         signalPathnameUpdated.current = undefined;
-    }, [pathname]);
+    }, [mayInterceptedPathname]);
     
     const startIntercept = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
         // stack up:
-        setOriginPathnameStack((current) => [...current, pathname]); // append a new item to the last
+        setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
             const restorePathname = (await callback()) ?? true;
-            if (restorePathname) await restorePathnameAsync(pathname);
+            if (restorePathname) await restorePathnameAsync(mayInterceptedPathname);
         }
         finally {
             // stack down:
