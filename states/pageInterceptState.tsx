@@ -42,23 +42,25 @@ import {
 // contexts:
 export interface PageInterceptState {
     // states:
-    originPathname : string|null
+    originPathname          : string|null
+    nonInterceptingPathname : string
     
     
     
     // actions:
-    startIntercept : (callback: (backPathname: string) => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
+    startIntercept          : (callback: (backPathname: string) => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
 }
 
 const noopCallback = () => Promise.resolve<void>(undefined);
 const defaultPageInterceptStateContext : PageInterceptState = {
     // states:
-    originPathname : null,
+    originPathname          : null,
+    nonInterceptingPathname : '/',
     
     
     
     // actions:
-    startIntercept : noopCallback,
+    startIntercept          : noopCallback,
 }
 const PageInterceptStateContext = createContext<PageInterceptState>(defaultPageInterceptStateContext);
 PageInterceptStateContext.displayName  = 'PageInterceptState';
@@ -75,12 +77,9 @@ export interface PageInterceptStateProps {
 const PageInterceptStateProvider = (props: React.PropsWithChildren<PageInterceptStateProps>): JSX.Element|null => {
     // states:
     const pathname = usePathname();
-    const [originPathname, setOriginPathname] = useState<string|null>(null);
-    const signalPathnameUpdated = useRef<(() => void)|undefined>(undefined);
-    useIsomorphicLayoutEffect(() => {
-        signalPathnameUpdated.current?.(); // signal updated
-        signalPathnameUpdated.current = undefined;
-    }, [pathname]);
+    const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
+    const originPathname: string|null = originPathnameStack?.[0] ?? null;
+    const nonInterceptingPathname = (originPathname ?? pathname);
     
     
     
@@ -91,22 +90,8 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     // actions:
     const router = useRouter();
-    const startIntercept = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
-        setOriginPathname(pathname);
-        const restorePathname = (await callback(pathname)) ?? true;
-        if (restorePathname) {
-            await restorePathnameAsync(pathname);
-            
-            
-            
-            // reset the intercepting state:
-            setOriginPathname(null);
-        }
-        else {
-            // reset the intercepting state:
-            setOriginPathname(null);
-        } // if
-    });
+    
+    const signalPathnameUpdated = useRef<(() => void)|undefined>(undefined);
     const restorePathnameAsync = useEvent(async (originPathname: string): Promise<void> => {
         if (originPathname.toLowerCase() === pathname.toLowerCase()) return; // already the same => ignore
         
@@ -123,6 +108,23 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
             setTimeoutAsync(100),
         ]);
     });
+    useIsomorphicLayoutEffect(() => {
+        signalPathnameUpdated.current?.(); // signal updated
+        signalPathnameUpdated.current = undefined;
+    }, [pathname]);
+    
+    const startIntercept = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
+        // stack up:
+        setOriginPathnameStack((current) => [...current, pathname]); // append a new item to the last
+        try {
+            const restorePathname = (await callback(pathname)) ?? true;
+            if (restorePathname) await restorePathnameAsync(pathname);
+        }
+        finally {
+            // stack down:
+            setOriginPathnameStack((current) => current.length ? current.slice(0, -1) : current); // remove the last item (if any)
+        } // try
+    });
     
     
     
@@ -130,6 +132,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     const pageInterceptState = useMemo<PageInterceptState>(() => ({
         // states:,
         originPathname,
+        nonInterceptingPathname,
         
         
         
@@ -138,6 +141,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     }), [
         // states:,
         originPathname,
+        nonInterceptingPathname,
         
         
         

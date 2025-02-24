@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// next-js:
-import {
-    usePathname,
-}                           from 'next/navigation'
-
 // reusable-ui core:
 import {
     // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
@@ -64,11 +59,9 @@ export interface SearchMenuProps
 }
 const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     // states:
-    const pathname = usePathname();
     const {
-        originPathname,
+        nonInterceptingPathname,
     } = usePageInterceptState();
-    const nonInterceptingPathname = (originPathname ?? pathname);
     
     
     

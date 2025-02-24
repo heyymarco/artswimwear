@@ -93,12 +93,16 @@ export function CategoryPageContent({ categories: categoriesRaw }: { categories?
     } = usePageInterceptState();
     const categories = (
         originPathname
+        
+        // when in intercepting pathname, extract the categories info from `originPathname`:
         ? ((): string[]|undefined => {
             let tailPathname = originPathname.slice('/categories'.length);
             if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
             const categories = !tailPathname ? undefined : tailPathname.split('/');
             return categories;
         })()
+        
+        // when in normal pathname, extract the categories info from `props.categories`:
         : categoriesRaw
     );
     
