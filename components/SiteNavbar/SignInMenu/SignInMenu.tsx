@@ -76,6 +76,9 @@ import {
     PrefetchKind,
     PrefetchRouter,
 }                           from '@/components/prefetches/PrefetchRouter'
+import {
+    NotifyDialog,
+}                           from '@/components/dialogs/NotifyDialog'
 
 // internals:
 import {
@@ -241,7 +244,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 newShownMenu.collapseStartEvent().then(() => {
                     setShownMenu(null);
                 });
-                newShownMenu.collapseEndEvent().then((event) => {
+                newShownMenu.collapseEndEvent().then(async (event): Promise<void> => {
                     switch (event.data) {
                         case 'editProfile':
                             router.push('/customer', { scroll: true }); // goto customer's profile page // may scroll the page because it navigates to customer's profile page
@@ -249,7 +252,23 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                         
                         case 'signOut':
                             setIsLoading(true); // the `sessionStatus === 'loading'` is not quite reliable, so we use additional loading state
-                            signOut({ redirect: false, callbackUrl: mayInterceptedPathname }); // when signed in back, redirects to current url
+                            
+                            /*
+                                If you need to redirect to another page but you want to avoid a page reload,
+                                you can try:
+                                ```ts
+                                    const data = await signOut({redirect: false, callbackUrl: '/foo'});
+                                ```
+                                where `data.url` is the validated URL you can redirect the user to without any flicker by using Next.js's `useRouter().push(data.url)`
+                            */
+                            await signOut({ redirect: false, callbackUrl: mayInterceptedPathname });
+                            showDialog<unknown>(
+                                <NotifyDialog theme='success'>
+                                    <p>
+                                        You've successfully signed out.
+                                    </p>
+                                </NotifyDialog>
+                            );
                             break;
                     } // switch
                     toggleList(false); // collapse the <Navbar> manually
