@@ -54,9 +54,9 @@ export default function ProtectedLayout({
     
     
     
-    // dom effects:
-    const router   = useRouter();
-    const pathname = usePathname();
+    // effects:
+    const router                 = useRouter();
+    const mayInterceptedPathname = usePathname();
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (sessionStatus !== 'unauthenticated') return; // ignore if still loading or has authenticated
@@ -64,12 +64,8 @@ export default function ProtectedLayout({
         
         
         // actions:
-        router.replace(
-            !pathname
-            ? `${signInPath}`
-            : `${signInPath}?callbackUrl=${encodeURIComponent(pathname)}`
-        );
-    }, [sessionStatus])
+        router.replace(`${signInPath}?callbackUrl=${encodeURIComponent(mayInterceptedPathname)}`);
+    }, [sessionStatus]);
     
     
     
