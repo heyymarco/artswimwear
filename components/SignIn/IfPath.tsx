@@ -38,12 +38,12 @@ const IfPath = (props: IfPathProps): JSX.Element|null => {
     
     
     // states:
-    const pathname = usePathname();
+    const mayInterceptedPathname = usePathname();
     
     
     
     // jsx:
-    if (ifPathname !== pathname) return null;
+    if (ifPathname !== mayInterceptedPathname) return null;
     return (
         <>
             {children}
