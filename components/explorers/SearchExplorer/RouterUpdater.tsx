@@ -46,10 +46,10 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     
     // effects:
     
-    // Set the pathname to '/search':
-    const pathname     = usePathname();
-    const router       = useRouter();
-    const hasSyncedRef = useRef<boolean>(false);
+    // Set the mayInterceptedPathname to '/search':
+    const mayInterceptedPathname = usePathname();
+    const router                 = useRouter();
+    const hasSyncedRef           = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
         if (hasSyncedRef.current) return; // already synced => ignore
@@ -59,10 +59,10 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         
         // actions:
         const newPathname = searchPath;
-        if (newPathname.toLowerCase() !== pathname.toLowerCase()) {
+        if (newPathname.toLowerCase() !== mayInterceptedPathname.toLowerCase()) {
             router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
         } // if
-    }, [pathname]);
+    }, [mayInterceptedPathname]);
     
     // Closes the dropdown if the `nonInterceptedPathname` exits from '/search':
     const {

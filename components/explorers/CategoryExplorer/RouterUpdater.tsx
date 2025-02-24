@@ -69,11 +69,11 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     
     // effects:
     
-    // sync the pathname to '/categories/**':
-    const pathname                      = usePathname();
+    // sync the mayInterceptedPathname to '/categories/**':
+    const mayInterceptedPathname        = usePathname();
     const router                        = useRouter();
     const prevParentCategoriesRef       = useRef<CategoryParentInfo[]|undefined>(undefined /* initially unsynced */);
-    const [historyUrls, setHistoryUrls] = useImmer<string[]>(() => [pathname]);
+    const [historyUrls, setHistoryUrls] = useImmer<string[]>(() => [mayInterceptedPathname]);
     useEffect(() => {
         // conditions:
         if (prevParentCategoriesRef.current === parentCategories) return; // already the same => ignore
@@ -83,7 +83,7 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         
         // actions:
         const newPathname = `${categoriesPath}${!parentCategories.length ? '' : `/${parentCategories.map(({category: {path}}) => path).join('/')}`}`;
-        if (newPathname.toLowerCase() !== pathname.toLowerCase()) {
+        if (newPathname.toLowerCase() !== mayInterceptedPathname.toLowerCase()) {
             const backPathname = (historyUrls.length < 2) ? undefined : historyUrls.at(-2);
             if (newPathname === backPathname) { // if a back action detected
                 setHistoryUrls((historyUrls) => {
@@ -98,7 +98,7 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
                 router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
             } // if
         } // if
-    }, [parentCategories, pathname]);
+    }, [parentCategories, mayInterceptedPathname]);
     
     // Closes the dropdown if the `nonInterceptedPathname` exits from '/categories/**':
     const {
