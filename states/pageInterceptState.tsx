@@ -48,7 +48,7 @@ export interface PageInterceptState {
     
     
     // actions:
-    startIntercept          : (callback: (backPathname: string) => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
+    startIntercept          : (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
 }
 
 const noopCallback = () => Promise.resolve<void>(undefined);
@@ -117,7 +117,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         // stack up:
         setOriginPathnameStack((current) => [...current, pathname]); // append a new item to the last
         try {
-            const restorePathname = (await callback(pathname)) ?? true;
+            const restorePathname = (await callback()) ?? true;
             if (restorePathname) await restorePathnameAsync(pathname);
         }
         finally {

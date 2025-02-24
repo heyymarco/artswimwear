@@ -225,7 +225,7 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
         else {
             //#region a fix for categories page interceptor
             // intercepts all_pages/** => show <DropdownUi>:
-            startIntercept(async (backPathname): Promise<boolean> => {
+            startIntercept(async (): Promise<boolean> => {
                 const data = await showDropdownAndWaitUntilClosing();
                 
                 

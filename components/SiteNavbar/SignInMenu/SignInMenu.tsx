@@ -169,6 +169,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // handlers:
     const {
         startIntercept,
+        nonInterceptingPathname,
     } = usePageInterceptState();
     const router = useRouter();
     const mayInterceptingPathname = usePathname();
@@ -182,7 +183,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             //#region a fix for signIn page interceptor when on /checkout page
             // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
             // if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(mayInterceptingPathname)) {
-                startIntercept(async (backPathname): Promise<boolean> => {
+                startIntercept(async (): Promise<boolean> => {
                     toggleList(false); // collapse the <Navbar> manually
                     router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
                     
@@ -194,7 +195,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                             signInComponent={
                                 <SignIn<Element>
                                     // back to current checkout page after signed in:
-                                    defaultCallbackUrl={backPathname}
+                                    defaultCallbackUrl={nonInterceptingPathname}
                                 />
                             }
                         />
