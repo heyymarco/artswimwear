@@ -136,16 +136,16 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
 }
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
-    const pathname = usePathname();
+    const mayInterceptedPathname = usePathname();
     const [initialCategories] = useState<string[]|null>(() => {
         // conditions:
-        if (!(/^\/categories($|\/)/i).test(pathname)) return null; // OUTSIDE the `/categories/**` path => no selected category
+        if (!(/^\/categories($|\/)/i).test(mayInterceptedPathname)) return null; // OUTSIDE the `/categories/**` path => no selected category
         
         
         
-        let tailPathname = pathname.slice('/categories'.length);
+        let tailPathname = mayInterceptedPathname.slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
-        const categories = !tailPathname ? null : tailPathname.split('/'); // INSIDE the `/categories/**` path => USE current pathname to restore the last selected category
+        const categories = !tailPathname ? null : tailPathname.split('/'); // INSIDE the `/categories/**` path => USE current mayInterceptedPathname to restore the last selected category
         return categories;
     });
     
