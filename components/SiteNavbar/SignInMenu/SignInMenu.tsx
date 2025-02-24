@@ -171,7 +171,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         startIntercept,
     } = usePageInterceptState();
     const router = useRouter();
-    const pathname = usePathname();
+    const mayInterceptingPathname = usePathname();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
@@ -181,7 +181,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         if (isSignedOut) {
             //#region a fix for signIn page interceptor when on /checkout page
             // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
-            if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(pathname)) {
+            // if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(mayInterceptingPathname)) {
                 startIntercept(async (backPathname): Promise<boolean> => {
                     toggleList(false); // collapse the <Navbar> manually
                     router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
@@ -207,7 +207,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     // restore the url:
                     return true;
                 });
-            } // if
+            // } // if
             //#endregion a fix for signIn page interceptor when on /checkout page
         }
         else if (isSignedIn) {
@@ -249,7 +249,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                         
                         case 'signOut':
                             setIsLoading(true); // the `sessionStatus === 'loading'` is not quite reliable, so we use additional loading state
-                            signOut({ redirect: false, callbackUrl: pathname }); // when signed in back, redirects to current url
+                            signOut({ redirect: false, callbackUrl: mayInterceptingPathname }); // when signed in back, redirects to current url
                             break;
                     } // switch
                     toggleList(false); // collapse the <Navbar> manually
@@ -291,7 +291,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 
                 
                 // states:
-                active={(isBusy || pathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
+                active={(isBusy || mayInterceptingPathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
                 
                 
                 
