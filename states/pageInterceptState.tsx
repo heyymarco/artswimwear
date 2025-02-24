@@ -42,25 +42,25 @@ import {
 // contexts:
 export interface PageInterceptState {
     // states:
-    originPathname          : string|null
-    nonInterceptingPathname : string
+    originPathname         : string|null
+    nonInterceptedPathname : string
     
     
     
     // actions:
-    startIntercept          : (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
+    startIntercept         : (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
 }
 
 const noopCallback = () => Promise.resolve<void>(undefined);
 const defaultPageInterceptStateContext : PageInterceptState = {
     // states:
-    originPathname          : null,
-    nonInterceptingPathname : '/',
+    originPathname         : null,
+    nonInterceptedPathname : '/',
     
     
     
     // actions:
-    startIntercept          : noopCallback,
+    startIntercept         : noopCallback,
 }
 const PageInterceptStateContext = createContext<PageInterceptState>(defaultPageInterceptStateContext);
 PageInterceptStateContext.displayName  = 'PageInterceptState';
@@ -79,7 +79,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     const mayInterceptedPathname = usePathname();
     const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
     const originPathname: string|null = originPathnameStack?.[0] ?? null;
-    const nonInterceptingPathname = (originPathname ?? mayInterceptedPathname);
+    const nonInterceptedPathname = (originPathname ?? mayInterceptedPathname);
     
     
     
@@ -132,7 +132,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     const pageInterceptState = useMemo<PageInterceptState>(() => ({
         // states:,
         originPathname,
-        nonInterceptingPathname,
+        nonInterceptedPathname,
         
         
         
@@ -141,7 +141,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     }), [
         // states:,
         originPathname,
-        nonInterceptingPathname,
+        nonInterceptedPathname,
         
         
         

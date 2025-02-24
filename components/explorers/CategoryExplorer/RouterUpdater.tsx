@@ -100,15 +100,15 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         } // if
     }, [parentCategories, pathname]);
     
-    // Closes the dropdown if the `nonInterceptingPathname` exits from '/categories/**':
+    // Closes the dropdown if the `nonInterceptedPathname` exits from '/categories/**':
     const {
-        nonInterceptingPathname,
+        nonInterceptedPathname,
     } = usePageInterceptState();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        const isInDropdown = nonInterceptingPathname.startsWith(categoriesPath) && ['', '/'].includes(nonInterceptingPathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `nonInterceptingPathname` is exact '/categories' or sub '/categories/**'
-        if (!hasOpenedRef.current) { // only interested if the nonInterceptingPathname is never entered to '/categories/**'
+        const isInDropdown = nonInterceptedPathname.startsWith(categoriesPath) && ['', '/'].includes(nonInterceptedPathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `nonInterceptedPathname` is exact '/categories' or sub '/categories/**'
+        if (!hasOpenedRef.current) { // only interested if the nonInterceptedPathname is never entered to '/categories/**'
             if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/categories/**'
             return; // returns earlier
         } // if
@@ -116,10 +116,10 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         
         
         // actions:
-        if (!isInDropdown) { // the `nonInterceptingPathname` exits from '/categories/**'
+        if (!isInDropdown) { // the `nonInterceptedPathname` exits from '/categories/**'
             onClose?.(true);
         } // if
-    }, [nonInterceptingPathname]);
+    }, [nonInterceptedPathname]);
     
     
     

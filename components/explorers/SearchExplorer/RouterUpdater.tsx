@@ -64,15 +64,15 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         } // if
     }, [pathname]);
     
-    // Closes the dropdown if the `nonInterceptingPathname` exits from '/search':
+    // Closes the dropdown if the `nonInterceptedPathname` exits from '/search':
     const {
-        nonInterceptingPathname,
+        nonInterceptedPathname,
     } = usePageInterceptState();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        const isInDropdown = nonInterceptingPathname.startsWith(searchPath) && ['', '/'].includes(nonInterceptingPathname.slice(searchPath.length, searchPath.length + 1)); // determines if the `nonInterceptingPathname` is exact '/search' or sub '/search/**'
-        if (!hasOpenedRef.current) { // only interested if the nonInterceptingPathname is never entered to '/search'
+        const isInDropdown = nonInterceptedPathname.startsWith(searchPath) && ['', '/'].includes(nonInterceptedPathname.slice(searchPath.length, searchPath.length + 1)); // determines if the `nonInterceptedPathname` is exact '/search' or sub '/search/**'
+        if (!hasOpenedRef.current) { // only interested if the nonInterceptedPathname is never entered to '/search'
             if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/search'
             return; // returns earlier
         } // if
@@ -80,10 +80,10 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         
         
         // actions:
-        if (!isInDropdown) { // the `nonInterceptingPathname` exits from '/search/**'
+        if (!isInDropdown) { // the `nonInterceptedPathname` exits from '/search/**'
             onClose?.(true);
         } // if
-    }, [nonInterceptingPathname]);
+    }, [nonInterceptedPathname]);
     
     
     

@@ -60,14 +60,14 @@ export interface SearchMenuProps
 const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     // states:
     const {
-        nonInterceptingPathname,
+        nonInterceptedPathname,
     } = usePageInterceptState();
     
     
     
     // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (nonInterceptingPathname === '/search') event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        if (nonInterceptedPathname === '/search') event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
     });
     
     
