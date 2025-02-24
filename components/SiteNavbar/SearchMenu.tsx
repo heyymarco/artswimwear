@@ -67,7 +67,7 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     
     // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (nonInterceptedPathname === '/search') event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        if (nonInterceptedPathname === '/search') event.preventDefault(); // do not intercept with search menu if already in unintercepted search page
     });
     
     
