@@ -157,7 +157,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable', 'PaymentMethod', 'PaymentMethodList'],
+    tagTypes  : ['ProductPage', 'SearchPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable', 'PaymentMethod', 'PaymentMethodList'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, GetProductPageRequest>({
             query: (arg) => ({
@@ -193,6 +193,13 @@ export const apiSlice = createApi({
                 url    : `search?${new URLSearchParams(Object.entries(arg))}`,
                 method : 'GET',
             }),
+            providesTags: (data, error, arg) => [
+                { type: 'SearchPage', id: arg.page },
+                
+                ...(data?.entities ?? []).map(({ id }) =>
+                    ({ type: 'Wishable', id: id })
+                ) satisfies { type: 'Wishable', id: string }[],
+            ],
         }),
         
         
@@ -627,7 +634,7 @@ export const apiSlice = createApi({
                     wished : desiredGroupId, // set to grouped wishes -or- ungroup (but still wished)
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: wishedProduct as any });
-                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'ProductPage', { providedMutatedModel: wishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'SearchPage' , { providedMutatedModel: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
@@ -692,7 +699,7 @@ export const apiSlice = createApi({
                     wished : undefined, // set to unwished
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: unwishedProduct as any });
-                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'ProductPage', { providedMutatedModel: unwishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'searchProductPage' , 'UPDATE', 'SearchPage' , { providedMutatedModel: unwishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
