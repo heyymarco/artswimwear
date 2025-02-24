@@ -203,7 +203,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     
                     
                     
-                    // on collapsing (start to close):
+                    // on collapsing (starts to close):
                     await shownDialogPromise.collapseStartEvent();
                     // restore the url:
                     return true;
