@@ -169,7 +169,6 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // handlers:
     const {
         startIntercept,
-        nonInterceptingPathname,
     } = usePageInterceptState();
     const router = useRouter();
     const mayInterceptedPathname = usePathname();
@@ -194,8 +193,8 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                             // components:
                             signInComponent={
                                 <SignIn<Element>
-                                    // back to current checkout page after signed in:
-                                    defaultCallbackUrl={nonInterceptingPathname}
+                                    // back to current page after signed in, so the user can continue the task:
+                                    defaultCallbackUrl={mayInterceptedPathname}
                                 />
                             }
                         />

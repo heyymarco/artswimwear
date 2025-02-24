@@ -63,6 +63,16 @@ import {
     useDeleteWish,
 }                           from '@/store/features/api/apiSlice'
 
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
+
+// configs:
+import {
+    authConfigClient,
+}                           from '@/auth.config.client'
+
 
 
 // react components:
@@ -88,6 +98,15 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     
+    // configs:
+    const {
+        signIn : {
+            path : signInPath,
+        }
+    } = authConfigClient;
+    
+    
+    
     // sessions:
     const { data: session } = useSession();
     const isSignedIn = !!session;
@@ -109,40 +128,47 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     // hooks:
-    const pathName = usePathname();
-    const router   = useRouter();
+    const mayInterceptedPathname = usePathname();
+    const router                 = useRouter();
     
     
     
     // handlers:
+    const {
+        startIntercept,
+    } = usePageInterceptState();
     const handleWishClick = useEvent(async (): Promise<void> => {
         // conditions:
         if (!model) return;
         if (!isSignedIn) {
-            router.push('/signin', { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
-            
-            
-            
-            const backPathname = pathName;
-            
-            showDialog<false|Session>(
-                <SignInDialog
-                    // components:
-                    signInComponent={
-                        <SignIn<Element>
-                            // back to current checkout page after signed in:
-                            defaultCallbackUrl={backPathname}
-                        />
-                    }
-                />
-            )
-            .then(() => { // on fully closed:
-                router.push(backPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
+            startIntercept(async (): Promise<boolean> => {
+                router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
+                
+                
+                
+                const shownDialogPromise = showDialog<false|Session>(
+                    <SignInDialog
+                        // components:
+                        signInComponent={
+                            <SignIn<Element>
+                                // back to current page after signed in, so the user can continue the task:
+                                defaultCallbackUrl={mayInterceptedPathname}
+                            />
+                        }
+                    />
+                );
+                
+                
+                
+                // on collapsing (starts to close):
+                await shownDialogPromise.collapseStartEvent();
+                // restore the url:
+                return true;
             });
             
             
             
-            return; // done
+            return; // abort to update the wish
         } // if
         
         
