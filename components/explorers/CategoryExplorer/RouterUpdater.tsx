@@ -33,6 +33,11 @@ import {
     useCategoryExplorerState,
 }                           from './states/categoryExplorerState'
 
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
+
 // configs:
 import {
     categoriesPath,
@@ -95,12 +100,15 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         } // if
     }, [parentCategories, pathname]);
     
-    // Closes the dropdown if the `pathname` exits from '/categories/**':
+    // Closes the dropdown if the `nonInterceptingPathname` exits from '/categories/**':
+    const {
+        nonInterceptingPathname,
+    } = usePageInterceptState();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        const isInDropdown = pathname.startsWith(categoriesPath) && ['', '/'].includes(pathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `pathname` is exact '/categories' or sub '/categories/**'
-        if (!hasOpenedRef.current) { // only interested if the pathname is never entered to '/categories/**'
+        const isInDropdown = nonInterceptingPathname.startsWith(categoriesPath) && ['', '/'].includes(nonInterceptingPathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `nonInterceptingPathname` is exact '/categories' or sub '/categories/**'
+        if (!hasOpenedRef.current) { // only interested if the nonInterceptingPathname is never entered to '/categories/**'
             if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/categories/**'
             return; // returns earlier
         } // if
@@ -108,10 +116,10 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         
         
         // actions:
-        if (!isInDropdown) { // the `pathname` exits from '/categories/**'
+        if (!isInDropdown) { // the `nonInterceptingPathname` exits from '/categories/**'
             onClose?.(true);
         } // if
-    }, [pathname]);
+    }, [nonInterceptingPathname]);
     
     
     
