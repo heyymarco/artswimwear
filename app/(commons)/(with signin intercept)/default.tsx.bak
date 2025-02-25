@@ -1,14 +1,14 @@
 'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
 
-// next-js:
-import {
-    usePathname,
-}                           from 'next/navigation'
-
 // pages:
 import {
     SignInPageContent,
 }                           from '@/app/(commons)/signin/page-content'
+
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
 
 
 
@@ -25,13 +25,15 @@ export default function DefaultLostDialogIntercept(): JSX.Element|null {
     
     
     // states:
-    const newPathname = usePathname();
+    const {
+        nonInterceptedPathname,
+    } = usePageInterceptState();
     
     
     
     // jsx:
-    if ((/^\/signin($|\/)/i).test(newPathname)) {
-        let tailPathname = newPathname.slice('/signin'.length);
+    if ((/^\/signin($|\/)/i).test(nonInterceptedPathname)) {
+        let tailPathname = nonInterceptedPathname.slice('/signin'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
         
         switch (tailPathname.toLowerCase()) {
