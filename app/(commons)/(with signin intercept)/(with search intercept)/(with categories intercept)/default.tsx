@@ -1,14 +1,14 @@
 'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
 
-// next-js:
-import {
-    usePathname,
-}                           from 'next/navigation'
-
 // pages:
 import {
     CategoryPageContent,
 }                           from '@/app/(commons)/(with signin intercept)/(with search intercept)/(with categories intercept)/categories/[[...categories]]/page-content'
+
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
 
 
 
@@ -25,22 +25,15 @@ export default function DefaultLostDropdownIntercept(): JSX.Element|null {
     
     
     // states:
-    const mayInterceptedPathname = usePathname();
-    // const oldPathnameRaw      = location.pathname;      // before `router.replace()`: '/_/categories/discounted/discount-1'
-    // const oldPathname         = (                       // remove the prefix '/_' (if any)
-    //     oldPathnameRaw.startsWith('/_/')
-    //     ? oldPathnameRaw.slice(2)
-    //     : oldPathnameRaw
-    // );
-    const newPathname            = mayInterceptedPathname; // after  `router.replace()`:   '/categories/discounted/discount-1'
+    const {
+        nonInterceptedPathname,
+    } = usePageInterceptState();
     
     
     
     // jsx:
-    const categoriesRegex = /^\/categories($|\/)/i;
-    const isNewPathnameMatch = categoriesRegex.test(newPathname);
-    if (isNewPathnameMatch /* || categoriesRegex.test(oldPathname) */) {
-        let tailPathname = /* (isNewPathnameMatch ? newPathname : oldPathname) */ newPathname .slice('/categories'.length);
+    if ((/^\/categories($|\/)/i).test(nonInterceptedPathname)) {
+        let tailPathname = nonInterceptedPathname.slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
         const categories = !tailPathname ? undefined : tailPathname.split('/');
         
