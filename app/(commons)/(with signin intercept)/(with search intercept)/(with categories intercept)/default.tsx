@@ -25,16 +25,22 @@ export default function DefaultLostDropdownIntercept(): JSX.Element|null {
     
     
     // states:
-    const newPathname = usePathname();
-    const oldPathname = location.pathname;
+    const mayInterceptedPathname = usePathname();
+    // const oldPathnameRaw      = location.pathname;      // before `router.replace()`: '/_/categories/discounted/discount-1'
+    // const oldPathname         = (                       // remove the prefix '/_' (if any)
+    //     oldPathnameRaw.startsWith('/_/')
+    //     ? oldPathnameRaw.slice(2)
+    //     : oldPathnameRaw
+    // );
+    const newPathname            = mayInterceptedPathname; // after  `router.replace()`:   '/categories/discounted/discount-1'
     
     
     
     // jsx:
     const categoriesRegex = /^\/categories($|\/)/i;
     const isNewPathnameMatch = categoriesRegex.test(newPathname);
-    if (isNewPathnameMatch || categoriesRegex.test(oldPathname)) {
-        let tailPathname = (isNewPathnameMatch ? newPathname : oldPathname).slice('/categories'.length);
+    if (isNewPathnameMatch /* || categoriesRegex.test(oldPathname) */) {
+        let tailPathname = /* (isNewPathnameMatch ? newPathname : oldPathname) */ newPathname .slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
         const categories = !tailPathname ? undefined : tailPathname.split('/');
         
