@@ -14,7 +14,6 @@ import {
 // next-js:
 import {
     usePathname,
-    useRouter,
 }                           from 'next/navigation'
 
 // reusable-ui core:
@@ -127,22 +126,24 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     
-    // hooks:
+    // states:
     const mayInterceptedPathname = usePathname();
-    const router                 = useRouter();
+    const {
+        // actions:
+        interceptingPush,
+        
+        startIntercept,
+    } = useInterceptingRouter();
     
     
     
     // handlers:
-    const {
-        startIntercept,
-    } = useInterceptingRouter();
     const handleWishClick = useEvent(async (): Promise<void> => {
         // conditions:
         if (!model) return;
         if (!isSignedIn) {
             startIntercept(async (): Promise<boolean> => {
-                router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
+                interceptingPush(signInPath); // goto signIn page
                 
                 
                 

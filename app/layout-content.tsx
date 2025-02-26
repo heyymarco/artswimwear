@@ -184,14 +184,14 @@ export function RootLayoutContent({
                 <StylesSSR />
             </head>
             <body>
-                <NextAuthSessionProvider>
-                    <SigninTabStateProvider>
-                        <Provider store={store}><PersistGate persistor={persistor}>
-                            <DialogMessageProvider
-                                fetchErrorTitleDefault={fetchErrorTitleDefault}
-                                fetchErrorMessageDefault={fetchErrorMessageDefault}
-                            >
-                                <InterceptingRouterProvider>
+                <InterceptingRouterProvider>
+                    <NextAuthSessionProvider>
+                        <SigninTabStateProvider>
+                            <Provider store={store}><PersistGate persistor={persistor}>
+                                <DialogMessageProvider
+                                    fetchErrorTitleDefault={fetchErrorTitleDefault}
+                                    fetchErrorMessageDefault={fetchErrorMessageDefault}
+                                >
                                     <CartStateProvider>
                                         <SearchExplorerStateProvider>
                                                 <RootLayoutContentInternal>
@@ -199,11 +199,11 @@ export function RootLayoutContent({
                                                 </RootLayoutContentInternal>
                                         </SearchExplorerStateProvider>
                                     </CartStateProvider>
-                                </InterceptingRouterProvider>
-                            </DialogMessageProvider>
-                        </PersistGate></Provider>
-                    </SigninTabStateProvider>
-                </NextAuthSessionProvider>
+                                </DialogMessageProvider>
+                            </PersistGate></Provider>
+                        </SigninTabStateProvider>
+                    </NextAuthSessionProvider>
+                </InterceptingRouterProvider>
             </body>
         </html>
     );

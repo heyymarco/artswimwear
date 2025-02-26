@@ -47,6 +47,11 @@ import {
     pathNavigateHome,
 }                           from './paths'
 
+// states:
+import {
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
+
 // configs:
 import {
     authConfigClient,
@@ -83,20 +88,42 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     
     
     
-    // hooks:
+    // states:
     const router = useRouter();
+    const {
+        // actions:
+        interceptingPush,
+    } = useInterceptingRouter();
     
     
     
     // handlers:
-    const handleNavigateSignIn  = useEvent((): void => {
-        router.push(pathNavigateSignIn,  { scroll: false }); // do not scroll the page because it triggers the signIn_tab interceptor
+    const handleNavigateSignIn  = useEvent(async (): Promise<void> => {
+        (
+            // when in intercepting dialog:
+            (await interceptingPush(pathNavigateSignIn ))
+            ||
+            // when in full page:
+            router.push(pathNavigateSignIn,  { scroll: false }) // do not scroll the page because it triggers the signIn_tab interceptor
+        );
     });
-    const handleNavigateSignUp  = useEvent((): void => {
-        router.push(pathNavigateSignUp,  { scroll: false }); // do not scroll the page because it triggers the signUp_tab interceptor
+    const handleNavigateSignUp  = useEvent(async (): Promise<void> => {
+        (
+            // when in intercepting dialog:
+            (await interceptingPush(pathNavigateSignUp ))
+            ||
+            // when in full page:
+            router.push(pathNavigateSignUp,  { scroll: false }) // do not scroll the page because it triggers the signUp_tab interceptor
+        );
     });
-    const handleNavigateRecover = useEvent((): void => {
-        router.push(pathNavigateRecover, { scroll: false }); // do not scroll the page because it triggers the recover_tab interceptor
+    const handleNavigateRecover = useEvent(async (): Promise<void> => {
+        (
+            // when in intercepting dialog:
+            (await interceptingPush(pathNavigateRecover))
+            ||
+            // when in full page:
+            router.push(pathNavigateRecover, { scroll: false }) // do not scroll the page because it triggers the recover_tab interceptor
+        );
     });
     const handleNavigateHome    = useEvent((): void => {
         router.push(pathNavigateHome,    { scroll: true  }); // may scroll the page because it navigates to home page

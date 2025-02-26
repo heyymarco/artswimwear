@@ -18,7 +18,6 @@ import {
 // next-js:
 import {
     usePathname,
-    useRouter,
 }                           from 'next/navigation'
 
 // models:
@@ -65,13 +64,23 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         parentCategories,
     } = useCategoryExplorerState();
     
+    const mayInterceptedPathname = usePathname();
+    const {
+        // states:
+        nonInterceptedPathname,
+        
+        
+        
+        // actions:
+        interceptingPush,
+        interceptingBack,
+    } = useInterceptingRouter();
+    
     
     
     // effects:
     
     // sync the mayInterceptedPathname to '/categories/**':
-    const mayInterceptedPathname        = usePathname();
-    const router                        = useRouter();
     const prevParentCategoriesRef       = useRef<CategoryParentInfo[]|undefined>(undefined /* initially unsynced */);
     const [historyUrls, setHistoryUrls] = useImmer<string[]>(() => [mayInterceptedPathname]);
     useEffect(() => {
@@ -89,21 +98,18 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
                 setHistoryUrls((historyUrls) => {
                     historyUrls.pop();
                 });
-                router.back();
+                interceptingBack();
             }
             else {
                 setHistoryUrls((historyUrls) => {
                     historyUrls.push(newPathname);
                 });
-                router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
+                interceptingPush(newPathname); // change the pathName for accessibility reason
             } // if
         } // if
     }, [parentCategories, mayInterceptedPathname]);
     
     // Closes the dropdown if the `nonInterceptedPathname` exits from '/categories/**':
-    const {
-        nonInterceptedPathname,
-    } = useInterceptingRouter();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:

@@ -14,7 +14,6 @@ import {
 // next-js:
 import {
     usePathname,
-    useRouter,
 }                           from 'next/navigation'
 
 // cssfn:
@@ -89,19 +88,21 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     
     
     
-    // hooks:
+    // states:
     const mayInterceptedPathname = usePathname();
-    const router                 = useRouter();
+    const {
+        // actions:
+        interceptingPush,
+        
+        startIntercept,
+    } = useInterceptingRouter();
     
     
     
     // handlers:
-    const {
-        startIntercept,
-    } = useInterceptingRouter();
     const handleSignInLinkClick = useEvent((): void => {
         startIntercept(async (): Promise<boolean> => {
-            router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
+            interceptingPush(signInPath); // goto signIn page
             
             
             

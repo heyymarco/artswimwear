@@ -169,12 +169,19 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     
     
-    // handlers:
+    // states:
+    const router                 = useRouter();
+    const mayInterceptedPathname = usePathname();
     const {
+        // actions:
+        interceptingPush,
+        
         startIntercept,
     } = useInterceptingRouter();
-    const router = useRouter();
-    const mayInterceptedPathname = usePathname();
+    
+    
+    
+    // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
@@ -186,8 +193,8 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
             // if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(mayInterceptedPathname)) {
                 startIntercept(async (): Promise<boolean> => {
+                    interceptingPush(signInPath); // goto signIn page
                     toggleList(false); // collapse the <Navbar> manually
-                    router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
                     
                     
                     

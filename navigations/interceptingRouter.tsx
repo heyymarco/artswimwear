@@ -76,7 +76,13 @@ const InterceptingRouterStateContext = createContext<InterceptingRouterState>(de
 InterceptingRouterStateContext.displayName  = 'InterceptingRouterState';
 
 export const useInterceptingRouter = (): InterceptingRouterState => {
-    return useContext(InterceptingRouterStateContext);
+    const interceptingRouterState = useContext(InterceptingRouterStateContext);
+    if (process.env.NODE_ENV !== 'production') {
+        if (interceptingRouterState === defaultInterceptingRouterStateContext) {
+            console.error('Not in <InterceptingRouterProvider>.');
+        } // if
+    } // if
+    return interceptingRouterState;
 }
 
 
@@ -154,6 +160,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         // stack up:
         setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
+            await new Promise<void>((resolve) => setTimeout(resolve, 0)); // wait for the stack to be updated (already rerendered)
             const restorePathname = (await callback()) ?? true;
             if (restorePathname) await interceptingPush(mayInterceptedPathname); // go back to unintercepted pathName
         }
@@ -186,7 +193,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         }
         else { // the pathname changes due to the user's action
             // assumes all the interceptions are canceled:
-            setOriginPathnameStack([]);
+            setOriginPathnameStack((current) => current.length ? [] : current); // clear the stack
         } // if
     }, [mayInterceptedPathname]);
     

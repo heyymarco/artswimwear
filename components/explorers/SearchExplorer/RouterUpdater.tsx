@@ -15,7 +15,6 @@ import {
 // next-js:
 import {
     usePathname,
-    useRouter,
 }                           from 'next/navigation'
 
 // states:
@@ -44,11 +43,23 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     
     
     
+    // states:
+    const mayInterceptedPathname = usePathname();
+    const {
+        // states:
+        nonInterceptedPathname,
+        
+        
+        
+        // actions:
+        interceptingPush,
+    } = useInterceptingRouter();
+    
+    
+    
     // effects:
     
     // Set the mayInterceptedPathname to '/search':
-    const mayInterceptedPathname = usePathname();
-    const router                 = useRouter();
     const hasSyncedRef           = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
@@ -60,14 +71,11 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         // actions:
         const newPathname = searchPath;
         if (newPathname.toLowerCase() !== mayInterceptedPathname.toLowerCase()) {
-            router.push(newPathname, { scroll: false }); // change the pathName for accessibility reason // do not scroll the page because it just change the pathName for accessibility reason
+            interceptingPush(newPathname); // change the pathName for accessibility reason
         } // if
     }, [mayInterceptedPathname]);
     
     // Closes the dropdown if the `nonInterceptedPathname` exits from '/search':
-    const {
-        nonInterceptedPathname,
-    } = useInterceptingRouter();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
