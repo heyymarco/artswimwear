@@ -13,6 +13,7 @@ import {
     // hooks:
     useContext,
     useMemo,
+    useRef,
     useState,
 }                           from 'react'
 
@@ -39,6 +40,7 @@ import {
 //#region pageInterceptState
 
 // contexts:
+export type StartInterceptHandler = (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
 export interface PageInterceptState {
     // states:
     originPathname         : string|null
@@ -47,7 +49,11 @@ export interface PageInterceptState {
     
     
     // actions:
-    startIntercept         : (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
+    interceptingPush       : (...params: Parameters<ReturnType<typeof useRouter>['push']>) => Promise<void>
+    interceptingBack       : () => Promise<void>
+    interceptingForward    : () => Promise<void>
+    
+    startIntercept         : StartInterceptHandler
 }
 
 const noopCallback = () => Promise.resolve<void>(undefined);
@@ -59,6 +65,10 @@ const defaultPageInterceptStateContext : PageInterceptState = {
     
     
     // actions:
+    interceptingPush       : noopCallback,
+    interceptingBack       : noopCallback,
+    interceptingForward    : noopCallback,
+    
     startIntercept         : noopCallback,
 }
 const PageInterceptStateContext = createContext<PageInterceptState>(defaultPageInterceptStateContext);
@@ -80,7 +90,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     const originPathname: string|null = originPathnameStack?.[0] ?? null;
     const nonInterceptedPathname = (originPathname ?? mayInterceptedPathname);
     
-    const [signalPathnameUpdated] = useState<Map<string, (() => void)[]>>(() => new Map<string, (() => void)[]>());
+    const [pathnameUpdatedSignals] = useState<(() => void)[]>(() => []);
     
     
     
@@ -89,22 +99,16 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     
     
-    // actions:
-    const router = useRouter();
-    
-    const restorePathnameAsync = useEvent(async (originPathname: string): Promise<void> => {
+    // utilities:
+    const router   = useRouter();
+    const navigate = useEvent(async (action: () => void): Promise<void> => {
         if (originPathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return; // already the same => ignore
         
         
         
         // wait until the router is fully applied:
         const { promise: routerUpdatedPromise, resolve: routerUpdatedSignal } = Promise.withResolvers<void>();
-        const signals = signalPathnameUpdated.get(originPathname) ?? (() => {
-            const newSignals : (() => void)[] = [];
-            signalPathnameUpdated.set(originPathname, newSignals);
-            return newSignals;
-        })();
-        signals.push(routerUpdatedSignal); // register the signal for the desired pathname update
+        pathnameUpdatedSignals.push(routerUpdatedSignal); // register the signal for the pathname update
         
         router.push(originPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
         
@@ -114,12 +118,25 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         ]);
     });
     
-    const startIntercept = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
+    
+    
+    // stable callbacks:
+    const interceptingPush    = useEvent<PageInterceptState['interceptingPush']>((url, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
+        return navigate(() => router.push(url, options));
+    });
+    const interceptingBack    = useEvent<PageInterceptState['interceptingBack']>(() => {
+        return navigate(() => router.back());
+    });
+    const interceptingForward = useEvent<PageInterceptState['interceptingForward']>(() => {
+        return navigate(() => router.forward());
+    });
+    
+    const startIntercept      = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
         // stack up:
         setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
             const restorePathname = (await callback()) ?? true;
-            if (restorePathname) await restorePathnameAsync(mayInterceptedPathname);
+            if (restorePathname) await interceptingPush(mayInterceptedPathname);
         }
         finally {
             // stack down:
@@ -130,21 +147,26 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     
     // effects:
+    
+    // Detects whether the pathname changes due to the interception or the user's action:
+    const prevMayInterceptedPathnameRef = useRef<string|null>(mayInterceptedPathname);
     useIsomorphicLayoutEffect(() => {
-        const signals = signalPathnameUpdated.get(mayInterceptedPathname);
-        if (signals?.length) { // the pathname changes due to the interception
-            // signal all the matched signals:
-            for (const signal of signals) signal(); // signal updated
-            signalPathnameUpdated.delete(mayInterceptedPathname); // remove the resolved signals
+        // conditions:
+        if (prevMayInterceptedPathnameRef.current === mayInterceptedPathname) return; // already the same => ignore
+        prevMayInterceptedPathnameRef.current = mayInterceptedPathname;               // sync
+        
+        
+        
+        // actions:
+        if (pathnameUpdatedSignals.length) { // the pathname changes due to the interception
+            // signal that the pathname has been updated:
+            for (const pathnameUpdatedSignal of pathnameUpdatedSignals) pathnameUpdatedSignal();
+            
+            // clear all the resolved signals:
+            pathnameUpdatedSignals.splice(0);
         }
         else { // the pathname changes due to the user's action
-            // signal all the signals:
-            for (const signals of signalPathnameUpdated.values()) {
-                for (const signal of signals) signal(); // signal updated
-            } // for
-            signalPathnameUpdated.clear(); // remove all the signals
-            
-            // assumes all the interception is done:
+            // assumes all the interceptions are canceled:
             setOriginPathnameStack([]);
         } // if
     }, [mayInterceptedPathname]);
@@ -160,6 +182,10 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         
         
         // actions:
+        interceptingPush,
+        interceptingBack,
+        interceptingForward,
+        
         startIntercept,
     }), [
         // states:,
@@ -169,7 +195,11 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         
         
         // actions:
-        // startIntercept, // stable ref
+        // interceptingPush,    // stable ref
+        // interceptingBack,    // stable ref
+        // interceptingForward, // stable ref
+        
+        // startIntercept,      // stable ref
     ]);
     
     
