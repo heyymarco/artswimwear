@@ -21,7 +21,7 @@ import {
 // states:
 import {
     usePageInterceptState,
-}                           from '@/states/pageInterceptState'
+}                           from '@/navigations/pageInterceptState'
 
 // configs:
 import {

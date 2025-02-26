@@ -79,7 +79,7 @@ import {
 // states:
 import {
     PageInterceptStateProvider,
-}                           from '@/states/pageInterceptState'
+}                           from '@/navigations/pageInterceptState'
 
 // configs:
 import {
