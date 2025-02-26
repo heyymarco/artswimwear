@@ -170,7 +170,7 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         
         
-        // states:,
+        // states:
         parentCategories,
         setParentCategories,
         

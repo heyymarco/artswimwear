@@ -201,7 +201,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     
     // states:
     const interceptingRouterState = useMemo<InterceptingRouterState>(() => ({
-        // states:,
+        // states:
         originPathname,
         nonInterceptedPathname,
         
@@ -214,7 +214,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         
         startIntercept,
     }), [
-        // states:,
+        // states:
         originPathname,
         nonInterceptedPathname,
         
