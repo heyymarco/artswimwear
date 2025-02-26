@@ -90,8 +90,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -172,7 +172,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // handlers:
     const {
         startIntercept,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const router = useRouter();
     const mayInterceptedPathname = usePathname();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {

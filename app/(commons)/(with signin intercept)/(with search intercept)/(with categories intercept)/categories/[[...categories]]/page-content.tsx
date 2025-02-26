@@ -68,8 +68,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 
 
@@ -90,7 +90,7 @@ export function CategoryPageContent({ categories: categoriesRaw }: { categories?
     // states:
     const {
         originPathname,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const categories = (
         originPathname
         

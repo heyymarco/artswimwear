@@ -20,8 +20,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -67,7 +67,7 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     // Closes the dropdown if the `nonInterceptedPathname` exits from '/search':
     const {
         nonInterceptedPathname,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const hasOpenedRef = useRef<boolean>(false);
     useEffect(() => {
         // conditions:

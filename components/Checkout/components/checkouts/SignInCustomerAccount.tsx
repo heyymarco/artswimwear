@@ -51,8 +51,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -98,7 +98,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     // handlers:
     const {
         startIntercept,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const handleSignInLinkClick = useEvent((): void => {
         startIntercept(async (): Promise<boolean> => {
             router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor

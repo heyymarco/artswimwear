@@ -37,11 +37,11 @@ import {
 
 // states:
 
-//#region pageInterceptState
+//#region interceptingRouter
 
 // contexts:
 export type StartInterceptHandler = (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
-export interface PageInterceptState {
+export interface InterceptingRouterState {
     // states:
     originPathname         : string|null
     nonInterceptedPathname : string
@@ -57,7 +57,7 @@ export interface PageInterceptState {
 }
 
 const noopCallback = () => Promise.resolve<void>(undefined);
-const defaultPageInterceptStateContext : PageInterceptState = {
+const defaultInterceptingRouterStateContext : InterceptingRouterState = {
     // states:
     originPathname         : null,
     nonInterceptedPathname : '/',
@@ -71,19 +71,19 @@ const defaultPageInterceptStateContext : PageInterceptState = {
     
     startIntercept         : noopCallback,
 }
-const PageInterceptStateContext = createContext<PageInterceptState>(defaultPageInterceptStateContext);
-PageInterceptStateContext.displayName  = 'PageInterceptState';
+const InterceptingRouterStateContext = createContext<InterceptingRouterState>(defaultInterceptingRouterStateContext);
+InterceptingRouterStateContext.displayName  = 'InterceptingRouterState';
 
-export const usePageInterceptState = (): PageInterceptState => {
-    return useContext(PageInterceptStateContext);
+export const useInterceptingRouter = (): InterceptingRouterState => {
+    return useContext(InterceptingRouterStateContext);
 }
 
 
 
 // react components:
-export interface PageInterceptStateProps {
+export interface InterceptingRouterProviderProps {
 }
-const PageInterceptStateProvider = (props: React.PropsWithChildren<PageInterceptStateProps>): JSX.Element|null => {
+const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingRouterProviderProps>): JSX.Element|null => {
     // states:
     const mayInterceptedPathname = usePathname();
     const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
@@ -121,17 +121,17 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     
     // stable callbacks:
-    const interceptingPush    = useEvent<PageInterceptState['interceptingPush']>((url, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
+    const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>((url, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
         return navigate(() => router.push(url, options));
     });
-    const interceptingBack    = useEvent<PageInterceptState['interceptingBack']>(() => {
+    const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(() => {
         return navigate(() => router.back());
     });
-    const interceptingForward = useEvent<PageInterceptState['interceptingForward']>(() => {
+    const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(() => {
         return navigate(() => router.forward());
     });
     
-    const startIntercept      = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
+    const startIntercept      = useEvent<InterceptingRouterState['startIntercept']>(async (callback) => {
         // stack up:
         setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
@@ -174,7 +174,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     
     // states:
-    const pageInterceptState = useMemo<PageInterceptState>(() => ({
+    const interceptingRouterState = useMemo<InterceptingRouterState>(() => ({
         // states:,
         originPathname,
         nonInterceptedPathname,
@@ -206,13 +206,13 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     // jsx:
     return (
-        <PageInterceptStateContext.Provider value={pageInterceptState}>
+        <InterceptingRouterStateContext.Provider value={interceptingRouterState}>
             {props.children}
-        </PageInterceptStateContext.Provider>
+        </InterceptingRouterStateContext.Provider>
     );
 };
 export {
-    PageInterceptStateProvider,
-    PageInterceptStateProvider as default,
+    InterceptingRouterProvider,
+    InterceptingRouterProvider as default,
 }
-//#endregion pageInterceptState
+//#endregion interceptingRouter

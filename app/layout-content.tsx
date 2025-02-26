@@ -78,8 +78,8 @@ import {
 
 // states:
 import {
-    PageInterceptStateProvider,
-}                           from '@/navigations/pageInterceptState'
+    InterceptingRouterProvider,
+}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -191,7 +191,7 @@ export function RootLayoutContent({
                                 fetchErrorTitleDefault={fetchErrorTitleDefault}
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
-                                <PageInterceptStateProvider>
+                                <InterceptingRouterProvider>
                                     <CartStateProvider>
                                         <SearchExplorerStateProvider>
                                                 <RootLayoutContentInternal>
@@ -199,7 +199,7 @@ export function RootLayoutContent({
                                                 </RootLayoutContentInternal>
                                         </SearchExplorerStateProvider>
                                     </CartStateProvider>
-                                </PageInterceptStateProvider>
+                                </InterceptingRouterProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>
                     </SigninTabStateProvider>

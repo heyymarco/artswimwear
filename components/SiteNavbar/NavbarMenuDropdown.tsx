@@ -47,8 +47,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 
 
@@ -210,7 +210,7 @@ const NavbarMenuDropdown = (props: NavbarMenuDropdownProps): JSX.Element|null =>
     
     const {
         startIntercept,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const handleClickInternal = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (event.defaultPrevented) return; // already handled => ignore
         event.preventDefault();             // prevents the `href='/target-path'` to HARD|SOFT navigate

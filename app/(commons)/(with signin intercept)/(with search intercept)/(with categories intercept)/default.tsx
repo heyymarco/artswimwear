@@ -7,8 +7,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 
 
@@ -27,7 +27,7 @@ export default function DefaultLostDropdownIntercept(): JSX.Element|null {
     // states:
     const {
         nonInterceptedPathname,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     
     
     

@@ -97,8 +97,8 @@ import {
 
 // // states:
 // import {
-//     usePageInterceptState,
-// }                           from '@/states/pageInterceptState'
+//     useInterceptingRouter,
+// }                           from '@/navigations/interceptingRouter'
 
 // utilities:
 import {
@@ -170,7 +170,7 @@ export function ProductDetailPageContent({ productPath: productPath }: { product
     // // states:
     // const {
     //     originPathname,
-    // } = usePageInterceptState();
+    // } = useInterceptingRouter();
     // const productPath = (
     //     originPathname
     //     ? ((): string|undefined => {

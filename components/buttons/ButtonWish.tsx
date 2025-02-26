@@ -65,8 +65,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -136,7 +136,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     // handlers:
     const {
         startIntercept,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     const handleWishClick = useEvent(async (): Promise<void> => {
         // conditions:
         if (!model) return;

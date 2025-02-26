@@ -42,8 +42,8 @@ import {
 
 // states:
 import {
-    usePageInterceptState,
-}                           from '@/navigations/pageInterceptState'
+    useInterceptingRouter,
+}                           from '@/navigations/interceptingRouter'
 
 
 
@@ -61,7 +61,7 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     // states:
     const {
         nonInterceptedPathname,
-    } = usePageInterceptState();
+    } = useInterceptingRouter();
     
     
     
