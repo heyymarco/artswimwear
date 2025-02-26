@@ -47,7 +47,7 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     const mayInterceptedPathname = usePathname();
     const {
         // states:
-        nonInterceptedPathname,
+        isInInterception,
         
         
         
@@ -75,23 +75,16 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         } // if
     }, [mayInterceptedPathname]);
     
-    // Closes the dropdown if the `nonInterceptedPathname` exits from '/search':
-    const hasOpenedRef = useRef<boolean>(false);
+    // Closes the dropdown if not in interception:
     useEffect(() => {
         // conditions:
-        const isInDropdown = nonInterceptedPathname.startsWith(searchPath) && ['', '/'].includes(nonInterceptedPathname.slice(searchPath.length, searchPath.length + 1)); // determines if the `nonInterceptedPathname` is exact '/search' or sub '/search/**'
-        if (!hasOpenedRef.current) { // only interested if the nonInterceptedPathname is never entered to '/search'
-            if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/search'
-            return; // returns earlier
-        } // if
+        if (isInInterception) return; // only interested if not in interception
         
         
         
         // actions:
-        if (!isInDropdown) { // the `nonInterceptedPathname` exits from '/search/**'
-            onClose?.(true);
-        } // if
-    }, [nonInterceptedPathname]);
+        onClose?.(true);
+    }, [isInInterception]);
     
     
     

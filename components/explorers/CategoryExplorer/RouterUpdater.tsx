@@ -67,7 +67,7 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     const mayInterceptedPathname = usePathname();
     const {
         // states:
-        nonInterceptedPathname,
+        isInInterception,
         
         
         
@@ -109,23 +109,16 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
         } // if
     }, [parentCategories, mayInterceptedPathname]);
     
-    // Closes the dropdown if the `nonInterceptedPathname` exits from '/categories/**':
-    const hasOpenedRef = useRef<boolean>(false);
+    // Closes the dropdown if not in interception:
     useEffect(() => {
         // conditions:
-        const isInDropdown = nonInterceptedPathname.startsWith(categoriesPath) && ['', '/'].includes(nonInterceptedPathname.slice(categoriesPath.length, categoriesPath.length + 1)); // determines if the `nonInterceptedPathname` is exact '/categories' or sub '/categories/**'
-        if (!hasOpenedRef.current) { // only interested if the nonInterceptedPathname is never entered to '/categories/**'
-            if (isInDropdown) hasOpenedRef.current = true; // mark ever entered to '/categories/**'
-            return; // returns earlier
-        } // if
+        if (isInInterception) return; // only interested if not in interception
         
         
         
         // actions:
-        if (!isInDropdown) { // the `nonInterceptedPathname` exits from '/categories/**'
-            onClose?.(true);
-        } // if
-    }, [nonInterceptedPathname]);
+        onClose?.(true);
+    }, [isInInterception]);
     
     
     
