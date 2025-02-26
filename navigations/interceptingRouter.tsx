@@ -45,6 +45,7 @@ export interface InterceptingRouterState {
     // states:
     originPathname         : string|null
     nonInterceptedPathname : string
+    isInInterception       : boolean
     
     
     
@@ -62,6 +63,7 @@ const defaultInterceptingRouterStateContext : InterceptingRouterState = {
     // states:
     originPathname         : null,
     nonInterceptedPathname : '/',
+    isInInterception       : false,
     
     
     
@@ -96,6 +98,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
     const originPathname: string|null = originPathnameStack?.[0] ?? null;
     const nonInterceptedPathname = (originPathname ?? mayInterceptedPathname);
+    const isInInterception = (originPathname !== null);
     
     const [pathnameUpdatedSignals] = useState<(() => void)[]>(() => []);
     
@@ -129,7 +132,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     // stable callbacks:
     const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>(async (pathname, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
         // conditions:
-        if (originPathname === null) return false; // not in interception => ignore
+        if (!isInInterception) return false; // not in interception => ignore
         if (pathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return true; // already the same => ignore
         
         
@@ -139,7 +142,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     });
     const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(async () => {
         // conditions:
-        if (originPathname === null) return false; // not in interception => ignore
+        if (!isInInterception) return false; // not in interception => ignore
         
         
         
@@ -148,7 +151,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     });
     const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(async () => {
         // conditions:
-        if (originPathname === null) return false; // not in interception => ignore
+        if (!isInInterception) return false; // not in interception => ignore
         
         
         
@@ -204,6 +207,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         // states:
         originPathname,
         nonInterceptedPathname,
+        isInInterception,
         
         
         
@@ -217,6 +221,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         // states:
         originPathname,
         nonInterceptedPathname,
+        isInInterception,
         
         
         
