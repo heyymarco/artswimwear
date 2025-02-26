@@ -102,16 +102,14 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     // utilities:
     const router   = useRouter();
     const navigate = useEvent(async (action: () => void): Promise<void> => {
-        if (originPathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return; // already the same => ignore
-        
-        
-        
-        // wait until the router is fully applied:
+        // create a signal for the pathname update:
         const { promise: routerUpdatedPromise, resolve: routerUpdatedSignal } = Promise.withResolvers<void>();
         pathnameUpdatedSignals.push(routerUpdatedSignal); // register the signal for the pathname update
         
-        router.push(originPathname, { scroll: false }); // go back to unintercepted pathName // do not scroll the page because it restores the unintercepted pathName
+        // do the work:
+        action();
         
+        // wait until the router is fully applied:
         await Promise.race([
             routerUpdatedPromise,
             setTimeoutAsync(1000), // assumes if the router is not updated within 1 second, it's failed
@@ -121,14 +119,33 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     
     
     // stable callbacks:
-    const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>((url, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
-        return navigate(() => router.push(url, options));
+    const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>(async (pathname, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
+        // conditions:
+        if (originPathname === null) return; // not in interception => ignore
+        if (pathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return; // already the same => ignore
+        
+        
+        
+        // actions:
+        await navigate(() => router.push(pathname, options));
     });
-    const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(() => {
-        return navigate(() => router.back());
+    const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(async () => {
+        // conditions:
+        if (originPathname === null) return; // not in interception => ignore
+        
+        
+        
+        // actions:
+        await navigate(() => router.back());
     });
-    const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(() => {
-        return navigate(() => router.forward());
+    const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(async () => {
+        // conditions:
+        if (originPathname === null) return; // not in interception => ignore
+        
+        
+        
+        // actions:
+        await navigate(() => router.forward());
     });
     
     const startIntercept      = useEvent<InterceptingRouterState['startIntercept']>(async (callback) => {
@@ -136,7 +153,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
             const restorePathname = (await callback()) ?? true;
-            if (restorePathname) await interceptingPush(mayInterceptedPathname);
+            if (restorePathname) await interceptingPush(mayInterceptedPathname); // go back to unintercepted pathName
         }
         finally {
             // stack down:
