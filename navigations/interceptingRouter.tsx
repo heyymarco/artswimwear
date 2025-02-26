@@ -49,14 +49,15 @@ export interface InterceptingRouterState {
     
     
     // actions:
-    interceptingPush       : (...params: Parameters<ReturnType<typeof useRouter>['push']>) => Promise<void>
-    interceptingBack       : () => Promise<void>
-    interceptingForward    : () => Promise<void>
+    interceptingPush       : (...params: Parameters<ReturnType<typeof useRouter>['push']>) => Promise<boolean>
+    interceptingBack       : () => Promise<boolean>
+    interceptingForward    : () => Promise<boolean>
     
     startIntercept         : StartInterceptHandler
 }
 
-const noopCallback = () => Promise.resolve<void>(undefined);
+const noopCallback        = () => Promise.resolve<void>(undefined);
+const noopCallbackBoolean = () => Promise.resolve<boolean>(false);
 const defaultInterceptingRouterStateContext : InterceptingRouterState = {
     // states:
     originPathname         : null,
@@ -65,9 +66,9 @@ const defaultInterceptingRouterStateContext : InterceptingRouterState = {
     
     
     // actions:
-    interceptingPush       : noopCallback,
-    interceptingBack       : noopCallback,
-    interceptingForward    : noopCallback,
+    interceptingPush       : noopCallbackBoolean,
+    interceptingBack       : noopCallbackBoolean,
+    interceptingForward    : noopCallbackBoolean,
     
     startIntercept         : noopCallback,
 }
@@ -101,7 +102,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     
     // utilities:
     const router   = useRouter();
-    const navigate = useEvent(async (action: () => void): Promise<void> => {
+    const navigate = useEvent(async (action: () => void): Promise<boolean> => {
         // create a signal for the pathname update:
         const { promise: routerUpdatedPromise, resolve: routerUpdatedSignal } = Promise.withResolvers<void>();
         pathnameUpdatedSignals.push(routerUpdatedSignal); // register the signal for the pathname update
@@ -114,6 +115,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
             routerUpdatedPromise,
             setTimeoutAsync(1000), // assumes if the router is not updated within 1 second, it's failed
         ]);
+        return true;
     });
     
     
@@ -121,31 +123,31 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     // stable callbacks:
     const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>(async (pathname, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
         // conditions:
-        if (originPathname === null) return; // not in interception => ignore
-        if (pathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return; // already the same => ignore
+        if (originPathname === null) return false; // not in interception => ignore
+        if (pathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return true; // already the same => ignore
         
         
         
         // actions:
-        await navigate(() => router.push(pathname, options));
+        return navigate(() => router.push(pathname, options));
     });
     const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(async () => {
         // conditions:
-        if (originPathname === null) return; // not in interception => ignore
+        if (originPathname === null) return false; // not in interception => ignore
         
         
         
         // actions:
-        await navigate(() => router.back());
+        return navigate(() => router.back());
     });
     const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(async () => {
         // conditions:
-        if (originPathname === null) return; // not in interception => ignore
+        if (originPathname === null) return false; // not in interception => ignore
         
         
         
         // actions:
-        await navigate(() => router.forward());
+        return navigate(() => router.forward());
     });
     
     const startIntercept      = useEvent<InterceptingRouterState['startIntercept']>(async (callback) => {
