@@ -49,14 +49,22 @@ export interface SigninTabState
     setSection : (section: ControllableSignInSection) => void
 }
 
-const SigninTabStateContext = createContext<SigninTabState>({
+const defaultSigninTabStateContext : SigninTabState = {
     // states:
+    section    : undefined,
     setSection : () => { throw Error('not in <SigninTabStateProvider>') },
-});
+};
+const SigninTabStateContext = createContext<SigninTabState>(defaultSigninTabStateContext);
 SigninTabStateContext.displayName  = 'SigninTabState';
 
 export const useSigninTabState = (): SigninTabState => {
-    return useContext(SigninTabStateContext);
+    const signinTabState = useContext(SigninTabStateContext);
+    if (process.env.NODE_ENV !== 'production') {
+        if (signinTabState === defaultSigninTabStateContext) {
+            console.error('Not in <SigninTabStateProvider>.');
+        } // if
+    } // if
+    return signinTabState;
 }
 
 
