@@ -35,10 +35,10 @@ import {
 
 // states:
 
-//#region signinTabState
+//#region signinState
 
 // contexts:
-export interface SigninTabState
+export interface SigninState
     extends
         Pick<SignInProps,
             // states:
@@ -49,28 +49,28 @@ export interface SigninTabState
     setSection : (section: ControllableSignInSection) => void
 }
 
-const defaultSigninTabStateContext : SigninTabState = {
+const defaultSigninStateContext : SigninState = {
     // states:
     section    : undefined,
-    setSection : () => { throw Error('not in <SigninTabStateProvider>') },
+    setSection : () => { throw Error('not in <SigninStateProvider>') },
 };
-const SigninTabStateContext = createContext<SigninTabState>(defaultSigninTabStateContext);
-SigninTabStateContext.displayName  = 'SigninTabState';
+const SigninStateContext = createContext<SigninState>(defaultSigninStateContext);
+SigninStateContext.displayName  = 'SigninState';
 
-export const useSigninTabState = (): SigninTabState => {
-    const signinTabState = useContext(SigninTabStateContext);
+export const useSigninState = (): SigninState => {
+    const signinState = useContext(SigninStateContext);
     if (process.env.NODE_ENV !== 'production') {
-        if (signinTabState === defaultSigninTabStateContext) {
-            console.error('Not in <SigninTabStateProvider>.');
+        if (signinState === defaultSigninStateContext) {
+            console.error('Not in <SigninStateProvider>.');
         } // if
     } // if
-    return signinTabState;
+    return signinState;
 }
 
 
 
 // react components:
-export interface SigninTabStateProps
+export interface SigninStateProps
     extends
         Pick<SignInProps,
             // states:
@@ -80,7 +80,7 @@ export interface SigninTabStateProps
         >
 {
 }
-const SigninTabStateProvider = (props: React.PropsWithChildren<SigninTabStateProps>): JSX.Element|null => {
+const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): JSX.Element|null => {
     // props:
     const {
         // states:
@@ -109,7 +109,7 @@ const SigninTabStateProvider = (props: React.PropsWithChildren<SigninTabStatePro
     
     
     // states:
-    const signinTabState = useMemo<SigninTabState>(() => ({
+    const signinState = useMemo<SigninState>(() => ({
         // states:
         section,
         setSection,
@@ -123,13 +123,13 @@ const SigninTabStateProvider = (props: React.PropsWithChildren<SigninTabStatePro
     
     // jsx:
     return (
-        <SigninTabStateContext.Provider value={signinTabState}>
+        <SigninStateContext.Provider value={signinState}>
             {children}
-        </SigninTabStateContext.Provider>
+        </SigninStateContext.Provider>
     );
 };
 export {
-    SigninTabStateProvider,            // named export for readibility
-    SigninTabStateProvider as default, // default export to support React.lazy
+    SigninStateProvider,            // named export for readibility
+    SigninStateProvider as default, // default export to support React.lazy
 }
-//#endregion signinTabState
+//#endregion signinState

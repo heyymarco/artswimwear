@@ -34,8 +34,8 @@ import {
     SignInInfo,
 }                           from '@/components/SignInInfo'
 import {
-    SigninTabStateProps,
-    useSigninTabState,
+    SigninStateProps,
+    useSigninState,
     
     SignIn,
 }                           from '@/components/SignIn'
@@ -45,7 +45,7 @@ import {
 // react components:
 export interface SignInPageContentProps
     extends
-        Pick<SigninTabStateProps,
+        Pick<SigninStateProps,
             // states:
             |'defaultSection'
         >
@@ -73,7 +73,7 @@ export function SignInPageContent(props: SignInPageContentProps): JSX.Element|nu
     const {
         // states:
         setSection,
-    } = useSigninTabState();
+    } = useSigninState();
     
     
     

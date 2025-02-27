@@ -50,7 +50,7 @@ import {
 
 // internal components:
 import {
-    SigninTabStateProvider,
+    SigninStateProvider,
 }                           from '@/components/SignIn'
 import {
     CartStateProvider,
@@ -186,7 +186,7 @@ export function RootLayoutContent({
             <body>
                 <InterceptingRouterProvider>
                     <NextAuthSessionProvider>
-                        <SigninTabStateProvider>
+                        <SigninStateProvider>
                             <Provider store={store}><PersistGate persistor={persistor}>
                                 <DialogMessageProvider
                                     fetchErrorTitleDefault={fetchErrorTitleDefault}
@@ -203,7 +203,7 @@ export function RootLayoutContent({
                                     </CartStateProvider>
                                 </DialogMessageProvider>
                             </PersistGate></Provider>
-                        </SigninTabStateProvider>
+                        </SigninStateProvider>
                     </NextAuthSessionProvider>
                 </InterceptingRouterProvider>
             </body>

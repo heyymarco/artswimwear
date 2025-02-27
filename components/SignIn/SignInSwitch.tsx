@@ -14,9 +14,9 @@ import {
 
 // internal components:
 import {
-    SigninTabStateProps,
-    useSigninTabState,
-}                           from './states/signinTabState'
+    SigninStateProps,
+    useSigninState,
+}                           from './states/signinState'
 import {
     IfPath,
 }                           from './IfPath'
@@ -26,7 +26,7 @@ import {
 // react components:
 export interface SignInSwitchProps
     extends
-        Required<Pick<SigninTabStateProps,
+        Required<Pick<SigninStateProps,
             // states:
             |'section'
         >>
@@ -78,7 +78,7 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
     const {
         // states:
         setSection,
-    } = useSigninTabState();
+    } = useSigninState();
     
     
     

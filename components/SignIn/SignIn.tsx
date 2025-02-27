@@ -35,8 +35,8 @@ export *                    from '@heymarco/next-auth'
 
 // internals:
 import {
-    useSigninTabState,
-}                           from './states/signinTabState'
+    useSigninState,
+}                           from './states/signinState'
 import {
     loginProviders,
 }                           from './loginProviders'
@@ -84,7 +84,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
         // states:
         section,
         setSection,
-    } = useSigninTabState();
+    } = useSigninState();
     
     
     
