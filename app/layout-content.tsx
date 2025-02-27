@@ -192,7 +192,9 @@ export function RootLayoutContent({
                                     fetchErrorTitleDefault={fetchErrorTitleDefault}
                                     fetchErrorMessageDefault={fetchErrorMessageDefault}
                                 >
+                                    {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                     <CartStateProvider>
+                                        {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
                                         <SearchExplorerStateProvider>
                                                 <RootLayoutContentInternal>
                                                     {children}
