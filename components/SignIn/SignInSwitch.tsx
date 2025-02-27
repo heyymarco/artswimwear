@@ -14,7 +14,7 @@ import {
 
 // internal components:
 import {
-    SigninStateProps,
+    type SigninState,
     useSigninState,
 }                           from './states/signinState'
 import {
@@ -26,10 +26,10 @@ import {
 // react components:
 export interface SignInSwitchProps
     extends
-        Required<Pick<SigninStateProps,
+        Pick<SigninState,
             // states:
             |'section'
-        >>
+        >
 {
     // conditions:
     ifPathname ?: string
