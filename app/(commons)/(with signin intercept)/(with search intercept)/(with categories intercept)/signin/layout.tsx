@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// internal components:
-import {
-    SigninTabStateProvider,
-}                           from '@/components/SignIn'
-
 
 
 // react components:
@@ -23,9 +18,9 @@ export default function TabInterceptLayout({
 }): JSX.Element|null {
     // jsx:
     return (
-        <SigninTabStateProvider>
+        <>
             {children}
             {signin_tab}
-        </SigninTabStateProvider>
+        </>
     );
 }
