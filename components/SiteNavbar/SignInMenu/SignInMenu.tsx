@@ -271,7 +271,17 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 
                 
                 // states:
-                active={(isBusy || mayInterceptedPathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
+                active={
+                    (
+                        isBusy
+                        ||
+                        (mayInterceptedPathname.startsWith(signInPath) && ['', '/'].includes(mayInterceptedPathname.slice(signInPath.length, signInPath.length + 1)))
+                        ||
+                        !!shownMenu
+                    )
+                    ? true
+                    : undefined
+                }
                 
                 
                 
