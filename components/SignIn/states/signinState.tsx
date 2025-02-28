@@ -150,13 +150,13 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
     
     const [dropdownState, setDropdownState] = useState<DropdownState|null>(null); // initially no <DropdownUi> was shown
     
-    const mayInterceptedPathname = usePathname();
-    const lastNonSigninPathname  = useRef<string>('/');
+    const mayInterceptedPathname     = usePathname();
+    const lastNonInterceptedPathname = useRef<string>('/');
     
     // if the pathname is neither the `signInPath` nor its sub-path:
     if (!mayInterceptedPathname.startsWith(signInPath) || !['', '/'].includes(mayInterceptedPathname.slice(signInPath.length, signInPath.length + 1))) {
         // remember the last non-signin pathname:
-        lastNonSigninPathname.current = mayInterceptedPathname;
+        lastNonInterceptedPathname.current = mayInterceptedPathname;
     } // if
     
     const {
@@ -247,7 +247,7 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
                 setIsShown(false);
                 
                 // restore the url manually:
-                interceptingPush(lastNonSigninPathname.current);
+                interceptingPush(lastNonInterceptedPathname.current);
                 return false;
             });
         }
@@ -296,7 +296,7 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
                     signInComponent={
                         <SignIn<Element>
                             // back to current page after signed in, so the user can continue the task:
-                            defaultCallbackUrl={lastNonSigninPathname.current}
+                            defaultCallbackUrl={lastNonInterceptedPathname.current}
                         />
                     }
                 />
