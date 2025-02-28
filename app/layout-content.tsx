@@ -50,7 +50,7 @@ import {
 
 // internal components:
 import {
-    SigninStateProvider,
+    SigninInterceptingStateProvider,
 }                           from '@/components/SignIn'
 import {
     CartStateProvider,
@@ -191,8 +191,8 @@ export function RootLayoutContent({
                                 fetchErrorTitleDefault={fetchErrorTitleDefault}
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
-                                {/* <SigninStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
-                                <SigninStateProvider>
+                                {/* <SigninInterceptingStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
+                                <SigninInterceptingStateProvider>
                                     {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                     <CartStateProvider>
                                         {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
@@ -202,7 +202,7 @@ export function RootLayoutContent({
                                             </RootLayoutContentInternal>
                                         </SearchExplorerStateProvider>
                                     </CartStateProvider>
-                                </SigninStateProvider>
+                                </SigninInterceptingStateProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>
                     </NextAuthSessionProvider>

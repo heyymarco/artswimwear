@@ -81,10 +81,10 @@ interface DropdownState {
 
 // states:
 
-//#region signinState
+//#region signinInterceptingState
 
 // contexts:
-export interface SigninState
+export interface SigninInterceptingState
     extends
         Required<Pick<SignInProps,
             // states:
@@ -99,7 +99,7 @@ export interface SigninState
 }
 
 const noopSetter = () => {};
-const defaultSigninStateContext : SigninState = {
+const defaultSigninInterceptingStateContext : SigninInterceptingState = {
     // states:
     isShown    : false,
     setIsShown : noopSetter,
@@ -107,26 +107,26 @@ const defaultSigninStateContext : SigninState = {
     section    : 'signIn',
     setSection : noopSetter,
 };
-const SigninStateContext = createContext<SigninState>(defaultSigninStateContext);
-SigninStateContext.displayName  = 'SigninState';
+const SigninInterceptingStateContext = createContext<SigninInterceptingState>(defaultSigninInterceptingStateContext);
+SigninInterceptingStateContext.displayName  = 'SigninInterceptingState';
 
-export const useSigninState = (): SigninState => {
-    const signinState = useContext(SigninStateContext);
+export const useSigninInterceptingState = (): SigninInterceptingState => {
+    const signinInterceptingState = useContext(SigninInterceptingStateContext);
     if (process.env.NODE_ENV !== 'production') {
-        if (signinState === defaultSigninStateContext) {
-            console.error('Not in <SigninStateProvider>.');
+        if (signinInterceptingState === defaultSigninInterceptingStateContext) {
+            console.error('Not in <SigninInterceptingStateProvider>.');
         } // if
     } // if
-    return signinState;
+    return signinInterceptingState;
 }
 
 
 
 // react components:
-export interface SigninStateProps
+export interface SigninInterceptingStateProps
 {
 }
-const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): JSX.Element|null => {
+const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninInterceptingStateProps>): JSX.Element|null => {
     // props:
     const {
         // children:
@@ -260,7 +260,7 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
     
     
     // states:
-    const signinState = useMemo<SigninState>(() => ({
+    const signinInterceptingState = useMemo<SigninInterceptingState>(() => ({
         // states:
         isShown,
         setIsShown,
@@ -280,7 +280,7 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
     
     // jsx:
     return (
-        <SigninStateContext.Provider value={signinState}>
+        <SigninInterceptingStateContext.Provider value={signinInterceptingState}>
             {children}
             
             <CollapsibleSuspense>
@@ -301,11 +301,11 @@ const SigninStateProvider = (props: React.PropsWithChildren<SigninStateProps>): 
                     }
                 />
             </CollapsibleSuspense>
-        </SigninStateContext.Provider>
+        </SigninInterceptingStateContext.Provider>
     );
 };
 export {
-    SigninStateProvider,            // named export for readibility
-    SigninStateProvider as default, // default export to support React.lazy
+    SigninInterceptingStateProvider,            // named export for readibility
+    SigninInterceptingStateProvider as default, // default export to support React.lazy
 }
-//#endregion signinState
+//#endregion signinInterceptingState

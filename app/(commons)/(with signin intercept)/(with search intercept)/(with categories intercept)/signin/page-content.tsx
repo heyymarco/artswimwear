@@ -34,8 +34,8 @@ import {
     SignInInfo,
 }                           from '@/components/SignInInfo'
 import {
-    type SigninState,
-    useSigninState,
+    type SigninInterceptingState,
+    useSigninInterceptingState,
     
     SignIn,
 }                           from '@/components/SignIn'
@@ -45,7 +45,7 @@ import {
 // react components:
 export interface SignInPageContentProps
 {
-    defaultSection ?: SigninState['section']
+    defaultSection ?: SigninInterceptingState['section']
 }
 export function SignInPageContent(props: SignInPageContentProps): JSX.Element|null {
     // props:
@@ -69,7 +69,7 @@ export function SignInPageContent(props: SignInPageContentProps): JSX.Element|nu
     const {
         // states:
         setSection,
-    } = useSigninState();
+    } = useSigninInterceptingState();
     
     
     

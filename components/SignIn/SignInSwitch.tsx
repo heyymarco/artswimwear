@@ -14,9 +14,9 @@ import {
 
 // internal components:
 import {
-    type SigninState,
-    useSigninState,
-}                           from './states/signinState'
+    type SigninInterceptingState,
+    useSigninInterceptingState,
+}                           from './states/signinInterceptingState'
 import {
     IfPath,
 }                           from './IfPath'
@@ -26,7 +26,7 @@ import {
 // react components:
 export interface SignInSwitchProps
     extends
-        Pick<SigninState,
+        Pick<SigninInterceptingState,
             // states:
             |'section'
         >
@@ -104,7 +104,7 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
         // states:
         setIsShown,
         setSection,
-    } = useSigninState();
+    } = useSigninInterceptingState();
     
     
     

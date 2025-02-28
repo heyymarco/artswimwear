@@ -35,8 +35,8 @@ export *                    from '@heymarco/next-auth'
 
 // internals:
 import {
-    useSigninState,
-}                           from './states/signinState'
+    useSigninInterceptingState,
+}                           from './states/signinInterceptingState'
 import {
     loginProviders,
 }                           from './loginProviders'
@@ -84,7 +84,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
         // states:
         section,
         setSection,
-    } = useSigninState();
+    } = useSigninInterceptingState();
     
     
     
