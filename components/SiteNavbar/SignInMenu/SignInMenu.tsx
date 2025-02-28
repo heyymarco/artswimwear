@@ -172,6 +172,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         
         if (isSignedOut) {
             router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
+            toggleList(false); // collapse the <Navbar> manually
         }
         else if (isSignedIn) {
             if (shownMenu) {
