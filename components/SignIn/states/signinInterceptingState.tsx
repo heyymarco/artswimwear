@@ -34,8 +34,8 @@ import {
 
 // reusable-ui components:
 import {
-    // menu-components:
-    type DropdownExpandedChangeEvent,
+    // dialog-components:
+    type ModalExpandedChangeEvent,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // heymarco components:
@@ -68,7 +68,7 @@ import {
 
 
 // types:
-interface DropdownState {
+interface DialogState {
     expanded       : boolean
     
     closingPromise : Promise<void>
@@ -148,7 +148,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     const [isShown, setIsShown] = useState<boolean>(false);
     const [section, setSection] = useState<ControllableSignInSection>('signIn');
     
-    const [dropdownState, setDropdownState] = useState<DropdownState|null>(null); // initially no <DropdownUi> was shown
+    const [dialogState, setDialogState] = useState<DialogState|null>(null); // initially no <DialogUi> was shown
     
     const mayInterceptedPathname     = usePathname();
     const lastNonInterceptedPathname = useRef<string>('/');
@@ -169,31 +169,31 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     
     
     // handlers:
-    const showDropdownAndWaitUntilClosing = useEvent(async (): Promise<void> => {
+    const showDialogAndWaitUntilClosing = useEvent(async (): Promise<void> => {
         // conditions:
-        if (dropdownState) {
-            // The <DropdownUi> is already opened => wait until the <DropdownUi> start to close:
-            await dropdownState.closingPromise;
+        if (dialogState) {
+            // The <DialogUi> is already opened => wait until the <DialogUi> start to close:
+            await dialogState.closingPromise;
             return;
         } // if
         
         
         
         // actions:
-        // The <DropdownUi> is not opened => open a new one:
+        // The <DialogUi> is not opened => open a new one:
         const { promise: closingPromise, resolve: signalClosing } = Promise.withResolvers<void>();
-        const newDropdownState : DropdownState = {
+        const newDialogState : DialogState = {
             expanded: true, // initially expanded
             
             closingPromise,
             signalClosing,
         };
-        setDropdownState(newDropdownState);
-        await closingPromise; // wait until the <DropdownUi> start to close
+        setDialogState(newDialogState);
+        await closingPromise; // wait until the <DialogUi> start to close
     });
-    const closeDropdown                   = useEvent((): void => {
+    const closeDialog                   = useEvent((): void => {
         // mutate to collapsed state:
-        setDropdownState((current) => {
+        setDialogState((current) => {
             if (!current) return null; // no state => noting to mutate
             if (!current.expanded) return current; // already collapsed => nothing to mutate
             
@@ -203,18 +203,18 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
             };
         });
     });
-    const handleExpandedChange            = useEvent<EventHandler<DropdownExpandedChangeEvent<unknown>>>(async ({ expanded }) => {
+    const handleExpandedChange          = useEvent<EventHandler<ModalExpandedChangeEvent<unknown>>>(async ({ expanded }) => {
         // conditions:
         if (expanded) return; // only interested of collapsed event, ignores expanded event
         
         
         
         // actions:
-        closeDropdown(); // the <DropdownUi> request to close => close the <DropdownUi>
+        closeDialog(); // the <DialogUi> request to close => close the <DialogUi>
     });
-    const handleCollapseStart             = useEvent<EventHandler<void>>(() => {
-        dropdownState?.signalClosing(); // notify that the <DropdownUi> start to close
-        setDropdownState(null); // remove the <DropdownUi>'s state
+    const handleCollapseStart           = useEvent<EventHandler<void>>(() => {
+        dialogState?.signalClosing(); // notify that the <DialogUi> start to close
+        setDialogState(null); // remove the <DialogUi>'s state
     });
     
     
@@ -239,7 +239,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
                 
                 
                 // show the dialog and wait until begin to close:
-                await showDropdownAndWaitUntilClosing();
+                await showDialogAndWaitUntilClosing();
                 
                 
                 
@@ -253,7 +253,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
         }
         else {
             // close the dialog:
-            closeDropdown();
+            closeDialog();
         } // if
     }, [isShown]);
     
@@ -286,7 +286,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
             <CollapsibleSuspense>
                 <SignInDialog
                     // states:
-                    expanded={dropdownState?.expanded ?? false}
+                    expanded={dialogState?.expanded ?? false}
                     onExpandedChange={handleExpandedChange}
                     onCollapseStart={handleCollapseStart}
                     
