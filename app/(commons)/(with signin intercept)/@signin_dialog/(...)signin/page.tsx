@@ -4,12 +4,20 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useEffect,
 }                           from 'react'
 
 // internal components:
 import {
     SignInSwitch,
 }                           from '@/components/SignIn'
+import {
+    useSigninState,
+}                           from '@/components/SignIn/states/signinState'
 
 
 
@@ -22,6 +30,29 @@ export default function SignInIntercept(): JSX.Element|null {
     
     
     
+    // states:
+    const {
+        // states:
+        setIsShown : setSignInIsShown,
+    } = useSigninState();
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // setups:
+        setSignInIsShown(true);
+        
+        
+        
+        // cleanups:
+        return () => {
+            setSignInIsShown(false);
+        };
+    }, []);
+    
+    
+    
     // jsx:
-    return <SignInSwitch section='signIn' />;
+    return <SignInSwitch section='signIn' showDialog={true} />;
 }

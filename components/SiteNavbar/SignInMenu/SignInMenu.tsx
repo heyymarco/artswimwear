@@ -62,16 +62,9 @@ import {
     ProfileImage,
 }                           from '@/components/ProfileImage'
 import {
-    SignInDialog,
-}                           from '@/components/dialogs/SignInDialog'
-import {
     SignInDropdownResult,
     SignInDropdown,
 }                           from './SignInDropdown'
-import {
-    type Session,
-    SignIn,
-}                           from '@/components/SignIn'
 import {
     PrefetchKind,
     PrefetchRouter,
@@ -87,11 +80,6 @@ import {
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
-
-// states:
-import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -172,12 +160,6 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // states:
     const router                 = useRouter();
     const mayInterceptedPathname = usePathname();
-    const {
-        // actions:
-        interceptingPush,
-        
-        startIntercept,
-    } = useInterceptingRouter();
     
     
     
@@ -189,36 +171,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         
         
         if (isSignedOut) {
-            //#region a fix for signIn page interceptor when on /checkout page
-            // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
-            // if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(mayInterceptedPathname)) {
-                startIntercept(async (): Promise<boolean> => {
-                    interceptingPush(signInPath); // goto signIn page
-                    toggleList(false); // collapse the <Navbar> manually
-                    
-                    
-                    
-                    const shownDialogPromise = showDialog<false|Session>(
-                        <SignInDialog
-                            // components:
-                            signInComponent={
-                                <SignIn<Element>
-                                    // back to current page after signed in, so the user can continue the task:
-                                    defaultCallbackUrl={mayInterceptedPathname}
-                                />
-                            }
-                        />
-                    );
-                    
-                    
-                    
-                    // on collapsing (starts to close):
-                    await shownDialogPromise.collapseStartEvent();
-                    // restore the url:
-                    return true;
-                });
-            // } // if
-            //#endregion a fix for signIn page interceptor when on /checkout page
+            router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
         }
         else if (isSignedIn) {
             if (shownMenu) {

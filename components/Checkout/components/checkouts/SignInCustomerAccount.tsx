@@ -11,66 +11,23 @@ import {
     useSession,
 }                           from 'next-auth/react'
 
-// next-js:
-import {
-    usePathname,
-}                           from 'next/navigation'
-
 // cssfn:
 import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
-// reusable-ui components:
-import {
-    // utility-components:
-    useDialogMessage,
-}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-
 // internal components:
-import {
-    SignInDialog,
-}                           from '@/components/dialogs/SignInDialog'
 import {
     SignInInfo,
 }                           from '@/components/SignInInfo'
 import {
     SignInGate,
 }                           from '@/components/SignInGate'
-import {
-    type Session,
-    SignIn,
-}                           from '@/components/SignIn'
-
-// states:
-import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
-
-// configs:
-import {
-    authConfigClient,
-}                           from '@/auth.config.client'
 
 
 
 // react components:
 const SignInCustomerAccount = (): JSX.Element|null => {
-    // configs:
-    const {
-        signIn : {
-            path : signInPath,
-        }
-    } = authConfigClient;
-    
-    
-    
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
@@ -78,54 +35,6 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     
     // sessions:
     const { data: session } = useSession();
-    
-    
-    
-    // dialogs:
-    const {
-        showDialog,
-    } = useDialogMessage();
-    
-    
-    
-    // states:
-    const mayInterceptedPathname = usePathname();
-    const {
-        // actions:
-        interceptingPush,
-        
-        startIntercept,
-    } = useInterceptingRouter();
-    
-    
-    
-    // handlers:
-    const handleSignInLinkClick = useEvent((): void => {
-        startIntercept(async (): Promise<boolean> => {
-            interceptingPush(signInPath); // goto signIn page
-            
-            
-            
-            const shownDialogPromise = showDialog<false|Session>(
-                <SignInDialog
-                    // components:
-                    signInComponent={
-                        <SignIn<Element>
-                            // back to current page after signed in, so the user can continue the task:
-                            defaultCallbackUrl={mayInterceptedPathname}
-                        />
-                    }
-                />
-            );
-            
-            
-            
-            // on collapsing (starts to close):
-            await shownDialogPromise.collapseStartEvent();
-            // restore the url:
-            return true;
-        });
-    });
     
     
     
@@ -143,11 +52,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                 </div>
                 <SignInInfo theme='success' />
             </div>}
-            <SignInGate
-                // handlers:
-                onSignIn={handleSignInLinkClick}
-                onSignUp={handleSignInLinkClick}
-            />
+            <SignInGate />
         </div>
     );
 };

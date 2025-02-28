@@ -18,6 +18,6 @@ export default function SignUpIntercept(): JSX.Element|null {
     
     // jsx:
     return (
-        <SignInSwitch section='signUp' />
+        <SignInSwitch section='signUp' showDialog={true} />
     );
 }

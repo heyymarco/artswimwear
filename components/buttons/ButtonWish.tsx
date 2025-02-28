@@ -13,7 +13,7 @@ import {
 
 // next-js:
 import {
-    usePathname,
+    useRouter,
 }                           from 'next/navigation'
 
 // reusable-ui core:
@@ -41,13 +41,6 @@ import {
 import {
     NotifyDialog,
 }                           from '@/components/dialogs/NotifyDialog'
-import {
-    SignInDialog,
-}                           from '@/components/dialogs/SignInDialog'
-import {
-    type Session,
-    SignIn,
-}                           from '@/components/SignIn'
 
 // models:
 import {
@@ -61,11 +54,6 @@ import {
     useUpdateWish,
     useDeleteWish,
 }                           from '@/store/features/api/apiSlice'
-
-// states:
-import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
 
 // configs:
 import {
@@ -127,13 +115,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     // states:
-    const mayInterceptedPathname = usePathname();
-    const {
-        // actions:
-        interceptingPush,
-        
-        startIntercept,
-    } = useInterceptingRouter();
+    const router = useRouter();
     
     
     
@@ -142,30 +124,7 @@ const ButtonWish = (props: ButtonWishProps) => {
         // conditions:
         if (!model) return;
         if (!isSignedIn) {
-            startIntercept(async (): Promise<boolean> => {
-                interceptingPush(signInPath); // goto signIn page
-                
-                
-                
-                const shownDialogPromise = showDialog<false|Session>(
-                    <SignInDialog
-                        // components:
-                        signInComponent={
-                            <SignIn<Element>
-                                // back to current page after signed in, so the user can continue the task:
-                                defaultCallbackUrl={mayInterceptedPathname}
-                            />
-                        }
-                    />
-                );
-                
-                
-                
-                // on collapsing (starts to close):
-                await shownDialogPromise.collapseStartEvent();
-                // restore the url:
-                return true;
-            });
+            router.push(signInPath, { scroll: false }); // goto signIn page // do not scroll the page because it triggers the signIn_dialog interceptor
             
             
             

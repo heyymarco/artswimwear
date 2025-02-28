@@ -33,12 +33,22 @@ export interface SignInSwitchProps
 {
     // conditions:
     ifPathname ?: string
+    
+    
+    
+    // behaviors:
+    showDialog ?: boolean
 }
 const SignInSwitch         = (props: SignInSwitchProps): JSX.Element|null => {
     // props:
     const {
         // conditions:
         ifPathname,
+        
+        
+        
+        // behaviors:
+        showDialog,
         
         
         
@@ -52,6 +62,11 @@ const SignInSwitch         = (props: SignInSwitchProps): JSX.Element|null => {
     if (ifPathname !== undefined) return (
         <IfPath ifPathname={ifPathname}>
             <SignInSwitchInternal
+                // behaviors:
+                showDialog={showDialog}
+                
+                
+                
                 // states:
                 section={section}
             />
@@ -60,6 +75,11 @@ const SignInSwitch         = (props: SignInSwitchProps): JSX.Element|null => {
     
     return (
         <SignInSwitchInternal
+            // behaviors:
+            showDialog={showDialog}
+            
+            
+            
             // states:
             section={section}
         />
@@ -68,6 +88,11 @@ const SignInSwitch         = (props: SignInSwitchProps): JSX.Element|null => {
 const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX.Element|null => {
     // props:
     const {
+        // behaviors:
+        showDialog = false,
+        
+        
+        
         // states:
         section,
     } = props;
@@ -77,6 +102,7 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
     // states:
     const {
         // states:
+        setIsShown,
         setSection,
     } = useSigninState();
     
@@ -84,8 +110,9 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
     
     // effects:
     useIsomorphicLayoutEffect(() => {
+        if (showDialog) setIsShown(true);
         setSection(section);
-    }, [section]);
+    }, [showDialog, section]);
     
     
     

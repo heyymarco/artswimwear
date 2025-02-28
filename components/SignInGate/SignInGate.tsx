@@ -16,12 +16,6 @@ import {
     useSignInGateStyleSheet,
 }                           from './styles/loader'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    type EventHandler,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
 // reusable-ui components:
 import {
     // base-content-components:
@@ -38,6 +32,11 @@ import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
+// configs:
+import {
+    authConfigClient,
+}                           from '@/auth.config.client'
+
 
 
 // react components:
@@ -50,12 +49,6 @@ export interface SignInGateProps<TElement extends Element = HTMLElement>
     textSignIn ?: React.ReactNode
     textSwitch ?: React.ReactNode
     textSignUp ?: React.ReactNode
-    
-    
-    
-    // handlers:
-    onSignIn   ?: EventHandler<unknown>
-    onSignUp   ?: EventHandler<unknown>
 }
 const SignInGate = <TElement extends Element = HTMLElement>(props: SignInGateProps<TElement>): JSX.Element|null => {
     // props:
@@ -67,15 +60,18 @@ const SignInGate = <TElement extends Element = HTMLElement>(props: SignInGatePro
         
         
         
-        // handlers:
-        onSignIn,
-        onSignUp,
-        
-        
-        
         // other props:
         ...restSignInGateProps
     } = props;
+    
+    
+    
+    // configs:
+    const {
+        signIn : {
+            path : signInPath,
+        },
+    } = authConfigClient;
     
     
     
@@ -131,13 +127,8 @@ const SignInGate = <TElement extends Element = HTMLElement>(props: SignInGatePro
                 <ButtonIcon
                     // appearances:
                     icon='login'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={onSignIn}
                 >
-                    <Link href='/signin' scroll={false}>
+                    <Link href={signInPath} scroll={false}>
                         Sign In
                     </Link>
                 </ButtonIcon>
@@ -156,13 +147,8 @@ const SignInGate = <TElement extends Element = HTMLElement>(props: SignInGatePro
                     // variants:
                     buttonStyle='link'
                     size='sm'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={onSignUp}
                 >
-                    <Link href='/signin/signup' scroll={false}>
+                    <Link href={`${signInPath}/signup`} scroll={false}>
                         Sign Up
                     </Link>
                 </ButtonIcon>

@@ -186,24 +186,25 @@ export function RootLayoutContent({
             <body>
                 <InterceptingRouterProvider>
                     <NextAuthSessionProvider>
-                        <SigninStateProvider>
-                            <Provider store={store}><PersistGate persistor={persistor}>
-                                <DialogMessageProvider
-                                    fetchErrorTitleDefault={fetchErrorTitleDefault}
-                                    fetchErrorMessageDefault={fetchErrorMessageDefault}
-                                >
+                        <Provider store={store}><PersistGate persistor={persistor}>
+                            <DialogMessageProvider
+                                fetchErrorTitleDefault={fetchErrorTitleDefault}
+                                fetchErrorMessageDefault={fetchErrorMessageDefault}
+                            >
+                                {/* <SigninStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
+                                <SigninStateProvider>
                                     {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                     <CartStateProvider>
                                         {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
                                         <SearchExplorerStateProvider>
-                                                <RootLayoutContentInternal>
-                                                    {children}
-                                                </RootLayoutContentInternal>
+                                            <RootLayoutContentInternal>
+                                                {children}
+                                            </RootLayoutContentInternal>
                                         </SearchExplorerStateProvider>
                                     </CartStateProvider>
-                                </DialogMessageProvider>
-                            </PersistGate></Provider>
-                        </SigninStateProvider>
+                                </SigninStateProvider>
+                            </DialogMessageProvider>
+                        </PersistGate></Provider>
                     </NextAuthSessionProvider>
                 </InterceptingRouterProvider>
             </body>
