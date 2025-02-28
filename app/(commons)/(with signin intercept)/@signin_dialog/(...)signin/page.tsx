@@ -4,20 +4,12 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useEffect,
 }                           from 'react'
 
 // internal components:
 import {
     SignInSwitch,
 }                           from '@/components/SignIn'
-import {
-    useSigninInterceptingState,
-}                           from '@/components/SignIn/states/signinInterceptingState'
 
 
 
@@ -27,29 +19,6 @@ export default function SignInIntercept(): JSX.Element|null {
         handles:
         * SOFT navigation of `/signin` => SHOW 'signIn' dialog and SWITCH to 'signIn' tab.
     */
-    
-    
-    
-    // states:
-    const {
-        // states:
-        setIsShown : setSignInIsShown,
-    } = useSigninInterceptingState();
-    
-    
-    
-    // effects:
-    useEffect(() => {
-        // setups:
-        setSignInIsShown(true);
-        
-        
-        
-        // cleanups:
-        return () => {
-            setSignInIsShown(false);
-        };
-    }, []);
     
     
     
