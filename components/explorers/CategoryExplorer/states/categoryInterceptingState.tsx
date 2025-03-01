@@ -62,6 +62,9 @@ interface DialogState {
     
     closingPromise : Promise<void>
     signalClosing  : () => void
+    
+    hasData        : boolean
+    data           : boolean|undefined
 }
 
 
@@ -156,7 +159,13 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
     const lastNonInterceptedPathname = useRef<string>('/');
     
     // if the pathname is neither the `categoriesPath` nor its sub-path:
-    if (!mayInterceptedPathname.startsWith(categoriesPath) || !['', '/'].includes(mayInterceptedPathname.slice(categoriesPath.length, categoriesPath.length + 1))) {
+    if (
+        // the pathname is not the escaped path:
+        (!mayInterceptedPathname.startsWith('/_/'))
+        &&
+        // the pathname is not the categories path:
+        (!mayInterceptedPathname.startsWith(categoriesPath) || !['', '/'].includes(mayInterceptedPathname.slice(categoriesPath.length, categoriesPath.length + 1)))
+    ) {
         // remember the last non-categories pathname:
         lastNonInterceptedPathname.current = mayInterceptedPathname;
     } // if
@@ -171,7 +180,7 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
     
     
     // handlers:
-    const showDialogAndWaitUntilClosing = useEvent(async (): Promise<void> => {
+    const showDialogAndWaitUntilClosing = useEvent(async (): Promise<boolean|undefined> => {
         // conditions:
         if (dialogState) {
             // The <DialogUi> is already opened => wait until the <DialogUi> start to close:
@@ -189,9 +198,13 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
             
             closingPromise,
             signalClosing,
+            
+            hasData : false,     // initially no data
+            data    : undefined, // initially no data
         };
         setDialogState(newDialogState);
         await closingPromise; // wait until the <DialogUi> start to close
+        return newDialogState.data;
     });
     const closeDialog                   = useEvent((): void => {
         // mutate to collapsed state:
@@ -205,7 +218,7 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
             };
         });
     });
-    const handleExpandedChange          = useEvent<EventHandler<ModalExpandedChangeEvent<unknown>>>(async ({ expanded }) => {
+    const handleExpandedChange          = useEvent<EventHandler<ModalExpandedChangeEvent<boolean>>>(async ({ expanded, data }) => {
         // conditions:
         if (expanded) return; // only interested of collapsed event, ignores expanded event
         
@@ -213,6 +226,10 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
         
         // actions:
         closeDialog(); // the <DialogUi> request to close => close the <DialogUi>
+        if (dialogState && !dialogState.hasData) {
+            dialogState.data    = data; // update the data
+            dialogState.hasData = true; // mark as has data
+        } // if
     });
     const handleCollapseStart           = useEvent<EventHandler<void>>(() => {
         dialogState?.signalClosing(); // notify that the <DialogUi> start to close
@@ -241,15 +258,15 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
                 
                 
                 // show the dialog and wait until begin to close:
-                await showDialogAndWaitUntilClosing();
+                const handled = await showDialogAndWaitUntilClosing();
                 
                 
                 
                 // update the state:
                 setIsDialogShown(false);
                 
-                // restore the url manually:
-                interceptingPush(lastNonInterceptedPathname.current);
+                // restore the url manually if not handled:
+                if (handled !== true) interceptingPush(lastNonInterceptedPathname.current);
                 return false;
             });
         }
