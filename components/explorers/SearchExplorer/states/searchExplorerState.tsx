@@ -184,7 +184,13 @@ const SearchExplorerStateContext = createContext<SearchExplorerState>(defaultSea
 SearchExplorerStateContext.displayName  = 'SearchExplorerState';
 
 export const useSearchExplorerState = (): SearchExplorerState => {
-    return useContext(SearchExplorerStateContext);
+    const searchExplorerState = useContext(SearchExplorerStateContext);
+    if (process.env.NODE_ENV !== 'production') {
+        if (searchExplorerState === defaultSearchExplorerStateContext) {
+            console.error('Not in <SearchExplorerStateProvider>.');
+        } // if
+    } // if
+    return searchExplorerState;
 }
 
 
