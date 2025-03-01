@@ -332,10 +332,10 @@ export default () => [
         // layouts:
         ...usesMainLayout(),
         ...usesSemiTransparentBackground(),
-    }),
+    }, { specificityWeight: 2 }), // overwrite <Container>'s styles
     
     scope('gallery', {
         // layouts:
         ...usesGalleryLayout(),
-    }, { specificityWeight: 3 }),
+    }, { specificityWeight: 3 }), // overwrite <Basic>'s styles
 ];
