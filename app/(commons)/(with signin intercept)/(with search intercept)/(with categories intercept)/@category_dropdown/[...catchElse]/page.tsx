@@ -8,20 +8,20 @@ import {
 
 // internal components:
 import {
-    CategoryExplorerOpen,
+    CategoryExplorerClose,
 }                           from '@/components/explorers/CategoryExplorer'
 
 
 
 // react components:
-export default function CategoryIntercept(): JSX.Element|null {
+export default function CategoryCloseIntercept(): JSX.Element|null {
     /*
         handles:
-        * SOFT navigation of `/categories` => SHOW <CategoryExplorerDropdown>.
+        * SOFT navigation of `/**` => CLOSE 'category' dialog.
     */
     
     
     
     // jsx:
-    return <CategoryExplorerOpen />;
+    return <CategoryExplorerClose />;
 }

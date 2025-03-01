@@ -420,16 +420,16 @@ export default () => [
         // layouts:
         ...usesRootLayout(),
         ...usesSemiTransparentBackground(),
-    }),
+    }, { specificityWeight: 2 }), // overwrite <CategoryExplorerList>'s styles
     scope('sub', {
         // layouts:
         ...usesSubLayout(),
         ...usesSemiTransparentBackground(),
-    }),
+    }, { specificityWeight: 2 }), // overwrite <CategoryExplorerGallery>'s styles
     scope('rootMergeSub', {
         // layouts:
         ...usesRootMergeSubLayout(),
-    }, { specificityWeight: 2 }), // higher specificity than root|sub
+    }, { specificityWeight: 3 }), // higher specificity than root|sub
     
     scope('nav', {
         // layouts:

@@ -53,6 +53,9 @@ import {
     SigninInterceptingStateProvider,
 }                           from '@/components/SignIn'
 import {
+    CategoryInterceptingStateProvider,
+}                           from '@/components/explorers/CategoryExplorer'
+import {
     CartStateProvider,
     CartDialog,
 }                           from '@/components/Cart'
@@ -193,15 +196,18 @@ export function RootLayoutContent({
                             >
                                 {/* <SigninInterceptingStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                 <SigninInterceptingStateProvider>
-                                    {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
-                                    <CartStateProvider>
-                                        {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
-                                        <SearchExplorerStateProvider>
-                                            <RootLayoutContentInternal>
-                                                {children}
-                                            </RootLayoutContentInternal>
-                                        </SearchExplorerStateProvider>
-                                    </CartStateProvider>
+                                    {/* <CategoryInterceptingStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
+                                    <CategoryInterceptingStateProvider>
+                                        {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
+                                        <CartStateProvider>
+                                            {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
+                                            <SearchExplorerStateProvider>
+                                                <RootLayoutContentInternal>
+                                                    {children}
+                                                </RootLayoutContentInternal>
+                                            </SearchExplorerStateProvider>
+                                        </CartStateProvider>
+                                    </CategoryInterceptingStateProvider>
                                 </SigninInterceptingStateProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>

@@ -4,7 +4,17 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useEffect,
 }                           from 'react'
+
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
 
 // reusable-ui core:
 import {
@@ -19,16 +29,24 @@ import {
 
 // reusable-ui components:
 import {
+    // composite-components:
+    NavItem,
+    useNavbarState,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
-    CategoryExplorerDropdown,
-}                           from '@/components/explorers/CategoryExplorer'
+    categoriesPath,
+}                           from '@/components/explorers/CategoryExplorer/configs'
 import {
     useGetHasCategories,
 }                           from '@/components/explorers/CategoryExplorer/hooks'
+import {
+    useCategoryInterceptingState,
+}                           from '@/components/explorers/CategoryExplorer/states/categoryInterceptingState'
 import {
     PrefetchCategoryPage,
 }                           from '@/components/prefetches/PrefetchCategoryPage'
@@ -38,7 +56,6 @@ import {
 }                           from '@/components/prefetches/PrefetchRouter'
 import {
     type NavbarMenuDropdownProps,
-    NavbarMenuDropdown,
 }                           from '@/components/SiteNavbar/NavbarMenuDropdown'
 
 // models:
@@ -65,11 +82,83 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     const [hasCategories, firstRootcategory] = useGetHasCategories();
     
     
+    const {
+        // refs:
+        navbarRef : getNavbarRef,
+        
+        
+        
+        // states:
+        navbarExpanded : isDesktopLayout,
+        listExpanded,
+        
+        
+        
+        // handlers:
+        toggleList,
+    } = useNavbarState();
+    
+    const {
+        // refs:
+        navbarRef : setNavbarRef,
+        menuRef,
+        
+        
+        
+        // states:
+        setIsDesktopLayout,
+        setIsNavbarListExpanded,
+        
+        isDialogShown,
+        setIsDialogShown,
+    } = useCategoryInterceptingState();
+    
+    const router = useRouter();
+    
+    
     
     // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (!hasCategories) event.preventDefault(); // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        // conditions:
+        if (!hasCategories) return; // not having categories => ignore => do not intercept with category menu => just directly displaying products page
+        
+        
+        
+        // actions:
+        event.preventDefault();  // prevents the `href='/target-path'` to HARD|SOFT navigate
+        event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
+        if (!isDialogShown) {
+            router.push(categoriesPath, { scroll: false }); // goto categories page // do not scroll the page because it triggers the categories_dropdown interceptor
+        }
+        else {
+            setIsDialogShown(false); // close the category menu
+        } // if
     });
+    
+    
+    
+    // effects:
+    
+    // Sync the <Navbar>'s ref with the <DropdownUi> ref:
+    setNavbarRef.current = getNavbarRef.current;
+    
+    // Sync the <Navbar>'s layout with the <DropdownUi> state:
+    useEffect(() => {
+        setIsDesktopLayout(isDesktopLayout);
+        setIsNavbarListExpanded(listExpanded);
+    }, [isDesktopLayout, listExpanded]);
+    
+    // In mobile mode => after the <DropdownUi> is fully closed => close the <Navbar>'s list too:
+    useEffect(() => {
+        // conditions:
+        if (isDialogShown  ) return; // only interested in the <DropdownUi> close event
+        if (isDesktopLayout) return; // only interested in mobile layout
+        
+        
+        
+        // actions:
+        toggleList(false); // collapse the <Navbar> manually
+    }, [isDialogShown]);
     
     
     
@@ -101,15 +190,22 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <NavbarMenuDropdown
+            <NavItem
                 // other props:
                 {...restNavItemProps}
                 
                 
                 
-                // components:
-                dropdownUiComponent={
-                    <CategoryExplorerDropdown />
+                // refs:
+                elmRef={menuRef}
+                
+                
+                
+                // states:
+                active={
+                    isDialogShown
+                    ? true
+                    : undefined
                 }
                 
                 
@@ -118,7 +214,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 onClick={handleClick}
             >
                 {children}
-            </NavbarMenuDropdown>
+            </NavItem>
             
             {/* PREFETCH for displaying the category PAGE, if having_categories: */}
             {hasCategories && <PrefetchRouter

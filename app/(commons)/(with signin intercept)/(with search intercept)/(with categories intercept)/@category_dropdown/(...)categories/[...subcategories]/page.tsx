@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// internal components:
+import {
+    CategoryExplorerOpen,
+}                           from '@/components/explorers/CategoryExplorer'
+
 
 
 // react components:
@@ -18,5 +23,5 @@ export default function CategoryIntercept(): JSX.Element|null {
     
     
     // jsx:
-    return null;
+    return <CategoryExplorerOpen />;
 }

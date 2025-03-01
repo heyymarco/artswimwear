@@ -45,19 +45,7 @@ import {
 
 
 // react components:
-export interface RouterUpdaterProps {
-    // handlers:
-    onClose ?: ((navigated: boolean) => void)   
-}
-const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
-    // props:
-    const {
-        // handlers:
-        onClose,
-    } = props;
-    
-    
-    
+const RouterUpdater = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -66,11 +54,6 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
     
     const mayInterceptedPathname = usePathname();
     const {
-        // states:
-        isInInterception,
-        
-        
-        
         // actions:
         interceptingPush,
         interceptingBack,
@@ -108,17 +91,6 @@ const RouterUpdater = (props: RouterUpdaterProps): JSX.Element|null => {
             } // if
         } // if
     }, [parentCategories, mayInterceptedPathname]);
-    
-    // Closes the dropdown if not in interception:
-    useEffect(() => {
-        // conditions:
-        if (isInInterception) return; // only interested if not in interception
-        
-        
-        
-        // actions:
-        onClose?.(true);
-    }, [isInInterception]);
     
     
     
