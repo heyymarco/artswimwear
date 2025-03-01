@@ -104,7 +104,7 @@ export const defaultInterceptingStateContext : InterceptingState = {
 
 
 
-export interface InterceptingDialogProps
+export interface InterceptingDialogComponentProps
     extends
         // bases:
         DropdownProps<Element, DropdownExpandedChangeEvent<boolean>>
@@ -119,7 +119,7 @@ export interface InterceptingStateProps {
     
     
     // components:
-    interceptingDialogComponent : React.ReactElement<InterceptingDialogProps>
+    interceptingDialogComponent : React.ReactElement<InterceptingDialogComponentProps>
 }
 export const useInterceptingState = (props: InterceptingStateProps) => {
     // props:
@@ -339,7 +339,7 @@ export const useInterceptingState = (props: InterceptingStateProps) => {
     // jsx:
     const interceptingDialog = (
         <CollapsibleSuspense>
-            {React.cloneElement<InterceptingDialogProps>(interceptingDialogComponent,
+            {React.cloneElement<InterceptingDialogComponentProps>(interceptingDialogComponent,
                 // props:
                 {
                     // appearances:
