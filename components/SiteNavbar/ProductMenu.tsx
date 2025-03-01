@@ -30,6 +30,7 @@ import {
 // reusable-ui components:
 import {
     // composite-components:
+    type NavItemProps,
     NavItem,
     useNavbarState,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -54,9 +55,6 @@ import {
     PrefetchKind,
     PrefetchRouter,
 }                           from '@/components/prefetches/PrefetchRouter'
-import {
-    type NavbarMenuDropdownProps,
-}                           from '@/components/SiteNavbar/NavbarMenuDropdown'
 
 // models:
 import {
@@ -71,10 +69,7 @@ import {
 export interface ProductMenuProps
     extends
         // bases:
-        Omit<NavbarMenuDropdownProps,
-            // components:
-            |'dropdownUiComponent'
-        >
+        NavItemProps
 {
 }
 const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
@@ -183,7 +178,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         
         // other props:
         ...restNavItemProps
-    } = props satisfies NoForeignProps<typeof props, Omit<NavbarMenuDropdownProps, 'dropdownUiComponent'>>;
+    } = props satisfies NoForeignProps<typeof props, NavItemProps>;
     
     
     
