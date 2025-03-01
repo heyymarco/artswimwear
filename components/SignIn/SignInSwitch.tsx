@@ -102,7 +102,7 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
     // states:
     const {
         // states:
-        setIsShown,
+        setIsDialogShown,
         setSection,
     } = useSigninInterceptingState();
     
@@ -110,7 +110,7 @@ const SignInSwitchInternal = (props: Omit<SignInSwitchProps, 'ifPathname'>): JSX
     
     // effects:
     useIsomorphicLayoutEffect(() => {
-        if (showDialog) setIsShown(true);
+        if (showDialog) setIsDialogShown(true);
         setSection(section);
     }, [showDialog, section]);
     

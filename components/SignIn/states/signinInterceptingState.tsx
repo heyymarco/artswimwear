@@ -92,20 +92,20 @@ export interface SigninInterceptingState
         >>
 {
     // states:
-    isShown    : boolean
-    setIsShown : (isShown: boolean) => void
+    isDialogShown    : boolean
+    setIsDialogShown : (isDialogShown: boolean) => void
     
-    setSection : (section: ControllableSignInSection) => void
+    setSection       : (section: ControllableSignInSection) => void
 }
 
 const noopSetter = () => {};
 const defaultSigninInterceptingStateContext : SigninInterceptingState = {
     // states:
-    isShown    : false,
-    setIsShown : noopSetter,
+    isDialogShown    : false,
+    setIsDialogShown : noopSetter,
     
-    section    : 'signIn',
-    setSection : noopSetter,
+    section          : 'signIn',
+    setSection       : noopSetter,
 };
 const SigninInterceptingStateContext = createContext<SigninInterceptingState>(defaultSigninInterceptingStateContext);
 SigninInterceptingStateContext.displayName  = 'SigninInterceptingState';
@@ -145,10 +145,10 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     
     
     // states:
-    const [isShown, setIsShown] = useState<boolean>(false);
-    const [section, setSection] = useState<ControllableSignInSection>('signIn');
+    const [isDialogShown, setIsDialogShown] = useState<boolean>(false);
+    const [section      , setSection      ] = useState<ControllableSignInSection>('signIn');
     
-    const [dialogState, setDialogState] = useState<DialogState|null>(null); // initially no <DialogUi> was shown
+    const [dialogState  , setDialogState  ] = useState<DialogState|null>(null); // initially no <DialogUi> was shown
     
     const mayInterceptedPathname     = usePathname();
     const lastNonInterceptedPathname = useRef<string>('/');
@@ -222,16 +222,16 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     // effects:
     
     // Shows/Hides the dialog:
-    const isShownRef = useRef<boolean>(isShown);
+    const prevIsDialogShownRef = useRef<boolean>(isDialogShown);
     useEffect(() => {
         // conditions:
-        if (isShownRef.current === isShown) return; // already the same => ignore
-        isShownRef.current = isShown;               // sync
+        if (prevIsDialogShownRef.current === isDialogShown) return; // already the same => ignore
+        prevIsDialogShownRef.current = isDialogShown;               // sync
         
         
         
         // actions:
-        if (isShown) {
+        if (isDialogShown) {
             // open the dialog:
             startIntercept(async (): Promise<boolean> => {
                 // interceptingPush(signInPath); // goto signIn page
@@ -244,7 +244,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
                 
                 
                 // update the state:
-                setIsShown(false);
+                setIsDialogShown(false);
                 
                 // restore the url manually:
                 interceptingPush(lastNonInterceptedPathname.current);
@@ -255,25 +255,25 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
             // close the dialog:
             closeDialog();
         } // if
-    }, [isShown]);
+    }, [isDialogShown]);
     
     
     
     // states:
     const signinInterceptingState = useMemo<SigninInterceptingState>(() => ({
         // states:
-        isShown,
-        setIsShown,
+        isDialogShown,
+        setIsDialogShown,
         
         section,
         setSection,
     }), [
         // states:
-        isShown,
-        // setIsShown, // stable ref
+        isDialogShown,
+        // setIsDialogShown, // stable ref
         
         section,
-        // setSection, // stable ref
+        // setSection,       // stable ref
     ]);
     
     

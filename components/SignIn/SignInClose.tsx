@@ -23,14 +23,14 @@ const SignInClose = (): JSX.Element|null => {
     // states:
     const {
         // states:
-        setIsShown : setSignInIsShown,
+        setIsDialogShown,
     } = useSigninInterceptingState();
     
     
     
     // effects:
     useEffect(() => {
-        setSignInIsShown(false);
+        setIsDialogShown(false);
     }, []);
     
     
