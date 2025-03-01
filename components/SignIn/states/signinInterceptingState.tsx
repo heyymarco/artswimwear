@@ -154,7 +154,13 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     const lastNonInterceptedPathname = useRef<string>('/');
     
     // if the pathname is neither the `signInPath` nor its sub-path:
-    if (!mayInterceptedPathname.startsWith(signInPath) || !['', '/'].includes(mayInterceptedPathname.slice(signInPath.length, signInPath.length + 1))) {
+    if ((
+        // the pathname is not the escaped path:
+        (!mayInterceptedPathname.startsWith('/_/'))
+        &&
+        // the pathname is not the `signInPath`:
+        (!mayInterceptedPathname.startsWith(signInPath) || !['', '/'].includes(mayInterceptedPathname.slice(signInPath.length, signInPath.length + 1))))
+    ) {
         // remember the last non-signin pathname:
         lastNonInterceptedPathname.current = mayInterceptedPathname;
     } // if
