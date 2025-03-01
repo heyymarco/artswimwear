@@ -35,11 +35,6 @@ import {
     Dropdown,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
-import {
-    type CartState,
-}                           from '@/components/Cart'
-
 // private components:
 import {
     type SearchExplorerProps,
@@ -97,12 +92,12 @@ const SearchExplorerDropdown = <TElement extends Element = HTMLElement>(props: S
             data       : true,
         });
     });
-    const handleClose = useEvent((navigated: boolean): void => {
+    const handleClose = useEvent((): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : navigated,
+            data       : false,
         });
     });
     

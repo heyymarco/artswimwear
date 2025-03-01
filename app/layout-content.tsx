@@ -60,6 +60,7 @@ import {
     CartDialog,
 }                           from '@/components/Cart'
 import {
+    SearchInterceptingStateProvider,
     SearchExplorerStateProvider,
 }                           from '@/components/explorers/SearchExplorer'
 import {
@@ -194,17 +195,17 @@ export function RootLayoutContent({
                                 fetchErrorTitleDefault={fetchErrorTitleDefault}
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
-                                {/* <SigninInterceptingStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                 <SigninInterceptingStateProvider>
-                                    {/* <CategoryInterceptingStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                     <CategoryInterceptingStateProvider>
-                                        {/* <CartStateProvider> must be inside <DialogMessageProvider> because it uses dialogs */}
                                         <CartStateProvider>
-                                            {/* <SearchExplorerStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
                                             <SearchExplorerStateProvider>
-                                                <RootLayoutContentInternal>
-                                                    {children}
-                                                </RootLayoutContentInternal>
+                                                {/* <SearchInterceptingStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
+                                                {/* <SearchInterceptingStateProvider> must be inside <SearchExplorerStateProvider> because the search result need to be preserved */}
+                                                <SearchInterceptingStateProvider>
+                                                    <RootLayoutContentInternal>
+                                                        {children}
+                                                    </RootLayoutContentInternal>
+                                                </SearchInterceptingStateProvider>
                                             </SearchExplorerStateProvider>
                                         </CartStateProvider>
                                     </CategoryInterceptingStateProvider>

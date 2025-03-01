@@ -4,7 +4,17 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useEffect,
 }                           from 'react'
+
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
 
 // reusable-ui core:
 import {
@@ -21,6 +31,13 @@ import {
 import {
     // simple-components:
     Icon,
+    
+    
+    
+    // composite-components:
+    type NavItemProps,
+    NavItem,
+    useNavbarState,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 // reusable-ui components:
 import {
@@ -29,21 +46,15 @@ import {
 
 // internal components:
 import {
-    SearchExplorerDropdown,
-}                           from '@/components/explorers/SearchExplorer'
+    searchPath,
+}                           from '@/components/explorers/SearchExplorer/configs'
 import {
-    type NavbarMenuDropdownProps,
-    NavbarMenuDropdown,
-}                           from '@/components/SiteNavbar/NavbarMenuDropdown'
+    useSearchInterceptingState,
+}                           from '@/components/explorers/SearchExplorer/states/searchInterceptingState'
 import {
     PrefetchKind,
     PrefetchRouter,
 }                           from '@/components/prefetches/PrefetchRouter'
-
-// states:
-import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
 
 
 
@@ -51,24 +62,83 @@ import {
 export interface SearchMenuProps
     extends
         // bases:
-        Omit<NavbarMenuDropdownProps,
-            // components:
-            |'dropdownUiComponent'
-        >
+        NavItemProps
 {
 }
 const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
     // states:
     const {
-        nonInterceptedPathname,
-    } = useInterceptingRouter();
+        // refs:
+        navbarRef : getNavbarRef,
+        
+        
+        
+        // states:
+        navbarExpanded : isDesktopLayout,
+        listExpanded,
+        
+        
+        
+        // handlers:
+        toggleList,
+    } = useNavbarState();
+    
+    const {
+        // refs:
+        navbarRef : setNavbarRef,
+        menuRef,
+        
+        
+        
+        // states:
+        setIsDesktopLayout,
+        setIsNavbarListExpanded,
+        
+        isDialogShown,
+        setIsDialogShown,
+    } = useSearchInterceptingState();
+    
+    const router = useRouter();
     
     
     
     // handlers:
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (nonInterceptedPathname === '/search') event.preventDefault(); // do not intercept with search menu if already in unintercepted search page
+        // actions:
+        event.preventDefault();  // prevents the `href='/target-path'` to HARD|SOFT navigate
+        event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
+        if (!isDialogShown) {
+            router.push(searchPath, { scroll: false }); // goto search page // do not scroll the page because it triggers the search_dropdown interceptor
+        }
+        else {
+            setIsDialogShown(false); // close the search menu
+        } // if
     });
+    
+    
+    
+    // effects:
+    
+    // Sync the <Navbar>'s ref with the <DropdownUi> ref:
+    setNavbarRef.current = getNavbarRef.current;
+    
+    // Sync the <Navbar>'s layout with the <DropdownUi> state:
+    useEffect(() => {
+        setIsDesktopLayout(isDesktopLayout);
+        setIsNavbarListExpanded(listExpanded);
+    }, [isDesktopLayout, listExpanded]);
+    
+    // In mobile mode => after the <DropdownUi> is fully closed => close the <Navbar>'s list too:
+    useEffect(() => {
+        // conditions:
+        if (isDialogShown  ) return; // only interested in the <DropdownUi> close event
+        if (isDesktopLayout) return; // only interested in mobile layout
+        
+        
+        
+        // actions:
+        toggleList(false); // collapse the <Navbar> manually
+    }, [isDialogShown]);
     
     
     
@@ -90,22 +160,29 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
                 </span>
             </Link>
         ),
-    } = props satisfies NoForeignProps<typeof props, Omit<NavbarMenuDropdownProps, 'dropdownUiComponent'>>;
+    } = props satisfies NoForeignProps<typeof props, NavItemProps>;
     
     
     
     // jsx:
     return (
         <>
-            <NavbarMenuDropdown
+            <NavItem
                 // other props:
                 {...props}
                 
                 
                 
-                // components:
-                dropdownUiComponent={
-                    <SearchExplorerDropdown />
+                // refs:
+                elmRef={menuRef}
+                
+                
+                
+                // states:
+                active={
+                    isDialogShown
+                    ? true
+                    : undefined
                 }
                 
                 
@@ -114,7 +191,7 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
                 onClick={handleClick}
             >
                 {children}
-            </NavbarMenuDropdown>
+            </NavItem>
             
             {/* PREFETCH for displaying the search PAGE: */}
             <PrefetchRouter

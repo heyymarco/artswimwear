@@ -8,20 +8,20 @@ import {
 
 // internal components:
 import {
-    SearchExplorerOpen,
+    SearchExplorerClose,
 }                           from '@/components/explorers/SearchExplorer'
 
 
 
 // react components:
-export default function SearchIntercept(): JSX.Element|null {
+export default function SearchCloseIntercept(): JSX.Element|null {
     /*
         handles:
-        * SOFT navigation of `/search` => SHOW <SearchExplorerDropdown>.
+        * SOFT navigation of `/` => CLOSE 'search' dialog.
     */
     
     
     
     // jsx:
-    return <SearchExplorerOpen />;
+    return <SearchExplorerClose />;
 }

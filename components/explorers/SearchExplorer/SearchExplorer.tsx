@@ -15,11 +15,6 @@ import {
 import {
     // a collection of TypeScript type utilities, assertions, and validations for ensuring type safety in reusable UI components:
     type NoForeignProps,
-    
-    
-    
-    // react helper hooks:
-    useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -71,7 +66,7 @@ export interface SearchExplorerProps<TElement extends Element = HTMLElement>
     
     // handlers:
     onNavigate     ?: ((url: string) => void) | null|undefined
-    onClose        ?: ((navigated: boolean) => void)   
+    onClose        ?: (() => void)            | null|undefined
 }
 const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExplorerProps<TElement>): JSX.Element|null => {
     // props:
@@ -105,13 +100,6 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
     
     // styles:
     const styles = useSearchExplorerStyleSheet();
-    
-    
-    
-    // handlers:
-    const handleClose = useEvent(() => {
-        onClose?.(false);
-    });
     
     
     
@@ -155,10 +143,7 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
             // classes:
             className={className}
         >
-            <RouterUpdater
-                // handlers:
-                onClose={onClose}
-            />
+            <RouterUpdater />
             
             
             
@@ -175,7 +160,7 @@ const SearchExplorer = <TElement extends Element = HTMLElement>(props: SearchExp
                 
                 
                 // handlers:
-                onClick={handleClose}
+                onClick={onClose ?? undefined}
             />}
             
             <SearchExplorerQuery
