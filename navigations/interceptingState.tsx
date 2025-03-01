@@ -363,17 +363,17 @@ export const useInterceptingState = (props: InterceptingStateProps) => {
                     floatingStrategy  : 'fixed', // prevents the influence by browser's scrollbar
                     floatingOn        : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: shows the <DropdownUi> on the bottom of <NavbarMenuDropdown>
+                        ? menuRef                // on desktop: shows the <DropdownUi> on the bottom of <InterceptingDialog>
                         : navbarRef              // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     floatingPlacement : (
                         isDesktopLayout
-                        ? 'bottom-end'           // on desktop: shows the <DropdownUi> on the bottom of <NavbarMenuDropdown>
+                        ? 'bottom-end'           // on desktop: shows the <DropdownUi> on the bottom of <InterceptingDialog>
                         : 'bottom-start'         // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     orientation       : (
                         isDesktopLayout
-                        ? 'block'                // on desktop: vertically   (top  to bottom) shows the <DropdownUi> on the bottom of <NavbarMenuDropdown>
+                        ? 'block'                // on desktop: vertically   (top  to bottom) shows the <DropdownUi> on the bottom of <InterceptingDialog>
                         : 'inline'               // on mobile : horizontally (left to  right) shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     
@@ -382,7 +382,7 @@ export const useInterceptingState = (props: InterceptingStateProps) => {
                     // auto focusable:
                     restoreFocusOn    : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: restores focus to <NavbarMenuDropdown>
+                        ? menuRef                // on desktop: restores focus to <InterceptingDialog>
                         : navbarRef              // on mobile: restores focus to <Navbar>
                     ),
                 },
