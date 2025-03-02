@@ -17,7 +17,7 @@ import {
 export default function CategoryIntercept(): JSX.Element|null {
     /*
         handles:
-        * SOFT navigation of `/categories` => SHOW <CategoryExplorerDropdown>.
+        * SOFT navigation of `/categories/subcategories*` => SHOW <CategoryExplorerDropdown>.
     */
     
     
