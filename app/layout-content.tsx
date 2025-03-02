@@ -64,9 +64,6 @@ import {
     SearchExplorerStateProvider,
 }                           from '@/components/explorers/SearchExplorer'
 import {
-    Header,
-}                           from './Header'
-import {
     Scroller,
 }                           from './Scroller'
 
@@ -163,8 +160,12 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 
 // react components:
 export function RootLayoutContent({
+    // children:
+    header,
     children,
 }: {
+    // children:
+    header   : React.ReactNode
     children : React.ReactNode
 }): JSX.Element|null {
     // styles:
@@ -202,7 +203,10 @@ export function RootLayoutContent({
                                                 {/* <SearchInterceptingStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
                                                 {/* <SearchInterceptingStateProvider> must be inside <SearchExplorerStateProvider> because the search result need to be preserved */}
                                                 <SearchInterceptingStateProvider>
-                                                    <RootLayoutContentInternal>
+                                                    <RootLayoutContentInternal
+                                                        // children:
+                                                        header={header}
+                                                    >
                                                         {children}
                                                     </RootLayoutContentInternal>
                                                 </SearchInterceptingStateProvider>
@@ -219,8 +223,12 @@ export function RootLayoutContent({
     );
 }
 function RootLayoutContentInternal({
+    // children:
+    header,
     children,
 }: {
+    // children:
+    header   : React.ReactNode
     children : React.ReactNode
 }): JSX.Element|null {
     // stores:
@@ -231,7 +239,7 @@ function RootLayoutContentInternal({
     // jsx:
     return (
         <>
-            <Header />
+            {header}
             
             <Scroller>
                 {children}
