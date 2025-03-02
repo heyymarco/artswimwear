@@ -19,8 +19,8 @@ import {
 
 // states:
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 // configs:
 import {
@@ -35,8 +35,8 @@ const RouterUpdater = (): JSX.Element|null => {
     const mayInterceptedPathname = usePathname();
     const {
         // actions:
-        interceptingPush,
-    } = useInterceptingRouter();
+        interceptPush,
+    } = useInterceptRouter();
     
     
     
@@ -54,7 +54,7 @@ const RouterUpdater = (): JSX.Element|null => {
         // actions:
         const newPathname = searchPath;
         if (newPathname.toLowerCase() !== mayInterceptedPathname.toLowerCase()) {
-            interceptingPush(newPathname); // change the pathName for accessibility reason
+            interceptPush(newPathname); // change the pathName for accessibility reason
         } // if
     }, [mayInterceptedPathname]);
     

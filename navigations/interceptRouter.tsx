@@ -37,11 +37,11 @@ import {
 
 // states:
 
-//#region interceptingRouter
+//#region interceptRouter
 
 // contexts:
 export type StartInterceptHandler = (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
-export interface InterceptingRouterState {
+export interface InterceptRouterState {
     // states:
     originPathname         : string|null
     nonInterceptedPathname : string
@@ -50,49 +50,28 @@ export interface InterceptingRouterState {
     
     
     // actions:
-    interceptingPush       : (...params: Parameters<ReturnType<typeof useRouter>['push']>) => Promise<boolean>
-    interceptingBack       : () => Promise<boolean>
-    interceptingForward    : () => Promise<boolean>
+    interceptPush          : (...params: Parameters<ReturnType<typeof useRouter>['push']>) => Promise<boolean>
+    interceptBack          : () => Promise<boolean>
+    interceptForward       : () => Promise<boolean>
     
     startIntercept         : StartInterceptHandler
 }
 
-const noopCallback        = () => Promise.resolve<void>(undefined);
-const noopCallbackBoolean = () => Promise.resolve<boolean>(false);
-const defaultInterceptingRouterStateContext : InterceptingRouterState = {
-    // states:
-    originPathname         : null,
-    nonInterceptedPathname : '/',
-    isInInterception       : false,
-    
-    
-    
-    // actions:
-    interceptingPush       : noopCallbackBoolean,
-    interceptingBack       : noopCallbackBoolean,
-    interceptingForward    : noopCallbackBoolean,
-    
-    startIntercept         : noopCallback,
-}
-const InterceptingRouterStateContext = createContext<InterceptingRouterState>(defaultInterceptingRouterStateContext);
-InterceptingRouterStateContext.displayName  = 'InterceptingRouterState';
+const InterceptRouterStateContext = createContext<InterceptRouterState|undefined>(undefined);
+if (process.env.NODE_ENV !== 'production') InterceptRouterStateContext.displayName  = 'InterceptRouterState';
 
-export const useInterceptingRouter = (): InterceptingRouterState => {
-    const interceptingRouterState = useContext(InterceptingRouterStateContext);
-    if (process.env.NODE_ENV !== 'production') {
-        if (interceptingRouterState === defaultInterceptingRouterStateContext) {
-            console.error('Not in <InterceptingRouterProvider>.');
-        } // if
-    } // if
-    return interceptingRouterState;
+export const useInterceptRouter = (): InterceptRouterState => {
+    const interceptRouterState = useContext(InterceptRouterStateContext);
+    if (interceptRouterState === undefined) throw Error('Not in <InterceptRouterProvider>.');
+    return interceptRouterState;
 }
 
 
 
 // react components:
-export interface InterceptingRouterProviderProps {
+export interface InterceptRouterProviderProps {
 }
-const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingRouterProviderProps>): JSX.Element|null => {
+const InterceptRouterProvider = (props: React.PropsWithChildren<InterceptRouterProviderProps>): JSX.Element|null => {
     // states:
     const mayInterceptedPathname = usePathname();
     const [originPathnameStack, setOriginPathnameStack] = useState<string[]>([]);
@@ -130,7 +109,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     
     
     // stable callbacks:
-    const interceptingPush    = useEvent<InterceptingRouterState['interceptingPush']>(async (pathname, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
+    const interceptPush    = useEvent<InterceptRouterState['interceptPush']>(async (pathname, options = { scroll: false /* do not scroll the page because it is the intercepting navigation */ }) => {
         // conditions:
         if (!isInInterception) return false; // not in interception => ignore
         if (pathname.toLowerCase() === mayInterceptedPathname.toLowerCase()) return true; // already the same => ignore
@@ -140,7 +119,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         // actions:
         return navigate(() => router.push(pathname, options));
     });
-    const interceptingBack    = useEvent<InterceptingRouterState['interceptingBack']>(async () => {
+    const interceptBack    = useEvent<InterceptRouterState['interceptBack']>(async () => {
         // conditions:
         if (!isInInterception) return false; // not in interception => ignore
         
@@ -149,7 +128,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         // actions:
         return navigate(() => router.back());
     });
-    const interceptingForward = useEvent<InterceptingRouterState['interceptingForward']>(async () => {
+    const interceptForward = useEvent<InterceptRouterState['interceptForward']>(async () => {
         // conditions:
         if (!isInInterception) return false; // not in interception => ignore
         
@@ -159,13 +138,13 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         return navigate(() => router.forward());
     });
     
-    const startIntercept      = useEvent<InterceptingRouterState['startIntercept']>(async (callback) => {
+    const startIntercept   = useEvent<InterceptRouterState['startIntercept']>(async (callback) => {
         // stack up:
         setOriginPathnameStack((current) => [...current, mayInterceptedPathname]); // append a new item to the last
         try {
             await new Promise<void>((resolve) => setTimeout(resolve, 0)); // wait for the stack to be updated (already rerendered)
             const restorePathname = (await callback()) ?? true;
-            if (restorePathname) await interceptingPush(mayInterceptedPathname); // go back to unintercepted pathName
+            if (restorePathname) await interceptPush(mayInterceptedPathname); // go back to unintercepted pathName
         }
         finally {
             // stack down:
@@ -203,7 +182,7 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
     
     
     // states:
-    const interceptingRouterState = useMemo<InterceptingRouterState>(() => ({
+    const interceptRouterState = useMemo<InterceptRouterState>(() => ({
         // states:
         originPathname,
         nonInterceptedPathname,
@@ -212,9 +191,9 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         
         
         // actions:
-        interceptingPush,
-        interceptingBack,
-        interceptingForward,
+        interceptPush,
+        interceptBack,
+        interceptForward,
         
         startIntercept,
     }), [
@@ -226,24 +205,24 @@ const InterceptingRouterProvider = (props: React.PropsWithChildren<InterceptingR
         
         
         // actions:
-        // interceptingPush,    // stable ref
-        // interceptingBack,    // stable ref
-        // interceptingForward, // stable ref
+        // interceptPush,    // stable ref
+        // interceptBack,    // stable ref
+        // interceptForward, // stable ref
         
-        // startIntercept,      // stable ref
+        // startIntercept,   // stable ref
     ]);
     
     
     
     // jsx:
     return (
-        <InterceptingRouterStateContext.Provider value={interceptingRouterState}>
+        <InterceptRouterStateContext.Provider value={interceptRouterState}>
             {props.children}
-        </InterceptingRouterStateContext.Provider>
+        </InterceptRouterStateContext.Provider>
     );
 };
 export {
-    InterceptingRouterProvider,
-    InterceptingRouterProvider as default,
+    InterceptRouterProvider,
+    InterceptRouterProvider as default,
 }
-//#endregion interceptingRouter
+//#endregion interceptRouter

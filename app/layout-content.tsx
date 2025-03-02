@@ -50,16 +50,16 @@ import {
 
 // internal components:
 import {
-    SigninInterceptingStateProvider,
+    SigninInterceptStateProvider,
 }                           from '@/components/SignIn'
 import {
-    CategoryInterceptingStateProvider,
+    CategoryInterceptStateProvider,
 }                           from '@/components/explorers/CategoryExplorer'
 import {
     CartStateProvider,
 }                           from '@/components/Cart'
 import {
-    SearchInterceptingStateProvider,
+    SearchInterceptStateProvider,
     SearchExplorerStateProvider,
 }                           from '@/components/explorers/SearchExplorer'
 import {
@@ -81,8 +81,8 @@ import {
     ScrollerStateProvider,
 }                           from '@/states/scrollerState'
 import {
-    InterceptingRouterProvider,
-}                           from '@/navigations/interceptingRouter'
+    InterceptRouterProvider,
+}                           from '@/navigations/interceptRouter'
 
 // configs:
 import {
@@ -195,20 +195,20 @@ export function RootLayoutContent({
                 <StylesSSR />
             </head>
             <body>
-                <InterceptingRouterProvider>
+                <InterceptRouterProvider>
                     <NextAuthSessionProvider>
                         <Provider store={store}><PersistGate persistor={persistor}>
                             <DialogMessageProvider
                                 fetchErrorTitleDefault={fetchErrorTitleDefault}
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
-                                <SigninInterceptingStateProvider>
-                                    <CategoryInterceptingStateProvider>
+                                <SigninInterceptStateProvider>
+                                    <CategoryInterceptStateProvider>
                                         <CartStateProvider>
                                             <SearchExplorerStateProvider>
-                                                {/* <SearchInterceptingStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
-                                                {/* <SearchInterceptingStateProvider> must be inside <SearchExplorerStateProvider> because the search result need to be preserved */}
-                                                <SearchInterceptingStateProvider>
+                                                {/* <SearchInterceptStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
+                                                {/* <SearchInterceptStateProvider> must be inside <SearchExplorerStateProvider> because the search result need to be preserved */}
+                                                <SearchInterceptStateProvider>
                                                     <RootLayoutContentInternal
                                                         // children:
                                                         header={header}
@@ -217,15 +217,15 @@ export function RootLayoutContent({
                                                     >
                                                         {children}
                                                     </RootLayoutContentInternal>
-                                                </SearchInterceptingStateProvider>
+                                                </SearchInterceptStateProvider>
                                             </SearchExplorerStateProvider>
                                         </CartStateProvider>
-                                    </CategoryInterceptingStateProvider>
-                                </SigninInterceptingStateProvider>
+                                    </CategoryInterceptStateProvider>
+                                </SigninInterceptStateProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>
                     </NextAuthSessionProvider>
-                </InterceptingRouterProvider>
+                </InterceptRouterProvider>
             </body>
         </html>
     );

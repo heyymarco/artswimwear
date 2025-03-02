@@ -34,8 +34,8 @@ import {
 
 // states:
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 // configs:
 import {
@@ -55,9 +55,9 @@ const RouterUpdater = (): JSX.Element|null => {
     const mayInterceptedPathname = usePathname();
     const {
         // actions:
-        interceptingPush,
-        interceptingBack,
-    } = useInterceptingRouter();
+        interceptPush,
+        interceptBack,
+    } = useInterceptRouter();
     
     
     
@@ -81,13 +81,13 @@ const RouterUpdater = (): JSX.Element|null => {
                 setHistoryUrls((historyUrls) => {
                     historyUrls.pop();
                 });
-                interceptingBack();
+                interceptBack();
             }
             else {
                 setHistoryUrls((historyUrls) => {
                     historyUrls.push(newPathname);
                 });
-                interceptingPush(newPathname); // change the pathName for accessibility reason
+                interceptPush(newPathname); // change the pathName for accessibility reason
             } // if
         } // if
     }, [parentCategories, mayInterceptedPathname]);

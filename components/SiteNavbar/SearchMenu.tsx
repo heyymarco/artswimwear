@@ -49,8 +49,8 @@ import {
     searchPath,
 }                           from '@/components/explorers/SearchExplorer/configs'
 import {
-    useSearchInterceptingState,
-}                           from '@/components/explorers/SearchExplorer/states/searchInterceptingState'
+    useSearchInterceptState,
+}                           from '@/components/explorers/SearchExplorer/states/searchInterceptState'
 import {
     PrefetchKind,
     PrefetchRouter,
@@ -96,7 +96,7 @@ const SearchMenu = (props: SearchMenuProps): JSX.Element|null => {
         
         isDialogShown,
         setIsDialogShown,
-    } = useSearchInterceptingState();
+    } = useSearchInterceptState();
     
     const router = useRouter();
     

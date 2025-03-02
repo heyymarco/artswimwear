@@ -1,4 +1,4 @@
-export * from './states/searchInterceptingState'
+export * from './states/searchInterceptState'
 export * from './states/searchExplorerState'
 
 export * from './SearchExplorer'

@@ -35,8 +35,8 @@ export *                    from '@heymarco/next-auth'
 
 // internals:
 import {
-    useSigninInterceptingState,
-}                           from './states/signinInterceptingState'
+    useSigninInterceptState,
+}                           from './states/signinInterceptState'
 import {
     loginProviders,
 }                           from './loginProviders'
@@ -49,8 +49,8 @@ import {
 
 // states:
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 // configs:
 import {
@@ -84,7 +84,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
         // states:
         section,
         setSection,
-    } = useSigninInterceptingState();
+    } = useSigninInterceptState();
     
     
     
@@ -92,8 +92,8 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     const router = useRouter();
     const {
         // actions:
-        interceptingPush,
-    } = useInterceptingRouter();
+        interceptPush,
+    } = useInterceptRouter();
     
     
     
@@ -101,7 +101,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     const handleNavigateSignIn  = useEvent(async (): Promise<void> => {
         (
             // when in intercepting dialog:
-            (await interceptingPush(pathNavigateSignIn ))
+            (await interceptPush(pathNavigateSignIn ))
             ||
             // when in full page:
             router.push(pathNavigateSignIn,  { scroll: false }) // do not scroll the page because it triggers the signIn_tab interceptor
@@ -110,7 +110,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     const handleNavigateSignUp  = useEvent(async (): Promise<void> => {
         (
             // when in intercepting dialog:
-            (await interceptingPush(pathNavigateSignUp ))
+            (await interceptPush(pathNavigateSignUp ))
             ||
             // when in full page:
             router.push(pathNavigateSignUp,  { scroll: false }) // do not scroll the page because it triggers the signUp_tab interceptor
@@ -119,7 +119,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     const handleNavigateRecover = useEvent(async (): Promise<void> => {
         (
             // when in intercepting dialog:
-            (await interceptingPush(pathNavigateRecover))
+            (await interceptPush(pathNavigateRecover))
             ||
             // when in full page:
             router.push(pathNavigateRecover, { scroll: false }) // do not scroll the page because it triggers the recover_tab interceptor

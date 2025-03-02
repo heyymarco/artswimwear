@@ -13,8 +13,8 @@ import {
 
 // internal components:
 import {
-    useSigninInterceptingState,
-}                           from './states/signinInterceptingState'
+    useSigninInterceptState,
+}                           from './states/signinInterceptState'
 
 
 
@@ -24,7 +24,7 @@ const SignInClose = (): JSX.Element|null => {
     const {
         // states:
         setIsDialogShown,
-    } = useSigninInterceptingState();
+    } = useSigninInterceptState();
     
     
     

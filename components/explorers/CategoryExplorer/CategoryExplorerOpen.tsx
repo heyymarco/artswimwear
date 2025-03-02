@@ -13,8 +13,8 @@ import {
 
 // internal components:
 import {
-    useCategoryInterceptingState,
-}                           from './states/categoryInterceptingState'
+    useCategoryInterceptState,
+}                           from './states/categoryInterceptState'
 
 
 
@@ -24,7 +24,7 @@ const CategoryExplorerOpen = (): JSX.Element|null => {
     const {
         // states:
         setIsDialogShown,
-    } = useCategoryInterceptingState();
+    } = useCategoryInterceptState();
     
     
     

@@ -46,8 +46,8 @@ import {
     useGetHasCategories,
 }                           from '@/components/explorers/CategoryExplorer/hooks'
 import {
-    useCategoryInterceptingState,
-}                           from '@/components/explorers/CategoryExplorer/states/categoryInterceptingState'
+    useCategoryInterceptState,
+}                           from '@/components/explorers/CategoryExplorer/states/categoryInterceptState'
 import {
     PrefetchCategoryPage,
 }                           from '@/components/prefetches/PrefetchCategoryPage'
@@ -106,7 +106,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         
         isDialogShown,
         setIsDialogShown,
-    } = useCategoryInterceptingState();
+    } = useCategoryInterceptState();
     
     const router = useRouter();
     

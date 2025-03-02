@@ -7,7 +7,7 @@ import {
 
 
 // contexts:
-export interface InterceptingState
+export interface InterceptState
 {
     // refs:
     navbarRef               : React.MutableRefObject<HTMLElement|null>

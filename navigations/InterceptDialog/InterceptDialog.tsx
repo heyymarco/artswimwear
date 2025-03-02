@@ -44,11 +44,11 @@ import {
 
 // states:
 import {
-    useInterceptingStateProvider,
-}                           from '@/navigations/interceptingState'
+    type InterceptState,
+}                           from '@/navigations/interceptState'
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 // internals:
 import {
@@ -58,7 +58,7 @@ import {
 
 
 // hooks:
-export interface InterceptingDialogComponentProps
+export interface InterceptDialogComponentProps
     extends
         // bases:
         DropdownProps<Element, DropdownExpandedChangeEvent<boolean>>
@@ -66,25 +66,35 @@ export interface InterceptingDialogComponentProps
     // appearances:
     mobileLayout ?: boolean
 }
-export interface InterceptingDialogProps {
+export interface InterceptDialogProps {
     // configs:
-    interceptingPath            : string
+    interceptPath            : string
+    
+    
+    
+    // states:
+    interceptState           : InterceptState
     
     
     
     // components:
-    interceptingDialogComponent : React.ReactElement<InterceptingDialogComponentProps>
+    interceptDialogComponent : React.ReactElement<InterceptDialogComponentProps>
 }
-const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null => {
+const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
     // props:
     const {
         // configs:
-        interceptingPath,
+        interceptPath,
+        
+        
+        
+        // states:
+        interceptState,
         
         
         
         // components:
-        interceptingDialogComponent,
+        interceptDialogComponent,
     } = props;
     
     
@@ -104,31 +114,31 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
         
         isDialogShown,
         setIsDialogShown,
-    } = useInterceptingStateProvider();
+    } = interceptState;
     
     const [dialogState, setDialogState] = useState<DialogState|null>(null); // initially no <DialogUi> was shown
     
     const mayInterceptedPathname     = usePathname();
     const lastNonInterceptedPathname = useRef<string>('/');
     
-    // if the pathname is neither the `interceptingPath` nor its sub-path:
+    // if the pathname is neither the `interceptPath` nor its sub-path:
     if (
         // the pathname is not the escaped path:
         (!mayInterceptedPathname.startsWith('/_/'))
         &&
-        // the pathname is not the `interceptingPath` path:
-        (!mayInterceptedPathname.startsWith(interceptingPath) || !['', '/'].includes(mayInterceptedPathname.slice(interceptingPath.length, interceptingPath.length + 1)))
+        // the pathname is not the `interceptPath` path:
+        (!mayInterceptedPathname.startsWith(interceptPath) || !['', '/'].includes(mayInterceptedPathname.slice(interceptPath.length, interceptPath.length + 1)))
     ) {
-        // remember the last non-`interceptingPath` path:
+        // remember the last non-`interceptPath` path:
         lastNonInterceptedPathname.current = mayInterceptedPathname;
     } // if
     
     const {
         // actions:
-        interceptingPush,
+        interceptPush,
         
         startIntercept,
-    } = useInterceptingRouter();
+    } = useInterceptRouter();
     
     
     
@@ -206,7 +216,7 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
         if (isDialogShown) {
             // open the dialog:
             startIntercept(async (): Promise<boolean> => {
-                // interceptingPush(interceptingPath); // goto `interceptingPath` page
+                // interceptPush(interceptPath); // goto `interceptPath` page
                 
                 
                 
@@ -219,7 +229,7 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
                 setIsDialogShown(false);
                 
                 // restore the url manually if not handled:
-                if (handled !== true) interceptingPush(lastNonInterceptedPathname.current);
+                if (handled !== true) interceptPush(lastNonInterceptedPathname.current);
                 return false;
             });
         }
@@ -261,7 +271,7 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
     // jsx:
     return (
         <CollapsibleSuspense>
-            {React.cloneElement<InterceptingDialogComponentProps>(interceptingDialogComponent,
+            {React.cloneElement<InterceptDialogComponentProps>(interceptDialogComponent,
                 // props:
                 {
                     // appearances:
@@ -285,17 +295,17 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
                     floatingStrategy  : 'fixed', // prevents the influence by browser's scrollbar
                     floatingOn        : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: shows the <DropdownUi> on the bottom of <InterceptingDialog>
+                        ? menuRef                // on desktop: shows the <DropdownUi> on the bottom of <InterceptDialog>
                         : navbarRef              // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     floatingPlacement : (
                         isDesktopLayout
-                        ? 'bottom-end'           // on desktop: shows the <DropdownUi> on the bottom of <InterceptingDialog>
+                        ? 'bottom-end'           // on desktop: shows the <DropdownUi> on the bottom of <InterceptDialog>
                         : 'bottom-start'         // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     orientation       : (
                         isDesktopLayout
-                        ? 'block'                // on desktop: vertically   (top  to bottom) shows the <DropdownUi> on the bottom of <InterceptingDialog>
+                        ? 'block'                // on desktop: vertically   (top  to bottom) shows the <DropdownUi> on the bottom of <InterceptDialog>
                         : 'inline'               // on mobile : horizontally (left to  right) shows the <DropdownUi> on the bottom of <Navbar>
                     ),
                     
@@ -304,7 +314,7 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
                     // auto focusable:
                     restoreFocusOn    : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: restores focus to <InterceptingDialog>
+                        ? menuRef                // on desktop: restores focus to <InterceptDialog>
                         : navbarRef              // on mobile: restores focus to <Navbar>
                     ),
                 },
@@ -313,6 +323,6 @@ const InterceptingDialog = (props: InterceptingDialogProps): JSX.Element|null =>
     );
 };
 export {
-    InterceptingDialog,            // named export for readibility
-    InterceptingDialog as default, // default export to support React.lazy
+    InterceptDialog,            // named export for readibility
+    InterceptDialog as default, // default export to support React.lazy
 }

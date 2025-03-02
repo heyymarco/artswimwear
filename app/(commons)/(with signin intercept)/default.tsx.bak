@@ -7,8 +7,8 @@ import {
 
 // states:
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 
 
@@ -27,7 +27,7 @@ export default function DefaultLostDialogIntercept(): JSX.Element|null {
     // states:
     const {
         nonInterceptedPathname,
-    } = useInterceptingRouter();
+    } = useInterceptRouter();
     
     
     

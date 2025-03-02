@@ -10,13 +10,13 @@ import {
 
 // internals:
 import {
-    type InterceptingState,
+    type InterceptState,
 }                           from './context'
 
 
 
 // hooks:
-export const useInterceptingStateProvider = () => {
+export const useInterceptStateProvider = () => {
     // refs:
     const navbarRef = useRef<HTMLElement|null>(null);
     const menuRef   = useRef<HTMLElement|null>(null);
@@ -32,7 +32,7 @@ export const useInterceptingStateProvider = () => {
     
     
     // states:
-    const interceptingState = useMemo<InterceptingState>(() => ({
+    const interceptState = useMemo<InterceptState>(() => ({
         // refs:
         navbarRef,
         menuRef,
@@ -69,5 +69,5 @@ export const useInterceptingStateProvider = () => {
     
     
     // api:
-    return interceptingState;
+    return interceptState;
 };

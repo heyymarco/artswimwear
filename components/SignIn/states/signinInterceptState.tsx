@@ -57,8 +57,8 @@ import {
 
 // states:
 import {
-    useInterceptingRouter,
-}                           from '@/navigations/interceptingRouter'
+    useInterceptRouter,
+}                           from '@/navigations/interceptRouter'
 
 // configs:
 import {
@@ -81,10 +81,8 @@ interface DialogState {
 
 // states:
 
-//#region signinInterceptingState
-
 // contexts:
-export interface SigninInterceptingState
+export interface SigninInterceptState
     extends
         Required<Pick<SignInProps,
             // states:
@@ -98,35 +96,22 @@ export interface SigninInterceptingState
     setSection       : (section: ControllableSignInSection) => void
 }
 
-const noopSetter = () => {};
-const defaultSigninInterceptingStateContext : SigninInterceptingState = {
-    // states:
-    isDialogShown    : false,
-    setIsDialogShown : noopSetter,
-    
-    section          : 'signIn',
-    setSection       : noopSetter,
-};
-const SigninInterceptingStateContext = createContext<SigninInterceptingState>(defaultSigninInterceptingStateContext);
-SigninInterceptingStateContext.displayName  = 'SigninInterceptingState';
+const SigninInterceptStateContext = createContext<SigninInterceptState|undefined>(undefined);
+if (process.env.NODE_ENV !== 'production') SigninInterceptStateContext.displayName  = 'SigninInterceptState';
 
-export const useSigninInterceptingState = (): SigninInterceptingState => {
-    const signinInterceptingState = useContext(SigninInterceptingStateContext);
-    if (process.env.NODE_ENV !== 'production') {
-        if (signinInterceptingState === defaultSigninInterceptingStateContext) {
-            console.error('Not in <SigninInterceptingStateProvider>.');
-        } // if
-    } // if
-    return signinInterceptingState;
+export const useSigninInterceptState = (): SigninInterceptState => {
+    const signinInterceptState = useContext(SigninInterceptStateContext);
+    if (signinInterceptState === undefined) throw Error('Not in <SigninInterceptStateProvider>.');
+    return signinInterceptState;
 }
 
 
 
 // react components:
-export interface SigninInterceptingStateProps
+export interface SigninInterceptStateProps
 {
 }
-const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninInterceptingStateProps>): JSX.Element|null => {
+const SigninInterceptStateProvider = (props: React.PropsWithChildren<SigninInterceptStateProps>): JSX.Element|null => {
     // props:
     const {
         // children:
@@ -167,10 +152,10 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     
     const {
         // actions:
-        interceptingPush,
+        interceptPush,
         
         startIntercept,
-    } = useInterceptingRouter();
+    } = useInterceptRouter();
     
     
     
@@ -240,7 +225,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
         if (isDialogShown) {
             // open the dialog:
             startIntercept(async (): Promise<boolean> => {
-                // interceptingPush(signInPath); // goto signIn page
+                // interceptPush(signInPath); // goto signIn page
                 
                 
                 
@@ -253,7 +238,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
                 setIsDialogShown(false);
                 
                 // restore the url manually:
-                interceptingPush(lastNonInterceptedPathname.current);
+                interceptPush(lastNonInterceptedPathname.current);
                 return false;
             });
         }
@@ -266,7 +251,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     
     
     // states:
-    const signinInterceptingState = useMemo<SigninInterceptingState>(() => ({
+    const signinInterceptState = useMemo<SigninInterceptState>(() => ({
         // states:
         isDialogShown,
         setIsDialogShown,
@@ -286,7 +271,7 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
     
     // jsx:
     return (
-        <SigninInterceptingStateContext.Provider value={signinInterceptingState}>
+        <SigninInterceptStateContext.Provider value={signinInterceptState}>
             {children}
             
             <CollapsibleSuspense>
@@ -307,11 +292,10 @@ const SigninInterceptingStateProvider = (props: React.PropsWithChildren<SigninIn
                     }
                 />
             </CollapsibleSuspense>
-        </SigninInterceptingStateContext.Provider>
+        </SigninInterceptStateContext.Provider>
     );
 };
 export {
-    SigninInterceptingStateProvider,            // named export for readibility
-    SigninInterceptingStateProvider as default, // default export to support React.lazy
+    SigninInterceptStateProvider,            // named export for readibility
+    SigninInterceptStateProvider as default, // default export to support React.lazy
 }
-//#endregion signinInterceptingState

@@ -13,8 +13,8 @@ import {
 
 // internal components:
 import {
-    useSearchInterceptingState,
-}                           from './states/searchInterceptingState'
+    useSearchInterceptState,
+}                           from './states/searchInterceptState'
 
 
 
@@ -24,7 +24,7 @@ const SearchExplorerOpen = (): JSX.Element|null => {
     const {
         // states:
         setIsDialogShown,
-    } = useSearchInterceptingState();
+    } = useSearchInterceptState();
     
     
     
