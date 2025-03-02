@@ -68,19 +68,25 @@ export interface InterceptDialogComponentProps
 }
 export interface InterceptDialogProps {
     // configs:
-    interceptPath            : string
+    interceptPath                  : string
     
     
     
     // states:
-    interceptState           : InterceptState
+    interceptState                 : InterceptState
+    lastNonInterceptedPathnameRef ?: React.MutableRefObject<string>
     
     
     
     // components:
-    interceptDialogComponent : React.ReactElement<InterceptDialogComponentProps>
+    interceptDialogComponent       : React.ReactElement<InterceptDialogComponentProps>
 }
 const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
+    // refs:
+    const lastNonInterceptedPathnameRefInternal = useRef<string>('/');
+    
+    
+    
     // props:
     const {
         // configs:
@@ -90,6 +96,7 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
         
         // states:
         interceptState,
+        lastNonInterceptedPathnameRef = lastNonInterceptedPathnameRefInternal,
         
         
         
@@ -118,8 +125,7 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
     
     const [dialogState, setDialogState] = useState<DialogState|null>(null); // initially no <DialogUi> was shown
     
-    const mayInterceptedPathname     = usePathname();
-    const lastNonInterceptedPathname = useRef<string>('/');
+    const mayInterceptedPathname        = usePathname();
     
     // if the pathname is neither the `interceptPath` nor its sub-path:
     if (
@@ -130,7 +136,7 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
         (!mayInterceptedPathname.startsWith(interceptPath) || !['', '/'].includes(mayInterceptedPathname.slice(interceptPath.length, interceptPath.length + 1)))
     ) {
         // remember the last non-`interceptPath` path:
-        lastNonInterceptedPathname.current = mayInterceptedPathname;
+        lastNonInterceptedPathnameRef.current = mayInterceptedPathname;
     } // if
     
     const {
@@ -229,7 +235,7 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
                 setIsDialogShown(false);
                 
                 // restore the url manually if not handled:
-                if (handled !== true) interceptPush(lastNonInterceptedPathname.current);
+                if (handled !== true) interceptPush(lastNonInterceptedPathnameRef.current);
                 return false;
             });
         }
