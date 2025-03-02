@@ -51,6 +51,7 @@ export default function RootLayout({
     
     cartDialog,
     categoryDialog,
+    searchDialog,
 }: {
     // children:
     header         : React.ReactNode
@@ -60,6 +61,7 @@ export default function RootLayout({
     
     cartDialog     : React.ReactNode
     categoryDialog : React.ReactNode
+    searchDialog   : React.ReactNode
 }): JSX.Element|null {
     // jsx:
     return (
@@ -70,6 +72,7 @@ export default function RootLayout({
             
             cartDialog={cartDialog}
             categoryDialog={categoryDialog}
+            searchDialog={searchDialog}
         >
             {children}
         </RootLayoutContent>

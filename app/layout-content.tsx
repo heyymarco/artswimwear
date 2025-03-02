@@ -57,6 +57,8 @@ import {
 }                           from '@/components/Cart'
 import {
     SearchInterceptStateProvider,
+}                           from '@/navigations/searchInterceptState'
+import {
     SearchExplorerStateProvider,
 }                           from '@/components/explorers/SearchExplorer'
 import {
@@ -170,6 +172,7 @@ export function RootLayoutContent({
     
     cartDialog,
     categoryDialog,
+    searchDialog,
 }: {
     // children:
     header         : React.ReactNode
@@ -179,6 +182,7 @@ export function RootLayoutContent({
     
     cartDialog     : React.ReactNode
     categoryDialog : React.ReactNode
+    searchDialog   : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -210,11 +214,11 @@ export function RootLayoutContent({
                             >
                                 <SigninInterceptStateProvider>
                                     <CategoryInterceptStateProvider>
-                                        <CartStateProvider>
-                                            <SearchExplorerStateProvider>
-                                                {/* <SearchInterceptStateProvider> must be inside <CartStateProvider> because it depends on cart's currency, productPreviews, etc */}
-                                                {/* <SearchInterceptStateProvider> must be inside <SearchExplorerStateProvider> because the search result need to be preserved */}
-                                                <SearchInterceptStateProvider>
+                                        <SearchInterceptStateProvider>
+                                            
+                                            <CartStateProvider>
+                                                <SearchExplorerStateProvider>
+                                                    
                                                     <RootLayoutContentInternal
                                                         // children:
                                                         header={header}
@@ -222,12 +226,15 @@ export function RootLayoutContent({
                                                         
                                                         cartDialog={cartDialog}
                                                         categoryDialog={categoryDialog}
+                                                        searchDialog={searchDialog}
                                                     >
                                                         {children}
                                                     </RootLayoutContentInternal>
-                                                </SearchInterceptStateProvider>
-                                            </SearchExplorerStateProvider>
-                                        </CartStateProvider>
+                                                    
+                                                </SearchExplorerStateProvider>
+                                            </CartStateProvider>
+                                            
+                                        </SearchInterceptStateProvider>
                                     </CategoryInterceptStateProvider>
                                 </SigninInterceptStateProvider>
                             </DialogMessageProvider>
@@ -247,6 +254,7 @@ function RootLayoutContentInternal({
     
     cartDialog,
     categoryDialog,
+    searchDialog,
 }: {
     // children:
     header         : React.ReactNode
@@ -256,6 +264,7 @@ function RootLayoutContentInternal({
     
     cartDialog     : React.ReactNode
     categoryDialog : React.ReactNode
+    searchDialog   : React.ReactNode
 }): JSX.Element|null {
     // stores:
     useSignedInCacheRefresh();
@@ -277,6 +286,7 @@ function RootLayoutContentInternal({
             
             {cartDialog}
             {categoryDialog}
+            {searchDialog}
         </>
     );
 }

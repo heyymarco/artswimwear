@@ -14,7 +14,7 @@ import {
 // internal components:
 import {
     useSearchInterceptState,
-}                           from './states/searchInterceptState'
+}                           from './searchInterceptState'
 
 
 

@@ -9,7 +9,7 @@ import {
 // internal components:
 import {
     SearchExplorerClose,
-}                           from '@/components/explorers/SearchExplorer'
+}                           from '@/navigations/searchInterceptState'
 
 
 

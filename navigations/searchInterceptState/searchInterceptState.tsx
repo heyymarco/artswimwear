@@ -19,10 +19,10 @@ import {
 // internal components:
 import {
     SearchExplorerDropdown,
-}                           from '../SearchExplorerDropdown'
+}                           from '../../components/explorers/SearchExplorer/SearchExplorerDropdown'
 import {
     searchPath,
-}                           from '../configs'
+}                           from '../../components/explorers/SearchExplorer/configs'
 
 // states:
 import {
