@@ -77,10 +77,6 @@ interface DialogState {
 
 
 
-// hooks:
-
-// states:
-
 // contexts:
 export interface SigninInterceptState
     extends
@@ -95,10 +91,12 @@ export interface SigninInterceptState
     
     setSection       : (section: ControllableSignInSection) => void
 }
-
 const SigninInterceptStateContext = createContext<SigninInterceptState|undefined>(undefined);
 if (process.env.NODE_ENV !== 'production') SigninInterceptStateContext.displayName  = 'SigninInterceptState';
 
+
+
+// hooks:
 export const useSigninInterceptState = (): SigninInterceptState => {
     const signinInterceptState = useContext(SigninInterceptStateContext);
     if (signinInterceptState === undefined) throw Error('Not in <SigninInterceptStateProvider>.');
