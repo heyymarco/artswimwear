@@ -6,7 +6,7 @@ import {
     default as React,
 }                           from 'react'
 
-// internal components:
+// states:
 import {
     SearchExplorerClose,
 }                           from '@/navigations/searchInterceptState'
