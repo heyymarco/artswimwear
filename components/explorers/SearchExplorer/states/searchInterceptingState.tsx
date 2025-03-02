@@ -61,13 +61,7 @@ const SearchInterceptingStateProvider = (props: React.PropsWithChildren<SearchIn
     
     
     // states:
-    const {
-        interceptingState,
-        interceptingDialog,
-    } = useInterceptingStateProvider({
-        interceptingPath            : searchPath,
-        interceptingDialogComponent : <SearchExplorerDropdown />,
-    });
+    const interceptingState = useInterceptingStateProvider();
     
     
     
@@ -75,8 +69,6 @@ const SearchInterceptingStateProvider = (props: React.PropsWithChildren<SearchIn
     return (
         <SearchInterceptingStateContext.Provider value={interceptingState}>
             {children}
-            
-            {interceptingDialog}
         </SearchInterceptingStateContext.Provider>
     );
 };

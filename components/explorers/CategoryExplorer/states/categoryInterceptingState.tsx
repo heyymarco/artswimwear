@@ -61,13 +61,7 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
     
     
     // states:
-    const {
-        interceptingState,
-        interceptingDialog,
-    } = useInterceptingStateProvider({
-        interceptingPath            : categoriesPath,
-        interceptingDialogComponent : <CategoryExplorerDropdown />,
-    });
+    const interceptingState = useInterceptingStateProvider();
     
     
     
@@ -75,8 +69,6 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
     return (
         <CategoryInterceptingStateContext.Provider value={interceptingState}>
             {children}
-            
-            {interceptingDialog}
         </CategoryInterceptingStateContext.Provider>
     );
 };
