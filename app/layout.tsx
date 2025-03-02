@@ -45,17 +45,20 @@ export const metadata: Metadata = {
 export default function RootLayout({
     // children:
     header,
+    cartDialog,
     children,
 }: {
     // children:
-    header   : React.ReactNode
-    children : React.ReactNode
+    header     : React.ReactNode
+    cartDialog : React.ReactNode
+    children   : React.ReactNode
 }): JSX.Element|null {
     // jsx:
     return (
         <RootLayoutContent
             // children:
             header={header}
+            cartDialog={cartDialog}
         >
             {children}
         </RootLayoutContent>

@@ -57,7 +57,6 @@ import {
 }                           from '@/components/explorers/CategoryExplorer'
 import {
     CartStateProvider,
-    CartDialog,
 }                           from '@/components/Cart'
 import {
     SearchInterceptingStateProvider,
@@ -162,11 +161,13 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 export function RootLayoutContent({
     // children:
     header,
+    cartDialog,
     children,
 }: {
     // children:
-    header   : React.ReactNode
-    children : React.ReactNode
+    header     : React.ReactNode
+    cartDialog : React.ReactNode
+    children   : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -206,6 +207,7 @@ export function RootLayoutContent({
                                                     <RootLayoutContentInternal
                                                         // children:
                                                         header={header}
+                                                        cartDialog={cartDialog}
                                                     >
                                                         {children}
                                                     </RootLayoutContentInternal>
@@ -225,11 +227,13 @@ export function RootLayoutContent({
 function RootLayoutContentInternal({
     // children:
     header,
+    cartDialog,
     children,
 }: {
     // children:
-    header   : React.ReactNode
-    children : React.ReactNode
+    header     : React.ReactNode
+    cartDialog : React.ReactNode
+    children   : React.ReactNode
 }): JSX.Element|null {
     // stores:
     useSignedInCacheRefresh();
@@ -245,7 +249,7 @@ function RootLayoutContentInternal({
                 {children}
             </Scroller>
             
-            <CartDialog />
+            {cartDialog}
         </>
     );
 }
