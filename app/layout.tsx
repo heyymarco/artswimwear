@@ -45,11 +45,13 @@ export const metadata: Metadata = {
 export default function RootLayout({
     // children:
     header,
+    footer,
     cartDialog,
     children,
 }: {
     // children:
     header     : React.ReactNode
+    footer     : React.ReactNode
     cartDialog : React.ReactNode
     children   : React.ReactNode
 }): JSX.Element|null {
@@ -58,6 +60,7 @@ export default function RootLayout({
         <RootLayoutContent
             // children:
             header={header}
+            footer={footer}
             cartDialog={cartDialog}
         >
             {children}

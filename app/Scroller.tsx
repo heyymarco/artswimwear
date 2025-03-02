@@ -19,10 +19,10 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// internal components:
+// states:
 import {
-    Footer,
-}                           from './Footer'
+    useScrollerState,
+}                           from '@/states/scrollerState'
 
 
 
@@ -42,8 +42,15 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
     const shifterTopRef          = useRef<HTMLDivElement|null>(null);
     const shifterBottomRef       = useRef<HTMLDivElement|null>(null);
     const scrollingContentRef    = useRef<HTMLDivElement|null>(null);
-    const footerRef              = useRef<HTMLElement|null>(null);
     const delayedScrollUpdateRef = useRef<ReturnType<typeof requestAnimationFrame>|null>(null);
+    
+    
+    
+    // states:
+    const {
+        // refs:
+        footerRef,
+    } = useScrollerState();
     
     
     
@@ -230,15 +237,12 @@ export const Scroller = (props: ScrollerProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <>
-            <div ref={scrollerRef} className='main-scroller'>
-                <div ref={shifterTopRef} />
-                <div ref={scrollingContentRef} className='scrolling-content'>
-                    {children}
-                </div>
-                <div ref={shifterBottomRef} />
+        <div ref={scrollerRef} className='main-scroller'>
+            <div ref={shifterTopRef} />
+            <div ref={scrollingContentRef} className='scrolling-content'>
+                {children}
             </div>
-            <Footer elmRef={footerRef} />
-        </>
+            <div ref={shifterBottomRef} />
+        </div>
     );
 };

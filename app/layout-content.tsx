@@ -78,6 +78,9 @@ import {
 
 // states:
 import {
+    ScrollerStateProvider,
+}                           from '@/states/scrollerState'
+import {
     InterceptingRouterProvider,
 }                           from '@/navigations/interceptingRouter'
 
@@ -161,11 +164,13 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 export function RootLayoutContent({
     // children:
     header,
+    footer,
     cartDialog,
     children,
 }: {
     // children:
     header     : React.ReactNode
+    footer     : React.ReactNode
     cartDialog : React.ReactNode
     children   : React.ReactNode
 }): JSX.Element|null {
@@ -207,6 +212,7 @@ export function RootLayoutContent({
                                                     <RootLayoutContentInternal
                                                         // children:
                                                         header={header}
+                                                        footer={footer}
                                                         cartDialog={cartDialog}
                                                     >
                                                         {children}
@@ -227,11 +233,13 @@ export function RootLayoutContent({
 function RootLayoutContentInternal({
     // children:
     header,
+    footer,
     cartDialog,
     children,
 }: {
     // children:
     header     : React.ReactNode
+    footer     : React.ReactNode
     cartDialog : React.ReactNode
     children   : React.ReactNode
 }): JSX.Element|null {
@@ -245,9 +253,13 @@ function RootLayoutContentInternal({
         <>
             {header}
             
-            <Scroller>
-                {children}
-            </Scroller>
+            <ScrollerStateProvider>
+                <Scroller>
+                    {children}
+                </Scroller>
+                
+                {footer}
+            </ScrollerStateProvider>
             
             {cartDialog}
         </>
