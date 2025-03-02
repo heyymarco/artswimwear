@@ -53,16 +53,34 @@ export interface CategoryExplorerState {
     onNavigate          : ((url: string) => void) | null|undefined
     onClose             : (() => void)            | null|undefined
 }
-const CategoryExplorerStateContext = createContext<CategoryExplorerState|undefined>(undefined);
+const rootCategoryExplorerStateContext : CategoryExplorerState = {
+    // appearances:
+    mobileLayout        : true,
+    showRootSection     : true,
+    
+    
+    
+    // states:
+    parentCategories    : rootParentCategories,
+    setParentCategories : noopCallback,
+    
+    restoreIndex        : 0,
+    setRestoreIndex     : noopCallback,
+    
+    
+    
+    // handlers:
+    onNavigate          : undefined,
+    onClose             : undefined,
+}
+const CategoryExplorerStateContext = createContext<CategoryExplorerState>(rootCategoryExplorerStateContext);
 if (process.env.NODE_ENV !== 'production') CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
 
 
 
 // hooks:
 export const useCategoryExplorerState = (): CategoryExplorerState => {
-    const categoryExplorerState = useContext(CategoryExplorerStateContext);
-    if (categoryExplorerState === undefined) throw Error('Not in <CategoryExplorerStateProvider>.');
-    return categoryExplorerState;
+    return useContext(CategoryExplorerStateContext);
 }
 
 
