@@ -26,12 +26,6 @@ import {
 
 
 
-// hooks:
-
-// states:
-
-//#region categoryExplorerState
-
 // utilities:
 export const rootParentCategories : CategoryParentInfo[] = [];
 export const noopCallback = () => {};
@@ -59,32 +53,16 @@ export interface CategoryExplorerState {
     onNavigate          : ((url: string) => void) | null|undefined
     onClose             : (() => void)            | null|undefined
 }
+const CategoryExplorerStateContext = createContext<CategoryExplorerState|undefined>(undefined);
+if (process.env.NODE_ENV !== 'production') CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
 
-const defaultCategoryExplorerStateContext : CategoryExplorerState = {
-    // appearances:
-    mobileLayout        : true,
-    showRootSection     : true,
-    
-    
-    
-    // states:
-    parentCategories    : rootParentCategories,
-    setParentCategories : noopCallback,
-    
-    restoreIndex        : 0,
-    setRestoreIndex     : noopCallback,
-    
-    
-    
-    // handlers:
-    onNavigate          : undefined,
-    onClose             : undefined,
-}
-const CategoryExplorerStateContext = createContext<CategoryExplorerState>(defaultCategoryExplorerStateContext);
-CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
 
+
+// hooks:
 export const useCategoryExplorerState = (): CategoryExplorerState => {
-    return useContext(CategoryExplorerStateContext);
+    const categoryExplorerState = useContext(CategoryExplorerStateContext);
+    if (categoryExplorerState === undefined) throw Error('Not in <CategoryExplorerStateProvider>.');
+    return categoryExplorerState;
 }
 
 
@@ -197,4 +175,3 @@ export {
     CategoryExplorerStateProvider,
     CategoryExplorerStateProvider as default,
 }
-//#endregion categoryExplorerState
