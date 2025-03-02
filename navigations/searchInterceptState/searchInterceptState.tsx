@@ -16,14 +16,6 @@ import {
     useContext,
 }                           from 'react'
 
-// internal components:
-import {
-    SearchExplorerDropdown,
-}                           from '../../components/explorers/SearchExplorer/SearchExplorerDropdown'
-import {
-    searchPath,
-}                           from '../../components/explorers/SearchExplorer/configs'
-
 // states:
 import {
     type InterceptState,
