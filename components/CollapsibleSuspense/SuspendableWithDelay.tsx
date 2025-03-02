@@ -116,15 +116,17 @@ const SuspendableWithDelay = <TExpandedChangeEvent extends ExpandedChangeEvent =
         
         
         // setups:
-        const asyncDelayedTransition = setTimeout(() => { // a brief moment before rendering `EXPANDED` state, so the expanding animation runs
-            setVisibilityState(VisibilityState.EXPANDED);
-        }, 0);
+        let asyncDelayedTransition = requestAnimationFrame(() => { // a brief moment before rendering `EXPANDED` state, so the expanding animation runs
+            asyncDelayedTransition = requestAnimationFrame(() => { // a brief moment before rendering `EXPANDED` state, so the expanding animation runs
+                setVisibilityState(VisibilityState.EXPANDED);
+            });
+        });
         
         
         
         // cleanups:
         return () => {
-            clearTimeout(asyncDelayedTransition);
+            cancelAnimationFrame(asyncDelayedTransition);
         };
     }, [visibilityState]);
     
