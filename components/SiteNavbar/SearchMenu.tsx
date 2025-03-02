@@ -50,7 +50,7 @@ import {
 }                           from '@/components/explorers/SearchExplorer/configs'
 import {
     useSearchInterceptState,
-}                           from '@/navigations/searchInterceptState/searchInterceptState'
+}                           from '@/navigations/searchInterceptState'
 import {
     PrefetchKind,
     PrefetchRouter,
