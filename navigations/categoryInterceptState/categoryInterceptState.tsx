@@ -16,14 +16,6 @@ import {
     useContext,
 }                           from 'react'
 
-// internal components:
-import {
-    CategoryExplorerDropdown,
-}                           from '../CategoryExplorerDropdown'
-import {
-    categoriesPath,
-}                           from '../configs'
-
 // states:
 import {
     type InterceptState,

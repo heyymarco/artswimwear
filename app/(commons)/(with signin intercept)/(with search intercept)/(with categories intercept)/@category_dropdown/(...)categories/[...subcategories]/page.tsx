@@ -9,7 +9,7 @@ import {
 // internal components:
 import {
     CategoryExplorerOpen,
-}                           from '@/components/explorers/CategoryExplorer'
+}                           from '@/navigations/categoryInterceptState'
 
 
 

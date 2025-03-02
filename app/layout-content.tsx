@@ -53,9 +53,6 @@ import {
     SigninInterceptStateProvider,
 }                           from '@/components/SignIn'
 import {
-    CategoryInterceptStateProvider,
-}                           from '@/components/explorers/CategoryExplorer'
-import {
     CartStateProvider,
 }                           from '@/components/Cart'
 import {
@@ -83,6 +80,9 @@ import {
 import {
     InterceptRouterProvider,
 }                           from '@/navigations/interceptRouter'
+import {
+    CategoryInterceptStateProvider,
+}                           from '@/navigations/categoryInterceptState'
 
 // configs:
 import {
@@ -165,14 +165,20 @@ export function RootLayoutContent({
     // children:
     header,
     footer,
-    cartDialog,
+    
     children,
+    
+    cartDialog,
+    categoryDialog,
 }: {
     // children:
-    header     : React.ReactNode
-    footer     : React.ReactNode
-    cartDialog : React.ReactNode
-    children   : React.ReactNode
+    header         : React.ReactNode
+    footer         : React.ReactNode
+    
+    children       : React.ReactNode
+    
+    cartDialog     : React.ReactNode
+    categoryDialog : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -213,7 +219,9 @@ export function RootLayoutContent({
                                                         // children:
                                                         header={header}
                                                         footer={footer}
+                                                        
                                                         cartDialog={cartDialog}
+                                                        categoryDialog={categoryDialog}
                                                     >
                                                         {children}
                                                     </RootLayoutContentInternal>
@@ -234,14 +242,20 @@ function RootLayoutContentInternal({
     // children:
     header,
     footer,
-    cartDialog,
+    
     children,
+    
+    cartDialog,
+    categoryDialog,
 }: {
     // children:
-    header     : React.ReactNode
-    footer     : React.ReactNode
-    cartDialog : React.ReactNode
-    children   : React.ReactNode
+    header         : React.ReactNode
+    footer         : React.ReactNode
+    
+    children       : React.ReactNode
+    
+    cartDialog     : React.ReactNode
+    categoryDialog : React.ReactNode
 }): JSX.Element|null {
     // stores:
     useSignedInCacheRefresh();
@@ -262,6 +276,7 @@ function RootLayoutContentInternal({
             </ScrollerStateProvider>
             
             {cartDialog}
+            {categoryDialog}
         </>
     );
 }

@@ -14,12 +14,12 @@ import {
 // internal components:
 import {
     useCategoryInterceptState,
-}                           from './states/categoryInterceptState'
+}                           from './categoryInterceptState'
 
 
 
 // react components:
-const CategoryExplorerClose = (): JSX.Element|null => {
+const CategoryExplorerOpen = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -30,7 +30,7 @@ const CategoryExplorerClose = (): JSX.Element|null => {
     
     // effects:
     useEffect(() => {
-        setIsDialogShown(false);
+        setIsDialogShown(true);
     }, []);
     
     
@@ -39,6 +39,6 @@ const CategoryExplorerClose = (): JSX.Element|null => {
     return null;
 };
 export {
-    CategoryExplorerClose,            // named export for readibility
-    CategoryExplorerClose as default, // default export to support React.lazy
+    CategoryExplorerOpen,            // named export for readibility
+    CategoryExplorerOpen as default, // default export to support React.lazy
 }

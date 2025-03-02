@@ -46,15 +46,17 @@ import {
     useGetHasCategories,
 }                           from '@/components/explorers/CategoryExplorer/hooks'
 import {
-    useCategoryInterceptState,
-}                           from '@/components/explorers/CategoryExplorer/states/categoryInterceptState'
-import {
     PrefetchCategoryPage,
 }                           from '@/components/prefetches/PrefetchCategoryPage'
 import {
     PrefetchKind,
     PrefetchRouter,
 }                           from '@/components/prefetches/PrefetchRouter'
+
+// states:
+import {
+    useCategoryInterceptState,
+}                           from '@/navigations/categoryInterceptState'
 
 // models:
 import {
