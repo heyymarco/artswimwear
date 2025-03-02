@@ -33,12 +33,6 @@ import {
 
 
 
-// hooks:
-
-// states:
-
-//#region interceptRouter
-
 // contexts:
 export type StartInterceptHandler = (callback: () => undefined|void|boolean|Promise<undefined|void|boolean>) => Promise<void>
 export interface InterceptRouterState {
@@ -56,10 +50,12 @@ export interface InterceptRouterState {
     
     startIntercept         : StartInterceptHandler
 }
-
 const InterceptRouterStateContext = createContext<InterceptRouterState|undefined>(undefined);
 if (process.env.NODE_ENV !== 'production') InterceptRouterStateContext.displayName  = 'InterceptRouterState';
 
+
+
+// hooks:
 export const useInterceptRouter = (): InterceptRouterState => {
     const interceptRouterState = useContext(InterceptRouterStateContext);
     if (interceptRouterState === undefined) throw Error('Not in <InterceptRouterProvider>.');
@@ -225,4 +221,3 @@ export {
     InterceptRouterProvider,
     InterceptRouterProvider as default,
 }
-//#endregion interceptRouter
