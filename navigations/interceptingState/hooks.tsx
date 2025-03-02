@@ -48,62 +48,17 @@ import {
     useInterceptingRouter,
 }                           from '@/navigations/interceptingRouter'
 
-
-
-// types:
-interface DialogState {
-    expanded       : boolean
-    
-    closingPromise : Promise<void>
-    signalClosing  : () => void
-    
-    hasData        : boolean
-    data           : boolean|undefined
-}
+// internals:
+import {
+    type DialogState,
+}                           from './types'
+import {
+    type InterceptingState,
+}                           from './context'
 
 
 
-// contexts:
-export interface InterceptingState
-{
-    // refs:
-    navbarRef               : React.MutableRefObject<HTMLElement|null>
-    menuRef                 : React.MutableRefObject<HTMLElement|null>
-    
-    
-    
-    // states:
-    isDesktopLayout         : boolean
-    setIsDesktopLayout      : (isDesktopLayout: boolean) => void
-    
-    isNavbarListExpanded    : boolean
-    setIsNavbarListExpanded : (isNavbarListExpanded: boolean) => void
-    
-    isDialogShown           : boolean
-    setIsDialogShown        : (isDialogShown: boolean) => void
-}
-
-const noopSetter = () => {};
-export const defaultInterceptingStateContext : InterceptingState = {
-    // refs:
-    navbarRef               : { current: null },
-    menuRef                 : { current: null },
-    
-    
-    
-    // states:
-    isDesktopLayout         : false,
-    setIsDesktopLayout      : noopSetter,
-    
-    isNavbarListExpanded    : false,
-    setIsNavbarListExpanded : noopSetter,
-    
-    isDialogShown           : false,
-    setIsDialogShown        : noopSetter,
-};
-
-
-
+// hooks:
 export interface InterceptingDialogComponentProps
     extends
         // bases:
@@ -121,7 +76,7 @@ export interface InterceptingStateProps {
     // components:
     interceptingDialogComponent : React.ReactElement<InterceptingDialogComponentProps>
 }
-export const useInterceptingState = (props: InterceptingStateProps) => {
+export const useInterceptingStateProvider = (props: InterceptingStateProps) => {
     // props:
     const {
         // configs:

@@ -27,29 +27,21 @@ import {
 // states:
 import {
     type InterceptingState,
-    defaultInterceptingStateContext,
-    useInterceptingState,
+    useInterceptingStateProvider,
 }                           from '@/navigations/interceptingState'
 
 
 
-// hooks:
-
-// states:
-
-//#region categoryInterceptingState
-
 // contexts:
-const CategoryInterceptingStateContext = createContext<InterceptingState>(defaultInterceptingStateContext);
-CategoryInterceptingStateContext.displayName  = 'CategoryInterceptingState';
+const CategoryInterceptingStateContext = createContext<InterceptingState|undefined>(undefined);
+if (process.env.NODE_ENV !== 'production') CategoryInterceptingStateContext.displayName  = 'CategoryInterceptingState';
 
+
+
+// hooks:
 export const useCategoryInterceptingState = (): InterceptingState => {
     const categoryInterceptingState = useContext(CategoryInterceptingStateContext);
-    if (process.env.NODE_ENV !== 'production') {
-        if (categoryInterceptingState === defaultInterceptingStateContext) {
-            console.error('Not in <CategoryInterceptingStateProvider>.');
-        } // if
-    } // if
+    if (categoryInterceptingState === undefined) throw Error('Not in <CategoryInterceptingStateProvider>.');
     return categoryInterceptingState;
 }
 
@@ -72,7 +64,7 @@ const CategoryInterceptingStateProvider = (props: React.PropsWithChildren<Catego
     const {
         interceptingState,
         interceptingDialog,
-    } = useInterceptingState({
+    } = useInterceptingStateProvider({
         interceptingPath            : categoriesPath,
         interceptingDialogComponent : <CategoryExplorerDropdown />,
     });
@@ -92,4 +84,3 @@ export {
     CategoryInterceptingStateProvider,            // named export for readibility
     CategoryInterceptingStateProvider as default, // default export to support React.lazy
 }
-//#endregion categoryInterceptingState

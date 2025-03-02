@@ -27,29 +27,21 @@ import {
 // states:
 import {
     type InterceptingState,
-    defaultInterceptingStateContext,
-    useInterceptingState,
+    useInterceptingStateProvider,
 }                           from '@/navigations/interceptingState'
 
 
 
-// hooks:
-
-// states:
-
-//#region searchInterceptingState
-
 // contexts:
-const SearchInterceptingStateContext = createContext<InterceptingState>(defaultInterceptingStateContext);
-SearchInterceptingStateContext.displayName  = 'SearchInterceptingState';
+const SearchInterceptingStateContext = createContext<InterceptingState|undefined>(undefined);
+if (process.env.NODE_ENV !== 'production') SearchInterceptingStateContext.displayName  = 'SearchInterceptingState';
 
+
+
+// hooks:
 export const useSearchInterceptingState = (): InterceptingState => {
     const searchInterceptingState = useContext(SearchInterceptingStateContext);
-    if (process.env.NODE_ENV !== 'production') {
-        if (searchInterceptingState === defaultInterceptingStateContext) {
-            console.error('Not in <SearchInterceptingStateProvider>.');
-        } // if
-    } // if
+    if (searchInterceptingState === undefined) throw Error('Not in <SearchInterceptingStateProvider>.');
     return searchInterceptingState;
 }
 
@@ -72,7 +64,7 @@ const SearchInterceptingStateProvider = (props: React.PropsWithChildren<SearchIn
     const {
         interceptingState,
         interceptingDialog,
-    } = useInterceptingState({
+    } = useInterceptingStateProvider({
         interceptingPath            : searchPath,
         interceptingDialogComponent : <SearchExplorerDropdown />,
     });
@@ -92,4 +84,3 @@ export {
     SearchInterceptingStateProvider,            // named export for readibility
     SearchInterceptingStateProvider as default, // default export to support React.lazy
 }
-//#endregion searchInterceptingState
