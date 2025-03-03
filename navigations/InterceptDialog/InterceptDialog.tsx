@@ -27,13 +27,8 @@ import {
 
 // reusable-ui components:
 import {
-    // menu-components:
-    type DropdownExpandedChangeEvent,
-    type DropdownProps,
-    
-    
-    
     // dialog-components:
+    type ModalProps,
     type ModalExpandedChangeEvent,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
@@ -44,8 +39,8 @@ import {
 
 // states:
 import {
-    type InterceptState,
-}                           from '@/navigations/interceptState'
+    type DialogInterceptState,
+}                           from '@/navigations/dialogInterceptState'
 import {
     useInterceptRouter,
 }                           from '@/navigations/interceptRouter'
@@ -61,19 +56,18 @@ import {
 export interface InterceptDialogComponentProps
     extends
         // bases:
-        DropdownProps<Element, DropdownExpandedChangeEvent<boolean>>
+        ModalProps<Element, ModalExpandedChangeEvent<boolean>>
 {
-    // appearances:
-    mobileLayout ?: boolean
 }
-export interface InterceptDialogProps {
+export interface InterceptDialogProps
+{
     // configs:
     interceptPath                  : string
     
     
     
     // states:
-    interceptState                 : InterceptState
+    interceptState                 : DialogInterceptState
     lastNonInterceptedPathnameRef ?: React.MutableRefObject<string>
     
     
@@ -108,17 +102,7 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
     
     // states:
     const {
-        // refs:
-        navbarRef,
-        menuRef,
-        
-        
-        
         // states:
-        isDesktopLayout,
-        
-        isNavbarListExpanded,
-        
         isDialogShown,
         setIsDialogShown,
     } = interceptState;
@@ -245,33 +229,6 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
         } // if
     }, [isDialogShown]);
     
-    // Closes the shown <DialogUi> when on transition between desktop <==> mobile:
-    const prevIsDesktopLayoutRef = useRef<boolean>(isDesktopLayout);
-    useEffect(() => {
-        // conditions:
-        if (prevIsDesktopLayoutRef.current === isDesktopLayout) return; // no diff => ignore
-        prevIsDesktopLayoutRef.current = isDesktopLayout; // sync
-        
-        
-        
-        // actions:
-        closeDialog();
-    }, [isDesktopLayout]);
-    
-    // Closes the shown <DialogUi> when <Navbar>'s list collapsed:
-    const prevIsNavbarListExpandedRef = useRef<boolean>(isNavbarListExpanded);
-    useEffect(() => {
-        // conditions:
-        if (prevIsNavbarListExpandedRef.current === isNavbarListExpanded) return; // no diff => ignore
-        prevIsNavbarListExpandedRef.current = isNavbarListExpanded; // sync
-        if (isNavbarListExpanded) return; // only interested on collapsed event
-        
-        
-        
-        // actions:
-        closeDialog();
-    }, [isNavbarListExpanded]);
-    
     
     
     // jsx:
@@ -280,44 +237,10 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
             {React.cloneElement<InterceptDialogComponentProps>(interceptDialogComponent,
                 // props:
                 {
-                    // appearances:
-                    mobileLayout      : !isDesktopLayout,
-                    
-                    
-                    
                     // states:
                     expanded          : dialogState?.expanded ?? false,
                     onExpandedChange  : handleExpandedChange,
                     onCollapseStart   : handleCollapseStart,
-                    
-                    
-                    
-                    // floatable:
-                    floatingStrategy  : 'fixed', // prevents the influence by browser's scrollbar
-                    floatingOn        : (
-                        isDesktopLayout
-                        ? menuRef                // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
-                        : navbarRef              // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
-                    ),
-                    floatingPlacement : (
-                        isDesktopLayout
-                        ? 'bottom'               // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
-                        : 'bottom-start'         // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
-                    ),
-                    orientation       : (
-                        isDesktopLayout
-                        ? 'block'                // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
-                        : 'inline'               // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
-                    ),
-                    
-                    
-                    
-                    // auto focusable:
-                    restoreFocusOn    : (
-                        isDesktopLayout
-                        ? menuRef                // on desktop : restores focus to <NavItem>
-                        : navbarRef              // on mobile  : restores focus to <Navbar>
-                    ),
                 },
             )}
         </CollapsibleSuspense>

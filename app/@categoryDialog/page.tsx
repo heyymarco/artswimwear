@@ -14,8 +14,8 @@ import {
 
 // states:
 import {
-    InterceptDialog,
-}                           from '@/navigations/InterceptDialog'
+    InterceptNavbarDropdown,
+}                           from '@/navigations/InterceptNavbarDropdown'
 import {
     useCategoryInterceptState,
 }                           from '@/navigations/categoryInterceptState'
@@ -31,7 +31,7 @@ export default function CategoryDialogPage(): JSX.Element|null {
     
     // jsx:
     return (
-        <InterceptDialog
+        <InterceptNavbarDropdown
             // configs:
             interceptPath={categoriesPath}
             

@@ -8,15 +8,20 @@ import {
     useRef,
 }                           from 'react'
 
+// states:
+import {
+    useDialogInterceptStateProvider,
+}                           from '@/navigations/dialogInterceptState'
+
 // internals:
 import {
-    type InterceptState,
+    type NavbarDropdownInterceptState,
 }                           from './context'
 
 
 
 // hooks:
-export const useInterceptStateProvider = () => {
+export const useNavbarDropdownInterceptStateProvider = () => {
     // refs:
     const navbarRef = useRef<HTMLElement|null>(null);
     const menuRef   = useRef<HTMLElement|null>(null);
@@ -24,15 +29,19 @@ export const useInterceptStateProvider = () => {
     
     
     // states:
+    const dialogInterceptState = useDialogInterceptStateProvider();
     const [isDesktopLayout     , setIsDesktopLayout     ] = useState<boolean>(false);
     const [isNavbarListExpanded, setIsNavbarListExpanded] = useState<boolean>(false);
-    
-    const [isDialogShown       , setIsDialogShown       ] = useState<boolean>(false);
     
     
     
     // states:
-    const interceptState = useMemo<InterceptState>(() => ({
+    const navbarDropdownInterceptState = useMemo<NavbarDropdownInterceptState>(() => ({
+        // bases:
+        ...dialogInterceptState,
+        
+        
+        
         // refs:
         navbarRef,
         menuRef,
@@ -45,10 +54,12 @@ export const useInterceptStateProvider = () => {
         
         isNavbarListExpanded,
         setIsNavbarListExpanded,
-        
-        isDialogShown,
-        setIsDialogShown,
     }), [
+        // bases:
+        dialogInterceptState,
+        
+        
+        
         // refs:
         // navbarRef,               // stable ref
         // menuRef,                 // stable ref
@@ -61,13 +72,10 @@ export const useInterceptStateProvider = () => {
         
         isNavbarListExpanded,
         // setIsNavbarListExpanded, // stable ref
-        
-        isDialogShown,
-        // setIsDialogShown,        // stable ref
     ]);
     
     
     
     // api:
-    return interceptState;
+    return navbarDropdownInterceptState;
 };

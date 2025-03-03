@@ -14,8 +14,8 @@ import {
 
 // states:
 import {
-    InterceptDialog,
-}                           from '@/navigations/InterceptDialog'
+    InterceptNavbarDropdown,
+}                           from '@/navigations/InterceptNavbarDropdown'
 import {
     useSearchInterceptState,
 }                           from '@/navigations/searchInterceptState'
@@ -31,7 +31,7 @@ export default function SearchDialogPage(): JSX.Element|null {
     
     // jsx:
     return (
-        <InterceptDialog
+        <InterceptNavbarDropdown
             // configs:
             interceptPath={searchPath}
             

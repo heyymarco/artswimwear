@@ -18,20 +18,20 @@ import {
 
 // states:
 import {
-    type InterceptState,
-    useInterceptStateProvider,
-}                           from '@/navigations/interceptState'
+    type NavbarDropdownInterceptState,
+    useNavbarDropdownInterceptStateProvider,
+}                           from '@/navigations/navbarDropdownInterceptState'
 
 
 
 // contexts:
-const SearchInterceptStateContext = createContext<InterceptState|undefined>(undefined);
+const SearchInterceptStateContext = createContext<NavbarDropdownInterceptState|undefined>(undefined);
 if (process.env.NODE_ENV !== 'production') SearchInterceptStateContext.displayName  = 'SearchInterceptState';
 
 
 
 // hooks:
-export const useSearchInterceptState = (): InterceptState => {
+export const useSearchInterceptState = (): NavbarDropdownInterceptState => {
     const searchInterceptState = useContext(SearchInterceptStateContext);
     if (searchInterceptState === undefined) throw Error('Not in <SearchInterceptStateProvider>.');
     return searchInterceptState;
@@ -53,7 +53,7 @@ const SearchInterceptStateProvider = (props: React.PropsWithChildren<SearchInter
     
     
     // states:
-    const interceptState = useInterceptStateProvider();
+    const interceptState = useNavbarDropdownInterceptStateProvider();
     
     
     

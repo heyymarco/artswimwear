@@ -4,10 +4,18 @@ import {
     type default as React,
 }                           from 'react'
 
+// states:
+import {
+    type DialogInterceptState,
+}                           from '@/navigations/dialogInterceptState'
+
 
 
 // contexts:
-export interface InterceptState
+export interface NavbarDropdownInterceptState
+    extends
+        // bases:
+        DialogInterceptState
 {
     // refs:
     navbarRef               : React.MutableRefObject<HTMLElement|null>
@@ -21,7 +29,4 @@ export interface InterceptState
     
     isNavbarListExpanded    : boolean
     setIsNavbarListExpanded : (isNavbarListExpanded: boolean) => void
-    
-    isDialogShown           : boolean
-    setIsDialogShown        : (isDialogShown: boolean) => void
 }

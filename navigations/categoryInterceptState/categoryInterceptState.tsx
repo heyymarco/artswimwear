@@ -18,20 +18,20 @@ import {
 
 // states:
 import {
-    type InterceptState,
-    useInterceptStateProvider,
-}                           from '@/navigations/interceptState'
+    type NavbarDropdownInterceptState,
+    useNavbarDropdownInterceptStateProvider,
+}                           from '@/navigations/navbarDropdownInterceptState'
 
 
 
 // contexts:
-const CategoryInterceptStateContext = createContext<InterceptState|undefined>(undefined);
+const CategoryInterceptStateContext = createContext<NavbarDropdownInterceptState|undefined>(undefined);
 if (process.env.NODE_ENV !== 'production') CategoryInterceptStateContext.displayName  = 'CategoryInterceptState';
 
 
 
 // hooks:
-export const useCategoryInterceptState = (): InterceptState => {
+export const useCategoryInterceptState = (): NavbarDropdownInterceptState => {
     const categoryInterceptState = useContext(CategoryInterceptStateContext);
     if (categoryInterceptState === undefined) throw Error('Not in <CategoryInterceptStateProvider>.');
     return categoryInterceptState;
@@ -53,7 +53,7 @@ const CategoryInterceptStateProvider = (props: React.PropsWithChildren<CategoryI
     
     
     // states:
-    const interceptState = useInterceptStateProvider();
+    const interceptState = useNavbarDropdownInterceptStateProvider();
     
     
     

@@ -26,9 +26,9 @@ import {
 
 // states:
 import {
-    type InterceptState,
-    useInterceptStateProvider,
-}                           from '@/navigations/interceptState'
+    type DialogInterceptState,
+    useDialogInterceptStateProvider,
+}                           from '@/navigations/dialogInterceptState'
 
 
 
@@ -36,7 +36,7 @@ import {
 export interface SigninInterceptState
     extends
         // bases:
-        InterceptState,
+        DialogInterceptState,
         
         // states:
         Required<Pick<SignInProps,
@@ -75,7 +75,7 @@ const SigninInterceptStateProvider = (props: React.PropsWithChildren<SigninInter
     
     
     // states:
-    const interceptState = useInterceptStateProvider();
+    const interceptState = useDialogInterceptStateProvider();
     const [section, setSection] = useState<ControllableSignInSection>('signIn');
     
     
