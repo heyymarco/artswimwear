@@ -285,11 +285,6 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
                     
                     
                     
-                    // variants:
-                    // theme          : 'primary'
-                    
-                    
-                    
                     // states:
                     expanded          : dialogState?.expanded ?? false,
                     onExpandedChange  : handleExpandedChange,
@@ -301,18 +296,18 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
                     floatingStrategy  : 'fixed', // prevents the influence by browser's scrollbar
                     floatingOn        : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: shows the <DropdownUi> on the bottom of <InterceptDialog>
-                        : navbarRef              // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
+                        ? menuRef                // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
+                        : navbarRef              // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
                     ),
                     floatingPlacement : (
                         isDesktopLayout
-                        ? 'bottom-end'           // on desktop: shows the <DropdownUi> on the bottom of <InterceptDialog>
-                        : 'bottom-start'         // on mobile : shows the <DropdownUi> on the bottom of <Navbar>
+                        ? 'bottom'               // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
+                        : 'bottom-start'         // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
                     ),
                     orientation       : (
                         isDesktopLayout
-                        ? 'block'                // on desktop: vertically   (top  to bottom) shows the <DropdownUi> on the bottom of <InterceptDialog>
-                        : 'inline'               // on mobile : horizontally (left to  right) shows the <DropdownUi> on the bottom of <Navbar>
+                        ? 'block'                // on desktop : dropdown  the <DropdownUi> on the bottom of <NavItem>
+                        : 'inline'               // on mobile  : dropright the <DropdownUi> on the bottom of <Navbar>
                     ),
                     
                     
@@ -320,8 +315,8 @@ const InterceptDialog = (props: InterceptDialogProps): JSX.Element|null => {
                     // auto focusable:
                     restoreFocusOn    : (
                         isDesktopLayout
-                        ? menuRef                // on desktop: restores focus to <InterceptDialog>
-                        : navbarRef              // on mobile: restores focus to <Navbar>
+                        ? menuRef                // on desktop : restores focus to <NavItem>
+                        : navbarRef              // on mobile  : restores focus to <Navbar>
                     ),
                 },
             )}
