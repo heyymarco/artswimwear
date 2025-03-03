@@ -16,7 +16,7 @@ import {
 import {
     type SigninInterceptState,
     useSigninInterceptState,
-}                           from './states/signinInterceptState'
+}                           from './signinInterceptState'
 import {
     IfPath,
 }                           from './IfPath'
@@ -39,7 +39,7 @@ export interface SignInSwitchProps
     // behaviors:
     showDialog ?: boolean
 }
-const SignInSwitch         = (props: SignInSwitchProps): JSX.Element|null => {
+const SignInSwitch = (props: SignInSwitchProps): JSX.Element|null => {
     // props:
     const {
         // conditions:

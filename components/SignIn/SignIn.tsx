@@ -35,9 +35,6 @@ export *                    from '@heymarco/next-auth'
 
 // internals:
 import {
-    useSigninInterceptState,
-}                           from './states/signinInterceptState'
-import {
     loginProviders,
 }                           from './loginProviders'
 import {
@@ -51,6 +48,9 @@ import {
 import {
     useInterceptRouter,
 }                           from '@/navigations/interceptRouter'
+import {
+    useSigninInterceptState,
+}                           from '@/navigations/signinInterceptState'
 
 // configs:
 import {

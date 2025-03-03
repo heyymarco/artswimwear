@@ -50,20 +50,11 @@ import {
 
 // internal components:
 import {
-    SigninInterceptStateProvider,
-}                           from '@/components/SignIn'
+    Scroller,
+}                           from './Scroller'
 import {
     CartStateProvider,
 }                           from '@/components/Cart'
-import {
-    SearchInterceptStateProvider,
-}                           from '@/navigations/searchInterceptState'
-import {
-    SearchExplorerStateProvider,
-}                           from '@/components/explorers/SearchExplorer'
-import {
-    Scroller,
-}                           from './Scroller'
 
 // stores:
 import {
@@ -77,14 +68,23 @@ import {
 
 // states:
 import {
-    ScrollerStateProvider,
-}                           from '@/states/scrollerState'
-import {
     InterceptRouterProvider,
 }                           from '@/navigations/interceptRouter'
 import {
     CategoryInterceptStateProvider,
 }                           from '@/navigations/categoryInterceptState'
+import {
+    SigninInterceptStateProvider,
+}                           from '@/navigations/signinInterceptState'
+import {
+    SearchInterceptStateProvider,
+}                           from '@/navigations/searchInterceptState'
+import {
+    ScrollerStateProvider,
+}                           from '@/states/scrollerState'
+import {
+    SearchExplorerStateProvider,
+}                           from '@/components/explorers/SearchExplorer'
 
 // configs:
 import {
@@ -170,9 +170,10 @@ export function RootLayoutContent({
     
     children,
     
-    cartDialog,
+    signinDialog,
     categoryDialog,
     searchDialog,
+    cartDialog,
 }: {
     // children:
     header         : React.ReactNode
@@ -180,9 +181,10 @@ export function RootLayoutContent({
     
     children       : React.ReactNode
     
-    cartDialog     : React.ReactNode
+    signinDialog   : React.ReactNode
     categoryDialog : React.ReactNode
     searchDialog   : React.ReactNode
+    cartDialog     : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -224,9 +226,10 @@ export function RootLayoutContent({
                                                         header={header}
                                                         footer={footer}
                                                         
-                                                        cartDialog={cartDialog}
+                                                        signinDialog={signinDialog}
                                                         categoryDialog={categoryDialog}
                                                         searchDialog={searchDialog}
+                                                        cartDialog={cartDialog}
                                                     >
                                                         {children}
                                                     </RootLayoutContentInternal>
@@ -252,9 +255,10 @@ function RootLayoutContentInternal({
     
     children,
     
-    cartDialog,
+    signinDialog,
     categoryDialog,
     searchDialog,
+    cartDialog,
 }: {
     // children:
     header         : React.ReactNode
@@ -262,9 +266,10 @@ function RootLayoutContentInternal({
     
     children       : React.ReactNode
     
-    cartDialog     : React.ReactNode
+    signinDialog   : React.ReactNode
     categoryDialog : React.ReactNode
     searchDialog   : React.ReactNode
+    cartDialog     : React.ReactNode
 }): JSX.Element|null {
     // stores:
     useSignedInCacheRefresh();
@@ -284,9 +289,10 @@ function RootLayoutContentInternal({
                 {footer}
             </ScrollerStateProvider>
             
-            {cartDialog}
+            {signinDialog}
             {categoryDialog}
             {searchDialog}
+            {cartDialog}
         </>
     );
 }
